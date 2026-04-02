@@ -3,3 +3,25 @@
 api:
   specs:
     - openapi: openapi.json
+      overrides: overrides.yml
+
+groups:
+  javascript-sdk:
+    generators:
+      - name: fernapi/fern-typescript-node-sdk
+        version: 0.39.3
+        output:
+          location: npm
+          package-name: "@mailchimp/mailchimp-marketing"
+        config:
+          clientName: MailchimpClient
+          allowCustomFetcher: true
+
+  php-sdk:
+    generators:
+      - name: fernapi/fern-php-sdk
+        version: 0.8.2
+        github:
+          repository: fern-support/mailchimp-php
+        config:
+          clientName: MailchimpClient

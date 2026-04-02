@@ -1,120 +1,99 @@
 ---
-title: Welcome to Fern!
-subtitle: Everything you need to build the best developer experience
-slug: welcome
+title: Quick start
+subtitle: Get up and running with the Mailchimp Marketing API
+slug: quick-start
+description: Learn how to make your first API call with the Mailchimp Marketing API using API keys or OAuth 2 authentication.
 ---
 
-This repository is a starter template for building documentation with [Fern](https://buildwithfern.com). It includes a sample Plant Store API to demonstrate how Fern generates interactive API reference documentation from an OpenAPI specification.
+The Mailchimp Marketing API provides programmatic access to Mailchimp data and functionality, allowing you to build custom features to do things like sync your audience data, manage campaigns, and more.
 
-Use this template to get started quickly, then replace the sample content with your own API and documentation.
+## Before you begin
 
-## What's included
+To use the Mailchimp Marketing API, you need:
 
-This starter template contains everything you need to publish documentation:
+- A [Mailchimp account](https://login.mailchimp.com/signup/)
+- An API key or OAuth 2 access token
 
-<Files>
-  <File name="docs.yml" comment="Configures navigation, theme, and hosting" />
-  <File name="fern.config.json" comment="Sets your organization name and CLI version" />
-  <File name="openapi.yaml" comment="Sample Plant Store API specification" />
-  <Folder name="docs" defaultOpen>
-    <Folder name="pages" comment="Markdown content for your documentation" />
-    <Folder name="assets" comment="Logos, favicon, and other assets" />
-  </Folder>
-</Files>
+## Generate an API key
 
-## Getting started
+1. Log in to your Mailchimp account.
+2. Navigate to **Profile > Extras > API keys**.
+3. Click **Create A Key** and give it a descriptive label.
+4. Copy your new API key. You won't be able to see it again.
 
-<Steps>
-<Step title="Clone this repository">
+<Warning>
+Keep your API key secure. Do not share it in publicly accessible areas such as GitHub or client-side code.
+</Warning>
 
-```bash
-git clone <your-template-repo.git>
-cd docs-starter
+## Make your first API call
+
+Use your API key to call the API root endpoint and verify your credentials:
+
+<CodeBlocks>
+```bash title="cURL"
+curl -X GET "https://us1.api.mailchimp.com/3.0/" \
+  --user "anystring:YOUR_API_KEY"
 ```
 
-</Step>
+```javascript title="JavaScript"
+const mailchimp = require("@mailchimp/mailchimp_marketing");
 
-<Step title="Install the Fern CLI">
+mailchimp.setConfig({
+  apiKey: "YOUR_API_KEY",
+  server: "us1",
+});
 
-```bash
-npm install -g fern-api
+async function callPing() {
+  const response = await mailchimp.ping.get();
+  console.log(response);
+}
+
+callPing();
 ```
 
-</Step>
+```php title="PHP"
+require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
 
-<Step title="Preview locally">
+$mailchimp = new MailchimpMarketing\ApiClient();
+$mailchimp->setConfig([
+    'apiKey' => 'YOUR_API_KEY',
+    'server' => 'us1',
+]);
 
-Start a local development server with hot-reloading:
-
-```bash
-fern docs dev
+$response = $mailchimp->ping->get();
+print_r($response);
 ```
+</CodeBlocks>
 
-Open [http://localhost:3000](http://localhost:3000) to see your docs.
+A successful response returns information about the authenticated account:
 
-</Step>
-
-<Step title="Make it yours">
-
-Update `fern.config.json` with your organization name and `docs.yml` with your desired URL:
-
-```json title="fern.config.json"
+```json
 {
-  "organization": "your-org-name",
-  "version": "0.46.15"
+  "account_id": "abc123",
+  "login_id": "user@example.com",
+  "account_name": "Your Account",
+  "email": "user@example.com",
+  ...
 }
 ```
 
-```yaml title="docs.yml"
-instances:
-  - url: your-org.docs.buildwithfern.com
+## Determine your server prefix
+
+Your API key includes your server prefix as the last characters after the dash. For example, if your API key is `abc123def456-us6`, your server prefix is `us6`.
+
+All API requests use the format:
+
 ```
-
-</Step>
-
-<Step title="Publish">
-
-When you're ready to go live:
-
-```bash
-fern generate --docs
+https://{server_prefix}.api.mailchimp.com/3.0/
 ```
-
-</Step>
-</Steps>
 
 ## Next steps
 
-Replace the sample Plant Store API with your own OpenAPI specification, update the Markdown pages with your content, and customize the theme to match your brand. For detailed guidance, explore the pages in this documentation or visit the [Fern documentation](https://buildwithfern.com/learn).
-
 <CardGroup cols={2}>
-  <Card
-    title="Edit your docs"
-    icon="duotone pen-to-square"
-    href="/editing-your-docs"
-  >
-    Learn how to preview and publish changes using the CLI or Fern Editor
+  <Card title="Authentication" icon="duotone lock" href="/guides/authentication">
+    Learn about API key and OAuth 2 authentication methods.
   </Card>
-  <Card
-    title="Set up navigation"
-    icon="duotone sitemap"
-    href="/navigation"
-  >
-    Configure tabs, sections, and pages in your docs.yml file
-  </Card>
-  <Card
-    title="Customize your docs"
-    icon="duotone palette"
-    href="/customization"
-  >
-    Brand your documentation with colors, logos, and layouts
-  </Card>
-  <Card
-    title="API reference"
-    icon="duotone code"
-    href="/api-reference"
-  >
-    See how Fern generates interactive API documentation
+  <Card title="API Reference" icon="duotone code" href="/api-reference">
+    Explore all available endpoints.
   </Card>
 </CardGroup>
-

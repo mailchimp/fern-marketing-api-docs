@@ -1,0 +1,13 @@
+/* Mailchimp Developer branding overrides */
+
+:root {
+  --mc-dark-bg: #001D28;
+  --mc-dark-surface: #0C2832;
+  --mc-dark-border: #18323B;
+  --mc-light-bg: #EFEEEA;
+  --mc-yellow: #E7B75F;
+  --mc-teal: #007C89;
+  --mc-green: #00C14E;
+  --mc-text-light: #EFEEEA;
+  --mc-text-muted: #96A8AD;
+}

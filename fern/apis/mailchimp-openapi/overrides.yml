@@ -1,0 +1,26 @@
+# OpenAPI overrides for Mailchimp Marketing API
+# Enhances pagination and authentication documentation
+
+info:
+  description: |
+    The Mailchimp Marketing API provides programmatic access to Mailchimp data and functionality.
+    Use this API to manage audiences, campaigns, automations, and more.
+
+    ## Authentication
+
+    The API supports two authentication methods:
+
+    - **API Key**: Use HTTP Basic authentication with any string as the username and your API key as the password. Alternatively, pass the API key as a Bearer token in the Authorization header.
+    - **OAuth 2**: Use the OAuth 2 authorization code flow for integrations that access other users' accounts.
+
+    ## Base URL
+
+    All API requests use the format `https://{server_prefix}.api.mailchimp.com/3.0/` where `{server_prefix}` is the data center prefix from your API key (e.g., `us1`).
+
+    ## Pagination
+
+    List endpoints support offset-based pagination with `count` (max 1000) and `offset` query parameters. Responses include `total_items` to indicate the full result set size.
+
+    ## Rate Limits
+
+    The API enforces rate limits of 10 simultaneous connections. If you exceed this limit, you'll receive a `429 Too Many Requests` response.

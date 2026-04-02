@@ -1,0 +1,108 @@
+---
+title: Create your first audience
+subtitle: Set up and manage your Mailchimp audience with the Marketing API
+slug: create-your-first-audience
+description: Learn how to create an audience and add contacts using the Mailchimp Marketing API.
+---
+
+Your Mailchimp audience is where you store and manage all of your contacts. Use the Marketing API to create audiences and add members programmatically.
+
+## Create an audience
+
+Use the Lists endpoint to create a new audience:
+
+```bash
+curl -X POST "https://us1.api.mailchimp.com/3.0/lists" \
+  --user "anystring:YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My First Audience",
+    "contact": {
+      "company": "Acme Corp",
+      "address1": "123 Main St",
+      "city": "Atlanta",
+      "state": "GA",
+      "zip": "30308",
+      "country": "US"
+    },
+    "permission_reminder": "You signed up for updates on our website.",
+    "campaign_defaults": {
+      "from_name": "Acme Corp",
+      "from_email": "hello@example.com",
+      "subject": "",
+      "language": "en"
+    },
+    "email_type_option": true
+  }'
+```
+
+## Add a member
+
+Add a contact to your audience using the List Members endpoint:
+
+```bash
+curl -X POST "https://us1.api.mailchimp.com/3.0/lists/{list_id}/members" \
+  --user "anystring:YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email_address": "user@example.com",
+    "status": "subscribed",
+    "merge_fields": {
+      "FNAME": "Jane",
+      "LNAME": "Doe"
+    }
+  }'
+```
+
+### Member statuses
+
+| Status | Description |
+|--------|-------------|
+| `subscribed` | Active member receiving campaigns |
+| `unsubscribed` | Opted out of campaigns |
+| `cleaned` | Bounced and removed from active sending |
+| `pending` | Awaiting double opt-in confirmation |
+| `transactional` | Receives transactional emails only |
+
+## Add members in bulk
+
+For adding multiple contacts at once, use the Batch Subscribe endpoint for better performance:
+
+```bash
+curl -X POST "https://us1.api.mailchimp.com/3.0/lists/{list_id}" \
+  --user "anystring:YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "members": [
+      {
+        "email_address": "user1@example.com",
+        "status": "subscribed"
+      },
+      {
+        "email_address": "user2@example.com",
+        "status": "subscribed"
+      }
+    ],
+    "update_existing": false
+  }'
+```
+
+## Organize contacts with tags
+
+Tags let you label and organize contacts within an audience:
+
+```bash
+curl -X POST "https://us1.api.mailchimp.com/3.0/lists/{list_id}/members/{subscriber_hash}/tags" \
+  --user "anystring:YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tags": [
+      {"name": "VIP", "status": "active"},
+      {"name": "Newsletter", "status": "active"}
+    ]
+  }'
+```
+
+<Note>
+The `subscriber_hash` is the MD5 hash of the lowercase version of the contact's email address.
+</Note>

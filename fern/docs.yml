@@ -8,79 +8,124 @@ instances:
         repo: mailchimp
         branch: main
       launch: dashboard
+
+title: Mailchimp | Developer
+metadata:
+  og:site_name: Mailchimp Developer
+  og:title: Mailchimp Developer Documentation
+  og:description: >-
+    Find all the Mailchimp API documentation and tools developers need to send
+    marketing and transactional emails.
+  og:locale: en_US
+  twitter:title: Mailchimp Developer Documentation
+  twitter:description: >-
+    Find all the Mailchimp API documentation and tools developers need to send
+    marketing and transactional emails.
+
 ai-search:
   location:
     - docs
 ai-examples:
   enabled: false
-title: Mailchimp | Documentation
+
 layout:
   searchbar-placement: header
   page-width: full
   tabs-placement: header
-tabs:
-  home:
-    display-name: Docs
-    icon: home
-  API Reference:
-    display-name: API Reference
-    icon: puzzle
-navigation:
-  - tab: home
-    layout:
-      - section: Get started
-        contents:
-          - page: Welcome
-            path: docs/pages/welcome.mdx
-            icon: fa-duotone fa-house
-          - page: Edit your docs
-            path: docs/pages/editing-your-docs.mdx
-            icon: fa-duotone fa-pen-to-square
-          - page: Write content
-            path: docs/pages/writing-content.mdx
-            icon: fa-duotone fa-file-lines
-          - page: Set up navigation
-            path: docs/pages/navigation.mdx
-            icon: fa-duotone fa-sitemap
-          - page: Customize your docs
-            path: docs/pages/customization.mdx
-            icon: fa-duotone fa-palette
-          - page: Support
-            path: docs/pages/support.mdx
-            icon: fa-duotone fa-headset
-      - section: Changelog
-        contents:
-          - changelog: docs/changelog
-  - tab: API Reference
-    layout:
-      - section: Overview
-        contents:
-          - page: API reference
-            path: docs/pages/api-reference-overview.mdx
-            icon: fa-duotone fa-book
-      - api: Mailchimp API
-        flattened: true
-navbar-links:
-  - type: minimal
-    text: Fork this repo
-    url: https://github.com/fern-api/docs-starter
-  - type: filled
-    text: Dashboard
-    url: https://dashboard.buildwithfern.com
-  - type: github
-    value: https://github.com/fern-api/fern
+
+logo:
+  light: ./assets/mailchimp-developer-logo.svg
+  dark: ./assets/mailchimp-developer-logo-dark-bg.svg
+  height: 28
+  href: /
+
+favicon: docs/assets/favicon.png
+
 colors:
   accent-primary:
     dark: "#E7B75F"
-    light: "#E7B75F"
+    light: "#007C89"
   background:
-    dark: "#111113"
+    dark: "#001D28"
+    light: "#EFEEEA"
+  sidebar-background:
+    dark: "#0C2832"
+  header-background:
+    dark: "#0C2832"
+  card-background:
+    dark: "#0C2832"
     light: "#FFFFFF"
+  border:
+    dark: "#18323B"
+
+css: docs/assets/styles.css
+
+tabs:
+  home:
+    display-name: Home
+    icon: home
+    slug: ""
+  guides:
+    display-name: Documentation
+    icon: book
+  api-reference:
+    display-name: API Reference
+    icon: puzzle
+
+navbar-links:
+  - type: minimal
+    text: Release Notes
+    url: https://mailchimp.com/developer/release-notes/
+  - type: minimal
+    text: Tools
+    url: https://mailchimp.com/developer/tools/
+  - type: filled
+    text: Sign Up
+    url: https://login.mailchimp.com/signup/
+
+navigation:
+  - tab: home
+    layout:
+      - page: Home
+        path: docs/pages/landing.mdx
+        slug: ""
+  - tab: guides
+    layout:
+      - section: Getting started
+        contents:
+          - page: Quick start
+            path: docs/pages/welcome.mdx
+            icon: fa-duotone fa-rocket
+          - page: Authentication
+            path: docs/pages/authentication.mdx
+            icon: fa-duotone fa-lock
+          - page: Pagination
+            path: docs/pages/pagination.mdx
+            icon: fa-duotone fa-list
+      - section: Guides
+        contents:
+          - page: Create your first audience
+            path: docs/pages/guides/create-audience.mdx
+            icon: fa-duotone fa-users
+          - page: Send your first campaign
+            path: docs/pages/guides/send-campaign.mdx
+            icon: fa-duotone fa-paper-plane
+      - section: SDKs
+        contents:
+          - page: JavaScript SDK
+            path: docs/pages/sdks/javascript.mdx
+            icon: fa-brands fa-js
+          - page: PHP SDK
+            path: docs/pages/sdks/php.mdx
+            icon: fa-brands fa-php
+      - changelog: docs/changelog
+  - tab: api-reference
+    layout:
+      - api: Mailchimp API
+        api-name: mailchimp-openapi
+        flattened: true
+        paginated: true
+
 theme:
   page-actions: toolbar
   footer-nav: minimal
-logo:
-  light: ./assets/logo.svg
-  dark: ./assets/logo.svg
-  height: 30
-favicon: docs/assets/favicon.svg

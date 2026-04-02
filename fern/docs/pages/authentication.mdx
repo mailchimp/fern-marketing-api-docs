@@ -1,0 +1,102 @@
+---
+title: Authentication
+subtitle: Secure access to the Mailchimp Marketing API
+slug: authentication
+description: Learn how to authenticate with the Mailchimp Marketing API using API keys or OAuth 2.
+---
+
+The Mailchimp Marketing API supports two authentication methods: API keys for server-side integrations you build for your own account, and OAuth 2 for integrations that access other users' Mailchimp accounts.
+
+## API key authentication
+
+API keys are the simplest way to authenticate. Each Mailchimp user can generate multiple API keys from their account settings.
+
+### How it works
+
+Include your API key in the `Authorization` header using HTTP Basic authentication. The username can be any string; the password is your API key.
+
+```bash
+curl -X GET "https://us1.api.mailchimp.com/3.0/" \
+  --user "anystring:YOUR_API_KEY"
+```
+
+Alternatively, use the `Bearer` token scheme:
+
+```bash
+curl -X GET "https://us1.api.mailchimp.com/3.0/" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+<Warning>
+API keys grant full access to your Mailchimp account. Keep them secure and never expose them in client-side code.
+</Warning>
+
+### Server prefix
+
+Your API key contains your data center prefix after the last dash. For example, `abc123-us6` means your server prefix is `us6`. All requests must use the correct server:
+
+```
+https://{server_prefix}.api.mailchimp.com/3.0/
+```
+
+## OAuth 2 authentication
+
+Use OAuth 2 when building integrations that need to access other users' Mailchimp accounts. This provides a secure authorization flow without requiring users to share their API keys.
+
+### Authorization flow
+
+<Steps>
+<Step title="Register your application">
+Register your app in the [Mailchimp developer portal](https://mailchimp.com/developer/) to obtain a `client_id` and `client_secret`.
+</Step>
+
+<Step title="Redirect the user">
+Direct the user to the Mailchimp authorization URL:
+
+```
+https://login.mailchimp.com/oauth2/authorize?response_type=code&client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI
+```
+</Step>
+
+<Step title="Exchange the authorization code">
+After the user authorizes your app, exchange the code for an access token:
+
+```bash
+curl -X POST "https://login.mailchimp.com/oauth2/token" \
+  -d "grant_type=authorization_code" \
+  -d "client_id=YOUR_CLIENT_ID" \
+  -d "client_secret=YOUR_CLIENT_SECRET" \
+  -d "redirect_uri=YOUR_REDIRECT_URI" \
+  -d "code=AUTHORIZATION_CODE"
+```
+</Step>
+
+<Step title="Use the access token">
+Include the access token in the `Authorization` header:
+
+```bash
+curl -X GET "https://us1.api.mailchimp.com/3.0/" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+</Step>
+</Steps>
+
+### Get the server prefix
+
+After obtaining an OAuth token, call the metadata endpoint to find the user's API endpoint:
+
+```bash
+curl -X GET "https://login.mailchimp.com/oauth2/metadata" \
+  -H "Authorization: OAuth YOUR_ACCESS_TOKEN"
+```
+
+The response includes the `api_endpoint` field with the correct server URL.
+
+## Error handling
+
+Authentication errors return a `401 Unauthorized` status. Common causes:
+
+- Invalid or expired API key
+- Wrong server prefix
+- Revoked OAuth token
+- Missing authorization header
