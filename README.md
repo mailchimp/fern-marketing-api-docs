@@ -1,0 +1,2 @@
+# mailchimp
+Documentation for mailchimp
