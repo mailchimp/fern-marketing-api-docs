@@ -88,8 +88,6 @@ components:
 
 security:
   - basicAuth: []
-  - bearerToken: []
-  - oauth2: []
 
 paths:
   /3.0/account-exports:
