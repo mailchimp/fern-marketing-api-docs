@@ -1,0 +1,25 @@
+# Payments
+
+Open Commerce supports multiple payment providers through its plugin system.
+
+## Supported Payment Methods
+
+- Credit/debit cards via Stripe
+- PayPal
+- Custom payment providers via plugin
+
+## Add a Payment Method
+
+```graphql
+mutation {
+  addCartPayments(input: {
+    cartId: "cart-id"
+    cartToken: "cart-token"
+    payments: [{ amount: { amount: 29.99 }, method: "stripe_card" }]
+  }) {
+    cart {
+      _id
+    }
+  }
+}
+```

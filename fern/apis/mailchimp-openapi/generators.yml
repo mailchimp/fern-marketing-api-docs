@@ -10,11 +10,11 @@ groups:
     generators:
       - name: fernapi/fern-typescript-sdk
         version: 3.60.9
-        # output:
-        #   location: npm
-        #   package-name: "@mailchimp/mailchimp-marketing"
+        output:
+          location: npm
+          package-name: "@mailchimp/mailchimp-marketing"
         github:
-          repository: fern-support/mailchimp-typescript-sdk
+          repository: fern-demo/mailchimp-typescript-sdk
           mode: pull-request
         config:
           namespaceExport: Mailchimp
@@ -27,7 +27,7 @@ groups:
       - name: fernapi/fern-php-sdk
         version: 2.2.6
         github:
-          repository: fern-support/mailchimp-php-sdk
+          repository: fern-demo/mailchimp-php-sdk
           mode: pull-request
         config:
           clientName: MailchimpClient
