@@ -1,6 +1,60 @@
 # OpenAPI overrides for Mailchimp Marketing API
 # Enhances pagination and authentication documentation
 
+tags:
+  - name: root
+    x-displayName: Root
+  - name: account-exports
+    x-displayName: Account Exports
+  - name: activity-feed
+    x-displayName: Activity Feed
+  - name: authorized-apps
+    x-displayName: Authorized Apps
+  - name: automations
+    x-displayName: Automations
+  - name: batch-webhooks
+    x-displayName: Batch Webhooks
+  - name: batches
+    x-displayName: Batches
+  - name: campaign-folders
+    x-displayName: Campaign Folders
+  - name: campaigns
+    x-displayName: Campaigns
+  - name: connected-sites
+    x-displayName: Connected Sites
+  - name: conversations
+    x-displayName: Conversations
+  - name: customer-journeys
+    x-displayName: Customer Journeys
+  - name: ecommerce
+    x-displayName: Ecommerce
+  - name: facebook-ads
+    x-displayName: Facebook Ads
+  - name: file-manager
+    x-displayName: File Manager
+  - name: landing-pages
+    x-displayName: Landing Pages
+  - name: lists
+    x-displayName: Lists
+  - name: ping
+    x-displayName: Ping
+  - name: reporting
+    x-displayName: Reporting
+  - name: reports
+    x-displayName: Reports
+  - name: search-campaigns
+    x-displayName: Search Campaigns
+  - name: search-members
+    x-displayName: Search Members
+  - name: surveys
+    x-displayName: Surveys
+  - name: template-folders
+    x-displayName: Template Folders
+  - name: templates
+    x-displayName: Templates
+  - name: verified-domains
+    x-displayName: Verified Domains
+
 info:
   description: |
     The Mailchimp Marketing API provides programmatic access to Mailchimp data and functionality.

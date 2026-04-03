@@ -117,5 +117,4 @@ navigation:
         snippets:
           typescript: "@mailchimp/mailchimp-marketing"
           # php: mailchimp/marketing
-        flattened: true
         paginated: true
