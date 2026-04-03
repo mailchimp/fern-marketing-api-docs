@@ -576,7 +576,7 @@
    FOOTER
 ============================================= */
 .mc-site-footer {
-  background-color: #001d28;
+  background-color: #001D28;
 }
 .mc-footer-inner {
   column-gap: 20px;
@@ -713,6 +713,25 @@
   padding-top: 20px;
 }
 .mc-footer-legal p { margin: 0 !important; }
+
+/* =============================================
+   PRODUCT SWITCHER
+============================================= */
+
+/* --- Trigger button --- */
+.product-dropdown-trigger {
+  margin-left: 12px !important;
+  border: 1.5px solid var(--mc-dark-bg) !important;
+  border-radius: 12px !important;
+  gap: 4px !important;
+  padding: 5px 10px 5px 14px !important;
+}
+.dark .product-dropdown-trigger {
+  border-color: rgba(239, 238, 234, 0.25) !important;
+}
+.dark .product-dropdown-trigger:hover {
+  border-color: rgba(239, 238, 234, 0.5) !important;
+}
 
 /* =============================================
    FERN INJECTION OVERRIDES

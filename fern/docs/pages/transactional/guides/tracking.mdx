@@ -1,0 +1,16 @@
+# Tracking Opens and Clicks
+
+Mailchimp Transactional automatically tracks opens and clicks for messages sent through the API.
+
+## Enable Tracking
+
+Set `track_opens` and `track_clicks` in your message payload.
+
+```json
+{
+  "message": {
+    "track_opens": true,
+    "track_clicks": true
+  }
+}
+```

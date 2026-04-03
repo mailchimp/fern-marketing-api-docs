@@ -1,0 +1,95 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/product-yml.schema.json
+
+tabs:
+  guides:
+    display-name: Guides
+    icon: book
+  documentation:
+    display-name: Documentation
+    icon: house
+  api-reference:
+    display-name: API Reference
+    icon: puzzle
+
+navigation:
+  - tab: guides
+    layout:
+      - section: Getting Started
+        contents:
+          - page: Transactional API Quick Start
+            path: ../docs/pages/transactional/guides/quick-start.mdx
+            icon: fa-duotone fa-rocket
+          - page: Send Your First Transactional Email
+            path: ../docs/pages/transactional/guides/send-first-email.mdx
+            icon: fa-duotone fa-envelope
+          - page: Send Your First Transactional SMS
+            path: ../docs/pages/transactional/guides/send-first-sms.mdx
+            icon: fa-duotone fa-message-sms
+      - section: Advanced Sending
+        contents:
+          - page: Change Sending Behavior with the Rules Engine
+            path: ../docs/pages/transactional/guides/change-behavior-rules-engine.mdx
+            icon: fa-duotone fa-sliders
+          - page: Manage Different Users with Subaccounts
+            path: ../docs/pages/transactional/guides/manage-different-users-subaccounts.mdx
+            icon: fa-duotone fa-users
+          - page: Set Up Inbound Email Processing
+            path: ../docs/pages/transactional/guides/set-up-inbound-email-processing.mdx
+            icon: fa-duotone fa-inbox
+          - page: Track and Respond to Email Activity with Webhooks
+            path: ../docs/pages/transactional/guides/track-respond-activity-webhooks.mdx
+            icon: fa-duotone fa-rotate
+          - page: How to Use Mailchimp's Transactional Messaging MCP
+            path: ../docs/pages/transactional/guides/transactional-messaging-mcp.mdx
+            icon: fa-duotone fa-microchip-ai
+  - tab: documentation
+    layout:
+      - section: Core Concepts
+        contents:
+          - page: Fundamentals
+            path: ../docs/pages/transactional/documentation/fundamentals.mdx
+            icon: fa-duotone fa-book-open
+          - page: Authentication and Delivery
+            path: ../docs/pages/transactional/documentation/authentication-delivery.mdx
+            icon: fa-duotone fa-lock
+          - page: Outbound Email
+            path: ../docs/pages/transactional/documentation/outbound-email.mdx
+            icon: fa-duotone fa-paper-plane
+          - page: SMTP Integration
+            path: ../docs/pages/transactional/documentation/smtp-integration.mdx
+            icon: fa-duotone fa-server
+      - section: Content & Routing
+        contents:
+          - page: Templates and Dynamic Content
+            path: ../docs/pages/transactional/documentation/templates-dynamic-content.mdx
+            icon: fa-duotone fa-file-lines
+          - page: Tags and Metadata
+            path: ../docs/pages/transactional/documentation/tags-metadata.mdx
+            icon: fa-duotone fa-tags
+          - page: The Rules Engine
+            path: ../docs/pages/transactional/documentation/rules-engine.mdx
+            icon: fa-duotone fa-sliders
+      - section: Management & Monitoring
+        contents:
+          - page: Subaccounts
+            path: ../docs/pages/transactional/documentation/subaccounts.mdx
+            icon: fa-duotone fa-sitemap
+          - page: Reputation and Rejections
+            path: ../docs/pages/transactional/documentation/reputation-rejections.mdx
+            icon: fa-duotone fa-shield
+          - page: Activity and Reports
+            path: ../docs/pages/transactional/documentation/activity-reports.mdx
+            icon: fa-duotone fa-chart-line
+          - page: Webhooks
+            path: ../docs/pages/transactional/documentation/webhooks.mdx
+            icon: fa-duotone fa-rotate
+          - page: Transactional SMS
+            path: ../docs/pages/transactional/documentation/transactional-sms.mdx
+            icon: fa-duotone fa-message-sms
+  - tab: api-reference
+    layout:
+      - section: API Reference
+        contents:
+          - page: Overview
+            path: ../docs/pages/transactional/api-reference.mdx
+            icon: fa-duotone fa-code
