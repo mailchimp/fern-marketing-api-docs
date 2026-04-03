@@ -116,5 +116,5 @@ navigation:
         api-name: mailchimp-openapi
         snippets:
           typescript: "@mailchimp/mailchimp-marketing"
-          # php: mailchimp/marketing
+          php: mailchimp/marketing
         paginated: true
