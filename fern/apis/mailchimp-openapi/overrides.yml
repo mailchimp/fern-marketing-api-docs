@@ -1,5 +1,5 @@
 # OpenAPI overrides for Mailchimp Marketing API
-# Enhances pagination and authentication documentation
+# Fixes authentication, pagination, and server configuration
 
 tags:
   - name: root
@@ -78,3 +78,285 @@ info:
     ## Rate Limits
 
     The API enforces rate limits of 10 simultaneous connections. If you exceed this limit, you'll receive a `429 Too Many Requests` response.
+
+components:
+  securitySchemes:
+    basicAuth:
+      description: "HTTP Basic authentication using any string as the username and your Mailchimp API key as the password."
+      type: http
+      scheme: basic
+
+security:
+  - basicAuth: []
+
+paths:
+  /3.0/account-exports:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.exports
+  /3.0/activity-feed/chimp-chatter:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.chimp_chatter
+  /3.0/authorized-apps:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.apps
+  /3.0/automations:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.automations
+  /3.0/batch-webhooks:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.webhooks
+  /3.0/batches:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.batches
+  /3.0/campaign-folders:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.folders
+  /3.0/campaigns:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.campaigns
+  /3.0/connected-sites:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.sites
+  /3.0/conversations:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.conversations
+  /3.0/ecommerce/orders:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.orders
+  /3.0/ecommerce/stores:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.stores
+  /3.0/ecommerce/stores/{store_id}/carts:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.carts
+  /3.0/ecommerce/stores/{store_id}/carts/{cart_id}/lines:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.lines
+  /3.0/ecommerce/stores/{store_id}/customers:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.customers
+  /3.0/ecommerce/stores/{store_id}/orders/{order_id}/lines:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.lines
+  /3.0/ecommerce/stores/{store_id}/products:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.products
+  /3.0/ecommerce/stores/{store_id}/products/{product_id}/images:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.images
+  /3.0/ecommerce/stores/{store_id}/products/{product_id}/variants:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.variants
+  /3.0/ecommerce/stores/{store_id}/promo-rules:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.promo_rules
+  /3.0/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.promo_codes
+  /3.0/facebook-ads:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.facebook_ads
+  /3.0/file-manager/files:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.files
+  /3.0/file-manager/folders:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.folders
+  /3.0/file-manager/folders/{folder_id}/files:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.files
+  /3.0/lists:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.lists
+  /3.0/lists/{list_id}/abuse-reports:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.abuse_reports
+  /3.0/lists/{list_id}/activity:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.activity
+  /3.0/lists/{list_id}/growth-history:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.history
+  /3.0/lists/{list_id}/interest-categories:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.categories
+  /3.0/lists/{list_id}/interest-categories/{interest_category_id}/interests:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.interests
+  /3.0/lists/{list_id}/members:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.members
+  /3.0/lists/{list_id}/members/{subscriber_hash}/activity-feed:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.activity
+  /3.0/lists/{list_id}/members/{subscriber_hash}/events:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.events
+  /3.0/lists/{list_id}/members/{subscriber_hash}/notes:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.notes
+  /3.0/lists/{list_id}/members/{subscriber_hash}/tags:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.tags
+  /3.0/lists/{list_id}/merge-fields:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.merge_fields
+  /3.0/lists/{list_id}/segments:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.segments
+  /3.0/lists/{list_id}/segments/{segment_id}/members:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.members
+  /3.0/reporting/facebook-ads:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.facebook_ads
+  /3.0/reporting/facebook-ads/{outreach_id}/ecommerce-product-activity:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.products
+  /3.0/reporting/landing-pages:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.landing_pages
+  /3.0/reporting/surveys:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.surveys
+  /3.0/reports:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.reports
+  /3.0/reports/{campaign_id}/click-details:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.urls_clicked
+  /3.0/reports/{campaign_id}/click-details/{link_id}/members:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.members
+  /3.0/reports/{campaign_id}/ecommerce-product-activity:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.products
+  /3.0/reports/{campaign_id}/email-activity:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.emails
+  /3.0/reports/{campaign_id}/locations:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.locations
+  /3.0/reports/{campaign_id}/open-details:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.members
+  /3.0/reports/{campaign_id}/sent-to:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.sent_to
+  /3.0/reports/{campaign_id}/unsubscribed:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.unsubscribes
+  /3.0/template-folders:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.folders
+  /3.0/templates:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.templates
