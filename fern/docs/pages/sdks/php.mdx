@@ -5,11 +5,11 @@ slug: php-sdk
 description: Install and use the official Mailchimp Marketing PHP SDK to interact with the API from PHP applications.
 ---
 
-The official Mailchimp Marketing PHP SDK provides a convenient wrapper for the Mailchimp Marketing API in PHP applications.
+The official Mailchimp Marketing PHP SDK provides a convenient, typed wrapper for the Mailchimp Marketing API in PHP applications.
 
 ## Requirements
 
-- PHP 7.2 or later
+- PHP ^8.1
 - Composer
 
 ## Installation
@@ -17,30 +17,30 @@ The official Mailchimp Marketing PHP SDK provides a convenient wrapper for the M
 Install the SDK using Composer:
 
 ```bash
-composer require mailchimp/marketing
+composer require mailchimp/marketing-sdk
 ```
 
 ## Configuration
 
-Initialize the client with your API key and server prefix:
+Initialize the client with your API key:
 
 ```php
-require_once('/path/to/vendor/autoload.php');
+<?php
 
-$mailchimp = new MailchimpMarketing\ApiClient();
-$mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY',
-    'server' => 'us1',
-]);
+use Mailchimp\MailchimpClient;
+
+$client = new MailchimpClient(
+    token: 'YOUR_API_KEY',
+);
 ```
 
-For OAuth 2 authentication:
+You can also pass additional options such as a custom base URL:
 
 ```php
-$mailchimp->setConfig([
-    'accessToken' => 'YOUR_ACCESS_TOKEN',
-    'server' => 'us1',
-]);
+$client = new MailchimpClient(
+    token: 'YOUR_API_KEY',
+    options: ['baseUrl' => 'https://usX.api.mailchimp.com'],
+);
 ```
 
 ## Usage examples
@@ -48,79 +48,109 @@ $mailchimp->setConfig([
 ### Verify your connection
 
 ```php
-$response = $mailchimp->ping->get();
-print_r($response);
-// stdClass Object ( [health_status] => Everything's Chimpy! )
+use Mailchimp\MailchimpClient;
+
+$client = new MailchimpClient(token: 'YOUR_API_KEY');
+
+$response = $client->ping->getPing();
+echo $response->healthStatus; // "Everything's Chimpy!"
 ```
 
 ### List your audiences
 
 ```php
-$response = $mailchimp->lists->getAllLists();
-foreach ($response->lists as $list) {
-    echo $list->name . " (" . $list->id . ")\n";
+use Mailchimp\MailchimpClient;
+
+$client = new MailchimpClient(token: 'YOUR_API_KEY');
+
+$pager = $client->lists->getLists();
+
+foreach ($pager as $list) {
+    echo $list->name . "\n";
 }
 ```
 
-### Add a subscriber
+### Add a subscriber to a list
 
 ```php
-$response = $mailchimp->lists->addListMember("LIST_ID", [
-    "email_address" => "user@example.com",
-    "status" => "subscribed",
-    "merge_fields" => [
-        "FNAME" => "Jane",
-        "LNAME" => "Doe",
+use Mailchimp\MailchimpClient;
+use Mailchimp\Lists\Requests\PostListsIdMembersRequest;
+
+$client = new MailchimpClient(token: 'YOUR_API_KEY');
+
+$response = $client->lists->postListsIdMembers('list_id', new PostListsIdMembersRequest([
+    'emailAddress' => 'user@example.com',
+    'status' => 'subscribed',
+    'mergeFields' => [
+        'FNAME' => 'John',
+        'LNAME' => 'Doe',
     ],
-]);
-echo "Added member: " . $response->id;
+]));
+
+echo $response->id;
 ```
 
 ### Create and send a campaign
 
 ```php
-$campaign = $mailchimp->campaigns->create([
-    "type" => "regular",
-    "recipients" => ["list_id" => "LIST_ID"],
-    "settings" => [
-        "subject_line" => "Your monthly update",
-        "from_name" => "Acme Corp",
-        "reply_to" => "hello@example.com",
-    ],
-]);
+use Mailchimp\MailchimpClient;
+use Mailchimp\Campaigns\Requests\PostCampaignsRequest;
+use Mailchimp\Campaigns\Types\PostCampaignsRequestRecipients;
+use Mailchimp\Types\CampaignsSettings;
 
-$mailchimp->campaigns->setContent($campaign->id, [
-    "html" => "<html><body><h1>Hello!</h1></body></html>",
-]);
+$client = new MailchimpClient(token: 'YOUR_API_KEY');
 
-$mailchimp->campaigns->send($campaign->id);
+$campaign = $client->campaigns->postCampaigns(new PostCampaignsRequest([
+    'type' => 'regular',
+    'recipients' => new PostCampaignsRequestRecipients([
+        'listId' => 'your_list_id',
+    ]),
+    'settings' => new CampaignsSettings([
+        'subjectLine' => 'My Newsletter',
+        'fromName' => 'Your Name',
+        'replyTo' => 'you@example.com',
+    ]),
+]));
+
+// Send the campaign
+$client->campaigns->postCampaignsIdActionsSend($campaign->id);
 ```
 
-### Paginate through results
+## Pagination
+
+List endpoints return a `Pager` which automatically handles pagination across multiple HTTP requests:
 
 ```php
-$allLists = [];
-$offset = 0;
-$count = 100;
+use Mailchimp\MailchimpClient;
 
-do {
-    $response = $mailchimp->lists->getAllLists($count, $offset);
-    $allLists = array_merge($allLists, $response->lists);
-    $offset += $count;
-} while (count($allLists) < $response->total_items);
+$client = new MailchimpClient(token: 'YOUR_API_KEY');
 
-echo "Total audiences: " . count($allLists);
+// Iterate over all items automatically
+$items = $client->lists->getLists();
+
+foreach ($items as $item) {
+    echo $item->name . "\n";
+}
 ```
 
 ## Error handling
 
-Catch API exceptions to handle errors:
+The SDK throws typed exceptions for non-2XX API responses:
 
 ```php
+use Mailchimp\MailchimpClient;
+use Mailchimp\Exceptions\MailchimpApiException;
+use Mailchimp\Exceptions\MailchimpException;
+
+$client = new MailchimpClient(token: 'YOUR_API_KEY');
+
 try {
-    $response = $mailchimp->lists->getAllLists();
-} catch (MailchimpMarketing\ApiException $e) {
-    echo "Error: " . $e->getMessage() . "\n";
-    echo "Status: " . $e->getCode() . "\n";
+    $response = $client->lists->getLists();
+} catch (MailchimpApiException $e) {
+    echo 'API error: ' . $e->getMessage() . "\n";
+    echo 'Status code: ' . $e->getCode() . "\n";
+    echo 'Response body: ' . $e->getBody() . "\n";
+} catch (MailchimpException $e) {
+    echo 'SDK error: ' . $e->getMessage() . "\n";
 }
 ```

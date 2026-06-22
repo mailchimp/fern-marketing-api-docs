@@ -31,4 +31,4 @@ groups:
           mode: pull-request
         config:
           clientName: MailchimpClient
-          packageName: mailchimp/marketing
+          packageName: mailchimp/marketing-sdk
