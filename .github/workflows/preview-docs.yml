@@ -24,6 +24,7 @@ jobs:
         id: generate-docs
         env:
           FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
+          FERN_DOCS_DEPLOY_MODE: ledger
         run: |
           OUTPUT=$(fern generate --docs --preview 2>&1) || true
           echo "$OUTPUT"
