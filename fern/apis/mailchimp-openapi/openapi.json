@@ -42734,7 +42734,7 @@
   "servers": [
     {
       "description": "Mailchimp development environment",
-      "url": "https://dev.api.mailchimp.com"
+      "url": "https://api.mailchimp.com"
     },
     {
       "description": "Mailchimp public API",
