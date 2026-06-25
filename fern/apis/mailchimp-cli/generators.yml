@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://schema.buildwithfern.dev/generators-yml.json
+#
+# Isolated API definition for the Mailchimp CLI.
+# Reuses the shared spec + base overrides from ../mailchimp-openapi, then layers
+# CLI-only method-name overrides on top (method-names.yml). This keeps the
+# published TypeScript/PHP SDK method names untouched while giving the CLI
+# clean command names (e.g. `mailchimp lists get-member` instead of
+# `lists get-lists-id-members-id`).
+
+api:
+  specs:
+    - openapi: ../mailchimp-openapi/openapi.json
+      overrides:
+        - ../mailchimp-openapi/overrides.yml
+        - method-names.yml
+
+groups:
+  cli:
+    generators:
+      - name: fern-cli-generator
+        version: 0.18.0
+        ir-version: v67
+        smart-casing: true
+        config:
+          binaryName: mailchimp
+        github:
+          repository: fern-demo/mailchimp-cli
+          mode: pull-request
+
+  local-cli:
+    generators:
+      - name: fern-cli-generator
+        version: 0.18.0
+        ir-version: v67
+        smart-casing: true
+        config:
+          binaryName: mailchimp
+        output:
+          location: local-file-system
+          path: ../../../../mailchimp-cli
