@@ -1,0 +1,728 @@
+# CLI-only method-name overrides (x-fern-sdk-method-name), kebab-case for CLI command ergonomics.
+# Layered on ../mailchimp-openapi/overrides.yml for the CLI generator ONLY — SDK names untouched.
+
+paths:
+  /3.0/:
+    get:
+      x-fern-sdk-method-name: list
+  /3.0/account-exports:
+    get:
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-method-name: create
+  /3.0/account-exports/{export_id}:
+    get:
+      x-fern-sdk-method-name: get
+  /3.0/activity-feed:
+    get:
+      x-fern-sdk-method-name: list
+  /3.0/activity-feed/chimp-chatter:
+    get:
+      x-fern-sdk-method-name: list-chimp-chatter
+  /3.0/authorized-apps:
+    get:
+      x-fern-sdk-method-name: list
+  /3.0/authorized-apps/{app_id}:
+    get:
+      x-fern-sdk-method-name: get
+  /3.0/automations:
+    get:
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-method-name: create
+  /3.0/automations/{workflow_id}:
+    get:
+      x-fern-sdk-method-name: get
+  /3.0/automations/{workflow_id}/actions/archive:
+    post:
+      x-fern-sdk-method-name: create-action-archive
+  /3.0/automations/{workflow_id}/actions/pause-all-emails:
+    post:
+      x-fern-sdk-method-name: create-action-pause-all-email
+  /3.0/automations/{workflow_id}/actions/start-all-emails:
+    post:
+      x-fern-sdk-method-name: create-action-start-all-email
+  /3.0/automations/{workflow_id}/emails:
+    get:
+      x-fern-sdk-method-name: list-emails
+  /3.0/automations/{workflow_id}/emails/{workflow_email_id}:
+    get:
+      x-fern-sdk-method-name: get-email
+    patch:
+      x-fern-sdk-method-name: update-email
+    delete:
+      x-fern-sdk-method-name: delete-email
+  /3.0/automations/{workflow_id}/emails/{workflow_email_id}/actions/pause:
+    post:
+      x-fern-sdk-method-name: create-email-action-pause
+  /3.0/automations/{workflow_id}/emails/{workflow_email_id}/actions/start:
+    post:
+      x-fern-sdk-method-name: create-email-action-start
+  /3.0/automations/{workflow_id}/emails/{workflow_email_id}/queue:
+    get:
+      x-fern-sdk-method-name: list-email-queue
+    post:
+      x-fern-sdk-method-name: create-email-queue
+  /3.0/automations/{workflow_id}/emails/{workflow_email_id}/queue/{subscriber_hash}:
+    get:
+      x-fern-sdk-method-name: get-email-queue
+  /3.0/automations/{workflow_id}/removed-subscribers:
+    get:
+      x-fern-sdk-method-name: list-removed-subscribers
+    post:
+      x-fern-sdk-method-name: create-removed-subscriber
+  /3.0/automations/{workflow_id}/removed-subscribers/{subscriber_hash}:
+    get:
+      x-fern-sdk-method-name: get-removed-subscriber
+  /3.0/batch-webhooks:
+    get:
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-method-name: create
+  /3.0/batch-webhooks/{batch_webhook_id}:
+    get:
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-method-name: update
+    delete:
+      x-fern-sdk-method-name: delete
+  /3.0/batches:
+    get:
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-method-name: create
+  /3.0/batches/{batch_id}:
+    get:
+      x-fern-sdk-method-name: get
+    delete:
+      x-fern-sdk-method-name: delete
+  /3.0/campaign-folders:
+    get:
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-method-name: create
+  /3.0/campaign-folders/{folder_id}:
+    get:
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-method-name: update
+    delete:
+      x-fern-sdk-method-name: delete
+  /3.0/campaigns:
+    get:
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-method-name: create
+  /3.0/campaigns/{campaign_id}:
+    get:
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-method-name: update
+    delete:
+      x-fern-sdk-method-name: delete
+  /3.0/campaigns/{campaign_id}/actions/cancel-send:
+    post:
+      x-fern-sdk-method-name: create-action-cancel-send
+  /3.0/campaigns/{campaign_id}/actions/create-resend:
+    post:
+      x-fern-sdk-method-name: create-action-create-resend
+  /3.0/campaigns/{campaign_id}/actions/pause:
+    post:
+      x-fern-sdk-method-name: create-action-pause
+  /3.0/campaigns/{campaign_id}/actions/replicate:
+    post:
+      x-fern-sdk-method-name: create-action-replicate
+  /3.0/campaigns/{campaign_id}/actions/resume:
+    post:
+      x-fern-sdk-method-name: create-action-resume
+  /3.0/campaigns/{campaign_id}/actions/schedule:
+    post:
+      x-fern-sdk-method-name: create-action-schedule
+  /3.0/campaigns/{campaign_id}/actions/send:
+    post:
+      x-fern-sdk-method-name: create-action-send
+  /3.0/campaigns/{campaign_id}/actions/test:
+    post:
+      x-fern-sdk-method-name: create-action-test
+  /3.0/campaigns/{campaign_id}/actions/unschedule:
+    post:
+      x-fern-sdk-method-name: create-action-unschedule
+  /3.0/campaigns/{campaign_id}/content:
+    get:
+      x-fern-sdk-method-name: get-content
+    put:
+      x-fern-sdk-method-name: upsert-content
+  /3.0/campaigns/{campaign_id}/feedback:
+    get:
+      x-fern-sdk-method-name: list-feedback
+    post:
+      x-fern-sdk-method-name: create-feedback
+  /3.0/campaigns/{campaign_id}/feedback/{feedback_id}:
+    get:
+      x-fern-sdk-method-name: get-feedback
+    patch:
+      x-fern-sdk-method-name: update-feedback
+    delete:
+      x-fern-sdk-method-name: delete-feedback
+  /3.0/campaigns/{campaign_id}/send-checklist:
+    get:
+      x-fern-sdk-method-name: list-send-checklist
+  /3.0/connected-sites:
+    get:
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-method-name: create
+  /3.0/connected-sites/{connected_site_id}:
+    get:
+      x-fern-sdk-method-name: get
+    delete:
+      x-fern-sdk-method-name: delete
+  /3.0/connected-sites/{connected_site_id}/actions/verify-script-installation:
+    post:
+      x-fern-sdk-method-name: create-action-verify-script-installation
+  /3.0/conversations:
+    get:
+      x-fern-sdk-method-name: list
+  /3.0/conversations/{conversation_id}:
+    get:
+      x-fern-sdk-method-name: get
+  /3.0/conversations/{conversation_id}/messages:
+    get:
+      x-fern-sdk-method-name: list-messages
+  /3.0/conversations/{conversation_id}/messages/{message_id}:
+    get:
+      x-fern-sdk-method-name: get-message
+  /3.0/customer-journeys/journeys/{journey_id}/steps/{step_id}/actions/trigger:
+    post:
+      x-fern-sdk-method-name: create-journey-step-action-trigger
+  /3.0/ecommerce:
+    get:
+      x-fern-sdk-method-name: list
+  /3.0/ecommerce/orders:
+    get:
+      x-fern-sdk-method-name: list-orders
+  /3.0/ecommerce/stores:
+    get:
+      x-fern-sdk-method-name: list-stores
+    post:
+      x-fern-sdk-method-name: create-store
+  /3.0/ecommerce/stores/{store_id}:
+    get:
+      x-fern-sdk-method-name: get-store
+    patch:
+      x-fern-sdk-method-name: update-store
+    delete:
+      x-fern-sdk-method-name: delete-store
+  /3.0/ecommerce/stores/{store_id}/carts:
+    get:
+      x-fern-sdk-method-name: list-store-carts
+    post:
+      x-fern-sdk-method-name: create-store-cart
+  /3.0/ecommerce/stores/{store_id}/carts/{cart_id}:
+    get:
+      x-fern-sdk-method-name: get-store-cart
+    patch:
+      x-fern-sdk-method-name: update-store-cart
+    delete:
+      x-fern-sdk-method-name: delete-store-cart
+  /3.0/ecommerce/stores/{store_id}/carts/{cart_id}/lines:
+    get:
+      x-fern-sdk-method-name: list-store-cart-lines
+    post:
+      x-fern-sdk-method-name: create-store-cart-line
+  /3.0/ecommerce/stores/{store_id}/carts/{cart_id}/lines/{line_id}:
+    get:
+      x-fern-sdk-method-name: get-store-cart-line
+    patch:
+      x-fern-sdk-method-name: update-store-cart-line
+    delete:
+      x-fern-sdk-method-name: delete-store-cart-line
+  /3.0/ecommerce/stores/{store_id}/customers:
+    get:
+      x-fern-sdk-method-name: list-store-customers
+    post:
+      x-fern-sdk-method-name: create-store-customer
+  /3.0/ecommerce/stores/{store_id}/customers/{customer_id}:
+    get:
+      x-fern-sdk-method-name: get-store-customer
+    put:
+      x-fern-sdk-method-name: upsert-store-customer
+    patch:
+      x-fern-sdk-method-name: update-store-customer
+    delete:
+      x-fern-sdk-method-name: delete-store-customer
+  /3.0/ecommerce/stores/{store_id}/orders:
+    get:
+      x-fern-sdk-method-name: list-store-orders
+    post:
+      x-fern-sdk-method-name: create-store-order
+  /3.0/ecommerce/stores/{store_id}/orders/{order_id}:
+    get:
+      x-fern-sdk-method-name: get-store-order
+    patch:
+      x-fern-sdk-method-name: update-store-order
+    delete:
+      x-fern-sdk-method-name: delete-store-order
+  /3.0/ecommerce/stores/{store_id}/orders/{order_id}/lines:
+    get:
+      x-fern-sdk-method-name: list-store-order-lines
+    post:
+      x-fern-sdk-method-name: create-store-order-line
+  /3.0/ecommerce/stores/{store_id}/orders/{order_id}/lines/{line_id}:
+    get:
+      x-fern-sdk-method-name: get-store-order-line
+    patch:
+      x-fern-sdk-method-name: update-store-order-line
+    delete:
+      x-fern-sdk-method-name: delete-store-order-line
+  /3.0/ecommerce/stores/{store_id}/products:
+    get:
+      x-fern-sdk-method-name: list-store-products
+    post:
+      x-fern-sdk-method-name: create-store-product
+  /3.0/ecommerce/stores/{store_id}/products/{product_id}:
+    get:
+      x-fern-sdk-method-name: get-store-product
+    put:
+      x-fern-sdk-method-name: upsert-store-product
+    patch:
+      x-fern-sdk-method-name: update-store-product
+    delete:
+      x-fern-sdk-method-name: delete-store-product
+  /3.0/ecommerce/stores/{store_id}/products/{product_id}/images:
+    get:
+      x-fern-sdk-method-name: list-store-product-images
+    post:
+      x-fern-sdk-method-name: create-store-product-image
+  /3.0/ecommerce/stores/{store_id}/products/{product_id}/images/{image_id}:
+    get:
+      x-fern-sdk-method-name: get-store-product-image
+    patch:
+      x-fern-sdk-method-name: update-store-product-image
+    delete:
+      x-fern-sdk-method-name: delete-store-product-image
+  /3.0/ecommerce/stores/{store_id}/products/{product_id}/variants:
+    get:
+      x-fern-sdk-method-name: list-store-product-variants
+    post:
+      x-fern-sdk-method-name: create-store-product-variant
+  /3.0/ecommerce/stores/{store_id}/products/{product_id}/variants/{variant_id}:
+    get:
+      x-fern-sdk-method-name: get-store-product-variant
+    put:
+      x-fern-sdk-method-name: upsert-store-product-variant
+    patch:
+      x-fern-sdk-method-name: update-store-product-variant
+    delete:
+      x-fern-sdk-method-name: delete-store-product-variant
+  /3.0/ecommerce/stores/{store_id}/promo-rules:
+    get:
+      x-fern-sdk-method-name: list-store-promo-rules
+    post:
+      x-fern-sdk-method-name: create-store-promo-rule
+  /3.0/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}:
+    get:
+      x-fern-sdk-method-name: get-store-promo-rule
+    patch:
+      x-fern-sdk-method-name: update-store-promo-rule
+    delete:
+      x-fern-sdk-method-name: delete-store-promo-rule
+  /3.0/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes:
+    get:
+      x-fern-sdk-method-name: list-store-promo-rule-promo-codes
+    post:
+      x-fern-sdk-method-name: create-store-promo-rule-promo-code
+  /3.0/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes/{promo_code_id}:
+    get:
+      x-fern-sdk-method-name: get-store-promo-rule-promo-code
+    patch:
+      x-fern-sdk-method-name: update-store-promo-rule-promo-code
+    delete:
+      x-fern-sdk-method-name: delete-store-promo-rule-promo-code
+  /3.0/facebook-ads:
+    get:
+      x-fern-sdk-method-name: list
+  /3.0/facebook-ads/{outreach_id}:
+    get:
+      x-fern-sdk-method-name: get
+  /3.0/file-manager:
+    get:
+      x-fern-sdk-method-name: list
+  /3.0/file-manager/files:
+    get:
+      x-fern-sdk-method-name: list-files
+    post:
+      x-fern-sdk-method-name: create-file
+  /3.0/file-manager/files/{file_id}:
+    get:
+      x-fern-sdk-method-name: get-file
+    patch:
+      x-fern-sdk-method-name: update-file
+    delete:
+      x-fern-sdk-method-name: delete-file
+  /3.0/file-manager/folders:
+    get:
+      x-fern-sdk-method-name: list-folders
+    post:
+      x-fern-sdk-method-name: create-folder
+  /3.0/file-manager/folders/{folder_id}:
+    get:
+      x-fern-sdk-method-name: get-folder
+    patch:
+      x-fern-sdk-method-name: update-folder
+    delete:
+      x-fern-sdk-method-name: delete-folder
+  /3.0/file-manager/folders/{folder_id}/files:
+    get:
+      x-fern-sdk-method-name: list-folder-files
+  /3.0/landing-pages:
+    get:
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-method-name: create
+  /3.0/landing-pages/{page_id}:
+    get:
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-method-name: update
+    delete:
+      x-fern-sdk-method-name: delete
+  /3.0/landing-pages/{page_id}/actions/publish:
+    post:
+      x-fern-sdk-method-name: create-action-publish
+  /3.0/landing-pages/{page_id}/actions/unpublish:
+    post:
+      x-fern-sdk-method-name: create-action-unpublish
+  /3.0/landing-pages/{page_id}/content:
+    get:
+      x-fern-sdk-method-name: list-content
+  /3.0/lists:
+    get:
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-method-name: create
+  /3.0/lists/{list_id}:
+    get:
+      x-fern-sdk-method-name: get
+    post:
+      x-fern-sdk-method-name: batch-subscribe-or-unsubscribe
+    patch:
+      x-fern-sdk-method-name: update
+    delete:
+      x-fern-sdk-method-name: delete
+  /3.0/lists/{list_id}/abuse-reports:
+    get:
+      x-fern-sdk-method-name: list-abuse-reports
+  /3.0/lists/{list_id}/abuse-reports/{report_id}:
+    get:
+      x-fern-sdk-method-name: get-abuse-report
+  /3.0/lists/{list_id}/activity:
+    get:
+      x-fern-sdk-method-name: list-activity
+  /3.0/lists/{list_id}/clients:
+    get:
+      x-fern-sdk-method-name: list-clients
+  /3.0/lists/{list_id}/growth-history:
+    get:
+      x-fern-sdk-method-name: list-growth-history
+  /3.0/lists/{list_id}/growth-history/{month}:
+    get:
+      x-fern-sdk-method-name: get-growth-history
+  /3.0/lists/{list_id}/interest-categories:
+    get:
+      x-fern-sdk-method-name: list-interest-categories
+    post:
+      x-fern-sdk-method-name: create-interest-category
+  /3.0/lists/{list_id}/interest-categories/{interest_category_id}:
+    get:
+      x-fern-sdk-method-name: get-interest-category
+    patch:
+      x-fern-sdk-method-name: update-interest-category
+    delete:
+      x-fern-sdk-method-name: delete-interest-category
+  /3.0/lists/{list_id}/interest-categories/{interest_category_id}/interests:
+    get:
+      x-fern-sdk-method-name: list-interest-category-interests
+    post:
+      x-fern-sdk-method-name: create-interest-category-interest
+  /3.0/lists/{list_id}/interest-categories/{interest_category_id}/interests/{interest_id}:
+    get:
+      x-fern-sdk-method-name: get-interest-category-interest
+    patch:
+      x-fern-sdk-method-name: update-interest-category-interest
+    delete:
+      x-fern-sdk-method-name: delete-interest-category-interest
+  /3.0/lists/{list_id}/locations:
+    get:
+      x-fern-sdk-method-name: list-locations
+  /3.0/lists/{list_id}/members:
+    get:
+      x-fern-sdk-method-name: list-members
+    post:
+      x-fern-sdk-method-name: create-member
+  /3.0/lists/{list_id}/members/{subscriber_hash}:
+    get:
+      x-fern-sdk-method-name: get-member
+    put:
+      x-fern-sdk-method-name: upsert-member
+    patch:
+      x-fern-sdk-method-name: update-member
+    delete:
+      x-fern-sdk-method-name: delete-member
+  /3.0/lists/{list_id}/members/{subscriber_hash}/actions/delete-permanent:
+    post:
+      x-fern-sdk-method-name: create-member-action-delete-permanent
+  /3.0/lists/{list_id}/members/{subscriber_hash}/activity:
+    get:
+      x-fern-sdk-method-name: list-member-activity
+  /3.0/lists/{list_id}/members/{subscriber_hash}/activity-feed:
+    get:
+      x-fern-sdk-method-name: list-member-activity-feed
+  /3.0/lists/{list_id}/members/{subscriber_hash}/events:
+    get:
+      x-fern-sdk-method-name: list-member-events
+    post:
+      x-fern-sdk-method-name: create-member-event
+  /3.0/lists/{list_id}/members/{subscriber_hash}/goals:
+    get:
+      x-fern-sdk-method-name: list-member-goals
+  /3.0/lists/{list_id}/members/{subscriber_hash}/notes:
+    get:
+      x-fern-sdk-method-name: list-member-notes
+    post:
+      x-fern-sdk-method-name: create-member-note
+  /3.0/lists/{list_id}/members/{subscriber_hash}/notes/{note_id}:
+    get:
+      x-fern-sdk-method-name: get-member-note
+    patch:
+      x-fern-sdk-method-name: update-member-note
+    delete:
+      x-fern-sdk-method-name: delete-member-note
+  /3.0/lists/{list_id}/members/{subscriber_hash}/tags:
+    get:
+      x-fern-sdk-method-name: list-member-tags
+    post:
+      x-fern-sdk-method-name: create-member-tag
+  /3.0/lists/{list_id}/merge-fields:
+    get:
+      x-fern-sdk-method-name: list-merge-fields
+    post:
+      x-fern-sdk-method-name: create-merge-field
+  /3.0/lists/{list_id}/merge-fields/{merge_id}:
+    get:
+      x-fern-sdk-method-name: get-merge-field
+    patch:
+      x-fern-sdk-method-name: update-merge-field
+    delete:
+      x-fern-sdk-method-name: delete-merge-field
+  /3.0/lists/{list_id}/segments:
+    get:
+      x-fern-sdk-method-name: list-segments
+    post:
+      x-fern-sdk-method-name: create-segment
+  /3.0/lists/{list_id}/segments/{segment_id}:
+    get:
+      x-fern-sdk-method-name: get-segment
+    post:
+      x-fern-sdk-method-name: batch-add-or-remove-members
+    patch:
+      x-fern-sdk-method-name: update-segment
+    delete:
+      x-fern-sdk-method-name: delete-segment
+  /3.0/lists/{list_id}/segments/{segment_id}/members:
+    get:
+      x-fern-sdk-method-name: list-segment-members
+    post:
+      x-fern-sdk-method-name: create-segment-member
+  /3.0/lists/{list_id}/segments/{segment_id}/members/{subscriber_hash}:
+    delete:
+      x-fern-sdk-method-name: delete-segment-member
+  /3.0/lists/{list_id}/signup-forms:
+    get:
+      x-fern-sdk-method-name: list-signup-forms
+    post:
+      x-fern-sdk-method-name: create-signup-form
+  /3.0/lists/{list_id}/surveys:
+    get:
+      x-fern-sdk-method-name: list-surveys
+  /3.0/lists/{list_id}/surveys/{survey_id}:
+    get:
+      x-fern-sdk-method-name: get-survey
+  /3.0/lists/{list_id}/surveys/{survey_id}/actions/create-email:
+    post:
+      x-fern-sdk-method-name: create-list-survey-action-create-email
+  /3.0/lists/{list_id}/surveys/{survey_id}/actions/publish:
+    post:
+      x-fern-sdk-method-name: create-list-survey-action-publish
+  /3.0/lists/{list_id}/surveys/{survey_id}/actions/unpublish:
+    post:
+      x-fern-sdk-method-name: create-list-survey-action-unpublish
+  /3.0/lists/{list_id}/tag-search:
+    get:
+      x-fern-sdk-method-name: list-tag-search
+  /3.0/lists/{list_id}/webhooks:
+    get:
+      x-fern-sdk-method-name: list-webhooks
+    post:
+      x-fern-sdk-method-name: create-webhook
+  /3.0/lists/{list_id}/webhooks/{webhook_id}:
+    get:
+      x-fern-sdk-method-name: get-webhook
+    patch:
+      x-fern-sdk-method-name: update-webhook
+    delete:
+      x-fern-sdk-method-name: delete-webhook
+  /3.0/ping:
+    get:
+      x-fern-sdk-method-name: list
+  /3.0/reporting:
+    get:
+      x-fern-sdk-method-name: list
+  /3.0/reporting/facebook-ads:
+    get:
+      x-fern-sdk-method-name: list-facebook-ads
+  /3.0/reporting/facebook-ads/{outreach_id}:
+    get:
+      x-fern-sdk-method-name: get-facebook-ad
+  /3.0/reporting/facebook-ads/{outreach_id}/ecommerce-product-activity:
+    get:
+      x-fern-sdk-method-name: list-facebook-ad-ecommerce-product-activity
+  /3.0/reporting/landing-pages:
+    get:
+      x-fern-sdk-method-name: list-landing-pages
+  /3.0/reporting/landing-pages/{outreach_id}:
+    get:
+      x-fern-sdk-method-name: get-landing-page
+  /3.0/reporting/surveys:
+    get:
+      x-fern-sdk-method-name: list-surveys
+  /3.0/reporting/surveys/{survey_id}:
+    get:
+      x-fern-sdk-method-name: get-survey
+  /3.0/reporting/surveys/{survey_id}/questions:
+    get:
+      x-fern-sdk-method-name: list-survey-questions
+  /3.0/reporting/surveys/{survey_id}/questions/{question_id}:
+    get:
+      x-fern-sdk-method-name: get-survey-question
+  /3.0/reporting/surveys/{survey_id}/questions/{question_id}/answers:
+    get:
+      x-fern-sdk-method-name: list-survey-question-answers
+  /3.0/reporting/surveys/{survey_id}/responses:
+    get:
+      x-fern-sdk-method-name: list-survey-responses
+  /3.0/reporting/surveys/{survey_id}/responses/{response_id}:
+    get:
+      x-fern-sdk-method-name: get-survey-respons
+  /3.0/reports:
+    get:
+      x-fern-sdk-method-name: list
+  /3.0/reports/{campaign_id}:
+    get:
+      x-fern-sdk-method-name: get
+  /3.0/reports/{campaign_id}/abuse-reports:
+    get:
+      x-fern-sdk-method-name: list-abuse-reports
+  /3.0/reports/{campaign_id}/abuse-reports/{report_id}:
+    get:
+      x-fern-sdk-method-name: get-abuse-report
+  /3.0/reports/{campaign_id}/advice:
+    get:
+      x-fern-sdk-method-name: list-advice
+  /3.0/reports/{campaign_id}/click-details:
+    get:
+      x-fern-sdk-method-name: list-click-details
+  /3.0/reports/{campaign_id}/click-details/{link_id}:
+    get:
+      x-fern-sdk-method-name: get-click-detail
+  /3.0/reports/{campaign_id}/click-details/{link_id}/members:
+    get:
+      x-fern-sdk-method-name: list-click-detail-members
+  /3.0/reports/{campaign_id}/click-details/{link_id}/members/{subscriber_hash}:
+    get:
+      x-fern-sdk-method-name: get-click-detail-member
+  /3.0/reports/{campaign_id}/domain-performance:
+    get:
+      x-fern-sdk-method-name: list-domain-performance
+  /3.0/reports/{campaign_id}/ecommerce-product-activity:
+    get:
+      x-fern-sdk-method-name: list-ecommerce-product-activity
+  /3.0/reports/{campaign_id}/eepurl:
+    get:
+      x-fern-sdk-method-name: list-eepurl
+  /3.0/reports/{campaign_id}/email-activity:
+    get:
+      x-fern-sdk-method-name: list-email-activity
+  /3.0/reports/{campaign_id}/email-activity/{subscriber_hash}:
+    get:
+      x-fern-sdk-method-name: get-email-activity
+  /3.0/reports/{campaign_id}/locations:
+    get:
+      x-fern-sdk-method-name: list-locations
+  /3.0/reports/{campaign_id}/open-details:
+    get:
+      x-fern-sdk-method-name: list-open-details
+  /3.0/reports/{campaign_id}/open-details/{subscriber_hash}:
+    get:
+      x-fern-sdk-method-name: get-open-detail
+  /3.0/reports/{campaign_id}/sent-to:
+    get:
+      x-fern-sdk-method-name: list-sent-to
+  /3.0/reports/{campaign_id}/sent-to/{subscriber_hash}:
+    get:
+      x-fern-sdk-method-name: get-sent-to
+  /3.0/reports/{campaign_id}/sub-reports:
+    get:
+      x-fern-sdk-method-name: list-sub-reports
+  /3.0/reports/{campaign_id}/unsubscribed:
+    get:
+      x-fern-sdk-method-name: list-unsubscribed
+  /3.0/reports/{campaign_id}/unsubscribed/{subscriber_hash}:
+    get:
+      x-fern-sdk-method-name: get-unsubscribed
+  /3.0/search-campaigns:
+    get:
+      x-fern-sdk-method-name: list
+  /3.0/search-members:
+    get:
+      x-fern-sdk-method-name: list
+  /3.0/template-folders:
+    get:
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-method-name: create
+  /3.0/template-folders/{folder_id}:
+    get:
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-method-name: update
+    delete:
+      x-fern-sdk-method-name: delete
+  /3.0/templates:
+    get:
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-method-name: create
+  /3.0/templates/{template_id}:
+    get:
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-method-name: update
+    delete:
+      x-fern-sdk-method-name: delete
+  /3.0/templates/{template_id}/default-content:
+    get:
+      x-fern-sdk-method-name: list-default-content
+  /3.0/verified-domains:
+    get:
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-method-name: create
+  /3.0/verified-domains/{domain_name}:
+    get:
+      x-fern-sdk-method-name: get
+    delete:
+      x-fern-sdk-method-name: delete
+  /3.0/verified-domains/{domain_name}/actions/verify:
+    post:
+      x-fern-sdk-method-name: create-action-verify
