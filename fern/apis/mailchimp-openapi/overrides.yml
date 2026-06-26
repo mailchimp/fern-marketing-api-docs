@@ -79,15 +79,47 @@ info:
 
     The API enforces rate limits of 10 simultaneous connections. If you exceed this limit, you'll receive a `429 Too Many Requests` response.
 
-components:
-  securitySchemes:
-    basicAuth:
-      description: "HTTP Basic authentication using any string as the username and your Mailchimp API key as the password."
-      type: http
-      scheme: basic
+# Auth schemes left to the upstream spec (`bearerToken`, `oauth2`).
+#
+# We previously declared an additional `basicAuth` scheme + `security: [{basicAuth}]`
+# here. That broke the generated CLI: Fern merged the override into the spec's
+# `security: [{bearerToken}, {oauth2}]` by array index, producing
+# `[{bearerToken, basicAuth}, {oauth2}]` — an AND requirement no client can
+# satisfy with bearer-only creds. The CLI then dropped the Authorization header
+# entirely and 401'd every request. Mailchimp's API accepts the API key as a
+# Bearer token (RFC 6750) regardless, so we rely on `bearerToken` alone.
 
-security:
-  - basicAuth: []
+servers:
+  - description: Mailchimp public API
+    url: https://{serverPrefix}.api.mailchimp.com
+    variables:
+      serverPrefix:
+        default: us1
+        enum:
+          - us1
+          - us2
+          - us3
+          - us4
+          - us5
+          - us6
+          - us7
+          - us8
+          - us9
+          - us10
+          - us11
+          - us12
+          - us13
+          - us14
+          - us15
+          - us16
+          - us17
+          - us18
+          - us19
+          - us20
+          - us21
+          - us22
+  - description: Mailchimp development environment (internal)
+    url: https://api.mailchimp.com
 
 paths:
   /3.0/account-exports:
