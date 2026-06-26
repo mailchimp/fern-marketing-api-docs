@@ -13,6 +13,10 @@ api:
       overrides:
         - ../mailchimp-openapi/overrides.yml
         - method-names.yml
+        # CLI-only: pin the default base URL to the us1 datacenter because the
+        # CLI generator does not substitute OpenAPI server-variable defaults
+        # (FER-11475). Layered last so it replaces the templated `servers`.
+        - server-override.yml
 
 groups:
   cli:

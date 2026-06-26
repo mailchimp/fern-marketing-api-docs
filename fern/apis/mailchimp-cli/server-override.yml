@@ -1,0 +1,24 @@
+# CLI-scoped server override.
+#
+# The shared base spec + overrides (../mailchimp-openapi) declare a templated
+# server `https://{serverPrefix}.api.mailchimp.com` with `serverPrefix.default: us1`.
+#
+# The CLI generator copies the FIRST server's URL verbatim into the embedded
+# spec's `root_url` and does NOT substitute OpenAPI server-variable defaults.
+# (root_url = spec.servers.first().url, no substitution; server-variable
+# substitution only runs for vars explicitly registered via `.server_var(...)`,
+# none of which are emitted from spec defaults today.) As a result the generated
+# CLI calls the literal `https://{serverprefix}.api.mailchimp.com` and fails with
+# "Parsed Url is not a valid Uri". Tracked in FER-11475 (umbrella FER-11472);
+# the cross-generator server-variable work is FER-8851.
+#
+# Until the generator learns to substitute server-variable defaults, pin the
+# CLI's default base URL to the `us1` datacenter (the spec's declared default).
+# Users can still target another datacenter via the MAILCHIMP_BASE_URL env var.
+#
+# This file is layered LAST in the CLI api's overrides list so its `servers`
+# array replaces the templated one for CLI generation only — the published
+# TypeScript/PHP SDKs (../mailchimp-openapi) are unaffected.
+servers:
+  - description: Mailchimp public API (default datacenter; override via MAILCHIMP_BASE_URL)
+    url: https://us1.api.mailchimp.com
