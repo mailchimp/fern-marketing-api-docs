@@ -79,15 +79,15 @@ info:
 
     The API enforces rate limits of 10 simultaneous connections. If you exceed this limit, you'll receive a `429 Too Many Requests` response.
 
-# Auth schemes left to the upstream spec (`bearerToken`, `oauth2`).
+# Auth schemes are declared in openapi.json directly (`basicAuth`, `oauth2`).
 #
-# We previously declared an additional `basicAuth` scheme + `security: [{basicAuth}]`
-# here. That broke the generated CLI: Fern merged the override into the spec's
-# `security: [{bearerToken}, {oauth2}]` by array index, producing
-# `[{bearerToken, basicAuth}, {oauth2}]` — an AND requirement no client can
-# satisfy with bearer-only creds. The CLI then dropped the Authorization header
-# entirely and 401'd every request. Mailchimp's API accepts the API key as a
-# Bearer token (RFC 6750) regardless, so we rely on `bearerToken` alone.
+# Earlier the spec declared `bearerToken` + an override security block that
+# Fern merged with the spec's `security` by array index. The result —
+# `[{bearerToken, basicAuth}, {oauth2}]` — was an AND requirement no client
+# could satisfy, and the generated CLI dropped the Authorization header
+# entirely. Spec-level declaration of `security: [{basicAuth}, {oauth2}]`
+# avoids the array-merge pitfall and matches Mailchimp's documented method
+# (HTTP Basic with any username + API key as password).
 
 servers:
   - description: Mailchimp public API

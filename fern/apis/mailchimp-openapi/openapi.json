@@ -1,10 +1,10 @@
 {
   "components": {
     "securitySchemes": {
-      "bearerToken": {
-        "description": "Authorization using a Mailchimp API key (a.k.a. Bearer token)",
-        "scheme": "Bearer",
-        "type": "http"
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic",
+        "description": "HTTP Basic authentication. Use any string as the username and your Mailchimp API key as the password (e.g. `anystring:abc123-us1`)."
       },
       "oauth2": {
         "description": "Authorization using OAuth",
@@ -42725,7 +42725,7 @@
   },
   "security": [
     {
-      "bearerToken": []
+      "basicAuth": []
     },
     {
       "oauth2": []
