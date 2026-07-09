@@ -47,6 +47,23 @@ logo:
 
 favicon: docs/assets/favicon.png
 
+typography:
+  headingsFont:
+    name: Means Web
+    paths:
+      - path: docs/assets/fonts/Means-Light-Web.woff2
+        weight: 400
+  bodyFont:
+    name: Graphik Web
+    paths:
+      - path: docs/assets/fonts/Graphik-Regular-Web.woff2
+        weight: 400
+      - path: docs/assets/fonts/Graphik-Medium-Web.woff2
+        weight: 500
+  codeFont:
+    name: Input Mono Regular
+    path: docs/assets/fonts/Input-Mono-Regular.woff2
+
 colors:
   accent-primary:
     dark: "#E7B75F"
