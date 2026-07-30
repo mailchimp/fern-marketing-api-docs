@@ -5,9 +5,16 @@
  */
 (function () {
   var RE = /(^|\/)(blog|tools|release-notes)(\/|$)/;
+  // product landing pages live at the exact product root (…/marketing, not …/marketing/guides)
+  var PROD_ROOT = /(^|\/)(marketing|transactional|open-commerce)$/;
   function apply() {
     var p = location.pathname.replace(/\/+$/, "");
-    document.body.classList.toggle("mc-blog-route", RE.test(p));
+    document.body.classList.toggle("mc-blog-route", RE.test(p) || PROD_ROOT.test(p));
+    // Remove the "Built with Fern" badge site-wide. Inline !important beats
+    // Fern's runtime utility styles.
+    document.querySelectorAll('a[href*="buildwithfern.com"]').forEach(function (a) {
+      a.style.setProperty("display", "none", "important");
+    });
   }
   var t;
   function schedule() { clearTimeout(t); t = setTimeout(apply, 20); }

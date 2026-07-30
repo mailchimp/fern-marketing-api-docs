@@ -1,6 +1,9 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/product-yml.schema.json
 
 tabs:
+  overview:
+    display-name: Overview
+    skip-slug: true
   guides:
     display-name: Guides
     icon: book
@@ -15,6 +18,11 @@ tabs:
     slug: api
 
 navigation:
+  - tab: overview
+    layout:
+      - page: Overview
+        path: ../docs/pages/marketing/landing.mdx
+        slug: ""
   - tab: guides
     layout:
       - page: Marketing API Quick Start

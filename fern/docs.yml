@@ -90,6 +90,8 @@ js:
     strategy: afterInteractive
   - path: docs/assets/mc-blog.js
     strategy: afterInteractive
+  - path: docs/assets/mc-carousel.js
+    strategy: afterInteractive
 
 navbar-links:
   - type: minimal
