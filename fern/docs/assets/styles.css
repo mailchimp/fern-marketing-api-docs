@@ -1168,14 +1168,16 @@ a[href*="buildwithfern.com"] {
   font-size: 14px; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 14px 0 !important;
 }
 /* product title links to the product landing */
-.mc-home-product-title a { color: inherit !important; text-decoration: none !important; }
-.mc-home-product-title a:hover { color: #e7b75f !important; }
+/* product title is a block-level link (not a heading, so Fern's MDX doesn't turn it into a #self-anchor) */
 .mc-home-product-title {
+  display: block;
   color: #efeeea !important; font-family: 'Means Web', Georgia, serif !important;
   font-size: 54px !important; font-weight: 300 !important; line-height: 1.0 !important;
   letter-spacing: -.02em !important;
   margin: 0 0 18px 0 !important;
+  text-decoration: none !important;
 }
+.mc-home-product-title:hover { color: #e7b75f !important; }
 .mc-home-product-copy {
   color: #96a8ad; font-family: 'Graphik Web', Helvetica, Arial, sans-serif;
   font-size: 20px; line-height: 1.5; margin: 0 0 4px 0 !important;
