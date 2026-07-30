@@ -1169,7 +1169,7 @@ a[href*="buildwithfern.com"] {
 }
 /* product title links to the product landing */
 .mc-home-product-title a { color: inherit !important; text-decoration: none !important; }
-.mc-home-product-title a:hover, .mc-home-product-eyebrow:hover { color: #e7b75f !important; }
+.mc-home-product-title a:hover { color: #e7b75f !important; }
 .mc-home-product-title {
   color: #efeeea !important; font-family: 'Means Web', Georgia, serif !important;
   font-size: 54px !important; font-weight: 300 !important; line-height: 1.0 !important;
