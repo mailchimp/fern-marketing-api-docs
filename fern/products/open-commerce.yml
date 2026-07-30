@@ -4,9 +4,11 @@ tabs:
   guides:
     display-name: Guides
     icon: book
+    slug: guides
   documentation:
     display-name: Documentation
     icon: house
+    slug: docs
   graphql-playground:
     display-name: GraphQL Playground
     icon: puzzle
@@ -14,58 +16,42 @@ tabs:
 navigation:
   - tab: guides
     layout:
-      - section: Getting Started
-        contents:
-          - page: Open Commerce Quick Start
-            path: ../docs/pages/open-commerce/guides/quick-start.mdx
-            icon: fa-duotone fa-rocket
-      - section: Building
-        contents:
-          - page: Build an API Plugin
-            path: ../docs/pages/open-commerce/guides/build-api-plugin.mdx
-            icon: fa-duotone fa-plug
+      - page: Open Commerce Quick Start
+        path: ../docs/pages/open-commerce/guides/quick-start.mdx
+        slug: quick-start
+      - page: Build an API Plugin
+        path: ../docs/pages/open-commerce/guides/build-api-plugin.mdx
+        slug: build-api-plugin
   - tab: documentation
     layout:
-      - section: Core Concepts
-        contents:
-          - page: Fundamentals
-            path: ../docs/pages/open-commerce/documentation/fundamentals.mdx
-            icon: fa-duotone fa-book-open
-          - page: Plugins and Environment Variables
-            path: ../docs/pages/open-commerce/documentation/plugins-environment-variables.mdx
-            icon: fa-duotone fa-gear
-          - page: Sharing Code Between Plugins
-            path: ../docs/pages/open-commerce/documentation/sharing-code-between-plugins.mdx
-            icon: fa-duotone fa-code-branch
-      - section: Commerce
-        contents:
-          - page: Creating and Organizing Products
-            path: ../docs/pages/open-commerce/documentation/creating-organizing-products.mdx
-            icon: fa-duotone fa-box
-          - page: Tags and Navigation
-            path: ../docs/pages/open-commerce/documentation/tags-navigation.mdx
-            icon: fa-duotone fa-tags
-          - page: Fulfilling Orders
-            path: ../docs/pages/open-commerce/documentation/fulfilling-orders.mdx
-            icon: fa-duotone fa-truck
-          - page: Sending Emails
-            path: ../docs/pages/open-commerce/documentation/sending-emails.mdx
-            icon: fa-duotone fa-envelope
-      - section: Contributing
-        contents:
-          - page: Contributing to Open Commerce
-            path: ../docs/pages/open-commerce/documentation/contribute-open-commerce.mdx
-            icon: fa-duotone fa-code-pull-request
-          - page: Git Formatting Conventions
-            path: ../docs/pages/open-commerce/documentation/git-formatting-conventions.mdx
-            icon: fa-duotone fa-code-commit
-          - page: Testing Requirements
-            path: ../docs/pages/open-commerce/documentation/testing-requirements.mdx
-            icon: fa-duotone fa-flask
+      - page: Fundamentals
+        path: ../docs/pages/open-commerce/documentation/fundamentals.mdx
+      - page: Plugins and Environment Variables
+        path: ../docs/pages/open-commerce/documentation/plugins-environment-variables.mdx
+        slug: plugins-environment-variables
+      - page: Sharing Code Between Plugins
+        path: ../docs/pages/open-commerce/documentation/sharing-code-between-plugins.mdx
+      - page: Creating and Organizing Products
+        path: ../docs/pages/open-commerce/documentation/creating-organizing-products.mdx
+        slug: creating-organizing-products
+      - page: Tags and Navigation
+        path: ../docs/pages/open-commerce/documentation/tags-navigation.mdx
+        slug: tags-navigation
+      - page: Fulfilling Orders
+        path: ../docs/pages/open-commerce/documentation/fulfilling-orders.mdx
+      - page: Sending Emails
+        path: ../docs/pages/open-commerce/documentation/sending-emails.mdx
+      - page: Contributing to Open Commerce
+        path: ../docs/pages/open-commerce/documentation/contribute-open-commerce.mdx
+        slug: contribute-open-commerce
+      - page: Git Formatting Conventions
+        path: ../docs/pages/open-commerce/documentation/git-formatting-conventions.mdx
+      - page: Testing Requirements
+        path: ../docs/pages/open-commerce/documentation/testing-requirements.mdx
   - tab: graphql-playground
     layout:
       - section: GraphQL Playground
+        skip-slug: true
         contents:
           - page: GraphQL Playground
             path: ../docs/pages/open-commerce/graphql-playground.mdx
-            icon: fa-duotone fa-code

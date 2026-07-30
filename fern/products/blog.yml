@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/product-yml.schema.json
+
+tabs:
+  posts:
+    display-name: Blog
+    skip-slug: true
+
+navigation:
+  - tab: posts
+    layout:
+      - page: Mailchimp Engineering
+        path: ../docs/pages/blog/landing.mdx
+        slug: ""
+      - page: Breaking down the remote collaboration conundrum
+        path: ../docs/pages/blog/breaking-down-remote-collaboration-conundrum.mdx
+        slug: breaking-down-remote-collaboration-conundrum
+      - page: Changing the tires on a moving bus
+        path: ../docs/pages/blog/changing-the-tires-on-a-moving-bus.mdx
+        slug: changing-the-tires-on-a-moving-bus
+      - page: Computers are the easy part
+        path: ../docs/pages/blog/computers-are-the-easy-part.mdx
+        slug: computers-are-the-easy-part
+      - page: Empowering developers to empower the underdog
+        path: ../docs/pages/blog/empowering-developers-empower-underdog.mdx
+        slug: empowering-developers-empower-underdog
+      - page: Leading Teams and Closing Loops
+        path: ../docs/pages/blog/leading-teams-closing-loops.mdx
+        slug: leading-teams-closing-loops
+      - page: Mailchimp and WordPress
+        path: ../docs/pages/blog/mailchimp-and-wordpress.mdx
+        slug: mailchimp-and-wordpress
+      - page: Reintroducing Mailchimp Transactional for your Email and SMS needs
+        path: ../docs/pages/blog/reintroducing-mailchimp-transactional-for-your-email-and-sms-needs.mdx
+        slug: reintroducing-mailchimp-transactional-for-your-email-and-sms-needs
+      - page: Scaling in the age of COVID
+        path: ../docs/pages/blog/scaling-in-the-age-of-covid.mdx
+        slug: scaling-in-the-age-of-covid

@@ -36,7 +36,8 @@ landing-page:
 
 layout:
   searchbar-placement: header
-  page-width: full
+  page-width: 88rem
+  content-width: 46rem
   tabs-placement: header
 
 logo:
@@ -72,7 +73,8 @@ colors:
     dark: "#001D28"
     light: "#EFEEEA"
   sidebar-background:
-    dark: "#0C2832"
+    dark: "#001D28"
+    light: "#EFEEEA"
   header-background:
     dark: "#0C2832"
   card-background:
@@ -83,16 +85,22 @@ colors:
 
 css: docs/assets/styles.css
 
+js:
+  - path: docs/assets/mc-sidebar-toc.js
+    strategy: afterInteractive
+  - path: docs/assets/mc-blog.js
+    strategy: afterInteractive
+
 navbar-links:
   - type: minimal
     text: Tools
-    url: https://mailchimp.com/developer/tools/
+    url: /tools
   - type: minimal
     text: Release Notes
-    url: https://mailchimp.com/developer/release-notes/
+    url: /release-notes
   - type: minimal
     text: Blog
-    url: https://mailchimp.com/developer/blog/
+    url: /blog
   - type: filled
     text: Sign Up
     url: https://login.mailchimp.com/signup/
@@ -116,6 +124,21 @@ products:
     icon: fa-duotone fa-cart-shopping
     slug: open-commerce
     subtitle: Control your commerce future with a modular, API-first commerce stack.
+  - display-name: Tools
+    path: ./products/tools.yml
+    icon: fa-duotone fa-wrench
+    slug: tools
+    subtitle: Official client libraries and mobile SDKs for the Mailchimp APIs.
+  - display-name: Release Notes
+    path: ./products/release-notes.yml
+    icon: fa-duotone fa-bell
+    slug: release-notes
+    subtitle: The latest updates, improvements, and fixes across the Mailchimp APIs.
+  - display-name: Blog
+    path: ./products/blog.yml
+    icon: fa-duotone fa-newspaper
+    slug: blog
+    subtitle: Engineering stories and updates from the Mailchimp developer team.
 
 footer: ./components/Footer.tsx
 

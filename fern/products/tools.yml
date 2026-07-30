@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/product-yml.schema.json
+
+tabs:
+  tools:
+    display-name: Tools
+    skip-slug: true
+
+navigation:
+  - tab: tools
+    layout:
+      - page: Tools - SDKs
+        path: ../docs/pages/tools/landing.mdx
+        slug: ""

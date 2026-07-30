@@ -4,116 +4,76 @@ tabs:
   guides:
     display-name: Guides
     icon: book
+    slug: guides
   documentation:
     display-name: Documentation
     icon: house
+    slug: docs
   api-reference:
     display-name: API Reference
     icon: puzzle
+    slug: api
 
 navigation:
   - tab: guides
     layout:
-      - section: Getting Started
-        contents:
-          - page: Marketing API Quick Start
-            path: ../docs/pages/welcome.mdx
-            icon: fa-duotone fa-rocket
-          - page: Authentication
-            path: ../docs/pages/authentication.mdx
-            icon: fa-duotone fa-lock
-          - page: Pagination
-            path: ../docs/pages/pagination.mdx
-            icon: fa-duotone fa-list
-      - section: Manage Audiences
-        contents:
-          - page: Create Your First Audience
-            path: ../docs/pages/guides/create-audience.mdx
-            icon: fa-duotone fa-users
-          - page: Organize Contacts with Tags
-            path: ../docs/pages/guides/organize-contacts-with-tags.mdx
-            icon: fa-duotone fa-tags
-          - page: Access Data on Behalf of Other Users with OAuth 2
-            path: ../docs/pages/guides/access-user-data-oauth-2.mdx
-            icon: fa-duotone fa-key
-          - page: Synchronize Audience Data with Webhooks
-            path: ../docs/pages/guides/sync-audience-data-webhooks.mdx
-            icon: fa-duotone fa-rotate
-      - section: Automate Marketing
-        contents:
-          - page: Send your first campaign
-            path: ../docs/pages/guides/send-campaign.mdx
-            icon: fa-duotone fa-paper-plane
-          - page: Run Async Requests with the Batch Endpoint
-            path: ../docs/pages/guides/run-async-requests-batch-endpoint.mdx
-            icon: fa-duotone fa-layer-group
-          - page: Track Outside Activity with Events
-            path: ../docs/pages/guides/track-outside-activity-events.mdx
-            icon: fa-duotone fa-chart-line
-          - page: Create a Webhook for Customer Journey Builder or Campaign Manager
-            path: ../docs/pages/guides/create-webhook-customer-journey.mdx
-            icon: fa-duotone fa-diagram-project
-      - section: Integrate Data
-        contents:
-          - page: Manage Contacts and Events with the Mobile SDK
-            path: ../docs/pages/guides/mobile-sdk.mdx
-            icon: fa-duotone fa-mobile
-      - section: SDKs
-        contents:
-          - page: JavaScript SDK
-            path: ../docs/pages/sdks/javascript.mdx
-            icon: fa-brands fa-js
-          - page: PHP SDK
-            path: ../docs/pages/sdks/php.mdx
-            icon: fa-brands fa-php
-      - changelog: ../docs/changelog
+      - page: Marketing API Quick Start
+        path: ../docs/pages/welcome.mdx
+        slug: quick-start
+      - page: Create Your First Audience
+        path: ../docs/pages/guides/create-audience.mdx
+      - page: Organize Contacts with Tags
+        path: ../docs/pages/guides/organize-contacts-with-tags.mdx
+      - page: Access Data on Behalf of Other Users with OAuth 2
+        path: ../docs/pages/guides/access-user-data-oauth-2.mdx
+        slug: access-user-data-oauth-2
+      - page: Run Async Requests with the Batch Endpoint
+        path: ../docs/pages/guides/run-async-requests-batch-endpoint.mdx
+        slug: run-async-requests-batch-endpoint
+      - page: Track Outside Activity with Events
+        path: ../docs/pages/guides/track-outside-activity-events.mdx
+        slug: track-outside-activity-events
+      - page: Synchronize Audience Data with Webhooks
+        path: ../docs/pages/guides/sync-audience-data-webhooks.mdx
+        slug: sync-audience-data-webhooks
+      - page: Manage Contacts and Events with the Mobile SDK
+        path: ../docs/pages/guides/mobile-sdk.mdx
+        slug: mobile-sdk
+      - page: Create a Webhook for Customer Journey Builder or Campaign Manager
+        path: ../docs/pages/guides/create-webhook-customer-journey.mdx
+        slug: create-webhook-customer-journey-builder-campaign-manager
   - tab: documentation
     layout:
-      - section: Core Concepts
-        contents:
-          - page: Fundamentals
-            path: ../docs/pages/documentation/fundamentals.mdx
-            icon: fa-duotone fa-book-open
-          - page: Methods and Parameters
-            path: ../docs/pages/documentation/methods-parameters.mdx
-            icon: fa-duotone fa-code
-          - page: Errors
-            path: ../docs/pages/documentation/errors.mdx
-            icon: fa-duotone fa-triangle-exclamation
-      - section: Features
-        contents:
-          - page: E-Commerce
-            path: ../docs/pages/documentation/e-commerce.mdx
-            icon: fa-duotone fa-cart-shopping
-          - page: Integrations
-            path: ../docs/pages/documentation/integrations.mdx
-            icon: fa-duotone fa-plug
-          - page: Merge Fields
-            path: ../docs/pages/documentation/merge-fields.mdx
-            icon: fa-duotone fa-input-text
-      - section: APIs & SDKs
-        contents:
-          - page: Mobile SDK
-            path: ../docs/pages/documentation/mobile-sdk.mdx
-            icon: fa-duotone fa-mobile-screen
-          - page: Exports
-            path: ../docs/pages/documentation/export-api.mdx
-            icon: fa-duotone fa-file-export
-          - page: Alternative Schemas
-            path: ../docs/pages/documentation/alternative-schemas.mdx
-            icon: fa-duotone fa-sitemap
-      - section: Beta
-        contents:
-          - page: Audiences (BETA)
-            path: ../docs/pages/documentation/audiences.mdx
-            icon: fa-duotone fa-flask
-          - page: Account Exports
-            path: ../docs/pages/documentation/account-exports.mdx
-            icon: fa-duotone fa-boxes-packing
+      - page: Fundamentals
+        path: ../docs/pages/documentation/fundamentals.mdx
+      - page: Methods and Parameters
+        path: ../docs/pages/documentation/methods-parameters.mdx
+        slug: methods-parameters
+      - page: Errors
+        path: ../docs/pages/documentation/errors.mdx
+      - page: E-Commerce
+        path: ../docs/pages/documentation/e-commerce.mdx
+      - page: Integrations
+        path: ../docs/pages/documentation/integrations.mdx
+      - page: Merge Fields
+        path: ../docs/pages/documentation/merge-fields.mdx
+      - page: Mobile SDK
+        path: ../docs/pages/documentation/mobile-sdk.mdx
+      - page: Exports
+        path: ../docs/pages/documentation/export-api.mdx
+        slug: export-api
+      - page: Alternative Schemas
+        path: ../docs/pages/documentation/alternative-schemas.mdx
+      - page: Audiences (BETA)
+        path: ../docs/pages/documentation/audiences.mdx
+        slug: audiences-introduction
+      - page: Account Exports
+        path: ../docs/pages/documentation/account-exports.mdx
   - tab: api-reference
     layout:
       - api: Mailchimp API
         api-name: mailchimp-openapi
+        skip-slug: true
         snippets:
           typescript: "@mailchimp/mailchimp-marketing"
           php: mailchimp/marketing
