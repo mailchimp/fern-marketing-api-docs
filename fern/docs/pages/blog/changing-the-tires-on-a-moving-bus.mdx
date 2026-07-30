@@ -1,0 +1,89 @@
+---
+title: "Changing the tires on a moving bus"
+subtitle: "Adventures in refactoring a decade-old feature without ruining it for everyone"
+---
+
+<a class="mc-blog-back" href="/blog">← Back to Blog</a>
+
+<p class="mc-blog-post-byline"><span class="mc-blog-author">Nate Ranson</span>, Software Engineer</p>
+
+<img class="mc-blog-post-hero" src="https://mailchimp.com/developer/static/3f85f3488de9307d9d4c328d12cee7fe/062c8/ILLO_Dev-Blog_04_Changing-The-Tires-On-A-Moving-Bus_2000x1124.jpg" alt="Changing the tires on a moving bus" />
+<p class="mc-blog-post-credit">Image Credit: James Daw</p>
+
+As an engineer at Mailchimp, one of our responsibilities is to do a tour of duty in the on-call rotation roughly once per quarter. This is a full 24-hours-a-day, 7-day rotation where anything falling apart outside of normal business hours gets escalated to you and your team. While you’re keeping track of everything for that week, someone will occasionally hit you up for a favor and ask you to check in on the progress of something. So we begin our story there.
+
+“Hey Nate,” a support agent said to me. “Would you mind keeping an eye on these account exports over the next few days since you’re on call?”
+
+I started working at Mailchimp in 2010, back when we were a much smaller company—my employee number is in the double digits. Even though I’d gone to school to be a history teacher and my résumé was full of jobs where I had my name stitched into my shirt, my first salaried job was here at Mailchimp as a support agent. I’ve changed job titles half a dozen times since then, but Support will always be home to me. Obviously when someone asks a favor I try to be true to my word. But when it’s my home team, I go out of my way to make sure I follow up on what I’ve committed to.
+
+So of course I said, “Yo! Absolutely.” 
+
+At this point in my tenure, the account export feature was more than a decade old. That code had existed since _I_ was in Support, so I’d naively assumed things were working as expected all the time. The truth was, as Mailchimp grew, account exports had become a growing pain in the neck for our Support teams: users would begin an export, but if that export was unusually large, the export job could crash and disappear, and the user would be left in the lurch.
+
+As a result, our Support teams devised a way to estimate when a user’s account was going to become too unwieldy to export without substantial intervention. They based it on a number of factors, but essentially, the larger the account, the less likely it was to complete successfully on its own. The export jobs Support had asked me to watch were deemed “at risk” by these criteria, so they figured an extra set of eyes wouldn’t hurt.
+
+For the first few days, I stared at some graphs that were meticulously logging every operation being conducted during this user’s account export—real riveting stuff. To the surprise of no one in Support, the exports they asked me to watch failed miserably about halfway through. I noticed that even though the exports failed at different points of execution, they’d both failed within a few minutes of each other. And while nothing stuck out about the job itself, I did notice that we had restarted our job-management system right around the time the exports failed.
+
+Here’s what’s supposed to happen: a user clicks the button inside the application that says—straightforwardly enough—“Export data,” and then we email them when it’s ready. On the back end of things, we are furiously pulling data from our databases and compiling it into an array of CSV, HTML, and image files of all types, asynchronously. Each account is slightly different due to variations of sending habits and size, so the fact that these two distinct account exports had failed so close together meant _something _to me.
+
+With the timing clue, I was able to track the problem down to a job-management-system restart: as part of that restart, we were deleting jobs that had been running for more than 24 hours. While I was sure we’d originally started doing that for a reason, to me, it was only creating problems, pinching our export jobs with no remediation, and leaving no evidence as to why they would have failed. 
+
+Since I was on call, had a pretty good mental model of the situation, and had a few days of time where I could prioritize this project, I decided that I alone could fix this problem. Dear reader, if you ever find yourself thinking this way, let this be a tale of warning to you: this “fix it in a few days” adventure turned into a full year of tinkering, learning, and breaking things in new ways before finally settling on a solution that was to our liking.
+
+### A first attempt at fixing the problem
+
+Feeling very smart and full of the optimistic vigor you get when you finally uncover a perplexing bug, I decided to rewrite our export process right then and there. In hindsight, this was an incredibly optimistic and naive approach. Today I—an older, wiser, more weathered engineer—would pump the brakes on such wild timeboxing.
+
+Our exports were getting killed more often than other jobs because of the sheer length of time they took to run. Some of our largest users’ exports could take anywhere from several days to several weeks to complete. These were single jobs that were just building and crunching data, uninterrupted for that entire time; there was no way to pause or resume, so failure meant starting all over again. In my mind, the fix seemed simple: make jobs responsible for one piece at a time, make them shorter-lived, and make more of them.
+
+Originally, it was just me on this project. But as I got further down the rabbit hole, I began to vocalize my intentions, and thankfully, another courageous fool decided to join me. Enter my teammate: Bob. Once Bob and I got to coding and then testing in our staging environment, things were working as expected. Smaller jobs? Check. Building a zip file in our testing environment? Check. Gratuitous, self-congratulatory back-pats? Buddy, you’ve never seen so many.
+
+But this story wouldn’t be fun without a tale of self-sacrifice. When our customer support team gave me the go-ahead to run our newly forged account export process on a test user, we only got half the data back. Perplexed, I ran it again, thinking there must be a glitch in the Matrix (you know how computers are). When I got back a slightly different but still half-complete data set, I knew something was up. 
+
+I logged on to one of the production servers this user resided on and found the other half of my missing data. Our first major roadblock: I had failed to take into account the sharded nature of our production environment. Mailchimp runs on multiple hosts, and for a distributed job system, we have to take the physical occupancy of the data into account. 
+
+To give a concrete example, imagine you and a friend are writing a story where you alternate every other sentence, but each on your own sheet of paper. At the end of the story, the teacher calls on you to read the story aloud, but you only have access to the sentences you wrote on _your_ paper. 
+
+That’s what was happening with user data: when the job runner called the job to zip things up, only the data on the selected server was available. Most of the time, this meant a fragmented export result. Our customers expect to receive _all_ of their data that they export, so we were back to the drawing board.
+
+To rectify this behavior, we needed a central repository where we could store the data and have it available, agnostic to which server needed it. We eventually decided to cast our lot with Google Cloud Storage (GCS). With a little elbow grease, our jobs were uploading data into GCS and downloading it back on the server that needed it to complete the export. 
+
+Imagine you and your friend are writing that collaborative story, but now you’re using the same sheet of paper—you can see the whole thing instead of just your own lines. Exports were now running in a much smoother and more reliable way, and we were giving users all of the data they requested. This was “mission accomplished!”
+
+### Mission not accomplished
+
+Fast forward a few weeks. Another set of engineers are on call. In the middle of the night, they get a page for one of our servers running out of available disk space. They traced it back to a particular user and…our export job. 
+
+If left untreated, this job threatened to exhaust all available disk space and cause some very nasty downstream effects for everyone else. In order to save the rest of the users on the shard, they killed the export and reached out to the user to let them know. In the end, a decade’s worth of open-and-click data, CSVs full of list contacts, and all of the files in the user’s image gallery ended up being larger than the physical disk space available on our production host. 
+
+So what had gone wrong? Well, in a way, nothing “went wrong”—things were working exactly the way we designed. (And if you happen to be my manager reading this, you might say they were working _too _well because we did _too_ good of a job!) 
+
+The problem was that we never expected the floodgates to open this much. Users who had previously never been able to create a successful export were suddenly having their entire accounts’ worth of data dump out onto our servers. Because these were generally one-off situations, we triaged them as best we could, even breaking up our exports into sections (thanks to our new job structures) to give the users the data they needed without melting things.
+
+It wasn’t until our Customer Success Team reached out to us that a large media organization had begun to export a decade’s worth of Mailchimp data that my coworker Bob and I really realized how deep we were in this. In the fog of war, we decided we would insert a code shim for this user that would prevent us from downloading that data and almost assuredly wrecking all available disk space. From there, we’d figure out a way to get our data out of GCS and give the user a hand-crafted/bespoke/hacked-together version of their data.
+
+### Okay, but like…how?
+
+The idea of giving this media conglomerate their data in a nice, easy-to-parse GCS bucket seemed great, but the reality was that we had to assemble it. Google doesn’t allow you to grant access to a subdirectory of data; it’s more of an all-or-nothing-type approach. 
+
+So how were we going to do this? Bob had an idea to use Go as a (pardon the pun) go-between for our batch server infrastructure and our GCS bucket. We’d reach out to the bucket, compress the files into a zip format, and then move our newly formed zip file back into our GCS bucket. Then we could serve them their data in a secure, signed, and obfuscated URL that was hidden behind our authentication. That checked a lot of our boxes for getting them their data in a way that made sense.
+
+With our immediate fire out of the way, we began to pursue this lead to its (il)logical end: What if we did this for every export for every user? There were some obvious wins right out of the gate: we could save money by not using another storage host for the old export files, we could have all of our user data in one secure and predictable place, and since we would no longer have to write to the disk, we wouldn’t knock over our servers when processing a gigantic amount of data.
+
+### Getting the gang together for one last heist/refactor
+
+Wiring this up for a special user was one thing, but wiring it up for everyone who uses our account export feature was quite another. We had dependencies, legacy code, and user expectations to consider. What if someone had just completed an export, and it was being stored in our old place, and we tried to link them to our GCS file instead? We either had to be very opinionated or at least medium-smart about how we did this.
+
+With a little trial and error, we were able to settle on a slow-rolling feature-flag situation where, as new exports were queued up, we enabled this new GCS-hosted option instead of our previous host. This meant that any exports that were in-flight wouldn’t have the rug jerked out from under them, nor would previously completed exports. 
+
+But this left us the problem of how to eventually migrate away from our previous host completely. Users still had completed exports, and we didn’t feel great about just having those disappear without any sort of warning. 
+
+This is where we had to be opinionated but empathetic towards our users. We decided to only allow export downloads for a period of time before they would eventually disappear or need to be restarted. This helped us to “roll off” our previous host slowly. Account exports are a free feature for our users—aside from the investment of time spent waiting—so this didn’t feel as bad as it could have.
+
+The technical details of our implementation were actually pretty plug-and-play for a feature that was almost a decade old. Instead of uploading this file to our old host, we’d queue up our Go binary to act as the interface between our batch infrastructure and GCS. This would zip their file, sign the URL, and save it in our DB for quick recall. With our retention rules in place at the Mailchimp level, this allowed us to implement retention rules on the GCS side as well, eventually rolling off old data that we no longer served up to the user.
+
+### Happily ever after
+
+When I initially waded into this project, I assumed it’d be resolved in a matter of weeks. I guess that’s still technically true—it just took 52 of them. What started out as a passion project with a skeleton crew of myself, one other engineer (shout out again to Bob!), and the grace and air cover from our various project and engineering managers, we were able to turn a neglected, decade-old feature into a more modern and polished option.
+
+In 2011, account exports at Mailchimp were a slow, monolithic process that exported all of your data in one go. A decade later, we allow our users to pick what data they want and the timeframe they want the data from (30, 60, or 90 days), and we have hardened it against our most common failure points. That’s not to say that we don’t still have more work to do, but maybe I’ll save that refactor until 2022.

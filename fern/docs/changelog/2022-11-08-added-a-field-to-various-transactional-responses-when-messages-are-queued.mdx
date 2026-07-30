@@ -1,0 +1,14 @@
+---
+title: Added a field to various Transactional responses when messages are queued
+tags: ["Transactional"]
+---
+
+We’ve add a `queued-reason` field to API responses when we return a `status` of `queued.` 
+
+This change affects the following endpoints:
+
+- `messages/send`
+- `messages/send-template`
+- `messages/send-raw`
+
+This new `queued-reason` field gives you more information and context why messages have been queued rather than sent.

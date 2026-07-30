@@ -1,5 +1,599 @@
 ---
 title: Alternative Schemas
+description: Details about Marketing API endpoints that accept or return multiple types of data.
 ---
 
-Content coming soon.
+
+
+## The basics
+
+The Mailchimp Marketing API has several endpoints that are capable of accepting or returning multiple types of data. The API specifies alternative schemas for these endpoints, with additional parameters for requesting a particular type of data.
+
+This documentation covers the Marketing API’s implementation of alternative schemas, including tables of the supported alternative schemas and their parameters. For further details on other aspects of these endpoints, consult the full [API reference](/marketing/api).
+
+## Structure
+
+To specify alternate schemas, the Marketing API uses `x-oneOf`, a variation on the Open API Specification’s [`oneOf`](https://swagger.io/docs/specification/data-models/oneof-anyof-allof-not/) keyword. The value of `x-oneOf` is an array of objects, each representing a possible schema for the endpoint.
+
+To choose among alternative schemas, you need to know the name of the schema and the field where you provide that name. The name of each schema is the `x-value` inside the schema object. The field name for a particular endpoint is specified as the `propertyName` of its `x-discriminator` object. Your code should be able to handle any type of data based on its `x-value`, or you should limit your API calls to the data types you want to handle.
+
+For example, say you want to add a segment using a `conditions` parameter to determine who is included in the segment. This parameter’s specification indicates that it uses alternative schemas with the `x-discriminator` named `condition_type`. Find the `x-value` of the type of segment you want to create and pass that within `conditions`.
+
+For some endpoints, specifying a particular schema affects not only the type of data returned, but also the other values you can pass in your request. Operators for comparing data are given in the `op` field, and valid comparisons are given in the `value` field.
+
+## Activity schemas
+
+The [Member Activity Feed endpoint](/marketing/api) can return a range of activity types. Although the `x-discriminator` for these activity schemas is `activity_type`, the relevant request parameter is `activity_filters`, which accepts an array of `x-values` instead of a single string. If you pass `activity_filters`, activity matching one of the provided types will be returned; if you omit it, any type of activity that matches your query will be returned.
+
+**Email Opens** — Activity feed item representing opening an email.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `activity_type` | string enum | The type of event activity. |
+| `created_at_timestamp` | string (date-time) | The created at timestamp in ISO8601. |
+| `campaign_id` | string | The campaign's unique id. |
+| `campaign_title` | string | The title of the campaign. |
+
+**Email Clicks** — Activity feed item representing having a link clicked by a contact.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `activity_type` | string enum | The type of event activity. |
+| `created_at_timestamp` | string (date-time) | The created at timestamp in ISO8601. |
+| `campaign_id` | string | The campaign's unique id. |
+| `campaign_title` | string | The title of the campaign. |
+| `link_clicked` | string | The URL of the link that was clicked. |
+
+**Email Bounced** — Activity feed item representing an email to this contact bouncing.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `activity_type` | string enum | The type of event activity. |
+| `created_at_timestamp` | string (date-time) | The created at timestamp in ISO8601. |
+| `campaign_id` | string | The campaign's unique id. |
+| `campaign_title` | string | The title of the campaign. |
+| `bounce_type` | string enum | The type of bounce. |
+| `bounce_has_open_activity` | boolean | Indicates if the email associated with this bounce also has open activity on the same campaign. |
+
+**List Unsubscribed** — Activity feed item representing this contact unsubscribing from a list.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `activity_type` | string enum | The type of event activity. |
+| `created_at_timestamp` | string (date-time) | The created at timestamp in ISO8601. |
+| `campaign_id` | string | The campaign's unique id. |
+| `campaign_title` | string | The title of the campaign. |
+| `is_admin_unsubscribed` | boolean | Indicates if an admin unsubscribed a contact. |
+| `unsubscribe_reason` | string | Indicates the reason that the contact was unsubscribed. |
+
+**Email Sent** — Activity feed item representing having an email sent to the contact.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `activity_type` | string enum | The type of event activity. |
+| `created_at_timestamp` | string (date-time) | The created at timestamp in ISO8601. |
+| `campaign_id` | string | The campaign's unique id. |
+| `campaign_title` | string | The title of the campaign. |
+
+**Email Conversation** — Activity feed item representing an individual reply in a conversation.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `activity_type` | string enum | The type of event activity. |
+| `created_at_timestamp` | string (date-time) | The created at timestamp in ISO8601. |
+| `campaign_id` | string | The campaign's unique id. |
+| `campaign_title` | string | The title of the campaign. |
+| `thread_id` | string | The thread's unique id of the conversation referenced in this event. |
+| `message_text` | string | The body of the message in this conversation. |
+| `created_by` | string | The username of the person who created this event. |
+| `is_user` | boolean | Indicates that the message created by a user (as opposed to a contact). |
+| `has_read` | boolean | Indicates that the message has been read. |
+| `from_email` | string | The email of the contact who sent the reply. |
+| `avatar_url` | string | The gravatar URL of the contact who sent the reply. |
+
+**Note** — Activity feed item representing a note on the contact record.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `activity_type` | string enum | The type of event activity. |
+| `created_at_timestamp` | string (date-time) | The created at timestamp in ISO8601. |
+| `updated_at_timestamp` | string (date-time) | The updated at timestamp in ISO8601. |
+| `note_id` | string | The note's unique id. |
+| `note_text` | string | The note's text. |
+| `created_by` | string | The person who created the note. |
+| `avatar_url` | string | The URL of the contact's profile gravatar image. |
+
+**Marketing Permission** — Activity feed item indicating if a marketing permission was added or updated.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `activity_type` | string enum | The type of event activity. |
+| `created_at_timestamp` | string (date-time) | The created at timestamp in ISO8601. |
+| `marketing_permisson_text` | string | The text describing this marketing permission. |
+| `updated_by` | string | The name of the contact who updated this permission. |
+| `marketing_permission_opted_in` | boolean | Indicates if the marketing permission is enabled or not. |
+
+**Postcard Sent** — Activity feed item representing a time when a contact was sent a particular postcard.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `activity_type` | string enum | The type of event activity. |
+| `created_at_timestamp` | string (date-time) | The created at timestamp in ISO8601. |
+| `outreach_id` | string | The outreach's unique id. |
+| `outreach_title` | string | The title of the outreach. |
+
+**Squatter Signup** — Activity feed item to representing a contact signing up for the audience from a squatter page.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `activity_type` | string enum | The type of event activity. |
+| `created_at_timestamp` | string (date-time) | The created at timestamp in ISO8601. |
+| `outreach_id` | string | The outreach's unique id. |
+| `outreach_title` | string | The title of the outreach. |
+
+**Website Signup** — Activity feed item to representing a contact signing up for the contact through a website page.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `activity_type` | string enum | The type of event activity. |
+| `created_at_timestamp` | string (date-time) | The created at timestamp in ISO8601. |
+| `outreach_id` | string | The outreach's unique id. |
+| `outreach_title` | string | The title of the outreach. |
+
+**Landing Page Signup** — Activity feed item to representing a contact signing up for the list via a landing page.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `activity_type` | string enum | The type of event activity. |
+| `created_at_timestamp` | string (date-time) | The created at timestamp in ISO8601. |
+| `outreach_id` | string | The outreach's unique id. |
+| `outreach_title` | string | The title of the outreach. |
+
+**Ecommerce Signup** — Activity feed item to representing a contact signing up for the list via a ecommerce store.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `activity_type` | string enum | The type of event activity. |
+| `created_at_timestamp` | string (date-time) | The created at timestamp in ISO8601. |
+| `store_name` | string | The name of the store. |
+
+**Generic Signup** — Activity feed item that represents a contact signing up for the audience via a generic some generic method (specifically, one we can't link to).
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `activity_type` | string enum | The type of event activity. |
+| `created_at_timestamp` | string (date-time) | The created at timestamp in ISO8601. |
+| `signup_category` | string | How was this user added to the list. |
+
+**Ecommerce Order** — Activity feed item that represents an order.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `activity_type` | string enum | The type of event activity. |
+| `created_at_timestamp` | string (date-time) | The created at timestamp in ISO8601. |
+| `outreach_id` | string | The outreach's unique id. |
+| `outreach_type` | string | The type of outreach that triggered the event. |
+| `outreach_title` | string | The title of the outreach. |
+| `order_id` | string | The unique order id. |
+| `order_total` | string | The order total formatted as a string. |
+| `order_items` | array | An array of items that have been ordered. |
+| `store_name` | string | The name of the store for an order. |
+| `order_url` | string | The order URL. |
+
+**Contact Activity Event** — Activity feed item that represents a generic event.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `activity_type` | string enum | The type of event activity. |
+| `created_at_timestamp` | string (date-time) | The created at timestamp in ISO8601. |
+| `event_name` | string | The name of the event. |
+| `event_properties` | array | An arbitrary datastore containing properties for the given event. |
+
+**Survey response** — Represents when a contact completes and submits a survey
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `activity_type` | string enum | The type of event activity. |
+| `created_at_timestamp` | string (date-time) | The created at timestamp in ISO8601. |
+| `survey_id` | string | The survey's unique id. |
+| `survey_title` | string | The title of the survey. |
+
+## Segment condition schemas
+
+A variety of endpoints accept or return segment condition data, from the [Segments endpoints](/marketing/api) themselves to others like automation, list, and campaign endpoints. Because there are many ways to define a segment, there are many alternative schemas for segment conditions. 
+
+The `x-discriminator` for segment conditions is `condition_type`. The request parameter `conditions` accepts an array of objects that indicate the desired segment condition (`field`), operator, value, and optional extra information. Multiple segment conditions can be combined like so:
+
+```json
+{
+   "name": "Gmail users who subscribed in 2021 or later",
+   "options": {
+       "match": "all",
+       "conditions": [
+           {
+               "field": "timestamp_opt",
+               "op":  "greater",
+               "value": "date",
+               "extra": "2021-01-01"
+           },
+           {
+               "field": "EMAIL",
+               "op":  "contains",
+               "value": "gmail.com"
+           }
+       ]
+   }
+}
+```
+
+**Aim Segment** — Segment by interaction with a specific campaign.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by interaction with a specific campaign. |
+| `op` | string enum | The status of the member with regard to their campaign interaction. One of the following: opened, clicked, was sent, didn't open, didn't click, or was not sent. |
+| `value` | string | Either the web id value for a specific campaign or 'any' to account for subscribers who have/have not interacted with any campaigns. |
+
+**Automation Segment** — Segment by interaction with an Automation workflow.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by interaction with an Automation workflow. |
+| `op` | string enum | The status of the member with regard to the automation workflow. One of the following: has started the workflow, has completed the workflow, has not started the workflow, or has not completed the workflow. |
+| `value` | string | The web id for the automation workflow to segment against. |
+
+**Poll Activity Segment** — Segment by poll activity.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by poll activity. |
+| `op` | string enum | Members have/have not interacted with a specific poll in a Mailchimp email. |
+| `value` | number | The id for the poll. |
+
+**Conversation Segment** — Segment by interaction with a campaign via Conversations.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by interaction with a campaign via Conversations. |
+| `op` | string enum | The status of a member's interaction with a conversation. One of the following: has replied or has not replied. |
+| `value` | string | The web id value for a specific campaign or 'any' to account for subscribers who have/have not interacted with any campaigns. |
+
+**Date Segment** — Segment by a specific date field.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | The type of date field to segment on: The opt-in time for a signup, the date the subscriber was last updated, or the date of their last ecomm purchase. |
+| `op` | string enum | When the event took place:  Before, after, is a specific date, is not a specific date, is blank, or is not blank. |
+| `value` | string | What type of data to segment on: a specific date, a specific campaign, or the last campaign sent. |
+| `extra` | string | When segmenting on 'date' or 'campaign', the date for the segment formatted as YYYY-MM-DD or the web id for the campaign. |
+
+**Email Client Segment** — Segment by use of a particular email client.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by use of a particular email client. |
+| `op` | string enum | Whether to match email clients that do or do not match the value. |
+| `value` | string | The name of the email client. |
+
+**Language Segment** — Segment by language.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by language. |
+| `op` | string enum | Whether the member's language is or is not set to a specific language. |
+| `value` | string | A two-letter language identifier. |
+
+**Member Rating Segment** — Segment by member rating.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by member rating. |
+| `op` | string enum | Members who have have a rating that is/not exactly a given number or members who have a rating greater/less than a given number. |
+| `value` | number | The star rating number to segment against. |
+
+**Signup Source Segment** — Segment by signup source.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum |  |
+| `op` | string enum | Whether the member's signup source was/was not a particular value. |
+| `value` | string | The signup source. |
+
+**SurveyMonkey Segment** — Segment by interaction with a SurveyMonkey survey.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by interaction with a SurveyMonkey survey. |
+| `op` | string enum | The status of the member with regard to the survey.One of the following: has started the survey, has completed the survey, has not started the survey, or has not completed the survey. |
+| `value` | string | The unique ID of the survey monkey survey. |
+
+**VIP Segment** — Segment by VIP status.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segmenting based off of a subscriber's VIP status. |
+| `op` | string enum | Whether the member is or is not marked as VIP. |
+
+**Interests Segment** — Segment by an interest group merge field.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string | Segmenting based on interest group information. This should start with 'interests-' followed by the grouping id. Ex. 'interests-123'. |
+| `op` | string enum | Whether the member is a part of one, all, or none of the groups. |
+| `value` | array | An array containing strings, each representing a group id. |
+
+**Ecommerce Category Segment** — Segment by purchases in specific items or categories.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by purchases in specific items or categories. |
+| `op` | string enum | A member who has purchased from a category/specific item that is/is not a specific name, where the category/item name contains/doesn't contain a specific phrase or string, or a category/item name that starts/ends with a string. |
+| `value` | string | The ecommerce category/item information. |
+
+**Ecommerce Number Segment** — Segment by average spent total, number of orders, total number of products purchased, or average number of products per order.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by average spent total, number of orders, total number of products purchased, or average number of products per order. |
+| `op` | string enum | Members who have spent exactly, have not spent exactly, spent more, or spent less than the segment value. |
+| `value` | number | Members who have spent exactly, have not spent exactly, spent more, or spent less than this amount. |
+
+**Ecommerce Purchased Segment** — Segment by whether someone has purchased anything.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by whether someone has purchased anything. |
+| `op` | string enum | Members who have have ('member') or have not ('notmember') purchased. |
+
+**Ecommerce Spent Segment** — Segment by amount spent on a single order or across all orders.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by amount spent on a single order or across all orders. |
+| `op` | string enum | Members who have spent 'more' or 'less' than then specified value. |
+| `value` | integer | The total amount a member spent. |
+
+**Ecommerce Purchased Store Segment** — Segment by purchases from a specific store.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by purchases from a specific store. |
+| `op` | string enum | Members who have or have not purchased from a specific store. |
+| `value` | string | The store id to segment against. |
+
+**Goal Activity Segment** — Segment by Goal activity.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by Goal activity. |
+| `op` | string enum | Whether the website URL is/not exactly, contains/doesn't contain, starts with/ends with a string. |
+| `value` | string | The URL to check Goal activity against. |
+
+**Goal Timestamp Segment** — Segment by most recent interaction with a website.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by most recent interaction with a website. |
+| `op` | string enum | Whether the website activity happened after, before, or at a given timestamp. |
+| `value` | string | The date to check Goal activity against. |
+
+**Similar Subscribers Segment Member Segment** — Segment by similar subscribers.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by similar subscribers. |
+| `op` | string enum | Members who are/are not apart of a 'similar subscribers' segment. |
+| `value` | number | The id for the 'similar subscribers' segment. |
+
+**Static Segment Member Segment** — Segment by a given static segment.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by a given static segment. |
+| `op` | string enum | Members who are/are not apart of a static segment. |
+| `value` | number | The id for the static segment. |
+
+**Location-Based Segment** — Segment by a specific country or US state.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segmenting subscribers who are within a specific location. |
+| `op` | string enum | Segment members who are within a specific country or US state. |
+| `value` | string | The two-letter country code or US state abbreviation. |
+
+**Geolocation Segment** — Segment by a specific geographic region.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segmenting subscribers who are within a specific location. |
+| `op` | string enum | Segment members who are within a specific geographic region. |
+| `value` | integer | The radius of the target location. |
+| `addr` | string | The address of the target location. |
+| `lat` | string | The latitude of the target location. |
+| `lng` | string | The longitude of the target location. |
+
+**US ZIP Code Segment** — Segment by a specific US ZIP code.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segmenting subscribers who are within a specific location. |
+| `op` | string enum | Segment members who are within a specific US ZIP code. |
+| `value` | integer | The radius of the target location. |
+| `extra` | integer | The zip code to segment against. |
+
+**Unknown Location-Based Segment** — Segment members whose location information is unknown.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segmenting subscribers who are within a specific location. |
+| `op` | string enum | Segment members for which location information is unknown. |
+
+**Zip Code Location-Based Segment** — Segment by a specific US ZIP code.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segmenting subscribers who are within a specific location. |
+| `op` | string enum | Segment members who are/are not within a specific US zip code. |
+| `value` | integer | The 5-digit zip code. |
+
+**Social Profiles Age Segment** — Segment by age ranges in Social Profiles data.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by age ranges in Social Profiles data. |
+| `op` | string enum | Members who are/not the exact criteria listed. |
+| `value` | string enum | The age range to segment. |
+
+**Social Profiles Gender Segment** — Segment by listed gender in Social Profiles data.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by listed gender in Social Profiles data. |
+| `op` | string enum | Members who are/not the exact criteria listed. |
+| `value` | string enum | The Social Profiles gender to segment. |
+
+**Social Profiles Influence Segment** — Segment by influence rating in Social Profiles data.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by influence rating in Social Profiles data. |
+| `op` | string enum | Members who have a rating that is/not or greater/less than the rating provided. |
+| `value` | number | The Social Profiles influence rating to segment. |
+
+**Social Profiles Social Network Segment** — Segment by social network in Social Profiles data.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by social network in Social Profiles data. |
+| `op` | string enum | Members who are/not on a given social network. |
+| `value` | string enum | The social network to segment against. |
+
+**Social Profiles Social Network Follow Segment** — Segment by social network in Social Profiles data.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by social network in Social Profiles data. |
+| `op` | string enum | Members who are/not following a linked account on a given social network. |
+| `value` | string enum | The social network to segment against. |
+
+**Address Merge Field Segment** — Segment by an address-type merge field.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string | An address-type merge field to segment. |
+| `op` | string enum | Whether the member's address merge field contains/does not contain a value or is/is not blank. |
+| `value` | string | The value to segment a text merge field with. |
+
+**Address/Zip Merge Field Segment** — Segment by an address-type merge field within a given distance.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string | An address or zip-type merge field to segment. |
+| `op` | string enum | Whether the member's address merge field is within a given distance from a city or zip. |
+| `value` | string | The distance from the city/zip. |
+| `extra` | string | The city or the zip being used to segment against. |
+
+**Birthday Merge Field Segment** — Segment by a contact's birthday.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string | A date merge field to segment. |
+| `op` | string enum | Whether the member's birthday merge information is/is not a certain date or is/is not blank. |
+| `value` | string | A date to segment against (mm/dd). |
+
+**Date Merge Field Segment** — Segment by a given date merge field.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string | A date merge field to segment. |
+| `op` | string enum | Whether the member's merge information is/is not, is greater/less than a value or is/is not blank. |
+| `value` | string | A date to segment against. |
+
+**Dropdown/Radio Merge Field Segment** — Segment by a given dropdown or radio button merge field.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string | A merge field to segment. |
+| `op` | string enum | Whether the member's merge information is/is not a value or is/is not blank. |
+| `value` | string | The value to segment a text merge field with. |
+
+**Text or Number Merge Field Segment** — Segment by a given text or number merge field.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string | A text or number merge field to segment. |
+| `op` | string enum | Whether the member's merge information is/is not, contains/does not contain, starts/ends with, or is greater/less than a value |
+| `value` | string | The value to segment a text or number merge field with. |
+
+**Email Segment** — Segment by email address.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segmenting based off of a subscriber's email address. |
+| `op` | string enum | Whether the email address is/not exactly, contains/doesn't contain, starts/ends with a string. |
+| `value` | string | The value to compare the email against. |
+
+**Predicted Gender Segment** — Segment by predicted gender.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by predicted gender. |
+| `op` | string enum | Members who are/not the exact criteria listed. |
+| `value` | string enum | The predicted gender to segment. |
+
+**Predicted Age Segment** — Segment by predicted age.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by predicted age. |
+| `op` | string enum | Members who are/not the exact criteria listed. |
+| `value` | string enum | The predicted age to segment. |
+
+**New Subscribers Prebuilt Segment** — Segment by when people subscribed.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition_type` | string enum |  |
+| `field` | string enum | Segment by when people subscribed. |
+| `op` | string enum | Whe the event took place, namely within a time frame. |
+| `value` | string | What type of data to segment on: a specific date, a specific campaign, or the last campaign sent. |

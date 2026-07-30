@@ -1,0 +1,12 @@
+---
+title: Deprecating the Link Application endpoint
+tags: ["Marketing API"]
+---
+
+We removed the largely unused Link Application endpoint due to security concerns.
+
+We previously supported a POST `/authorized-apps` endpoint that let you post the client credentials for an app, and receive a new API token associated with that app.
+
+This would register an app to the users’ account in a way that isn’t transparent to the user, so to improve security, we removed this feature.
+
+The endpoint was accessed by only a handful of accounts over the last few months, so most API users will not be impacted.

@@ -1,0 +1,10 @@
+---
+title: Changing API server response for client errors
+tags: ["Transactional"]
+---
+
+We’ve been updating our API responses recently to provide a more semantic response for the requests you make. With this release, we’re changing the way our servers respond if you provide invalid or missing data when performing a request to our API. Once this change goes live, we’ll respond with an `HTTP 400 Bad Request`, indicating you will have to make changes to your payload in the subsequent requests. 
+
+If you’re specifically targeting HTTP response codes other than `200`, you may need to update your code. We’re releasing this change incrementally over the next few weeks.
+
+Previously, we responded with an `HTTP 500 Server Error` when you provided an invalid or missing payload. We’re updating this to bring our response in line with proper semantics and allow more efficient status monitoring.

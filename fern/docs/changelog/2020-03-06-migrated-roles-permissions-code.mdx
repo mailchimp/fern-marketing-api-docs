@@ -1,0 +1,8 @@
+---
+title: Migrated roles and permissions code
+tags: ["Open Commerce"]
+---
+
+We moved remaining `role` and `permissions`-related code out of the Open Commerce API and into the `simple-authorization` plugin.
+
+Previously, developers had to use the built-in authentication service or fork the whole app to use a custom one. This change makes it easier to swap this plugin for a custom authorization service or implement other options like Auth0. 

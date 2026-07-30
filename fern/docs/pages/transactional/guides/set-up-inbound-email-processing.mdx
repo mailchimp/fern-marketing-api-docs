@@ -1,3 +1,236 @@
-# Set Up Inbound Email Processing
+---
+title: Set Up Inbound Email Processing
+description: Use Mailchimp Transactional to receive, process, and parse inbound email.
+---
 
-Learn how to configure Mailchimp Transactional to receive and process inbound email, routing messages to your application via webhooks.
+
+
+## At a glance
+
+Inbound email processing allows users to interact with your application via email. Once you’ve set up inbound processing, the Transactional API handles receiving, processing, and parsing inbound email, then sends the parsed results to your application via [a webhook](/transactional/docs/webhooks). 
+
+Inbound email processing allows your users to do things like:
+
+- Forward images or documents to your app for posting or processing
+- Take action in reply to an email, like RSVPing to an invitation
+- Add items to a to-do list
+
+We’re going to set up inbound email processing to allow the users of our app, CheckCheckCheck, to add items to their to-do list via email. The subject line becomes an item on their to-do list, and if they include anything in the body of the email, that text becomes the item’s description. 
+
+In this guide, we’ll walk through how to add your inbound domain, set up and validate your MX records with your DNS provider, configure your incoming email address and webhook, and handle your parsed emails.
+
+## What you’ll need
+
+- A Mailchimp Transactional account
+- Your own server to handle incoming webhooks
+- Access to your application’s DNS records
+- [Your API key](/transactional/guides/quick-start/#generate-your-api-key)
+
+## Add your inbound domain
+
+CheckCheckCheck users send their tasks to `todo@checkcheckcheck.example.com`. We want those emails to go straight to Mailchimp for processing. In order to do this, we need to add the `checkcheckcheck.example.com` domain to our Mailchimp Transactional account, then set up the appropriate MX records for our domain.
+
+<Note>
+**Note**: Mailchimp will handle all mail for the inbound domain you set up, so be sure to choose a dedicated domain or subdomain that you plan to use exclusively for inbound email processing.
+</Note>
+
+Navigate to [**Inbound**](https://mandrillapp.com/inbound) in the app and enter your domain—in our example, that’s `checkcheckcheck.example.com`—in the **Inbound Domains** input, and click **Add Domain**.
+
+![Transactional Email: Set up inbound domain](https://images.ctfassets.net/cxsachrr7h0p/7vxdvwNJxD6rPjxrbtOoLo/8a2fdf49ad7599fdbbb427a254b79b47/mx-records-inbound-domains.png)
+
+You can also add an inbound domain with the API using the [`inbound/add-domain`](/transactional/api) endpoint.
+
+## Set up your MX records
+
+Now we need to set up the MX records with our DNS provider so that when new email is sent to our domain, it’ll be routed through the Mailchimp Transactional servers. 
+
+Back at [**Inbound**](https://mandrillapp.com/inbound), click on **View Setup Instructions**. A modal window will pop up with the MX records you’ll need to set up with your DNS provider. The numbers at the front of the server records match your user ID, so make sure to copy these records directly from your logged-in account.
+
+![Transactional Email: Set up MX records](https://images.ctfassets.net/cxsachrr7h0p/5byPUU0mX8AHIWLVym3jTT/3c942018928c9d140bde1bd173118b76/mx-records-mx-setup.png)
+
+Next, add those MX records to your DNS provider. This process varies by DNS provider, so check with yours for the appropriate method for adding these records.
+
+## Validate your MX records
+
+To verify that you’ve correctly set up your MX records, click the **Test DNS Settings** button for `checkcheckcheck.example.com`. If your records were set up properly and have finished propagating, the text in the DNS column will change to “MX: valid.” If not, you’ll see “MX: invalid.” 
+
+If the test is invalid, it’s likely due to one of two things:
+
+1. Your DNS provider has not yet propagated the new MX records. Different providers propagate records at different speeds, and some records have a different TTL (time to live). If your provider allows you to set the TTL, a shorter duration may speed up propagation. Either way, you may have to wait for your records to finish propagating before you see a valid test. Depending on the provider, this could take up to a day.
+2. You entered the records incorrectly. Go back to the setup step and verify that the record priorities and servers are exactly the same as you see them in the setup instructions.
+
+Our test for CheckCheckCheck is valid, so we’re ready to configure our full email address and webhook.
+
+## Configure your incoming email address and webhook
+
+When our users email `todo@checkcheckcheck.example.com`, we want to process those emails as items for their to-do list, and POST the parsed results to `https://checkcheckcheck.example.com/todo-webhook`. For now, `todo@` is the only email address we want to support.
+
+In Mailchimp Transactional, configuring the “local” part of the email address (everything before the @) and the corresponding webhook is collectively referred to as setting up a Mailbox Route. To add a new route, click the dropdown next to the **Test DNS Settings** button, select **Routes**, and then select the **Add New Route** button. 
+
+<Note>
+**Note**: Mailchimp will verify that your application can receive requests at your webhook URL. At minimum, your server should be able to accept incoming POST requests to the URL you plan to use. If your webhook URL isn’t set up but you’d still like to test a route, a service like [RequestBin](https://requestbin.com/) will give you a URL you can use in the short term.
+</Note>
+
+Enter “`todo`” as the receiving email address and the URL for your webhook, and then click **Save**.
+
+![Transactional Email: Configure incoming email address ](https://images.ctfassets.net/cxsachrr7h0p/tGmvC6fj7NIKdT6dS4sWq/c3472e102862bf1cf35f34ac73d4c746/mx-records-mailbox-route.png)
+
+You can also do this via the API using the [`inbound/add-route`](/transactional/api) endpoint.
+
+Routes support two types of wildcards for your email address: 
+
+- “`*`” will match multiple characters
+- “`?`” will match single characters
+
+If you wanted to match all possible email addresses, you would set up your receiving email address as `*@checkcheckcheck.example.com`. But for our example, we only want to deal with emails sent directly to `todo@checkcheckcheck.example.com`.
+
+That’s the only route we’ll need to continue, but keep in mind that you can set up as many routes as you want—for example, if we later decided we wanted to support a grocery shopping list in our app, we could set up a new Mailbox Route that processed emails to `groceries@checkcheckcheck.example.com` and sent them to a separate email address for adding items to users’ grocery lists.
+
+## Handle parsed emails
+
+At this point, Mailchimp is configured to receive and parse our incoming email and then send it to the webhook on our server, where we can handle the results to create new to-do list items on behalf of our users. We want to verify that everything is set up as expected, and there are two ways to do so. 
+
+First, and perhaps most obviously, we could manually send an email to `todo@checkcheckcheck.example.com` and verify that the webhook received an inbound email event from that message. 
+
+Alternatively, you can visit the Mailbox Routes page for the domain we just set up and click the **send test** button. This will send a sample payload to your webhook that should look something like this:
+
+```json
+{
+  "mandrill_events": [
+    {
+      "event": "inbound",
+      "msg": {
+        "dkim": {
+          "signed": true,
+          "valid": true
+        },
+        "email": "todo@checkcheckcheck.example.com",
+        "from_email": "example.sender@mandrillapp.com",
+        "html": "<p>This is an example inbound message.</p><img src=\"http://mandrillapp.com/track/open.php?u=999&id=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&tags=_all,_sendexample.sender@mandrillapp.com\" height=\"1\" width=\"1\">\n",
+        "sender": null,
+        "subject": "This is an example webhook message",
+        "tags": [],
+        "template": null,
+        "text": "This is an example inbound message.\n",
+        "text_flowed": false,
+        "to": [["todo@checkcheckcheck.example.com", null]]
+      },
+      "ts": 1368214102
+    }
+  ]
+}
+```
+
+<Note>
+**Note**: The payload here is truncated to make it readable, but for a more detailed view of everything included in the inbound email webhook, check out the [inbound webhooks documentation](/transactional/docs/webhooks/#inbound-messages).
+</Note>
+
+At the top level, the JSON payload contains an array of data called `mandrill_events`. Mailchimp posts to webhooks roughly once per minute, meaning that if more than one inbound email was processed in that time, you’d receive each email as an object within that array. (That’s up to 1,000 events, or if the total size of the payload is greater than 1MB—if either is exceeded, you’ll receive more than one request to your webhook. Your webhook code should be written to handle more than one email in the `mandrill_events` payload.)
+
+For our to-do app, we have relatively simple data needs. When our users email `todo@checkcheckcheck.example.com`, they write the text of the to-do in the subject line. If they want to include a description for their to-do, they can include that in the body of the email. 
+
+We’ll need to check both the email body and the subject when we create the task, and we’ll need to check the address the email was sent from so we can associate the task with the corresponding user in our app.
+
+Your code might look like this:
+
+<CodeBlocks>
+```javascript title="Node"
+function handleInboundEmailWebhook(req) {
+  // Get the webhook events from the request body. We know
+  // every event will be an inbound event, because we’re
+  // only using this endpoint for inbound email.
+  const { mandrill_events: inboundEvents } = req.body;
+
+  inboundEvents.forEach(inboundEvent => {
+    const {
+      msg: { from_email, subject, text }
+    } = inboundEvent;
+
+    const user = fakeDb.getUserByEmail(from_email);
+    fakeDb.createTodo({
+      user,
+      text: subject,
+      description: text
+    });
+  });
+}
+```
+
+```php title="PHP"
+function handleInboundEmailWebhook($req)
+{
+    // Get the webhook events from the request body. We know
+    // every event will be an inbound event, because we're
+    // only using this endpoint for inbound email.
+    $mandrill_events = $req->body;
+    $inboundEvents = $mandrill_events->inboundEvents;
+
+    foreach ($inboundEvents as $inboundEvent) {
+        $msg = $inboundEvent->msg;
+        $form_email = $msg->from_email;
+        $subject = $msg->subject;
+        $text = $msg->text;
+
+        $user = $fakeDb->getUserByEmail($form_email);
+
+        $fakeDb->createTodo(
+            [
+                "user" => $user,
+                "text" => $subject,
+                "description" => $text
+            ]
+        );
+    }
+}
+```
+
+```ruby title="Ruby"
+def handle_inbound_email_webhook(request)
+  mandrill_events = request.body[:mandrill_events]
+  mandrill_events.each do |event|
+    msg = event[:msg]
+    from_email = msg[:from_email]
+    subject = msg[:subject]
+    text = msg[:text]
+    
+    user = fake_db.get_user_by_email(from_email)
+    fake_db.create_to_do({
+user: user,
+text: subject,
+description: text
+    })
+  end
+end
+```
+
+```python title="Python"
+from operator import itemgetter
+
+def handleInboundEmailWebhook(request):
+  try:
+    mandrill_events = itemgetter('mandrill_events')(request)
+    for inboundEvent in mandrill_events['inboundEvents']:
+      from_email = inboundEvent['from_email']
+      subject = inboundEvent['subject']
+      text = inboundEvent['text']
+      msg = inboundEvent['msg']
+      user = fakeDb.getUserByEmail(from_email)
+      fakeDb.createTodo({
+      'user' : user,
+      'text' : subject,
+      'description' : text
+    })
+  except: 
+    print('Empty request passed')
+
+handleInboundEmailWebhook()
+```
+</CodeBlocks>
+
+We receive the request at our webhook, iterate over the events, extract the sender’s email address, the subject, and the body of the email, and use that to create our user’s to-do list. Nice and simple—and considerably easier than handling and parsing the email ourselves.
+
+## More resources
+
+- [Send Your First Transactional Email](/transactional/guides/send-first-email)
+- [Outbound Email](/transactional/docs/outbound-email)
+- [Webhooks documentation](/transactional/docs/webhooks)

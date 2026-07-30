@@ -1,0 +1,9 @@
+---
+title: Improved error messaging on malformed requests to the Members endpoint
+tags: ["Marketing API"]
+---
+
+Previously, if an object was passed as the value of the email field in a POST to the [Lists/members endpoint](https://mailchimp.com/developer/api/marketing/list-members), the server would return a 500 error. Now we return a 400 error with a clear error message.
+
+
+We saw multiple occurrences of these errors in our logs. Ideally, badly formed requests shouldn’t return 500 errors, and we should give more information to callers when errors do occur.

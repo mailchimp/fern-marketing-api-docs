@@ -1,3 +1,179 @@
-# Tags and Metadata
+---
+title: Tags and Metadata
+description: Label your messages to segment sends, search activity, and compare stats.
+---
 
-Learn how to use tags and metadata to organize your messages and track sending activity by category or campaign.
+
+
+## The basics
+
+Both tags and custom metadata allow you to label your messages, which lets you search activity, compare stats, and more. This documentation outlines how to create and manage tags and metadata; to explore further ways to use them, see [Activity and Reports](/transactional/docs/activity-reports). 
+
+### Tags vs. custom metadata
+
+Tags are great for broad categories of messages like welcome or forgot-password emails. The content for these emails may vary, but tags can help [track data like opens and clicks](/transactional/docs/activity-reports/#open-and-click-tracking) for that type of email over time.
+
+Metadata is generally better for managing more user-specific information, like a user ID from your system. Metadata information is returned in webhooks and is searchable in [**Outbound Activity**](https://mandrillapp.com/activity), so you can tie certain information back to data in your own system.
+
+You can filter both tags and metadata via the **View Stats By **drop-down menu on your [**Dashboard**](https://mandrillapp.com/), or by using the [`/messages/search`](/transactional/api) and [`/messages/search-time-series`](/transactional/api) API calls. Tag-based stats are kept indefinitely and are viewable for the lifetime of the account; metadata stats in **Outbound Activity** are only viewable for 30 days. 
+
+## Tags
+
+Tags help you search activity, compare stats, and more. They are generated one of two ways in Mailchimp Transactional: by the user, or by the system. Most user-generated tags are created through API calls or custom SMTP headers, though you can also manually manage your tags directly in the app. 
+
+### Add tags
+
+When you send an email, you can add tags to your [API call](/transactional/api). For example, to add `order-confirmation` and `order-shipped` to your list of tags, add the array:
+
+```json
+"tags": [
+            "order-confirmation",
+            "order-shipped"
+        ]
+```
+
+With SMTP, you can add tags to your emails with the [`X-MC-Tags`](/transactional/docs/smtp-integration/#x-mc-tags) header.
+
+Once you’ve created them, these tags will show up in the [**Tags**](https://mandrillapp.com/tags) section of the app.
+
+<Note>
+**Note: **Stats are accumulated using tags, but Mailchimp Transactional stores 1,000 user-generated tags per account, so tags should not be unique for every message or change often. Tags should be 50 characters or less. Any tags starting with an underscore are reserved for internal use.
+</Note>
+
+### Delete tags
+
+You can delete a tag manually in the [**Tags**](https://mandrillapp.com/tags) section of the app; alternatively, you can use the [`tags/delete`](/transactional/api) endpoint in the Transactional API. 
+
+Deleting a tag cannot be undone, and doing so will also delete all aggregate stats collected for the tag. If new emails are sent with a deleted tag, that tag will be recreated—you’ll need to make sure you’ve stopped sending with the tag before deleting it.
+
+### System-generated tags
+
+Mailchimp Transactional also labels emails with system-generated tags: sender, any template used, and API key. You can filter your [**Outbound Activity**](https://mandrillapp.com/activity) by these system-generated tags using the **Tagged** drop-down menu for template and API key, and the **From** drop-down menu for sender. These system-generated tags cannot be searched in **Outbound Activity** queries. 
+
+### Tag reputation 
+
+Tags you create will be displayed on the [**Tags**](https://mandrillapp.com/tags) page, alongside each tag’s reputation. If your account is experiencing [reputation problems](/transactional/docs/reputation-rejections/#reputation-and-hourly-quota), it’s worth checking individual tag reputations—they might indicate what type of emails are causing these issues. For example, you might see that only emails tagged `password_reset` are getting spam complaints, and you could investigate those messages and adjust as needed. 
+
+## Metadata
+
+Mailchimp Transactional lets you attach custom, individualized metadata to messages, which you can integrate into your application’s data model. Metadata is searchable, and it’s included with webhook events and activity CSV exports.
+
+### Formatting
+
+Metadata format differs slightly whether you’re sending with SMTP or the API, but there are a few general rules. Key names should include only alphanumeric characters and underscores, though names cannot start with an underscore. Field names can contain spaces, but Mailchimp doesn’t support searching for field names with spaces or non-alphanumeric characters.
+
+Regardless of how you send your message, the following rules apply:
+
+- For each message, metadata is limited to 250 bytes of JSON-encoded data.
+- Nested data structures are not supported.
+- Values should be limited to scalar types (numbers, strings, Boolean values, and null).
+
+With SMTP, include the [`X-MC-Metadata`](/transactional/docs/smtp-integration/#x-mc-metadata) header with a JSON-encoded set of key–value pairs as the value. For example:
+
+```json
+X-MC-Metadata: { "user_id": "45828", "location_id": "111" }
+```
+
+Via the API, include metadata as part of the message parameter with the [`messages/send`](/transactional/api) or [`messages/send-template`](/transactional/api) endpoints. For example, a payload with metadata included might look like this:
+
+```json
+{
+    "key": "example key",
+    "message": {
+        "html": "example html",
+        "subject": "example subject",
+        "from_email": "message.from_email@example.com",
+        "to": [
+            {
+                "email": "recipient_email",
+                "name": "recipient_name"
+            }
+        ],
+        "metadata": {
+            "user_id": "45829",
+            "location_id": "111"
+        }
+    }
+}
+```
+
+### Recipient-specific metadata
+
+The previous examples add metadata for all recipients of a message, but you can also individualize the metadata for each recipient.
+
+With SMTP, include a `_rcpt` key in the encoded JSON object to designate which recipient the metadata should apply to. Via the API, use the `recipient_metadata` parameter to designate the recipient and their corresponding values. 
+
+<Note>
+**Note**: Metadata that does not specify a recipient will be applied globally to all recipients of the message. Per-recipient keys take precedence over global keys with the same name.
+</Note>
+
+For example, we’ll send to three recipients—foo@example.com, bar@example.com, and baz@example.com—but we won’t include recipient-specific metadata for baz@example.com.
+
+With SMTP: 
+
+```
+X-MC-Metadata: { "group_id": "users_active" }
+X-MC-Metadata: { "_rcpt": "foo@example.com", "user_id": "123" }
+X-MC-Metadata: { "_rcpt": "bar@example.com", "user_id": "456" }
+```
+
+With the API:
+
+```json
+...
+       "metadata": {
+            "group_id": "users_active"
+        },
+        "recipient_metadata": [
+            {
+                "rcpt": "foo@example.com",
+                "values": {
+                    "user_id": "123"
+                }
+            },
+           {
+                "rcpt": "bar@example.com",
+                "values": {
+                    "user_id": "456"
+                }
+            }
+        ]
+...
+```
+
+The following metadata will be stored:
+
+| Recipient | group_id | user_id |
+| --- | --- | --- |
+| foo@example.com | users_active | 123 |
+| bar@example.com | users_active | 456 |
+| baz@example.com | users_active | null |
+
+Because the global metadata does not include a `user_id` field and no per-recipient metadata was defined for baz@example.com, that recipient’s metadata doesn’t have a value for the `user_id` field.
+
+<Note>
+**Note**: When merging global metadata with per-recipient metadata, each recipient’s final, merged metadata must still be below the 250-byte encoded size limit. If a recipient’s merged metadata exceeds this limit, the metadata for that recipient will be discarded.
+</Note>
+
+### Configure metadata fields
+
+By default, message metadata is included with webhook calls—but not in your search index. To enable searching and reporting on metadata, navigate to **Settings** and then [**Custom Metadata**](https://mandrillapp.com/settings/custom-metadata)** **and enter the keys Mailchimp Transactional should add to its search index. What you enter in Field Name should match exactly what you’re naming the field in your API call or SMTP header.
+
+For example, if you’re sending signup confirmation messages with a unique username in each message’s metadata, you might find it useful to add that username as a custom metadata field and make it searchable from your Outbound Activity.
+
+<Note>
+**Note**: When you add or remove a custom metadata field, the change will take effect immediately for new messages; Mailchimp will also process your previously sent messages to apply the change to them. Depending on the size of your account, this can take some time.
+</Note>
+
+In addition to adding custom metadata to your search index, you can also define a custom template (even including other metadata) to determine how the metadata appears in your Outbound Activity. For example, if you have a `user_id` field and a `username` field, you could enter the following in View Template to build a link to the user’s profile page:
+
+`<a href="http://example.com/user/{{metadata.user_id}}">{{metadata.username}}</a>`
+
+You can reference any custom metadata field by prefixing its name with `metadata`. In addition to values namespaced under `metadata`, the following properties are also available in metadata view templates for all messages:
+
+| Property | Description |
+| --- | --- |
+| `name` | the current field’s name, e.g., `user_id` |
+| `value` | the current field’s value, e.g., `123456`, assuming the `user_id` for the current message is 123456 |
+| `email` | the message recipient’s email address |
+| `subject` | the message’s subject |

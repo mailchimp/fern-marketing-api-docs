@@ -1,3 +1,129 @@
-# Transactional SMS
+---
+title: Transactional SMS
+description: Learn how to configure transactional sms
+---
 
-Learn how to send transactional SMS messages using the Mailchimp Transactional API alongside your email sending.
+
+
+## The basics
+
+Transactional SMS messages offer a direct and immediate way to communicate critical information to users. Unlike marketing SMS messages, transactional SMS messages are expected and often crucial for a user's interaction with a service or product.
+
+ Examples of Transactional SMS messages:
+
+- Order Confirmations and Shipping Updates: Instantly notify customers about their purchase and provide real-time tracking information.
+- Appointment Reminders: Reduce no-shows by sending timely reminders for scheduled appointments.
+- Password Resets/Account Verifications: Provide quick methods for users to regain access or confirm their identity.
+- Two-Factor Authentication (2FA): Sending one-time passcodes for login verification.
+- Service Outage Notifications: Alert users to unexpected downtime or service disruptions, demonstrating transparency and proactive communication.
+- Status Updates: Deliver immediate notifications on delays, changes, or cancellations.
+- Payment Confirmations: Reassure users their payments have been processed successfully.
+- Delivery Notifications: Inform recipients when their package has been delivered.
+
+To sign up for Mailchimp Transactional and send transactional SMS messages, you need:
+
+- An active, paid, Standard or higher Mailchimp account
+- An active text messaging credit plan and a designated sending number approved for your account.
+
+You can [submit a SMS marketing application](https://mailchimp.com/help/set-up-your-sms-marketing-program/?_gl=1*1xmgqak*_up*MQ..*_gs*MQ..&gclid=CjwKCAjwlOrFBhBaEiwAw4bYDcxVp4dg6C6GY9QE3I6euXcHFzPIDo3YvAfeRzHZ7LTHhSiGa0F5DRoCg_QQAvD_BwE&gclsrc=aw.ds&gbraid=0AAAAADh1Fp08-HhUOb_Mfg-ZoakwPG80N#Submit_your_SMS_Marketing_application) and purchase SMS credits from the [SMS overview page](https://login.mailchimp.com/?referrer=%2Fsms%2F&_gl=1*1xmgqak*_up*MQ..*_gs*MQ..&gclid=CjwKCAjwlOrFBhBaEiwAw4bYDcxVp4dg6C6GY9QE3I6euXcHFzPIDo3YvAfeRzHZ7LTHhSiGa0F5DRoCg_QQAvD_BwE&gclsrc=aw.ds&gbraid=0AAAAADh1Fp08-HhUOb_Mfg-ZoakwPG80N), the [SMS settings page](https://login.mailchimp.com/?referrer=%2Fsms%2Fsettings%2F&_gl=1*ci3fic*_up*MQ..*_gs*MQ..&gclid=CjwKCAjwlOrFBhBaEiwAw4bYDcxVp4dg6C6GY9QE3I6euXcHFzPIDo3YvAfeRzHZ7LTHhSiGa0F5DRoCg_QQAvD_BwE&gclsrc=aw.ds&gbraid=0AAAAADh1Fp08-HhUOb_Mfg-ZoakwPG80N), or the SMS editor in Mailchimp.
+
+## Programs and sending numbers
+
+Transactional SMS messages may be sent from programs tied to your account. You must specify the sending number to be used for an individual transactional send. You are responsible for your configuration and for ensuring that each message is sent from the program and the sending number for which the contact provided consent.
+
+## SMS contact lists
+
+Contact lists cannot be uploaded or stored in Mailchimp Transactional. Your application's database should serve as the source of truth for user emails, SMS messages, and contact lists. You pass that information in your API request when you’re ready to send an SMS.
+
+## Transactional SMS API consent field
+
+SMS consent is expressed, verifiable permission by an individual to receive transactional text messages from you. Transactional SMS requires consent before you can send text messages to customers. You’re responsible for obtaining consent in compliance with applicable laws.
+
+Consent isn't only a common courtesy. It's required by [Mailchimp's Standard Terms of Use](https://mailchimp.com/legal/terms/). Also keep in mind that email consent is different from SMS consent. To send text messages with Mailchimp, you need to obtain SMS consent from your contacts.
+
+Using the `consent` field, you can identify the type of transactional program for which you have obtained consent:
+
+- onetime - You have obtained consent from the recipient to send them one informational SMS message.
+- recurring - You have obtained consent from the recipient to send them a series of informational messages that are sent over a period of time.
+
+In this scenario, the recipient is sent a confirmation text first. This confirmation only happens on the first initial message of the series.
+
+- recurring-no-confirm - You have obtained consent from the recipient to send them a series of informational messages **and **have already sent the recipient a confirmation message.
+
+Mailchimp Transactional SMS provides tools to help you send informational/transactional SMS messages. You, as the API user, are solely responsible for ensuring that your use of these tools and your methods of collecting, recording, and managing consent comply with all applicable laws and regulations in the jurisdictions where your contacts reside. It is your responsibility to accurately map the consent you have obtained from individuals to the appropriate Mailchimp Transactional SMS consent type.
+
+## Sending messages
+
+To start, you’ll need to navigate to the [**Settings**](https://mandrillapp.com//settings) page and set up an API key.  Find out more about setting up an API key at [Transactional API Quick Start](https://mailchimp.com/developer/transactional/guides/quick-start/#generate-your-api-key).
+
+All API URLs listed in this documentation for SMS messages are referring to  the Mailchimp Transactional API, v1.1 and the [send-sms endpoint](https://mailchimp.com/developer/transactional/api/messages/send-sms-message/).
+
+## Unsubscribes
+
+There are 3 ways to unsubscribe a phone number:
+
+- `STOP` events will be recorded and used to prevent users from sending to the same phone number again, using the Rejection Denylist.
+- Messages sent from an alphanumeric sender will automatically include an unsubscribe link.
+- Senders can manually add a phone number to the Mailchimp Transactional Rejection Denylist in your account to temporarily or indefinitely unsubscribe a phone number.
+
+When creating rejects, use the permanent unsubscribe option to prevent the recipient from receiving any future messages. 
+
+Attempts to send to an unsubscribed number will result in the API call responding with a `reject` response instead of `sent`.
+
+## Tags and metadata
+
+_Tags_ are great for labeling broad categories of messages, like welcome SMS messages. The content for these messages may vary, but tags can help track data for a specific type of SMS message over time.
+
+_Metadata_ is generally better for managing more user-specific information, like a user ID from your system. Metadata information is returned in webhooks and is searchable in Outbound Activity, so you can tie certain information back to data in your own system.
+
+To assign tags or metadata to an SMS send, use the `tag` and `metadata` parameter of the [send-sms endpoint](https://mailchimp.com/developer/transactional/api/messages/send-sms-message/).
+
+You can filter both tags and metadata via the **View Stats By** drop-down menu on your **Dashboard**, or by using the `/messages/search` and `/messages/search-time-series` endpoints. We keep tag-based stats indefinitely; you can view them for the lifetime of the account. You can only view metadata stats in Outbound Activity for sends made in the last 30 days.
+
+## Subaccounts
+
+To find out more about subaccounts, including how to create one, see [**Subaccounts**](https://mailchimp.com/developer/transactional/docs/subaccounts/#create-a-subaccount).
+
+To assign a subaccount to an SMS send, use the `subaccount` parameter of the [send-sms endpoint](https://mailchimp.com/developer/transactional/api/messages/send-sms-message/).
+
+## Reporting and analytics
+
+SMS sends will be logged in the Outbound Activity page alongside email sends. You can filter for SMS sends specifically using tags. SMS sends will automatically be tagged `channel: sms`. You’ll also be able to see click behavior for SMS sends if your SMS message contains a URL. 
+
+Reporting features like tags, custom metadata, and subaccounts work with SMS sends, so you can filter on these as well.
+
+## Webhooks
+
+Webhooks allow your application to receive information about SMS events as they occur and respond in a way that you define, similar to how [webhooks can be used for email events](https://mailchimp.com/developer/transactional/docs/webhooks/).
+
+**Add a new webhook**
+
+To set up a webhook, follow the steps located [here](https://mailchimp.com/developer/transactional/docs/webhooks/#add-a-new-webhook), but choose the events under the SMS section that you would like the webhook to listen for.
+
+The following events are available for SMS sends:
+
+- Message is processing
+- Message is sent
+- Message is canceled
+- Message is opened
+- Message recipient unsubscribes
+- Message is queued
+- Message is delivered
+- Message is failed
+- Message is clicked
+
+**Format**
+
+Every Mailchimp Transactional webhook uses the same general data format, regardless of the event type. The webhook request is a standard HTTP POST request with a single parameter: ‘mandrill_events’.
+
+For SMS events, the response will still follow a similar format as described [here](https://mailchimp.com/developer/transactional/docs/webhooks/#detailed-webhook-format-responses), with some differences. There will be a “channel” parameter that will help differentiate between a SMS message and an email message.
+
+## Reputation
+
+If your SMS Marketing program doesn’t comply with our [Terms of Use](https://mailchimp.com/legal/terms/), [Acceptable Use Policy](https://mailchimp.com/legal/acceptable_use/), [Additional Terms For Transactional Email (formerly Mandrill)](https://mailchimp.com/legal/additional-terms/#For_Transactional_Email_%28formerly_Mandrill%29), and applicable laws and carrier requirements, your account may be suspended or terminated.
+
+Additionally, a rising rate of `STOP` events could lead to account suspensions.
+
+<Note>
+Mailchimp offers tools and information as a resource, but we don’t offer legal advice. We recommend you contact your legal counsel to ensure you are using the services in compliance with all applicable laws.
+</Note>

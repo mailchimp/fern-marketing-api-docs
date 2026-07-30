@@ -1,0 +1,8 @@
+---
+title: Ensuring codegen references latest Swagger spec
+tags: ["Marketing API"]
+---
+
+We updated our [Swagger spec](https://api.mailchimp.com/schema/3.0/Swagger.json?expand) to make it match the [spec](https://raw.githubusercontent.com/mailchimp/mailchimp-client-lib-codegen/master/spec/marketing.json) used in the [codegen repo](https://github.com/mailchimp/mailchimp-client-lib-codegen).
+
+We use a Swagger spec to produce API client libraries from the codegen repo. Doing this required tweaking the Swagger spec that’s automatically produced by our internal API definitions, so there was some drift between the spec in the codegen repo and the one we produce automatically. We backported the changes, so our automatically-produced spec matched the one in the codegen repo. Now that this work is done, we can rely on the automatically produced spec for client libraries.

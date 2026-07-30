@@ -1,3 +1,121 @@
-# The Rules Engine
+---
+title: The Rules Engine
+description: Change sending behavior based on conditional rules that you create.
+---
 
-Learn how to use the Mailchimp Transactional Rules Engine to automate behavior based on recipient actions, message metadata, or custom conditions.
+
+
+## The basics
+
+Rules are a flexible way to change sending behavior based on searchable criteria in your Mailchimp Transactional account. The rules engine lets you take specific actions when events or messages meet criteria you’ve set.
+
+This documentation covers how rules work and how to create one in the rules engine. For a full range of examples, see the [Change Sending Behavior with the Rules Engine](/transactional/guides/change-behavior-rules-engine) guide.
+
+### Rule format
+
+Every rule starts with the basic logic:
+
+> **if** any email matches this **then** do that
+
+But in the rules engine, there are actually three components to every rule: the trigger, the condition, and the action. For example:
+
+> **if** an email is sent with a subject line that includes the term “event,” **then** apply the custom events template
+
+The trigger: sending an email. The condition: the subject line must have the word “event” in it. The action: apply the events template. 
+
+Rules can have multiple criteria, and those criteria can contain wildcard pattern matches. Mailchimp Transactional supports the [fnmatch](https://docs.python.org/3/library/fnmatch.html) format for wildcard pattern matching. 
+
+For example, if you want to create a new rule that looks for emails containing “QA” anywhere in the subject line, your rule condition would look like this:
+
+> **subject line** matches ***QA***
+
+But if you want to create a new rule that looks for any emails containing “[QA]” in the subject line, you need to escape the brackets. Your rule condition would look like this:
+
+> **subject line** matches ***\[QA\]***
+
+### Triggers
+
+When you navigate to the rules engine in your Mailchimp Transactional account, you’ll be able to see the full range of message triggers you can use to start your rule: 
+
+- is sent
+- is delayed
+- is bounced
+- is soft-bounced
+- is opened
+- is clicked
+- recipient unsubscribes
+- is marked as spam
+- is rejected
+- is inbound
+
+### Conditions
+
+Each rule can have one or more conditions:
+
+- _recipient’s email_ `matches` or `does not match`
+- _sender's email_ `matches` or `does not match`
+- _subject line_ `matches` or `does not match`
+- _tags_ `contains` or `does not contain`
+- _template_ `is` or `is not`
+- _api key_ `is` or `is not`
+- _matched rules_ `contains` or `does not contain`
+- _random sample_ %
+
+<Note>
+**Note: **When you create an API key, we ask for an optional description. The description can be left blank, but if you do so, it won’t show up in any dropdowns when creating a rule. Manage API keys on the [**SMTP & API page**](https://mandrillapp.com/settings/index) in your Mailchimp Transactional account.
+</Note>
+
+### Actions
+
+Each rule can take one or more actions: 
+
+- do nothing
+- send event to webhook
+
+For sent messages, rules can take the following additional actions:
+
+- reject message
+- add google analytics
+- add tag
+- set template
+- set open tracking
+- set click tracking
+- set text generation from HTML
+- set HTML generation from text
+- set CSS inlining
+- set content logging
+- set subaccount
+- set merge tag language
+- add unsubscribe footer
+
+## Create a rule
+
+To create a new rule in your Mailchimp Transactional account:
+
+1. Navigate to [**Rules**](http://mandrillapp.com/rules)
+2. Click **Add Rule**
+3. Add a descriptive name for your rule
+4. Set the trigger for your rule and set your if/then condition(s)
+5. Click **Submit**
+
+Before you save a new rule, you’ll see the approximate number of emails you sent in the past seven days that match the rule’s criteria, but the rule won’t affect messages you’ve already sent.
+
+<Note>
+**Note**: If you’ve set up a rule that uses pure wildcards (`*`), leading wildcards (e.g., `*the`), or null values, it may skew the number of matching emails that Mailchimp Transactional can detect.
+</Note>
+
+## Structuring your rules
+
+Rules can affect—and are affected by—the content of your messages, so it’s important that they’re applied in a consistent order.
+
+For example, you might have a rule that matches emails from a specific sender and sets the template to my-template. You may have another rule that matches emails using my-template and adds the tag my-tag. Whether or not the email will receive my-tag depends on whether the rule that adds the template is applied before or after the rule that adds the tag. 
+
+To help control this, Mailchimp Transactional lets you sort your rules. Drag rules up or down depending on how you want to order them, and they will be applied consistently from the top of the list to the bottom. 
+
+### Nesting
+
+Nested rules let a rule refer to other rules in its conditions. You can use nested rules to avoid repetition if the same conditions are duplicated across multiple rules. 
+
+For example, here are nested rules that send Gmail password reset emails to a webhook:
+
+![Nested rules](https://images.ctfassets.net/cxsachrr7h0p/2MDpBeBdSyM7PN5gdilRZG/c032de3b446740d91cb5d2bdd6d899f2/therulesengine-nested.png)

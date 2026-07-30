@@ -1,0 +1,8 @@
+---
+title:  Returning a 410 from an audience webhook will disable it
+tags: ["Marketing API"]
+---
+
+Prior to this change, 410 responses from audience webhooks were treated like any other error—we retried three times for the given change, and kept trying for other changes to the audience. Now a webhook that returns 410 will be disabled with no retries, and for all future changes to the audience. The Webhook entry on the Webhooks page in your [Audience settings](https://us16.admin.mailchimp.com/lists/) will indicate that it’s been disabled.
+
+410 means a resource is gone and its absence is likely to be permanent. Properly interpreting this response means less load on our servers and the servers that are hosting the webhook. Additionally, this allows webhook implementers to disable calls to their webhook without needing to make an API call to explicitly do so.

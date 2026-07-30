@@ -1,5 +1,439 @@
 ---
 title: Synchronize Audience Data with Webhooks
+description: Keep your data store in sync with your Mailchimp audience via webhooks.
 ---
 
-Content coming soon.
+
+
+## At a glance
+
+Webhooks are a helpful tool that you can use to collect information about audience changes in Mailchimp as they happen. By entering a valid URL that’s set up to accept HTTP POST requests, you can receive updates on subscriptions, changed email addresses, campaign sending, and more.  
+
+You can use webhooks to:
+
+- Alert your application when a campaign has finished sending
+- Keep your client’s profile data in sync with your own database
+- Detect when an email address starts bouncing
+
+For the purposes of this guide, we run a messaging app for vegetarians called Chatatouille. We use Mailchimp for our marketing emails, and we want to keep our application’s database in sync with our Mailchimp audience data. We’ll create a webhook that updates our database every time a user subscribes or unsubscribes from our mailing list.
+
+## What you’ll need
+
+- A Mailchimp account
+- An audience you would like to use a webhook with
+- A callback URL for your application that can accept HTTP POST requests
+- [Your API key and server prefix](/marketing/guides/quick-start/#generate-your-api-key)
+
+## Set up your callback URL
+
+In order to create our webhook, we need to provide a callback URL that accepts HTTP POST requests. In the sample code below, you’ll see an example of what your application code might look like, but if you just want to test out a webhook to see what the payloads look like without setting up and deploying the webhook handler in your application, you can also use a service like [RequestBin](https://requestbin.com/) to stand up a callback URL without deploying anything.
+
+When a webhook triggers based on your configured settings, Mailchimp sends an HTTP POST request to the URL you specified. If the URL is unavailable or takes more than 10 seconds to respond, the request is canceled and the system will try again later. Retries happen at increasing intervals over the course of 75 minutes. Excessive or unresponsive webhook requests may be dropped or disabled at Mailchimp’s discretion.
+
+<Note>
+**Note**: Mailchimp strongly recommends using an HTTPS URL as your webhook callback URL. You can further increase the security of your webhook setup by using a URL containing a hard-to-guess secret and by checking this secret in your callback code.
+</Note>
+
+## Create a new webhook
+
+There are two ways to set up our webhook: in the Mailchimp web app, or [through the API](/marketing/api). In this guide, we’ll walk through setting it up using the Mailchimp app.
+
+To create a webhook: 
+
+1. Log into Mailchimp and navigate to [**Audience**](https://admin.mailchimp.com/audience/)****
+2. Select the audience you want to work with in the the **Current Audience** dropdown
+3. Click the **Manage Audience** dropdown button and select **Settings**
+4. On the Settings page, click **Webhooks**
+5. Click the **Create New Webhook** button
+6. In the Callback URL field, add the URL of the integration or application where you want to send webhook requests—this URL will receive data about your Mailchimp audience
+7. Select the boxes next to each update type to choose the events that will trigger your webhook—in this guide, we’ll choose **Subscribes** and **Unsubscribes**
+8. Click **Save **to save your new webhook
+
+After you click Save, Mailchimp displays a **signing secret** for your webhook.
+
+Signature verification is optional — if you don't plan to verify incoming deliveries, you can safely dismiss this dialog and skip the Verifying Webhook Signatures section below.
+
+If you do want to verify signatures, copy the secret now and store it somewhere secure (for example, in your application's environment variables or a secrets manager). **The secret is shown exactly once and cannot be retrieved later.** If you dismiss without saving it, you'll need to delete the webhook and create a new one to get a new secret.
+
+The webhook will now notify your application of subscribe and unsubscribe events as they occur.
+
+## API Creation
+
+You can also create list webhooks programmatically via the API. The create response includes a `signing_secret` field with the one-time plaintext value — the same "shown exactly once" contract applies. See the [Add Webhook API reference](https://mailchimp.com/developer/marketing/api/list-webhooks/add-webhook/) for request/response details.
+
+## Handling the webhook response in your application
+
+Now that we have the webhook set up to alert us to changes in subscription status, we need to handle the callback data in our application. (This code should be accessible via the webhook URL you set up previously.)
+
+The body of the webhook request is sent as `application/x-www-form-urlencoded` data. The **Subscribes **event, ingested and parsed as JSON, will look something like this: 
+
+```json
+{
+  "type": "subscribe",
+  "fired_at": "2009-03-26 21:35:57",
+  "data": {
+    "id": "8a25ff1d98",
+    "list_id": "a6b5da1054",
+    "email": "api@mailchimp.com",
+    "email_type": "html",
+    "ip_opt": "10.20.10.30",
+    "ip_signup": "10.20.10.30",
+    "merges": {
+      "EMAIL": "api@mailchimp.com",
+      "FNAME": "Mailchimp",
+      "LNAME": "API",
+      "INTERESTS": "Group1,Group2"
+    }
+  }
+}
+```
+
+The body of the webhook request for the **Unsubscribes **event, ingested and parsed as JSON, will look something like this:
+
+```json
+{
+  "type": "unsubscribe",
+  "fired_at": "2009-03-26 21:40:57",
+  "data": {
+    "action": "unsub",
+    "reason": "manual",
+    "id": "8a25ff1d98",
+    "list_id": "a6b5da1054",
+    "email": "api+unsub@mailchimp.com",
+    "email_type": "html",
+    "ip_opt": "10.20.10.30",
+    "campaign_id": "cb398d21d2",
+    "merges": {
+      "EMAIL": "api+unsub@mailchimp.com",
+      "FNAME": "Mailchimp",
+      "LNAME": "API",
+      "INTERESTS": "Group1,Group2"
+    }
+  }
+}
+```
+
+Now that we know what the webhook data will look like, we’ll write the code that will handle it on our server. For the purposes of this example, imagine that fakeDB is a package with functions we use to interact with Chatatouille’s database.
+
+The code could look something like this:
+
+<CodeBlocks>
+```javascript title="Node"
+const express = require("express");
+const bodyParser = require("body-parser");
+// this is a stand-in for the code you'd use to write to your own database
+const fakeDB = require("fakeDB");
+
+const app = express();
+
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.post("/", (req, res) => {
+ const { type, data } = req.body;
+ if (type === "subscribe") {
+   fakeDB.subscribeUser(data);
+ } else if (type === "unsubscribe") {
+   fakeDB.unsubscribeUser(data.id);
+ }
+});
+
+app.listen(port, () =>
+ console.log(`Listening at http://localhost:3000`)
+);
+```
+
+```php title="PHP"
+<?php
+
+// this is a stand-in for the code you'd use to write to your own database
+function subscribeUser($id) {}
+function unsubscribeUser($id) {}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $type = $_POST['type'];
+  $id = $_POST['data']['id'];
+
+  if ($type === 'subscribe') {
+    subscribeUser($id);
+  } else if ($type === 'unsubscribe') {
+    unsubscribeUser($id);
+  }
+}
+```
+
+```ruby title="Ruby"
+require 'sinatra'
+
+configure do
+  set :port, 3000
+end
+
+
+post '/' do
+  type, data = params['type'], params['data']
+
+  if type == 'unsubscribe'
+    fake_db.unsubscribe_user(data['id'])
+  elsif type == 'subscribe'
+    fake_db.subscribe(data)
+  end
+end
+```
+
+```python title="Python"
+from flask import Flask,request
+from operator import itemgetter
+
+app = Flask(__name__)
+
+@app.route('/', methods=['POST'])
+def index():
+  reqType= itemgetter('type')(request.get_json())
+  reqData= itemgetter('data')(request.get_json())
+  if reqType == "subscribe" :
+   fakeDB.subscribeUser(reqData)
+  elif reqType == "unsubscribe" :
+   fakeDB.unsubscribeUser(reqData['id'])
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')
+```
+</CodeBlocks>
+
+## Test the webhook
+
+Now that we have the code set up, we’ll test it using the Mailchimp app:
+
+1. Navigate to [**Audience**](https://admin.mailchimp.com/lists/members/) and select the audience you’d like to add a test member to
+2. In the **Add Contacts** dropdown, select **Add a Subscriber**
+3. Fill in the input fields with information for your test email account
+4. Check the checkbox for “This person gave me permission to email them” if you’d like to skip the step of confirming the subscription manually
+5. Hit **Subscribe**
+6. Your server should receive the webhook request and your database should be updated accordingly
+
+If everything’s working, your webhook is good to go!
+
+## Verifying webhook signatures
+
+When you enable HMAC signing on a webhook, Mailchimp includes a signature in every delivery so your endpoint can confirm the request came from Mailchimp and hasn't been tampered with in transit.
+
+## How it works
+
+1. When you create a signed webhook, Mailchimp generates a **signing secret** and returns it in the API response. Copy and store this value securely — it is shown exactly once and cannot be retrieved later. If you lose it, delete and recreate the webhook.
+2. For every delivery, Mailchimp computes `HMAC-SHA256(key=signing_secret, message="{timestamp}.{raw_body}")` where `{timestamp}` is a Unix timestamp (seconds) and `{raw_body}` is the exact bytes of the request body.
+3. Mailchimp sends the result in the `X-Mailchimp-Signature` header in the format `t={timestamp},v1={hex_signature}`.
+4. Your endpoint reconstructs the same signed string, recomputes the HMAC, and compares it to the value in the header using a **timing-safe** comparison function.
+5. Reject any delivery where the signatures don't match, or where the timestamp is more than 5 minutes old (to prevent replay attacks).
+
+The header format is: `X-Mailchimp-Signature: t=1718000000,v1=a3f2c1...`
+
+<Note>
+**Note:** Always verify the signature against the **raw, unmodified request body**. Parsing the body as JSON or URL-decoding it before verification may change the bytes and cause a mismatch.
+
+Use a constant-time comparison function (e.g., `hash_equals`, `hmac.compare_digest`, `crypto.timingSafeEqual`). A standard equality check leaks timing information that can be exploited.
+</Note>
+
+<CodeBlocks>
+```php title="PHP"
+<?php
+
+function verifyMailchimpWebhook(
+    string $signingSecret,
+    string $signatureHeader,
+    string $rawBody,
+    int $toleranceSeconds = 300
+): void {
+    if (!preg_match('/\bt=(\d+)\b/', $signatureHeader, $tsMatch)
+        || !preg_match('/\bv1=([0-9a-f]{64})\b/', $signatureHeader, $sigMatch)) {
+        throw new RuntimeException('Missing or malformed X-Mailchimp-Signature header.');
+    }
+
+    $timestamp   = (int) $tsMatch[1];
+    $receivedSig = $sigMatch[1];
+
+    if (abs(time() - $timestamp) > $toleranceSeconds) {
+        throw new RuntimeException('Webhook timestamp is outside the tolerance window.');
+    }
+
+    $expectedSig = hash_hmac('sha256', $timestamp . '.' . $rawBody, $signingSecret);
+
+    if (!hash_equals($expectedSig, $receivedSig)) {
+        throw new RuntimeException('Webhook signature verification failed.');
+    }
+}
+
+$signingSecret   = getenv('MAILCHIMP_WEBHOOK_SECRET');
+$signatureHeader = $_SERVER['HTTP_X_MAILCHIMP_SIGNATURE'] ?? '';
+$rawBody         = file_get_contents('php://input');
+
+try {
+    verifyMailchimpWebhook($signingSecret, $signatureHeader, $rawBody);
+} catch (RuntimeException $e) {
+    http_response_code(400);
+    exit;
+}
+
+$event = json_decode($rawBody, true);
+```
+
+```javascript title="Node"
+const crypto = require('crypto');
+const http = require('http');
+
+function verifyMailchimpWebhook(signingSecret, signatureHeader, rawBody, toleranceSeconds = 300) {
+  const tsMatch  = signatureHeader.match(/\bt=(\d+)\b/);
+  const sigMatch = signatureHeader.match(/\bv1=([0-9a-f]{64})\b/);
+
+  if (!tsMatch || !sigMatch) {
+    throw new Error('Missing or malformed X-Mailchimp-Signature header.');
+  }
+
+  const timestamp   = parseInt(tsMatch[1], 10);
+  const receivedSig = sigMatch[1];
+
+  if (Math.abs(Math.floor(Date.now() / 1000) - timestamp) > toleranceSeconds) {
+    throw new Error('Webhook timestamp is outside the tolerance window.');
+  }
+
+  const expectedSig = crypto
+    .createHmac('sha256', signingSecret)
+    .update(`${timestamp}.${rawBody}`)
+    .digest('hex');
+
+  const expected = Buffer.from(expectedSig, 'hex');
+  const received = Buffer.from(receivedSig, 'hex');
+
+  if (expected.length !== received.length || !crypto.timingSafeEqual(expected, received)) {
+    throw new Error('Webhook signature verification failed.');
+  }
+}
+
+http.createServer((req, res) => {
+  if (req.method !== 'POST') { res.writeHead(405).end(); return; }
+
+  const chunks = [];
+  req.on('data', chunk => chunks.push(chunk));
+  req.on('end', () => {
+    const rawBody = Buffer.concat(chunks);
+    try {
+      verifyMailchimpWebhook(
+        process.env.MAILCHIMP_WEBHOOK_SECRET,
+        req.headers['x-mailchimp-signature'] ?? '',
+        rawBody
+      );
+    } catch (err) {
+      res.writeHead(400).end('Invalid signature.');
+      return;
+    }
+
+    const event = JSON.parse(rawBody);
+    res.writeHead(200).end();
+  });
+}).listen(3000);
+```
+
+```python title="Python"
+import hashlib
+import hmac
+import json
+import os
+import re
+import time
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+def verify_mailchimp_webhook(
+    signing_secret: str,
+    signature_header: str,
+    raw_body: bytes,
+    tolerance_seconds: int = 300,
+) -> None:
+    ts_match  = re.search(r'\bt=(\d+)\b', signature_header)
+    sig_match = re.search(r'\bv1=([0-9a-f]{64})\b', signature_header)
+
+    if not ts_match or not sig_match:
+        raise ValueError('Missing or malformed X-Mailchimp-Signature header.')
+
+    timestamp    = int(ts_match.group(1))
+    received_sig = sig_match.group(1)
+
+    if abs(int(time.time()) - timestamp) > tolerance_seconds:
+        raise ValueError('Webhook timestamp is outside the tolerance window.')
+
+    signed_string = f'{timestamp}.'.encode() + raw_body
+    expected_sig  = hmac.new(signing_secret.encode(), signed_string, hashlib.sha256).hexdigest()
+
+    if not hmac.compare_digest(expected_sig, received_sig):
+        raise ValueError('Webhook signature verification failed.')
+
+
+class WebhookHandler(BaseHTTPRequestHandler):
+    def do_POST(self):
+        raw_body = self.rfile.read(int(self.headers['Content-Length']))
+        try:
+            verify_mailchimp_webhook(
+                os.environ['MAILCHIMP_WEBHOOK_SECRET'],
+                self.headers.get('X-Mailchimp-Signature', ''),
+                raw_body,
+            )
+        except ValueError:
+            self.send_response(400); self.end_headers(); return
+
+        event = json.loads(raw_body)
+        self.send_response(200); self.end_headers()
+
+HTTPServer(('', 3000), WebhookHandler).serve_forever()
+```
+
+```ruby title="Ruby"
+require 'json'
+require 'openssl'
+require 'rack'
+require 'rack/utils'
+require 'webrick'
+
+def verify_mailchimp_webhook(signing_secret, signature_header, raw_body, tolerance_seconds: 300)
+  ts_match  = signature_header.match(/\bt=(\d+)\b/)
+  sig_match = signature_header.match(/\bv1=([0-9a-f]{64})\b/)
+
+  raise 'Missing or malformed X-Mailchimp-Signature header.' unless ts_match && sig_match
+
+  timestamp    = ts_match[1].to_i
+  received_sig = sig_match[1]
+
+  raise 'Webhook timestamp is outside the tolerance window.' \
+    if (Time.now.to_i - timestamp).abs > tolerance_seconds
+
+  expected_sig = OpenSSL::HMAC.hexdigest('SHA256', signing_secret, "#{timestamp}.#{raw_body}")
+
+  raise 'Webhook signature verification failed.' \
+    unless Rack::Utils.secure_compare(expected_sig, received_sig)
+end
+
+app = lambda do |env|
+  req     = Rack::Request.new(env)
+  raw_body = req.body.read
+
+  begin
+    verify_mailchimp_webhook(
+      ENV.fetch('MAILCHIMP_WEBHOOK_SECRET'),
+      env['HTTP_X_MAILCHIMP_SIGNATURE'] || '',
+      raw_body
+    )
+  rescue RuntimeError
+    return [400, {}, ['Invalid signature.']]
+  end
+
+  event = JSON.parse(raw_body)
+  [200, {}, ['']]
+end
+
+Rack::Handler::WEBrick.run app, Port: 3000
+```
+</CodeBlocks>
+
+## More resources
+
+- [Create Your First Audience](https://mailchimp.com/developer/guides/create-your-first-audience)
+- [Webhooks API Reference](https://mailchimp.com/developer/api/marketing/list-webhooks)
+- [Marketing Fundamentals](/marketing/docs/fundamentals)

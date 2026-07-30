@@ -1,0 +1,8 @@
+---
+title: Obfuscated emails on the Unsubscribe page
+tags: ["Transactional"]
+---
+
+We changed the behavior of the unsubscribe merge tag to obfuscate the email address of the person who clicked the link. Instead of showing the entire address, the `md_email` parameter now displays the address as something like x****@x***.*** . 
+
+Previously, if a customer clicked an unsubscribe link, their email address was displayed on the Unsubscribe page in full. By obfuscating the email address, this change provides better security.

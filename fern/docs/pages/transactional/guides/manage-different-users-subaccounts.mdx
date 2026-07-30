@@ -1,3 +1,751 @@
-# Manage Different Users with Subaccounts
+---
+title: Manage Different Users with Subaccounts
+description: Monitor activity across multiple senders under a single Mailchimp Transactional account.
+---
 
-Learn how to use subaccounts to segment sending for different users, clients, or business units within a single Mailchimp Transactional account.
+
+
+## At a glance
+
+If you send emails on behalf of different clients or if you run multi-tenant systems to separate sending for different users, you can use subaccounts to manage reputation, activity, reports, and quotas across different senders under a single Mailchimp Transactional account.  
+
+You could use subaccounts in your application for a variety of reasons:
+
+- A tech agency offering transactional email to its clients wants to pay for one account but get separate API keys for each client
+- A multi-tenant application wants to allow customers to customize the emails it sends on their behalf
+- A large organization wants to segment usage by departments internally for better accounting
+
+You can create and manage subaccounts in the app or via the Transactional API. In this guide, we’ll focus on the API; for details about managing subaccounts in the app, see the [subaccounts docs](/transactional/docs/subaccounts).
+
+Let’s say we run a multi-tenant project management application that includes a transactional email element. We’ve been using Mailchimp Transactional, but it’s been difficult to keep track of how many emails our individual users are sending, or to limit them to different quotas. 
+
+We’ve decided to start using subaccounts, which will give us the granularity we need to handle these different client needs, and we’re going to implement subaccounts with our newest customer—Acme Widgets. We’ll add a subaccount for Acme, start sending emails, view their stats, and, when we (amicably!) part ways, eventually delete their subaccount.
+
+## What you’ll need
+
+- A Mailchimp Transactional account
+- [Your API key](/transactional/guides/quick-start/#generate-your-api-key)
+
+## Create a subaccount
+
+Acme Widgets has registered for a new free account in our app, so let’s get started.
+
+When a new client registers for a free account, we create a new subaccount. By default, subaccounts have their own [hourly quotas](/transactional/docs/reputation-rejections/#hourly-quota) that match that of the main account, but you can also set [a custom hourly quota](/transactional/docs/subaccounts/#custom-hourly-quotas)—any amount lower than the main hourly quota. 
+
+We’re starting Acme Widgets at a low custom hourly quota: 10 emails per hour. (Gotta incentivize premium signups somehow!) To do this via the API, our code might look like:
+
+<CodeBlocks>
+```bash title="cURL"
+curl -X POST \
+  https://mandrillapp.com/api/1.0/subaccounts/add \
+  --data-binary @- << EOF 
+{
+  "key": "YOUR_API_KEY",
+  "id": "UNIQUE_ACCOUNT_ID",
+  "name": "Acme Widgets",
+  "notes": "Free tier",
+  "custom_quota": 10
+}
+EOF
+```
+
+```javascript title="Node"
+const mailchimp = require("mailchimp_transactional")("YOUR_API_KEY");
+
+const newAccount = {
+  id: "UNIQUE_ACCOUNT_ID",
+  name: "Acme Widgets", // optional
+  notes: "Free tier", // optional
+  custom_quota: 10 // optional
+};
+
+async function run() {
+  const response = await mailchimp.subaccounts.add(newAccount);
+  console.log(
+    `Successfully created subaccount. This account’s status is ${
+      response.status
+    }`
+  );
+}
+
+run();
+```
+
+```php title="PHP"
+require_once('/path/to/mailchimp-transactional-php/vendor/autoload.php');
+
+function run($newAccount)
+{
+    try {
+        $mailchimp = new MailchimpTransactional\ApiClient();
+        $mailchimp->setApiKey("YOUR_API_KEY");
+        $response = $mailchimp->subaccounts->add($newAccount);
+        if(isset($response->status)){
+            echo "Successfully created subaccount. This account's status is " . $response->status;
+        }else{
+            echo "Could not create subaccount: <br>";
+            print_r($response);
+        }
+    } catch (Error $e) {
+        echo 'Error: ', $e->getMessage(), "\n";
+    }
+}
+
+$newAccount = [
+    "id" => "UNIQUE_ACCOUNT_ID_PHP4",
+    "name" => "Acme Widgets", // Optional
+    "notes" => "Free tier", // Optional
+    "custom_quota" => 10, // Optional
+];
+run($newAccount);
+```
+
+```ruby title="Ruby"
+require 'MailchimpTransactional'
+
+client = MailchimpTransactional::Client.new(ENV['YOUR_API_KEY'])
+
+new_account = {
+  id: "UNIQUE_ACCOUNT_ID",
+  name: "Acme Widgets", # optional
+  notes: "Free Tier", # optional
+  custom_quota: 10 # optional
+}
+
+begin
+  account = client.subaccounts.add(new_account)
+  puts account
+rescue MailchimpTransactional::ApiError => e
+  puts "Error: #{e}"
+end
+```
+
+```python title="Python"
+import mailchimp_transactional as MailchimpTransactional
+from mailchimp_transactional.api_client import ApiClientError
+
+mailchimp = MailchimpTransactional.Client('YOUR_API_KEY')
+
+newAccount = {
+  'id': "UNIQUE_ACCOUNT_ID",
+  'name': "Acme Widgets", # optional
+  'notes': "Free tier", # optional
+  'custom_quota': 10 # optional
+}
+
+def run():
+  try:
+    response = mailchimp.subaccounts.add(newAccount)
+    print("Successfully created subaccount. This account's status is: {}".format(response['status']))
+  except ApiClientError as error:
+    print("Subaccount cannot be created. This account's status is: {}".format(error.text['status']))
+
+run()
+```
+</CodeBlocks>
+
+You can also get started directly in the Mailchimp Transactional app: see the docs for instructions on [setting up a new subaccount](/transactional/docs/subaccounts/#create-a-subaccount) and [modifying its hourly quota](/transactional/docs/subaccounts/#custom-hourly-quotas).
+
+## Send email from a subaccount
+
+Now that our new subaccount is up and running, we’re ready to start sending email on behalf of Acme Widgets. You can either use the subaccount option in the API (see the relevant endpoint [here](/transactional/api)) or you can use the [`X-MC-Subaccount`](/transactional/docs/smtp-integration/#x-mc-subaccount) header if you’re sending via SMTP. Again, we’ll focus on the API.
+
+Since we’ve [already been sending messages](https://mailchimp.com/developer/guides/send-your-first-transactional-email) with Mailchimp Transactional, updating our code to send from a subaccount is simple—just add a `subaccount` key along with your request:
+
+<CodeBlocks>
+```bash title="cURL"
+curl -X POST \
+  https://mandrillapp.com/api/1.0/messages/send \
+  --data-binary @- << EOF 
+{
+  "key": "YOUR_API_KEY",
+   "message": {
+     "text": "This email was sent from a subaccount!",
+      "subject": "Subaccount test",
+      "from_email": "hello@example.com",
+      "to": [{ 
+        "email": "freddie@example.com",
+        "type": "to" 
+      }],
+      "subaccount": "UNIQUE_ACCOUNT_ID"
+    }
+}
+EOF
+```
+
+```javascript title="Node"
+const mailchimp = require("mailchimp_transactional")("YOUR_API_KEY");
+
+const message = {
+  from_email: "hello@example.com",
+  subject: "Subaccount test",
+  text: "This email was sent from a subaccount!",
+  to: [
+    {
+      email: "freddie@example.com",
+      type: "to"
+    }
+  ],
+  subaccount: "UNIQUE_ACCOUNT_ID"
+};
+
+async function run() {
+  const response = await mailchimp.messages.send({
+    message
+  });
+  console.log(response);
+}
+run();
+```
+
+```php title="PHP"
+require_once('/path/to/mailchimp-transactional-php/vendor/autoload.php');
+function run($message)
+{
+    try {
+        $mailchimp = new MailchimpTransactional\ApiClient();
+        $mailchimp->setApiKey("YOUR_API_KEY");
+        $response = $mailchimp->messages->send(["message" => $message]);
+        print_r($response);
+    } catch (Error $e) {
+        echo 'Error: ', $e->getMessage(), "\n";
+    }
+}
+
+$message = [
+    "from_email" => "hello@example.com",
+    "subject" => "Subaccount test",
+    "text" => "This email was sent from a subaccount!",
+    "to" => [
+        [
+            "email"=>"freddie@example.com",
+            "type"=>"to"
+        ]
+    ],
+    "subaccount"=>"UNIQUE_ACCOUNT_ID_PHP"
+];
+run($message);
+```
+
+```ruby title="Ruby"
+require 'MailchimpTransactional'
+
+client = MailchimpTransactional::Client.new(ENV['YOUR_API_KEY'])
+
+message = {
+  from_email: "hello@example.com",
+  subject: "Subaccount test",
+  text: "This email was sent from a subaccount!",
+  to: [
+    {
+      email: "freddie@example.com",
+      type: "to"
+    }
+  ],
+  subaccount: "UNIQUE_ACCOUNT_ID"
+}
+
+begin
+  msg_response = client.messages.send(message: message)
+  puts msg_response
+rescue MailchimpTransactional::ApiError => e
+  puts "Error: #{e}"
+end
+```
+
+```python title="Python"
+import mailchimp_transactional as MailchimpTransactional
+from mailchimp_transactional.api_client import ApiClientError
+
+mailchimp = MailchimpTransactional.Client('YOUR_API_KEY')
+message = {
+    "from_email": "manny@mailchimp.com",
+    "subject": "Hello world",
+    "text": "Welcome to Mailchimp Transactional!",
+    "to": [
+      {
+        "email": "freddie@example.com",
+        "type": "to"
+      }
+    ],
+    "subaccount": "UNIQUE_ACCOUNT_ID"
+}
+
+def run():
+  try:
+    response = mailchimp.messages.send({"message":message})
+    print('API called successfully: {}'.format(response))
+  except ApiClientError as error:
+    print('An exception occurred: {}'.format(error.text))
+
+run()
+```
+</CodeBlocks>
+
+<Note>
+**Note**: Make sure you enter the subaccount name correctly. If you try to send an email via the API from a subaccount that doesn’t exist, it will fail with an error. However, if you try to send from a nonexistent subaccount via SMTP, the email will be accepted by the SMTP server but will ultimately fail to send.
+
+[](https://mailchimp.com/developer/transactional/docs/subaccounts/#view-subaccount-activity)
+</Note>
+
+## View subaccount activity
+
+We’ve been sending transactional email for Acme Widgets for a while now, and it’s time to check out our subaccount’s activity, which Mailchimp automatically tracks. 
+
+The easiest way to do so is [directly in your Mailchimp Transactional account](/transactional/docs/subaccounts/#view-subaccount-activity). But if you need programmatic access to account activity—for example, if you needed to set up your own dashboard or jobs to track subaccount activity—you can fetch it from the API like so:
+
+<CodeBlocks>
+```bash title="cURL"
+curl -X POST \
+  https://mandrillapp.com/api/1.0/subaccounts/info \
+  --data-binary @- << EOF 
+{
+  "key": "YOUR_API_KEY",
+  "id": "UNIQUE_ACCOUNT_ID"
+}
+EOF
+```
+
+```javascript title="Node"
+const mailchimp = require("mailchimp_transactional")("YOUR_API_KEY");
+
+async function run() {
+  const response = await mailchimp.subaccounts.info({
+    id: "UNIQUE_ACCOUNT_ID"
+  });
+  console.log(
+    `This subaccount has sent ${response.sent_total} emails. Its status is ${
+      response.status
+    }.`
+  );
+}
+run();
+```
+
+```php title="PHP"
+require_once('/path/to/mailchimp-transactional-php/vendor/autoload.php');
+function run($subAccount)
+{
+    try {
+        $mailchimp = new MailchimpTransactional\ApiClient();
+        $mailchimp->setApiKey("YOUR_API_KEY");
+        $response = $mailchimp->subaccounts->info($subAccount);
+        if(isset($response->sent_total) && isset($response->status)){
+            echo "This subaccount has sent " . $response->sent_total . " emails. Its status is " . $response->status;
+        }else{
+            echo "Could not get subaccount info: <br>";
+            print_r($response);
+        }
+    } catch (Error $e) {
+        echo 'Error: ', $e->getMessage(), "\n";
+    }
+}
+
+$subAccount = [
+    "id" => "UNIQUE_ACCOUNT_ID",
+];
+run($subAccount);
+```
+
+```ruby title="Ruby"
+require 'MailchimpTransactional'
+
+client = MailchimpTransactional::Client.new(ENV['YOUR_API_KEY'])
+account_id = "UNIQUE_ACCOUNT_ID"
+
+begin
+  account = client.subaccounts.info(id: account_id)
+  puts account
+rescue MailchimpTransactional::ApiError => e
+  puts "Error: #{e}"
+end
+```
+
+```python title="Python"
+import mailchimp_transactional as MailchimpTransactional
+from mailchimp_transactional.api_client import ApiClientError
+
+mailchimp = MailchimpTransactional.Client('YOUR_API_KEY')
+
+def run():
+  try:
+    response = mailchimp.subaccounts.info({
+      "id": "UNIQUE_ACCOUNT_ID"
+    })
+    print("This subaccount has sent: {} emails. Its status is: {}".format(response['sent_total'], response['status']))
+  except ApiClientError as error:
+    print('An exception occurred: {}'.format(error.text))
+
+run()
+```
+</CodeBlocks>
+
+## Update a subaccount’s quota
+
+Acme Widgets has found our application invaluable—but they’re bumping up against the limitations on our free tier, so they’ve decided to upgrade to a premium account. As part of the upgrade, we’ll increase their subaccount’s hourly email quota to 100 emails per hour.
+
+<CodeBlocks>
+```bash title="cURL"
+curl -X POST \
+  https://mandrillapp.com/api/1.0/subaccounts/update \
+  --data-binary @- << EOF 
+{
+  "key": "YOUR_API_KEY",
+  "id": "UNIQUE_ACCOUNT_ID",
+  "custom_quota": 100
+}
+EOF
+```
+
+```javascript title="Node"
+const mailchimp = require("mailchimp_transactional")("YOUR_API_KEY");
+
+async function run() {
+  const response = await mailchimp.subaccounts.update({
+    id: "UNIQUE_ACCOUNT_ID",
+    custom_quota: 100
+  });
+  console.log(
+    `Success! This account's new sending quota is ${response.custom_quota}.`
+  );
+}
+
+run();
+```
+
+```php title="PHP"
+require_once('/path/to/mailchimp-transactional-php/vendor/autoload.php');
+function run($subAccount)
+{
+    try {
+        $mailchimp = new MailchimpTransactional\ApiClient();
+        $mailchimp->setApiKey("YOUR_API_KEY");
+        $response = $mailchimp->subaccounts->update($subAccount);
+        if (isset($response->custom_quota)) {
+            echo "Success! This account's new sending quota is " . $response->custom_quota;
+        } else {
+            echo "Could not update subaccount: <br>";
+            print_r($response);
+        }
+    } catch (Error $e) {
+        echo 'Error: ', $e->getMessage(), "\n";
+    }
+}
+
+$subAccount = [
+    "id" => "UNIQUE_ACCOUNT_ID",
+    "custom_quota" => 100
+];
+run($subAccount);
+```
+
+```ruby title="Ruby"
+require 'MailchimpTransactional'
+
+client = MailchimpTransactional::Client.new(ENV['YOUR_API_KEY'])
+account_id = "UNIQUE_ACCOUNT_ID"
+
+fields = {
+  # account id that you want updated
+  id: account_id,
+  # fields you want updated
+  custom_quota: 100
+}
+
+begin
+  account = client.subaccounts.update(fields)
+  puts account
+rescue MailchimpTransactional::ApiError => e
+  puts "Error: #{e}"
+end
+```
+
+```python title="Python"
+import mailchimp_transactional as MailchimpTransactional
+from mailchimp_transactional.api_client import ApiClientError
+
+mailchimp = MailchimpTransactional.Client('YOUR_API_KEY')
+
+def run():
+  try:
+    response = mailchimp.subaccounts.update({
+      "id": "UNIQUE_ACCOUNT_ID",
+      "custom_quota": 100
+    })
+    print("Success! This account's new sending quota is {} ".format(response['custom_quota']))
+  except ApiClientError as error:
+    print('An exception occurred: {}'.format(error.text))
+
+run()
+```
+</CodeBlocks>
+
+## Pause and resume sending from a subaccount
+
+Uh oh. Acme Widgets is three months late on their subscription fees. We’re hoping to resolve this soon, so rather than deleting their subaccount, we’ll pause sending from their subaccount and resume once they’ve paid.
+
+To pause sending…
+
+<CodeBlocks>
+```bash title="cURL"
+curl -X POST \
+  https://mandrillapp.com/api/1.0/subaccounts/pause \
+  --data-binary @- << EOF 
+{
+  "key": "YOUR_API_KEY",
+  "id": "UNIQUE_ACCOUNT_ID"
+}
+EOF
+```
+
+```javascript title="Node"
+const mailchimp = require("mailchimp_transactional")("YOUR_API_KEY");
+
+async function run() {
+  const response = await mailchimp.subaccounts.pause({
+    id: "UNIQUE_ACCOUNT_ID"
+  });
+  console.log(`This subaccount is now ${response.status}`);
+}
+
+run();
+```
+
+```php title="PHP"
+require_once('/path/to/mailchimp-transactional-php/vendor/autoload.php');
+function run($subAccount)
+{
+    try {
+        $mailchimp = new MailchimpTransactional\ApiClient();
+        $mailchimp->setApiKey("YOUR_API_KEY");
+        $response = $mailchimp->subaccounts->pause($subAccount);
+        if(isset($response->status)){
+            echo "This subaccount is now " . $response->status;
+        }else{
+            echo "Could not change subaccount status: <br>";
+            print_r($response);
+        }
+    } catch (Error $e) {
+        echo 'Error: ', $e->getMessage(), "\n";
+    }
+}
+
+$subAccount = [
+    "id" => "UNIQUE_ACCOUNT_ID",
+];
+run($subAccount);
+```
+
+```ruby title="Ruby"
+require 'MailchimpTransactional'
+
+client = MailchimpTransactional::Client.new(ENV['YOUR_API_KEY'])
+account_id = "UNIQUE_ACCOUNT_ID"
+
+begin
+  account = client.subaccounts.pause(id: account_id)
+  puts account["status"] # => “paused”
+rescue MailchimpTransactional::ApiError => e
+  puts "Error: #{e}"
+end
+```
+
+```python title="Python"
+import mailchimp_transactional as MailchimpTransactional
+from mailchimp_transactional.api_client import ApiClientError
+
+mailchimp = MailchimpTransactional.Client('YOUR_API_KEY')
+
+def run():
+  try:
+    response = mailchimp.subaccounts.pause({
+      "id": "UNIQUE_ACCOUNT_ID"
+    })
+    print("This subaccount is now {} ".format(response['status']))
+  except ApiClientError as error:
+    print('An exception occurred: {}'.format(error.text))
+
+run()
+```
+</CodeBlocks>
+
+But wait, good news—Acme Widgets has found their credit card! 
+
+Let’s resume sending from their account:
+
+<CodeBlocks>
+```bash title="cURL"
+curl -X POST \
+  https://mandrillapp.com/api/1.0/subaccounts/resume \
+  --data-binary @- << EOF 
+{
+  "key": "YOUR_API_KEY",
+  "id": "UNIQUE_ACCOUNT_ID"
+}
+EOF
+```
+
+```javascript title="Node"
+const mailchimp = require("mailchimp_transactional")("YOUR_API_KEY");
+
+async function run() {
+  const response = await mailchimp.subaccounts.resume({
+    id: "UNIQUE_ACCOUNT_ID"
+  });
+  console.log(`This subaccount is now ${response.status}`);
+}
+
+run();
+```
+
+```php title="PHP"
+require_once('/path/to/mailchimp-transactional-php/vendor/autoload.php');
+function run($subAccount)
+{
+    try {
+        $mailchimp = new MailchimpTransactional\ApiClient();
+        $mailchimp->setApiKey("YOUR_API_KEY");
+        $response = $mailchimp->subaccounts->resume($subAccount);
+        if(isset($response->status)){
+            echo "This subaccount is now " . $response->status;
+        }else{
+            echo "Could not change subaccount status: <br>";
+            print_r($response);
+        }
+    } catch (Error $e) {
+        echo 'Error: ', $e->getMessage(), "\n";
+    }
+}
+
+$subAccount = [
+    "id" => "UNIQUE_ACCOUNT_ID",
+];
+run($subAccount);
+```
+
+```ruby title="Ruby"
+require 'MailchimpTransactional'
+
+client = MailchimpTransactional::Client.new(ENV['YOUR_API_KEY'])
+account_id = "UNIQUE_ACCOUNT_ID"
+
+begin
+  account = client.subaccounts.resume(id: account_id)
+  puts account["status"] # => “active”
+rescue MailchimpTransactional::ApiError => e
+  puts "Error: #{e}"
+end
+```
+
+```python title="Python"
+import mailchimp_transactional as MailchimpTransactional
+from mailchimp_transactional.api_client import ApiClientError
+
+mailchimp = MailchimpTransactional.Client('YOUR_API_KEY')
+
+def run():
+  try:
+    response = mailchimp.subaccounts.resume({
+      "id": "UNIQUE_ACCOUNT_ID"
+    })
+    print("This subaccount is now {} ".format(response['status']))
+  except ApiClientError as error:
+    print('An exception occurred: {}'.format(error.text))
+
+run()
+```
+</CodeBlocks>
+
+You can also pause and resume sending [directly in the Mailchimp Transactional app](/transactional/docs/subaccounts/#pause-and-resume-sending).
+
+## Delete a subaccount
+
+Oh no. Acme Widgets shipped a bug to production, causing a massive site outage during their most active quarter of the year. Despite the best efforts of our sales team, Acme Widgets has decided to cancel their account. 
+
+As part of that cancellation, we’ll need to delete their subaccount. Here’s how:
+
+<CodeBlocks>
+```bash title="cURL"
+curl -X POST \
+  https://mandrillapp.com/api/1.0/subaccounts/delete \
+  --data-binary @- << EOF 
+{
+  "key": "YOUR_API_KEY",
+  "id": "UNIQUE_ACCOUNT_ID"
+}
+EOF
+```
+
+```javascript title="Node"
+const mailchimp = require("mailchimp_transactional")("YOUR_API_KEY");
+
+async function run() {
+  const response = await mailchimp.subaccounts.delete({
+    id: "UNIQUE_ACCOUNT_ID"
+  });
+  console.log(response);
+}
+
+run();
+```
+
+```php title="PHP"
+require_once('/path/to/mailchimp-transactional-php/vendor/autoload.php');
+function run($subAccount)
+{
+    try {
+        $mailchimp = new MailchimpTransactional\ApiClient();
+        $mailchimp->setApiKey("YOUR_API_KEY");
+        $response = $mailchimp->subaccounts->delete($subAccount);
+        print_r($response);
+    } catch (Error $e) {
+        echo 'Error: ', $e->getMessage(), "\n";
+    }
+}
+
+$subAccount = [
+    "id" => "UNIQUE_ACCOUNT_ID_PHP",
+];
+run($subAccount);
+```
+
+```ruby title="Ruby"
+require 'MailchimpTransactional'
+
+client = MailchimpTransactional::Client.new(ENV['YOUR_API_KEY'])
+account_id = "UNIQUE_ACCOUNT_ID"
+
+begin
+  account = client.subaccounts.delete(id: account_id)
+  puts account
+rescue MailchimpTransactional::ApiError => e
+  puts "Error: #{e}"
+end
+```
+
+```python title="Python"
+import mailchimp_transactional as MailchimpTransactional
+from mailchimp_transactional.api_client import ApiClientError
+
+mailchimp = MailchimpTransactional.Client('YOUR_API_KEY')
+
+def run():
+  try:
+    response = mailchimp.subaccounts.delete({
+      "id": "UNIQUE_ACCOUNT_ID"
+    })
+    print('API called successfully: {}'.format(response))
+  except ApiClientError as error:
+    print('An exception occurred: {}'.format(error.text))
+
+run()
+```
+</CodeBlocks>
+
+You can also delete a subaccount [directly in the Mailchimp Transactional app](/transactional/docs/subaccounts/#delete-a-subaccount). Keep in mind that deleting a subaccount is permanent, and Mailchimp cannot recover a subaccount after it is deleted.
+
+## More resources
+
+- [Subaccounts documentation](/transactional/docs/subaccounts)
+- [Send Your First Transactional Email](/transactional/guides/send-first-email)
+- [Reputation and Rejections](/transactional/docs/reputation-rejections)

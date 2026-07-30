@@ -1,3 +1,257 @@
-# Reputation and Rejections
+---
+title: Reputation and Rejections
+description: Understand bounces, spam complaints, and other factors that determine account reputation.
+---
 
-Understand how Mailchimp Transactional manages your sender reputation and handles rejected messages, including bounce processing and rejection lists.
+
+
+## The basics
+
+Every Mailchimp Transactional account has a reputation, and understanding how that reputation works is key to ensuring high deliverability of your messages. This documentation will walk through the basics of reputation and your hourly quota, as well as the major factors that determine reputation—spam complaints, bounces, unsubscribes, and failed content reviews—and different strategies for reducing or preventing those factors.
+
+This documentation also covers rejections: when you send an email that bounces, a recipient unsubscribes, or they mark an email as spam, their address is added to your Rejection Denylist and future messages to them become rejections. Rejections aren’t sent, so they won’t affect your reputation—but like reputation, the Rejection Denylist is directly connected to bounces, unsubscribes, and spam complaints.
+
+## Reputation and hourly quota
+
+Like most email service providers, Mailchimp Transactional actively manages the IP addresses that are used for sending mail through our system. We need to be able to send email with as little delay from the receiving servers as possible—and the reputation of our IP addresses is paramount to ensuring high deliverability for all of our users.
+
+To keep that reputation high, every Mailchimp Transactional account has its own reputation, and that reputation plays a large role in determining an account’s hourly quota for sending. These two features help protect us from spammers that could otherwise send a lot of email quickly and damage the reputation of our sending servers, which would negatively affect other Mailchimp Transactional users.
+
+<Note>
+**Note**: Mailchimp Transactional calculates the reputation and hourly quota for all accounts automatically, and cannot change either of them manually.
+</Note>
+
+### Reputation
+
+Your account’s reputation can be **Poor**, **Good**, or **Excellent**, and can adjust in either direction based on your sending behavior.  
+
+Mailchimp Transactional uses many factors to define an account’s reputation value, including: 
+
+- Spam complaints
+- Bounces
+- Unsubscribes
+- Failed content reviews
+- Manually removed denylist entries
+
+While every account will experience some bounces and spam complaints, reputation is largely determined by the ratio of failed to successful sends. For example, the more bounces you see relative to your overall sending volume, the lower your reputation will be. 
+
+### Hourly quota
+
+Your hourly quota dictates how many emails you can send each hour. Any emails you send over your current hourly quota go into your account’s backlog, a temporary repository that holds emails that Mailchimp Transactional can’t immediately send. Emails are only stored in the backlog for 48 hours; after that, they’re deleted from the account entirely.
+
+The account’s reputation informs the account’s hourly quota, but it isn’t the only factor we use. Your typical sending volume also affects the hourly quota: an account that sends 1 million messages per week and an account that sends 100 messages per week could both have excellent reputations, but their hourly quotas will be very different. 
+
+Each time you send a higher volume than you normally do, there’s a period of adjustment as Mailchimp Transactional learns about the new emails you’re sending. If your account reputation remains Good, the hourly quota shouldn’t get in your way. If your account reputation is Poor, your hourly quota won’t increase as quickly as accounts with a Good or Excellent reputation.
+
+<Note>
+**Note**: Demo accounts are limited to a fixed hourly quota of 25 emails. Once you upgrade to a paid account, you’ll be switched to the standard reputation and quota system.
+</Note>
+
+### View reputation and quota information
+
+There are a few places to view or retrieve information about your reputation and hourly quota.
+
+1. The [**Dashboard**](https://mandrillapp.com/) in your Mailchimp Transactional account
+2. The [**Account Details**](https://mandrillapp.com/account/index) page
+3. Via the Transactional API with the [`users/info`](/transactional/api) endpoint
+
+## Spam complaints
+
+A spam complaint occurs when a recipient reports a message as spam in their email program. If the recipient’s ISP has a feedback loop (often shortened to [FBL](https://en.wikipedia.org/wiki/Feedback_loop_(email))), that action passes back to Mailchimp Transactional; the recipient is then moved to the Rejection Denylist and future attempts to send to them will be rejected. 
+
+Spam complaints are not the same thing as emails winding up in spam or junk folders. If the ISP does not provide an FBL, the complaint will not be recorded in your account, though your future emails may be sent to a recipient’s spam folder unless the recipient takes action to remove the email from the spam folder.
+
+Mailchimp Transactional also tracks direct complaints: when a recipient contacts Mailchimp’s abuse department and directly reports an email as spam. Direct complaints are considered very serious; the impact of a single direct complaint on the account’s reputation can be difficult to recover from. The best way to avoid direct complaints is to make sure that you are only sending to recipients who want to receive your email. 
+
+### Anti-spam legislation
+
+Mailchimp Transactional serves users throughout the world, and different laws govern email in various countries. Consult with a professional in your area about what laws or regulations apply to the emails you are sending. Failure to comply with the rules governing the email you are sending can cause legal consequences—in some cases, fines of hundreds of dollars per recipient.
+
+### High spam complaint rates
+
+Your spam complaint rate—recipients’ spam complaints relative to your overall sending volume—is one of the most heavily weighted factors in determining your reputation and hourly quota. 
+
+If you’re seeing a lot of spam complaints, you might be: 
+
+- **Using purchased, rented, and third-party lists**: These recipients haven’t directly agreed to receive information from you, and are more likely to mark your emails as spam. For more information, see our [Terms of Use](https://mailchimp.com/legal/additional-terms/#For_Transactional_Email_%28formerly_Mandrill%29_).
+- **Not including an unsubscribe link**: Even though a recipient shouldn’t need to unsubscribe from a one-off transactional email, you should still give them the option to unsubscribe or manage notification preferences.
+- **Sending content that isn’t relevant to your recipients**: If your content resembles spam or isn’t related to their relationship with you, you run the risk of the subscriber reporting your message as spam.
+- **Sending too often**: Only send transactional email triggered by an action (e.g., purchase, password reset, username reminder, receipt, shipping notification).
+
+If you’re sending a lot of email over time, you’re likely to see _some_ spam complaints, but industry standards recommend a complaint rate under 0.1%. A large number of complaints can mean that recipients don’t recognize why they’re receiving your emails or never directly gave you their email addresses to begin with.
+
+At certain spam complaint thresholds, ISPs may begin routing all your email to spam folders, bar you as a sender, or even block Mailchimp Transactional’s sending IPs overall—and Mailchimp Transactional will lower your hourly quota as a result.
+
+For tips on lowering your spam complaints, see [Reducing spam complaints, bounces, and unsubscribes](/transactional/docs/reputation-rejections/#reducing-spam-complaints-bounces-and-unsubscribes).
+
+## Bounces
+
+Bounces are undeliverable emails, and they typically occur when the receiving server or mailbox encounters some sort of delivery issue. Mailchimp Transactional handles and reports bounces automatically in your account. When a recipient’s email bounces, Mailchimp stops attempting to deliver that message, and further email to that address will be temporarily rejected.
+
+When an email bounces, the email address will be added to the [Rejection Denylist](/transactional/docs/reputation-rejections/#rejected-emails). After the rejection expires, the email address remains on the list for reference, but email sent to that address will be attempted again.
+
+Bounces are usually separated into two categories: hard and soft. Mailchimp Transactional uses a set of heuristics to determine whether a bounce should be classified as a hard or soft bounce. Permanent errors such as invalid mailboxes will get classified as hard bounces, while temporary problems like full mailboxes are treated as soft bounces. 
+
+Hard bounce rejections last longer than soft bounce rejections. If you’re seeing a lot of soft bounces to an address, it may be a sign that the address is unusable. The email may never show as a hard bounce, but you may want to treat it as such.
+
+Rejections cannot be removed in bulk, but if you know that a bounce was temporary or you have resolved an issue with the receiving server, you can remove individual rejections in exchange for a small hit to your account’s reputation.
+
+### Viewing bounce details
+
+In addition to a general bounce description or error message, Mailchimp Transactional stores raw bounce details for individual messages for seven days for more in-depth troubleshooting.
+
+To view bounce details:
+
+1. Navigate to [**Activity**](https://mandrillapp.com/activity)
+2. Search by email address, domain, sender, etc., or filter results by bounce type
+3. Click on the bounce reason to see the full error
+4. Click the **View Bounce Message** link to see the entire raw bounce message
+
+### Bounce notifications via email
+
+If you want to receive bounce notifications via email, you need to set up a bounce forwarding address. Navigate to [**Sending Defaults**](https://mandrillapp.com//settings/sending-options) and enter the address under **Forward Bounce Notifications To This Address**.
+
+The bounce forwarding address is only for bounce notifications; for rejections, unsubscribes, or spam complaints, you’ll need to set up [webhooks](/transactional/docs/webhooks) to receive details about these events in your own application. You can change the bounce forwarding address up to three times in one day.
+
+### High bounce rates
+
+A high bounce rate—the ratio of bounces relative to your overall sending volume—can negatively impact your reputation and hourly quota. While all bounces can damage your reputation, hard bounces are weighed more heavily than soft bounces. 
+
+While some bounces are considered normal when sending email over a period of time, industry standards suggest that your overall hard bounce rate should be below 5% of your total email volume. If this percentage climbs higher, some receiving servers may start blocking delivery of your mail, or decrease how quickly they accept your mail, resulting in delivery delays.
+
+Bounce rate thresholds fluctuate over time based on factors like the incoming volume to a particular ISP. Because of this—and to avoid providing insight that could assist spammers in gaming their systems—ISPs don’t publicly release their thresholds and schedules. While we recommend that you should aim for a bounce rate under 5%, that percentage is just a rule of thumb and can vary by ISP.
+
+For tips on lowering your bounce rate, see [Reducing spam complaints, bounces, and unsubscribes](/transactional/docs/reputation-rejections/#reducing-spam-complaints-bounces-and-unsubscribes).
+
+## Unsubscribes
+
+An unsubscribe occurs when someone clicks an auto-generated unsubscribe link in your message, or uses the unsubscribe feature of their email program. While the one-to-one nature of transactional email—receipts, confirmations, alerts, etc.—means recipients generally have no reason to unsubscribe, we recommend you give them the option to do so, so they’re less likely to mark your messages as spam. For full instructions on including an unsubscribe link, see [Outbound Email](/transactional/docs/outbound-email/#unsubscribes).
+
+When someone clicks on your unsubscribe link, the information is sent back to Mailchimp Transactional to process. The message status is changed to `unsubscribe`, and a sender-level rejection is added for that recipient address. As long as that address is on the [Rejection Denylist](/transactional/docs/reputation-rejections/#rejected-emails), any emails sent to that recipient will be rejected. 
+
+<Note>
+**Note**: A sender-level rejection means only one address will be barred from sending to the recipient who unsubscribed. For example, a recipient can unsubscribe from “orders@example.com” but still receive emails from “receipts@example.com”.
+</Note>
+
+### High unsubscribe rates
+
+Alongside spam complaints and bounces, a high number of unsubscribes relative to your overall sending volume can have a negative impact on your account’s reputation and hourly quota. And if ISPs see high unsubscribe rates, they might slow down or even stop accepting your email,  out of concern that there could be recipient management or permission issues
+
+Like other reputation factors, an increased number of unsubscribes could mean you have issues with old or stale recipient email addresses, improperly collected or purchased lists, or irrelevant content. 
+
+For tips on lowering your unsubscribe rate, see [Reducing spam complaints, bounces, and unsubscribes](/transactional/docs/reputation-rejections#reducing-spam-complaints-bounces-and-unsubscribes).
+
+## Reducing spam complaints, bounces, and unsubscribes
+
+If you’re seeing a high percentage of spam complaints, bounces, or unsubscribes—or if you’re trying to avoid them—the following are useful strategies to reduce them. 
+
+### Send to recipients who have opted in
+
+You should always ensure that you’re only sending to recipients who have consented to receive emails from you. 
+
+### Remove stale or old email addresses
+
+If you’ve been sending on a regular basis and tracking opens and clicks, consider removing inactive recipients (people who haven’t opened or clicked your emails in several months). This will help eliminate bounces and ensure high engagement. You can also clean your list prior to sending to ensure you’re not sending to stale or old email addresses.
+
+<Note>
+**Note: **Mailchimp Transactional should not be used to clean your list, and Mailchimp recommends against using third-party list-cleaning services, but there are [plenty of other ways to clean a list](https://mailchimp.com/help/about-list-cleaning-services/).
+</Note>
+
+### Validate email addresses before adding them to your application or database
+
+If users are inputting email addresses through an online form, validate the email address in your application code to ensure the email is technically sound (e.g., contains only one @ symbol, has a valid local and domain portion). You can also require that users type the email address twice and make sure that both instances match.
+
+### Provide an unsubscribe link
+
+It’s unlikely that a recipient would want to unsubscribe from a one-off transactional email, but including an unsubscribe option can give you feedback about how people are engaging with your emails. It will also give people the chance to opt out of your emails before flagging them as spam. Unsubscribes are weighed less heavily than spam complaints when Mailchimp Transactional determines reputation, so it’s generally worth allowing recipients to unsubscribe.
+
+### Use a relevant reply-to email address
+
+When setting the `Reply-To` header for your emails, be sure that you or someone in your organization has access to this email’s inbox and that the address matches the message content and your application or business.
+
+### Send relevant content 
+
+Because of the nature of transactional email, your recipients shouldn’t be surprised by the content of your emails—assuming they feel that they’re receiving messages that they signed up for. You can use the [**Split Test**](https://mandrillapp.com/split-test) and [**Stats Comparison**](https://mandrillapp.com/reports/compare) tools to find out which emails have higher recipient engagement.
+
+### Use test mode
+
+Every Mailchimp Transactional account has a [test mode](/transactional/docs/fundamentals/#test-mode) that lets you experiment and refine integrations for bounce and complaint handling without actually sending email. If you’re seeing a high spam complaint, bounce, or unsubscribe rate, you can use test mode to troubleshoot without having any effect on your reputation or quota.
+
+## Failed content reviews
+
+As part of the account reputation and hourly quota system, Mailchimp Transactional automatically reviews the content of the emails you send. This helps us find potential issues that could harm your reputation as a sender—or the reputation of Mailchimp Transactional’s sending IPs.
+
+If your messages include URLs from denylists, shortened URLs, or content that references commonly used spam phrases, your emails may generate a failed content review. After you remove these URLs or phrases, your account reputation and quota will adjust automatically based on your new sending patterns.
+
+### Shortened URLs
+
+A shortened link is a standard URL that is clipped down to a more manageable size. Most shortened links also hide the destination URL, allowing spammers to trick people into clicking harmful links; if** **you use shortened links in emails, that might set off spam filters. It's always best to use the full link—no URL shortening service is perfect and they’re all susceptible to security issues.
+
+### Banned domains
+
+Many ISPs and spam filtering services keep track of lists of IP addresses and domains of known spammers, or “spam-friendly” servers. If you’re seeing a high number of failed content reviews, it might be because you’re linking to content hosted on these banned domains. Not all lists of this nature are created equal—anyone can create one and share it with the internet—but most large ISPs use their own reputation systems, along with a select number of publicly available ones like [Spamhaus](http://www.spamhaus.org/).
+
+## Rejected emails
+
+The Rejection Denylist is the list of email addresses that Mailchimp Transactional will exclude from your sends. An address is added to the list when one of the following events occurs: 
+
+1. A message sent to the address bounces
+2. The recipient registers a spam complaint on one of your emails
+3. The recipient unsubscribes from one of your emails
+4. You manually add the address to the list
+
+While an email address is active on the Rejection Denylist, emails to the address will be given a state of `rejected` and Mailchimp Transactional won’t try to deliver them. This helps prevent sending emails to an email address that is no longer valid or having temporary issues, or to a recipient who doesn’t wish to receive emails from you.
+
+Accounts aren’t charged for rejected emails, and rejections do not affect your account reputation: only the first bounce, spam complaint, or unsubscribe is used to calculate reputation.
+
+The length of a rejection depends on the type: soft bounces expire after 24 hours, hard bounces after seven days, unsubscribes and spam complaints after a year, and addresses manually added to the Rejection Denylist never expire. After a rejection expires, if an email is sent to the address, Mailchimp Transactional will attempt to deliver the message—but subsequent bounces, spam complaints, or unsubscribes will result in the address being added to the rejection list for a longer period of time.
+
+<Note>
+**Note: **A** **reject with the reason `unsigned` means that the message was sent from a domain that hasn’t been fully configured for Mailchimp Transactional. For information about domain configuration and verification, see [Authentication and Delivery](/transactional/docs/authentication-delivery/#authentication).
+</Note>
+
+### Custom rejections
+
+Spam complaints, bounces, and unsubscribes will automatically put recipients on the Rejection Denylist, but like a global suppression list, you can also add addresses manually. Custom rejections never expire, and adding or removing a custom rejection won’t affect your account’s reputation.
+
+To add an address, navigate to the [**Rejection Denylist**](https://mandrillapp.com/settings/rejections) in your Mailchimp Transactional account and click the **Add to Denylist** button.
+
+To add a single email address, select **Manually Add Addresses**; to add multiple addresses, select **Import Addresses From File** and upload a plain text file with one email address per line. You can also add a reason for the rejection in the field under the **Note** heading.
+
+If you need to add the emails to a subaccount's Rejection Denylist, choose the subaccount ID from the **Add To This Subaccount’s Denylist** drop-down menu.
+
+You can also add email addresses to the Rejection Denylist via the [Transactional API](/transactional/api). 
+
+<Note>
+**Note**: You cannot add an entire domain to the Rejection Blacklist, but you can use [rules](/transactional/docs/rules-engine) to automatically reject emails sent to a certain domain.
+</Note>
+
+### Remove addresses from the Rejection Denylist
+
+Mistakes happen, and recipients can erroneously register a spam complaint or unsubscribe, landing them on the Rejection Denylist. If a recipient’s address doesn’t belong there, you can manually remove them from the Rejection Denylist for a small reputation hit. Be sure to only remove a single address at a time, rather than bulk removal. 
+
+To remove an address, navigate to the **Rejection Denylist**, search for the email address you’d like to remove, and click the **remove** link. You can also use the [`rejects/delete`](/transactional/api) endpoint in the Transactional API.
+
+### Rejection Allowlist
+
+To prevent an email address from being added to the Rejection Denylist after a bounce occurs, you can add it to the [Rejection Allowlist](https://mandrillapp.com/settings/allowlist). This is helpful if you’re troubleshooting delivery to an internal address that’s experiencing issues accepting mail, and you want to make sure that future messages are attempted even if a previous message bounced.
+
+While an address is on the Rejection Allowlist, bounces, unsubscribes, and spam complaints will still be tracked and factored into your account's reputation, but the address won't be added to the Rejection Denylist. Mailchimp Transactional will continue to deliver messages to the address as long as it’s on the Rejection Allowlist.
+
+<Note>
+**Note**: If you add an email to the Rejection Allowlist that is currently on the Rejection Denylist, the denylist entry will be removed automatically.
+</Note>
+
+Email addresses can be added to or removed from the Rejection Allowlist directly in Mailchimp Transactional or via the Transactional API. In the app, navigate to [**Rejection Allowlist**](https://mandrillapp.com/settings/allowlist)** **and click** Add Allowlist Entry**. With the Transactional API, use the [`allowlists/add`](/transactional/api) endpoint. 
+
+### Exporting a Rejection Denylist or Allowlist
+
+You can export both the Rejection Denylist and Allowlist from an account (or subaccount) directly in Mailchimp Transactional or via the Transactional API. 
+
+To export the Rejection Denylist, navigate to the [Rejection Denylist](https://mandrillapp.com/settings/rejections) page and click on **Export Full Denylist**, or use the [`exports/rejects`](/transactional/api) endpoint. To export the Rejection Allowlist, navigate to the [Rejection Allowlist](https://mandrillapp.com/settings/allowlist) page and click on **Export Allowlist**, or use the [`exports/allowlist`](/transactional/api) endpoint.
+
+With either list, your export will be queued, and an email will be sent to the [contact email address](https://mandrillapp.com/account/contact) for the account when the export is ready for download. You can also view it on the [**Exports**](https://mandrillapp.com/settings/exports) page. Export download links expire after seven days, though the export will appear in the list for an additional seven days for record-keeping purposes.
+
+<Note>
+**Note**: The exported file will contain rejects for the entire account. [Subaccount-specific rejections](/transactional/docs/subaccounts/#subaccount-rejections) will be listed under an additional subaccount column by the subaccount ID.
+</Note>

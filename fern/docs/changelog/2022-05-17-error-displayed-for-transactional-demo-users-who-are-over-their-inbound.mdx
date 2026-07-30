@@ -1,0 +1,8 @@
+---
+title: Error displayed for Transactional Demo users who are over their inbound quota
+tags: ["Transactional"]
+---
+
+When Transactional Demo users go over their inbound quota, we now return a `500` status code along with the message “Your inbound message quota has been exceeded. Please try again later.”
+
+Previously, we were returning a `200` message and not processing the webhook. Now that an error is returned, the API response is more clear.

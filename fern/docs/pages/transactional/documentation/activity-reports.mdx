@@ -1,3 +1,278 @@
-# Activity and Reports
+---
+title: Activity and Reports
+description: Review delivery and recipient behavior with Mailchimp Transactional\u2019s analytics tools.
+---
 
-Learn how to query message activity and generate reports to monitor your transactional email performance.
+
+
+## The basics
+
+Mailchimp Transactional tracks emails on a per-message basis, so opens, clicks, and delivery data are recorded for each email sent through your account. This documentation will walk through the ways you can capture data about your sends—open and click tracking, tags, and metadata—and then the various ways you can search, analyze, and export that data.  
+
+### Email content storage
+
+Mailchimp Transactional keeps a copy of the HTML and text parts of emails you’ve sent for 30 days, allowing you to view the email content and resend messages.
+
+Navigate to [**Activity**](https://mandrillapp.com/activity) in your Mailchimp Transactional account, and click **View Content** next to a particular email to see a window that displays the contents. 
+
+<Note>
+**Note**: Rejected emails will either display an error or no content, because the content wasn't processed or sent by Mailchimp Transactional.
+</Note>
+
+### Data storage
+
+Overall statistics—including total deliveries, bounces and rejections, unique opens and clicks, and total opens and clicks—are stored indefinitely. You can view these overall stats on the [**Dashboard**](https://mandrillapp.com/), or using the [senders](/transactional/api), [tags](/transactional/api), and [templates](/transactional/api) API calls.
+
+While bounces are also stored indefinitely, data about bounced messages is only kept for 90 days. This information is available on the [**Activity**](https://mandrillapp.com/activity) page, and includes details about the bounced message’s subject line, sender, recipient address, total opens and clicks, and metadata.
+
+## Open and click tracking
+
+Open and click tracking are the most foundational ways to track engagement with your emails in Mailchimp Transactional. You can manage your tracking settings in the [**Sending Defaults**](https://mandrillapp.com/settings/sending-options) section of the app, or you can override those settings on a per-message basis with the API or SMTP headers. 
+
+### Open tracking
+
+Mailchimp Transactional tracks opens by adding a 1-pixel square graphic at the bottom of HTML emails. When a recipient downloads images in your message (which happens by default with most email clients) this is recorded as an open. 
+
+You can turn open tracking on or off via the [**Sending Defaults**](https://mandrillapp.com/settings/sending-options) page. To override these global settings on a per-message basis, use the [`track_opens`](/transactional/api) parameter (API) or the [`X-MC-Track`](/transactional/docs/smtp-integration/#x-mc-track) header (SMTP). 
+
+<Note>
+**Note**: It’s impossible to embed the tracking image in text-only emails, but if you enable click tracking, Mailchimp can also record an open when a recipient clicks on a Mailchimp Transactional–tracked link. Recipient clicks are the only way to track opens for text emails.
+</Note>
+
+### Click tracking
+
+Click tracking is enabled by default for both HTML and text emails. You can adjust this for one or both types of messages in your [**Sending Defaults**](https://mandrillapp.com/settings/sending-options), or you can override those global settings on a per-message basis with the [`track_clicks`](/transactional/api) parameter (API) or the [`X-MC-Track`](/transactional/docs/smtp-integration/#x-mc-track) header (SMTP).
+
+Click tracking is not available in demo accounts. You'll need a paid account to use this feature.
+
+For HTML messages, click tracking applies to all links in `<a>` tags, though link tracking is not_ _added to `mailto` and email address links.
+
+<Note>
+**Note**: Some email clients and web browsers break links over a certain length. If Mailchimp Transactional detects that adding tracking information could create links that are longer than 255 bytes, tracking data will not be added. Always check to see if you can shorten longer links before including them in your messages.
+</Note>
+
+To disable click tracking on individual links, add the `mc:disable-tracking` parameter to the link tag. For example: 
+
+`<a href="http://linkthatshouldnotbetracked.com" mc:disable-tracking>Click here to confirm your email address</a>`
+
+The extra parameter is removed when the email is sent, and no click-tracking is applied to this link.
+
+<Note>
+**Note**: If you see that your URLs are not being tracked, verify that click tracking is enabled in [**Sending Defaults**](https://mandrillapp.com/settings/sending-options).
+</Note>
+
+### Custom tracking domains
+
+By default, the open-tracking image and all click-tracking URLs reference mandrillapp.com, and links are redirected from mandrillapp.com to the final destination. If you prefer, you can set up custom tracking domains to use your own subdomain in open- and click-tracking URLs instead.
+
+<Note>
+**Note**: Adding a custom tracking domain simply allows you to display a different tracking URL in your emails. Mailchimp will still record the clicks and opens; it will just serve the open-tracking image and write click-tracking links using your domain.
+</Note>
+
+The custom tracking domain must be a subdomain (like clicks.example.com) and cannot be a root domain (like example.com). 
+
+First, set up a [CNAME record](http://en.wikipedia.org/wiki/CNAME_record) pointing your subdomain to mandrillapp.com. 
+
+Then, add the subdomain to Mailchimp Transactional: 
+
+1. Navigate to **Settings** and choose [**Tracking & Return Path Domains**](https://mandrillapp.com/settings/tracking-domains)
+2. Enter your subdomain and click **Add**
+3. Click **Test DNS Settings**
+4. After the test is complete, click **View DNS settings** under the results for more detailed information about your current settings
+
+<Note>
+**Note**: Each DNS provider or host may handle the adding or editing of records differently, so your host’s technical support or documentation is the best resource for any limitations or formatting specific to that provider. Some DNS providers take longer than others to publish and push the record. If you’re adding a completely new record, those often validate within several minutes, while changing records can take longer.
+</Note>
+
+Once the domain is set up in your account, you can enable it as your custom tracking domain in [**Sending Defaults**](https://mandrillapp.com/settings/sending-options). If you want to override those global settings on a per-message basis, use the [`tracking_domain`](/transactional/api) parameter (API) or [`X-MC-TrackingDomain`](/transactional/docs/smtp-integration/#x-mc-trackingdomain) header (SMTP).
+
+A tracking domain can only be added to one Mailchimp Transactional account; adding the same domain to a different account will result in an error.
+
+## Google Analytics tracking
+
+Mailchimp Transactional also supports automatic Google Analytics tracking links. 
+
+You’ll need: 
+
+1. **A list of domains which are eligible for Google Analytics variables**. Some links don’t work as intended when a query string is added, or if arbitrary things are added to the query string. To avoid this, you’ll tell Mailchimp which links are intended to receive the Google Analytics variables.
+2. **A Google Analytics campaign**. What this actually means is up to you: it’s frequently a Google search campaign, but you could technically put whatever tracking variable you want in here. It’s what gets added to the `utm_campaign` parameter; if no value is provided, the `From` address for the email is used by default.
+
+### Add Google Analytics tracking
+
+With [SMTP integration](/transactional/docs/smtp-integration), use custom headers to set these variables:
+
+- `X-MC-GoogleAnalytics`: a comma-separated list of the domains to have Google Analytics tracking added
+- `X-MC-GoogleAnalyticsCampaign`: the value Mailchimp Transactional will set for the `utm_campaign` variable
+
+With the API, use the [`messages/send`](/transactional/api) or [`messages/send-template`](/transactional/api) endpoint and  set the following within the message parameter:
+
+- `google_analytics_domains`: an array of strings of the domains to have Google Analytics tracking added
+- `google_analytics_campaign`: the value Mailchimp Transactional will set for the `utm_campaign` variable
+
+Be sure to include any subdomains used in your URLs so Google Analytics tracking can be added. For example, if your message contains links to both `http://www.example.com` and `http://example.com`, your `google_analytics_domains` array would look like:
+
+```json
+"google_analytics_domains": [
+            "www.example.com",
+            "example.com"
+        ]
+```
+
+Your `X-MC-GoogleAnalytics` header would look like:
+
+`X-MC-GoogleAnalytics: www.example.com, example.com`
+
+<Note>
+**Note**: It’s not possible to change the `utm_source` that’s included when using Mailchimp Transactional’s automatic Google Analytics tracking code. If you want more control over the parameters being added, we recommend [adding the Google Analytics parameters manually](https://support.google.com/analytics/answer/1033867?hl=en) before passing the emails to Mailchimp Transactional for processing.
+</Note>
+
+## Search Outbound Activity
+
+Mailchimp Transactional automatically indexes a number of fields that you can use to search your sending and find relevant trends. Search is available in the app or [via the API](/transactional/api).
+
+### Query syntax
+
+Mailchimp Transactional search allows you to perform complex queries on your outbound email. If you’ve ever built a complex search for any search engine, the basics will be familiar to you.
+
+First, Mailchimp Transactional supports two types of search terms: Single, unquoted terms, e.g., `hello`, and quoted phrases, e.g., "`hello world`". Unquoted terms will be searched individually, in any order, and quoted phrases must appear in their entirety, and in order. 
+
+A search like `hello world` will return any emails with `hello` and `world`, no matter where and what order they appear in an email. In contrast, "`hello world`" will return only emails with the phrase "`hello world`", with both words appearing together in that order.
+
+Multiple terms can be combined together with Boolean operators to form a more complex query.
+
+We support the Boolean operators `AND`, `OR`, and `NOT`, along with wildcards. Use `*` for multiple-character and `?` for single-character wildcards—but make sure not to start a search with a wildcard. Wildcards are only supported in some fields.
+
+If you want to search a specific field for something, use the field name followed by a colon and then your search term or phrase. 
+
+<Note>
+**Note**: Behind the scenes, Mailchimp Transactional searches utilize [Lucene queries](http://lucene.apache.org/core/old_versioned_docs/versions/3_5_0/queryparsersyntax.html), and by default we search all indexed fields for your search terms (unless a field is specified).
+</Note>
+
+### Example searches
+
+Search messages that contain “welcome” or “bienvenidos” in the subject line.
+
+`subject:welcome OR subject:bienvenidos`
+
+Search for messages sent to recipients whose email addresses start with joe@domain (to capture, for example joe@example.com, joe@example.net and joe@example.org) that were also sent by me@anotherexample.com:
+
+`full_email:joe@example.* AND sender:me@anotherexample.com`
+
+Search for all recipients with `gmail.com` in the address. If you have a recipient with the address `gmail.com@domain.com`, that will also be included in this search, but this will generally return all recipients for the gmail.com domain:
+
+`email:gmail.com`
+
+Search messages which:
+
+- Were sent between 1609459200 Unix Time (January 1, 2021, 00:00:00 GMT) and 1609462800 Unix Time (January 1, 2021, 01:00:00 GMT); and
+- Have a subject line that contains the phrase "Order Receipt"; and
+- Were opened between 1609459200 Unix Time (January 1, 2021, 00:00:00 GMT) and 1609466400 (January 1, 2021, 02:00:00 GMT).
+
+`ts:[1609459200 TO 1609462800] AND subject:"Order Receipt" AND opens.ts:[1609459200 TO 1609466400]`
+
+Search for messages where the recipients clicked URLs that start with either twitter.com or facebook.com:
+
+`url:twitter.com OR url:facebook.com`
+
+Search for messages that are tagged with both `Welcome` and `a_test`:
+
+`tags:Welcome AND tags:a_test`
+
+### Search fields
+
+We index the following fields that can be used for searching message data:
+
+| Field Name | Description |
+| --- | --- |
+| state | The status of the email. Options are sent, bounced, soft-bounced, rejected, spam, and unsub. |
+| sender | The sender/from email address for the message |
+| ts | Unix timestamp when the message was sent. Supports searching a range, such as `ts:[START_TIME TO STOP_TIME]`. |
+| full_email | The full email address of the recipient. Supports wildcards. |
+| email | A tokenized field for recipient email address |
+| subject | The subject line of the message. Supports wildcards. |
+| tags | The tags applied to the message |
+| opens.ts | Unix timestamp when the recipient opened the message. Supports searching a range, such as `opens.ts:[START_TIME TO STOP_TIME].` |
+| opens.location | The geolocation where a recipient opened the message |
+| opens.ua | The user agent detected for an open event. Value is `null` if no user agent is detected. |
+| opens.ip | The IP address where an open originated |
+| clicks.ts | Unix timestamp when the recipient clicked a tracked URL in the message. Supports searching a range, such as `clicks.ts:[START_TIME TO STOP_TIME]`. |
+| clicks.location | The geolocation where a recipient clicked the message |
+| clicks.ua | The user agent detected for a click event. Value is `null` if no user agent is detected. |
+| clicks.ip | The IP address where a click originated |
+| url | A specific URL or URL pattern that the recipient clicked on |
+| u_metadatafield | An indexed custom metadata field, where metadatafield is the name of the field, such as `u_my_custom_field`. |
+| subaccount | The subaccount ID that sent the message. Supports wildcards. |
+| smtp_events.ts | Unix timestamp when the SMTP event occurred. Supports searching a range, such as `smtp_events.ts:[START_TIME TO STOP_TIME]`. |
+| smtp_events.type | The SMTP event type. Options are `sent` and `deferred`. |
+| smtp_events.diag | The SMTP diagnostic messages. |
+| smtp_events.source_ip | The Mailchimp Transactional source IP that sent the message |
+| smtp_events.destination_ip | The destination IP that Mailchimp Transactional connected to in order to deliver the message |
+| smtp_events.size | The size of the SMTP message in bytes. Supports searching a range such as `smtp_events.size:[MINIMUM TO MAXIMUM]`. |
+
+## Tags and metadata
+
+Tags and metadata let you mark and segment your emails, and you can use them to search activity and generate reports about your messages. For information about creating, configuring, and deleting tags and metadata, see the [Tags and Metadata](/transactional/docs/tags-metadata) docs.  
+
+### Search tags 
+
+When you visit the [**Tags**](https://mandrillapp.com/tags) page in the app, you’ll see the number of sends made with each tag, along with the tag’s reputation. You won’t see system-generated tags, such as API key, template, and sender, on the **Tags** page. To view those tags, see either [**Outbound Activity**](https://mandrillapp.com/activity) or the [**Dashboard**](https://mandrillapp.com).
+
+To search by tag, navigate to [**Outbound Activity**](https://mandrillapp.com/activity) and use the query tags:tagname to filter, or select a single tag using the **Tagged** drop-down menu.
+
+### Search metadata
+
+Like tags, Mailchimp Transactional automatically displays indexed metadata fields on the **Outbound Activity** page. When adding a custom field, you can configure the field with a unique template to control how the metadata renders.
+
+You can search your indexed metadata fields in **Outbound Activity** or via the API’s [`messages/search`](/transactional/api) call. To search for an indexed field, prefix the metadata field name with u_ in your search query:
+
+`full_email:test@example.com AND u_order_id:1398274`
+
+If the metadata value that you are searching for includes non-alphanumeric characters, surround it in quotes:
+
+`full_email:test@example.com AND u_contact_url:"http://example.com/test"`
+
+## Analytics
+
+Aside from Mailchimp Transactional’s tools to search and export data about sends and recipients, the app has a collection of features that help you analyze your data—and adjust your sends in the future. 
+
+### Demographics 
+
+The [**Demographics**](https://mandrillapp.com/reports/demographics) feature gives you insight about your recipients, including a map and lists with top locations, email clients, and operating systems that have been used to open emails or click on links. 
+
+You can also filter demographics using tags, including system-generated tags like sender, template, and API key. You can view these stats via the date drop-down for the lifetime of the account.
+
+<Note>
+**Note**: “Gmail image proxy” will show as an email client for opens but not clicks, due to the way Gmail’s service loads the open pixel from your email.
+</Note>
+
+### Compare Stats
+
+The [**Compare Stats**](https://mandrillapp.com/reports/compare) feature lets you set up comparisons for opens, clicks, and delivery stats between different groups of emails based on your own custom search filters.
+
+You can use your own tags to compare stats, or you can use system-generated tags like sender, template, and API key. Alternately, you can set up search queries as you would in **Outbound Activity**. You can view these stats via the date drop-down for the lifetime of the account.
+
+### Split Tests
+
+The [**Split Tests**](https://mandrillapp.com/split-test) feature allows you to A/B test your templates by specifying a tag. 
+
+When you set up a split test, choose the portion of emails with the given tag that you want to test. You can then split that percentage into anywhere from two to five groups, with a different template sent to each group.
+
+For example, you can test half of all emails tagged `passwordreset`: the other half will continue to receive normal content, while the testing batch will be split and receive either “Password Template 1” or “Password Template 2”.
+
+Once you start the test, you can view the results within the **Split Tests** page.
+
+<Note>
+**Note**: You can also set up finer-grained conditional A/B testing with [the rules engine](/transactional/docs/rules-engine).
+</Note>
+
+## Export activity
+
+You can export activity for your account via the [Outbound Activity](https://mandrillapp.com/activity) page or using the Transactional API [`exports/activity`](/transactional/api) call.
+
+In the app, navigate to [**Outbound**](https://mandrillapp.com/activity) and under the** Activity tab, **select any filters—date range, tag, sender, or delivery status—and click **Export Results**.
+
+If you use a search term, a file will be downloaded immediately with the last 1,000 delivered and 1,000 undelivered messages matching the search term(s) and selected filters. Using search terms will not allow you to download the entire results set.
+
+If you only use filters and drop-down selections, you can export the most recent 1,000 delivered and undelivered messages immediately, or you can download the entire results set. 
+
+If you select the option to **Export all results**, the export will be queued. When your export is ready to be downloaded, an email will be sent to the primary contact address in your Mailchimp account. You can also go to [**Exports**](https://mandrillapp.com/settings/exports) to view exports for your account. Export download links expire after seven days, and the export displays in the exports list for an additional seven days for record-keeping purposes.

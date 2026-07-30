@@ -1,5 +1,342 @@
 ---
 title: Track Outside Activity with Events
+description: Monitor and act on your users\u2019 behavior outside emails with the Events endpoint.
 ---
 
-Content coming soon.
+
+
+## At a glance
+
+Events are activities that a contact engages in _outside your emails_ that you want to track or monitor. Events are useful within Mailchimp for market analysis and segmentation, or you can use an event to start an automation. 
+
+Events help you do things like:
+
+- Track which contacts have registered for your conference
+- Put contacts who’ve viewed mugs in your e-commerce store into a “mug enthusiast” segment
+- Trigger an automation to send an email when a newly registered user enters a referral code
+
+You can find more robust event-tracking tools outside of Mailchimp, but if you need something lightweight that integrates well with your Mailchimp audiences, the Events endpoint may be a good choice.
+
+For the purposes of this guide, we’re a game developer and our app has paid premium content. Users can encourage their friends to sign up with referral codes; in exchange, we send those referrers discount codes for our merch. 
+
+In this guide, we’re going to create an event for whenever a new user signs up with a referral code. We’ll use this event to trigger an automation—sending an email to the referring contact with the discount code for our e-commerce store—and to create a segment of referring contacts for future campaigns.
+
+## What you’ll need
+
+- [An audience](https://mailchimp.com/help/create-audience/) in your Mailchimp account
+- The [Audience ID](https://mailchimp.com/help/find-audience-id/) for that audience
+- [Your API key and server prefix](/marketing/guides/quick-start/#generate-your-api-key)
+
+## Create an event
+
+We want to create an event for a contact when their referral code is successfully used. You can define an event for any action a contact might take. Event names are fully customizable, so you can assign them meaningful names. You can also create and assign properties to add further context to the event.
+
+You can name an event however you like, but to match the way other activities in a contact’s profile are listed, use a verb-noun pair, with an underscore (`_`) as the delimiter. For our example, the event will be named `registered_referral`.
+
+So: someone just signed up for an account using a referral code. We’ll use that code to look up the referring user in our app, then create an event for that contact within Mailchimp:
+
+<CodeBlocks>
+```bash title="cURL"
+dc="YOUR_DC"
+apikey="YOUR_API_KEY"
+listid="YOUR_LIST_ID"
+
+referral_code="THE_REFERRAL_CODE"
+subscriber_email="$(LOOKUP_IN_YOUR_APP)"
+subscriber_hash="$(echo -n "$subscriber_email" | md5sum | cut -d' ' -f1)"
+
+read -r -d '' data <<EOT
+{
+  "name": "registered_referral",
+  "properties": [
+    "${referral_code}"
+  ]
+}
+EOT
+
+curl -s --request POST \
+--url "https://${dc}.api.mailchimp.com/3.0/lists/${listid}/members/${subscriber_hash}/events" \
+--user "foo:${apikey}" --include \
+--data "$data" && echo "Event successfully created!"
+```
+
+```javascript title="Node"
+const mailchimp = require("@mailchimp/mailchimp_marketing");
+const md5 = require("md5");
+
+mailchimp.setConfig({
+  apiKey: "YOUR_API_KEY",
+  server: "YOUR_SERVER_PREFIX"
+});
+
+const referralCode = "THE_REFERRAL_CODE";
+const listId = "YOUR_LIST_ID";
+const user = fakeDB.getUserByReferralCode(referralCode);
+const subscriberHash = md5(user.email.toLowerCase());
+const options = {
+  name: "registered_referral",
+  properties: {
+    referralCode
+  }
+};
+
+async function run() {
+  const response = await mailchimp.lists.createListMemberEvent(
+    listId,
+    subscriberHash,
+    options
+  );
+
+  console.log(`Event successfully created!`);
+}
+
+run();
+```
+
+```php title="PHP"
+require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
+$mailchimp = new \MailchimpMarketing\ApiClient();
+$mailchimp->setConfig([
+    'apiKey' => 'YOUR_API_KEY',
+    'server' => 'YOUR_SERVER_PREFIX'
+]);
+$referral_code = "THE_REFERRAL_CODE";
+$list_id = "YOUR_LIST_ID";
+$email = "urist.mcvankab@example.com";
+$subscriber_hash = md5(strtolower($email));
+$options = new \MailchimpMarketing\Model\Events();
+$options->setName("registered_referral")
+    ->setProperties([
+        $referral_code
+    ]);
+try {
+    $mailchimp->lists->createListMemberEvent($list_id, $subscriber_hash, $options);
+    echo "Event successfully created!";
+} catch (MailchimpMarketing\ApiException $e) {
+    echo $e->getMessage();
+}
+```
+
+```ruby title="Ruby"
+require "MailchimpMarketing"
+require "digest/md5"
+
+mailchimp = MailchimpMarketing::Client.new
+mailchimp.set_config({
+  :api_key => ENV["API_KEY"],
+  :server => ENV["API_SERVER"]
+})
+
+referral_code = "THE_REFERRAL_CODE"
+list_id = "YOUR_LIST_ID"
+user = fakeDB.get_user_by_referral_code(referral_code)
+subscriber_hash = Digest::MD5.hexdigest(user.email.downcase)
+
+options = {
+  name: "registered_referral",
+  properties: {
+    referral_code: referral_code
+  }
+}
+
+response = mailchimp.lists.create_list_member_event(
+  list_id,
+  subscriber_hash,
+  options
+)
+
+puts "Event successfully created!"
+```
+
+```python title="Python"
+import hashlib
+from mailchimp_marketing import Client
+
+mailchimp = Client()
+mailchimp.set_config({
+  "api_key": "YOUR_API_KEY",
+  "server": "YOUR_SERVER_PREFIX"
+})
+
+list_id = 'YOUR_LIST_ID'
+
+referral_code = "THE_REFERRAL_CODE"
+subscriber_email = "subscriber@email.com"
+subscriber_hash = hashlib.md5(subscriber_email.lower().encode()).hexdigest()
+options = {
+    "body": {
+        "name": "registered_referral",
+        "properties": {
+            "ref_code": referral_code
+        }
+    }
+}
+
+response = mailchimp.lists.create_list_member_event(list_id, subscriber_hash, **options)
+print(response.status_code)
+```
+</CodeBlocks>
+
+<Note>
+**Note**: The options payload includes an optional `occured_at` property (see more in [the API reference](/marketing/api)). You can set this to the date and time the event occurred in ISO 8601 format; if omitted, it will default to the current time. 
+
+The optional `is_syncing` property allows you to specify whether or not an event should trigger an automation (if one is configured for this event). Setting `is_syncing` to `true` will not trigger automations. You might use `is_syncing` alongside `occured_at` to backfill events that you don’t want to act on. Since we want to trigger an automation and the default `is_syncing` value is false, we’ll omit it entirely.
+</Note>
+
+## View a contact’s events
+
+Since this is the first time we’ve created this event, we should take a look to make sure it was recorded as expected. Events are reflected in a contact’s profile alongside other information about their engagement behavior.  
+
+You can view a contact’s events—alongside other behavioral information—in the Mailchimp web application, but here, we’ll make a call to the API: 
+
+<CodeBlocks>
+```bash title="cURL"
+dc="YOUR_DC"
+apikey="YOUR_API_KEY"
+listid="YOUR_LIST_ID"
+
+referral_code="THE_REFERRAL_CODE"
+subscriber_email="$(LOOKUP_IN_YOUR_APP)"
+subscriber_hash="$(echo -n "$subscriber_email" | md5sum | cut -d' ' -f1)"
+
+num_events="$(curl -s \
+--url "https://${dc}.api.mailchimp.com/3.0/lists/${listid}/members/${subscriber_hash}/events" \
+--header 'content-type: application/json' \
+--user "foo:${apikey}" | jq -r '.total_items')"
+
+echo "We have created ${num_events} for this user."
+```
+
+```javascript title="Node"
+const referralCode = "THE_REFERRAL_CODE";
+const listId = "YOUR_LIST_ID";
+const user = fakeDB.getUserByReferralCode(referralCode);
+const subscriberHash = md5(user.email.toLowerCase());
+
+async function run() {
+  const response = await mailchimp.lists.getListMemberEvents(
+    listId,
+    subscriberHash
+  );
+
+  console.log(`We have created ${response.totalItems} events for this user.`);
+}
+
+run();
+```
+
+```php title="PHP"
+require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
+
+$mailchimp = new \MailchimpMarketing\ApiClient();
+
+$mailchimp->setConfig([
+    'apiKey' => 'YOUR_API_KEY',
+    'server' => 'YOUR_SERVER_PREFIX'
+]);
+
+$list_id = "YOUR_LIST_ID";
+$email = "urist.mcvankab@example.com";
+$subscriber_hash = md5(strtolower($email));
+
+try {
+    $response = $mailchimp->lists->getListMemberEvents($list_id, $subscriber_hash);
+    echo "We have created {$response->getTotalItems()} events for this user.";
+} catch (MailchimpMarketing\ApiException $e) {
+    echo $e->getMessage();
+}
+```
+
+```ruby title="Ruby"
+referral_code = "THE_REFERRAL_CODE"
+list_id = "YOUR_LIST_ID"
+user = fakeDB.get_user_by_referral_code(referral_code)
+subscriber_hash = Digest::MD5.hexdigest(user.email.downcase)
+
+response = mailchimp.lists.get_list_member_events(
+  list_id,
+  subscriber_hash
+)
+
+puts "We have created #{response["total_items"]} events for this user."
+```
+
+```python title="Python"
+import hashlib
+from mailchimp_marketing import Client
+
+mailchimp = Client()
+mailchimp.set_config({
+  "api_key": "YOUR_API_KEY",
+  "server": "YOUR_SERVER_PREFIX"
+})
+
+list_id = 'YOUR_LIST_ID'
+
+subscriber_email = "subscriber@email.com"
+subscriber_hash = hashlib.md5(subscriber_email.lower().encode()).hexdigest()
+
+response = mailchimp.lists.get_list_member_events(list_id, subscriber_hash)
+total_items = response['total_items']
+print(f'We have created {total_items} events for this user.')
+```
+</CodeBlocks>
+
+By default, the API will return the most recent 10 events. You can specify event count, offset, and [other options if needed](/marketing/api).
+
+## Trigger automations with events
+
+Beyond simply logging contact behavior, events can trigger further action—in particular, automations and segmentation. At our games company, we want to send our referring contact an email thanking them for the referral with a discount merch code, so we’ll set up an automation to do so.
+
+Mailchimp accounts on an Essential plan or higher can use an event to trigger a Customer Journey, but you’ll need a Premium or Pro account to send a series of automated emails. We just need a one-off here: successfully refer a friend and we send you the discount code.
+
+You manage event automations through the Mailchimp web app. Click **Automations** and choose** Customer Journeys.** 
+
+![menu-automation-cjb](https://images.ctfassets.net/cxsachrr7h0p/5rzEiECsHAWyTqYrjmfAWq/71515f146fe11aefe7f25ccff22912ae/menu-automation-cjb.png)
+
+If you’ve previously used the classic automations builder and want to use that to create this automation, click [Check out Classic Automations](https://us1.admin.mailchimp.com/customer-journey/#/create-campaign/explore/emailCampaign:custom) to start that up. 
+
+Any Mailchimp account that has previously created a Classic Automation can use an event to trigger a single automation, but you need a Pro plan or higher to send a series of automated emails. For details, check out [About Classic Automations](https://mailchimp.com/help/about-classic-automations/). 
+
+Hit **Create Journey**.
+
+We’ll name our customer journey **Referral discount** and choose the audience we want to work with and hit **Start Building**. Then, we’ll define our trigger event. 
+
+Hit **Choose A Starting Point**, and then choose **Event API** from the **API & Integrations** menu.  
+
+![Starting-Point-EventAPI-Trigger](https://images.ctfassets.net/cxsachrr7h0p/5SVNpjdCObMLYU3bV4kwYP/e935cc2e84b645ab6a385748704121ed/Starting-Point-EventAPI-Trigger.png)
+
+Enter the name of the event. For this, we want to use our event `registered_referral`.
+You can also set custom filters for contacts to further customize the automation trigger. When you’re done, click **Save Starting Point. **
+
+![modal-cjb-start-event-name](https://images.ctfassets.net/cxsachrr7h0p/5e7I8TmaiJkLe00wDp5H2l/835078d001b2c59609ba7a9583553daa/modal-cjb-start-event-name.png)
+
+On the Customer Journey Builder page, we’ll set the action for the trigger by clicking the **Send email** block and then clicking the **plus icon (+)** on the map. Once the block is added to the journey, click the **Gets email** block to customize the email you’ll send. You can set the schedule for when the email will be sent, design a template for the email and more. For details, check out [Use Send Email Actions](https://mailchimp.com/help/use-send-email-actions/).
+
+Once you’ve set up your email, hit **Continue**, and then **Turn on** to activate the automation.
+
+## Create segments with events
+
+Now we want to use our event to set up segments in our Mailchimp audience. We’re interested in the users who’ve referred their friends—they seem like they’ll be a reliable group to target going forward—so we’re going to set up a segment called “Referrers” for future campaigns. 
+
+Once again, we have to set this up via the web app. Navigate to the [**Audience**](https://us1.admin.mailchimp.com/audience/) [dashboard](https://us1.admin.mailchimp.com/audience/) and choose the correct audience. Select **View Contacts**, and once you’re on the contacts page, select **New Segment**: 
+
+![New Segment](https://images.ctfassets.net/cxsachrr7h0p/4CLDprhMDrXntj8ojCixOx/202c1aa311eab6cc870ad72f9ac5aebb/newsegment.png)
+
+Note that if you’re on a Mailchimp Premium or Pro plan, you’ll see a slightly different flow that allows you to choose between an **Advanced Segment** or a **Regular Segment**. For this example, we’re using a **Regular Segment**.
+
+Under _What your contacts have done_, select **Custom Engagement** and you’ll see your Event in the second drop-down. You can set date boundaries, but we’ll keep it simple: this segment is for anyone who’s triggered the `registered_referral` Event.
+
+![menu-segment-custom-engagement](https://images.ctfassets.net/cxsachrr7h0p/mT9Bpv4rAAQSq94O954Ip/df6de53bcddfcc85230edbd89201b690/menu-segment-custom-engagement.png)
+
+Preview the segment, hit save, and you’re good to go.
+
+<Note>
+**Note**: Essential and higher Mailchimp plans can set up Event-based segments, but if you want more granularity, you'll need a Premium or Pro plan, which let you create segments with unlimited segment conditions—as well as the ability to segment by Event properties themselves.
+</Note>
+
+## More resources
+
+- [Create Your First Audience](/marketing/guides/create-your-first-audience)
+- [Events API reference](/marketing/api)
+- [Marketing Fundamentals](/marketing/docs/fundamentals)

@@ -1,3 +1,193 @@
-# Webhooks
+---
+title: Webhooks
+description: Receive information about email events as they occur and respond in a way that you define.
+---
 
-Learn how to configure Mailchimp Transactional webhooks to receive real-time event notifications for sends, opens, clicks, bounces, and spam complaints.
+
+
+## The basics
+
+Webhooks allow your application to receive information about email events as they occur and respond in a way that you define. This documentation will detail configuring and testing webhooks, as well as information about authentication, failed batches, message formats, and more. To walk through the basic process of setting up a webhook, check out the [Track and Respond to Email Activity with Webhooks](/transactional/guides/track-respond-activity-webhooks) guide.
+
+### Formats
+
+Every Mailchimp Transactional webhook uses the same general data format, regardless of the event type. The webhook request is a standard HTTP POST request with a single parameter: `mandrill_events`.
+
+There are three types of webhooks that Mailchimp Transactional currently POSTs: 
+
+- **Message events**: send, deferral, hard-bounce, soft-bounce, delivered, open, click, spam, unsub, reject
+- **Sync events**: allowlist or denylist sync
+- **Inbound messages**
+
+The `mandrill_events` parameter contains a JSON array of webhook events, up to a maximum of 1,000 events. Each element in the array is a single event, such as an open, click, or denylist sync event. 
+
+<Note>
+**Note**: Webhooks are sent to your app via an HTTP POST request. You can and should authenticate that webhooks originated from Mailchimp’s servers by following the steps laid out in the “[Authenticating webhook requests](/transactional/guides/track-respond-activity-webhooks/#authenticating-webhook-requests)” section of the webhooks guide.
+</Note>
+
+### Event types
+
+Message event webhooks can be triggered by several types of events:
+
+- **Sent**: message has been sent successfully
+- **Opened**: recipient opened a message; will only occur when open tracking is enabled
+- **Clicked**: recipient clicked a link in a message; will only occur when click tracking is enabled
+- **Delivered**: message has received a response from the recipient’s mail server indicating successful delivery
+- **Delayed**: message has been sent, but the receiving server has indicated mail is being delivered too quickly and Mailchimp Transactional should temporarily slow down sending
+- **Marked as Spam**: recipient marked a message as spam
+- **Bounced**: message has hard-bounced
+- **Soft-Bounced**: message has soft-bounced
+- **Recipient Unsubscribes**: recipient has unsubscribed
+- **Rejected**: message was rejected
+
+Sync event webhooks allow you to sync data to an external data source. They help you track changes to data stored in Mailchimp Transactional, including:
+
+- **Rejection Denylist Changes**: triggered when a [Rejection Denylist](/transactional/docs/reputation-rejections/#rejected-emails) entry is added, changed, or removed
+- **Rejection Allowlist Changes**: triggered when a [Rejection Allowlist](/transactional/docs/reputation-rejections/#rejection-allowlist) entry is added or removed
+
+Inbound messages are processed based on the routes you’ve set up, and messages matching those routes are sent to your specified URL(s) as a webhook. For more information on inbound email, see the [Set Up Inbound Email Processing](/transactional/guides/set-up-inbound-email-processing) guide.
+
+## Add a new webhook
+
+You can configure a new webhook via your Mailchimp Transactional account or using the Transactional API.
+
+In the app: 
+
+1. Navigate to [**Webhooks**](https://mandrillapp.com/settings/webhooks) and click **Add a Webhook** at the top of the page
+2. Choose the events you want to listen for in the “Trigger on Events” section (e.g., when an email is sent, bounces, is opened, is marked as spam, is clicked)
+3. In the “Post To URL” field, input the callback URL your application will use to accept the incoming webhook
+4. Give your webhook an optional description under **Description**
+5. Click **Create Webhook**
+
+With the API: 
+
+Send a POST request to the [`webhooks/add`](/transactional/api) endpoint. For example:
+
+```json
+{
+    "key": "YOUR_API_KEY",
+    "url": "http://example.com/webhook-url",
+    "description": "My Example Webhook",
+    "events": [
+        "send",
+        "open",
+        "click",
+        "hard_bounce",
+        "spam"
+    ]
+}
+```
+
+<Note>
+**Note**: Your webhook callback URL should be set up to accept POST requests at a minimum. When you provide the URL where you want Mailchimp to POST the event data, a HEAD request will be sent to the URL to check that it exists.
+
+If the URL doesn't exist or returns something other than a 200 HTTP response to the HEAD request, Mailchimp will fall back and attempt a POST request. In this case, the POST request’s `mandrill_events` parameter will be an empty array, and the POST will be signed with a generic key (with the value `test-webhook`).
+</Note>
+
+## Test and debug webhooks
+
+You can send test events to any outbound webhook URL in your Mailchimp Transactional account using our built-in testing tools. In the [**Webhooks**](https://mandrillapp.com/settings/webhooks) section, find the webhook you’d like to test and click the **send test** button to send a batch of events to your webhook URL.
+
+If your webhook is set to trigger on more than one event type (e.g., open and click), the test will send one event for each type you’ve selected. If your webhook is set to trigger on only one event type, the test will send two events for that type. If the POST succeeds, we’ll display a success message that includes the number of POSTed events. If the POST fails, you’ll see an error message with more details on the failure.
+
+If you want to test webhooks in an external or temporary environment before making changes in production, check out these third-party tools: 
+
+- [RequestBin](https://requestbin.com/)
+- [Runscope](https://www.runscope.com/)
+- [ngrok](https://ngrok.com/)
+
+## Failed webhook batches
+
+Mailchimp Transactional batches events for each webhook URL and POSTs approximately once per minute. If the webhook URL does not return a 200 HTTP response code, the POST request will be re-attempted up to 20 times at 15-25 minute intervals. After 20 attempts, it will be considered a failure and will be marked as such in the app.
+
+While an unsuccessful POST request is being re-attempted, no other POSTs will be attempted. Subsequent events will be batched and deferred until the first event succeeds or ultimately fails. After the first event completes, deferred batches will be processed sequentially.
+
+To avoid data loss, we recommend that you accept and store data (with an HTTP 200 response to Mailchimp) for later processing.
+
+If your webhook has encountered too many failures, it will be disabled by having the triggers removed. Once you’ve resolved the connection issue, you can add the desired triggers back in the Webhooks page in your account.
+
+### View failed batches
+
+For webhooks in an error state, Mailchimp provides the raw webhook request content and sample code so you can emulate the failed POST using cURL. 
+
+To view webhook batch details, navigate to [**Webhooks**](https://mandrillapp.com/settings/webhooks), click on the number shown under **Number of events**, and then click the **view batch** button. At the top of the page, you’ll see the raw webhook request generated and sent by Mailchimp Transactional. You can use the cURL command at the bottom of the page to mimic the webhook POST in your own environment.
+
+<Note>
+**Note: **If the webhook payload is too large to fit on the common command line, we will provide a link to download it in full as a .txt file. You’ll need to save the file in your working directory before you run the cURL command.
+</Note>
+
+### Stop failed batches manually
+
+While Mailchimp automatically re-attempts failed webhook batches, you can also stop a failed batch manually. Navigate to [**Webhooks**](https://mandrillapp.com/settings/webhooks), click on the number shown under **Number of events**, and then click **give up.**The batch will be stopped and will not be sent to the webhook URL. New events will begin posting in about one to two minutes.
+
+## Detailed webhook format responses
+
+Each type of webhook sends a slightly different payload to your server when it fires. The following charts detail the keys included with each type of event.
+
+### Message events
+
+**ts** — the integer UTC UNIX timestamp when the event occurred
+
+**event** — the name of the event, one of: send, deferral, hard_bounce, soft_bounce, delivered, open, click, spam, unsub, reject
+
+**url** — for click events only, the url clicked for the event
+
+**ip** — for open and click events only, the IP address where the event originated
+
+**user_agent** — for open and click events only, the user agent string for the environment (i.e., browser or email client) where the open or click occurred
+
+**location** — for open and click events only, the geolocation where the event occurred. Value will be null if no location can be determined from the IP address of the event. Otherwise, an array of key–value pairs with the following keys:
+
+**user_agent_parsed** — for open and click events only, a parsed version of the user agent detected for the event. Value will be null if the user agent can’t be determined. Otherwise, an array of key–value pairs with the following keys:
+
+**_id** — the unique identifier of the message that generated the event. This is not an event identifier, but rather a reference to the message ID for the email that was sent, opened, clicked, etc.
+
+**msg** — details about the message for which the event occurred. May be empty if the message that generated an open or click is older than 30 days, or when the message was not yet indexed when the event occurred.
+
+### Sync events
+
+**ts** — the integer UTC UNIX timestamp when the event occurred
+
+**type** — the list that the sync event applies to (allowlist or denylist)
+
+**action** — the name of the event. Possible values: add (allowlist or denylist), remove (allowlist or denylist), change (denylist only)
+
+**reject**
+
+### Inbound messages
+
+**ts** — the integer UTC UNIX timestamp when the event occurred
+
+**event** — the name of the event
+
+**msg** — details about the message for which the event occurred
+
+**raw_msg** — the full content of the received message, including headers and content
+
+**headers** — an array of the headers received for the message, such as "Dkim-Signature", "Mime-version", "Date", "Message-Id", etc.
+
+**text** — the plain text version of the message
+
+**html** — the HTML version of the message
+
+**from_email** — the message sender's email address
+
+**from_name** — the message sender's name
+
+**to** — the email addresses and names of the recipients of the message
+
+**email** — the email address where Mailchimp Transactional received the message
+
+**subject** — the subject line of the message
+
+**tags** — the tags applied to the message; inbound messages won’t have tags, since they’re being received instead of sent, so this should always be an empty array
+
+**sender** — In inbound, sender will always show as null
+
+**attachments** — an array of attachments for the message, with filenames as keys. If there are no attachments, this key is omitted. Each attachment has the following keys:
+
+**images** — an array of images for the message, with filenames as keys. If there are no images, this key is omitted. Each image has the following keys:
+
+**spam_report** — the results of processing the message with the default SpamAssassin rules. Contains the following key:
+
+**matched_rules** — an array of objects containing details about the rules that the message matched. Each rule entry contains the following keys:

@@ -1,3 +1,408 @@
-# Track and Respond to Email Activity with Webhooks
+---
+title: Track and Respond to Email Activity with Webhooks
+description: Respond to email events\u2014like message opens and link clicks\u2014using webhooks.
+---
 
-Learn how to use Mailchimp Transactional webhooks to receive real-time notifications about email events like sends, opens, clicks, and bounces.
+
+
+## At a glance
+
+Webhooks allow your application to receive information about email events as they occur, and respond in a way that you define. You can [configure and test webhooks](/transactional/docs/webhooks/#test-and-debug-webhooks) via the [**Webhooks**](https://mandrillapp.com/settings/webhooks) page in your Mailchimp Transactional app, or you can do so via [the API](/transactional/api). 
+
+You could use webhooks to: 
+
+- Create your own custom reporting dashboard using webhook data
+- Keep your CRM in sync with events from Mailchimp Transactional
+- Store data about your emails for longer than 30 days
+
+For the purposes of this guide, we run a plant delivery website called Eiffel Flowers. In the course of our business, we send registered users a variety of transactional emails. 
+
+In this guide, we’ll set up a webhook that will trigger when a particular link is clicked in one of our emails, which will allow us to then send a follow-up email advertising a relevant flower sale. We’ll walk through how to create the webhook, and then we’ll write code to handle the incoming webhook data and send a follow-up email in response.
+
+## What you’ll need
+
+- A paid Mailchimp Transactional account
+- A callback URL for your application that can accept HTTP POST requests
+- [Your API key](/transactional/guides/quick-start)
+
+## Create a new webhook
+
+First, let’s set up our webhook, which will be triggered when subscribers click a link in one of our plant emails. There are two ways to do this: using the Mailchimp Transactional app or [through the API](/transactional/api). In this guide, we’ll walk through setting it up using the app. 
+
+To set up a webhook: 
+
+1. Navigate to [**Webhooks**](https://mandrillapp.com/settings/webhooks) and click **Add a Webhook** at the top of the page
+2. Choose the events you want to listen for in the “Trigger on Events” section (e.g., when an email is sent, bounces, is opened, is marked as spam, is clicked)
+3. In the “Post To URL” field, input the callback URL your application will use to accept the incoming webhook
+4. Give your webhook an optional description under **Description**
+5. Click **Create Webhook**
+
+<Note>
+**Note**: Your webhook callback URL must be set up to accept POST requests. When you provide the URL where you want Mailchimp to POST the event data, a request will be sent to the URL to check that it exists.
+
+The POST request’s mandrill_events parameter will be an empty array, and the POST will be signed with a generic key (with the value `test-webhook`).
+</Note>
+
+For a full overview of webhook formatting and configuration in Mailchimp Transactional, see the [Webhooks docs](/transactional/docs/webhooks/#the-basics). 
+
+## Handling the webhook response in your app
+
+Now that we have the webhook set up, we need to handle the webhook data on the server that the webhook URL we provided points to. 
+
+The body of the webhook request, parsed as JSON, will look something like this: 
+
+```json
+[json]
+{
+  "mandrill_events": [
+    {
+      "event": "open",
+      "msg": {
+        "ts": 1365109999,
+        "subject": "Roses Are Red, Violets Are On Sale",
+        "email": "flowerfriend@example.com",
+        "sender": "hello@eiffelflowers.biz",
+        "tags": ["violets"],
+        "opens": [
+          {
+            "ts": 1365111111
+          }
+        ],
+        "clicks": [
+          {
+            "ts": 1365111111,
+            "url": "https://www.eiffelflowers.biz/news/ultraviolet-sale"
+          }
+        ],
+        "state": "sent",
+        "metadata": {
+          "user_id": 111
+        },
+        "_id": "7761629",
+        "_version": "123"
+        # trimmed for brevity
+      }
+    }
+  ]
+}
+```
+
+Now that we know what the webhook data will look like for our “Message Is Clicked” event, we can work on handling it on our server. 
+
+That code might look like this:
+
+<CodeBlocks>
+```javascript title="Node"
+const express = require("express");
+const bodyParser = require("body-parser");
+
+const app = express();
+
+// notice that the body will be of type `x-www-form-urlencoded`,
+// and needs to be parsed as such
+app.use(
+  bodyParser.urlencoded({
+    extended: false
+  })
+);
+
+const TARGET_LINK_URL = "https://www.eiffelflowers.biz/news/ultraviolet-sale";
+
+const generateMessage = email => ({
+  html:
+    "<p>We noticed you were interested in violets! How about we offer you a great deal on a dozen if you buy in the next 72 hours?</p>",
+  text:
+    "We noticed you were interested in violets! How about we offer you a great deal on a dozen if you buy in the next 72 hours?",
+  subject: "Roses Are Red, Violets Are On Sale",
+  from_email: "hello@eiffelflowers.biz",
+  from_name: "Daisy @ Eiffel Flowers",
+  to: [
+    {
+      email,
+      type: "to"
+    }
+  ]
+});
+
+app.post("/", (req, res) => {
+  const mandrillEvents = JSON.parse(req.body.mandrill_events);
+  mandrillEvents.forEach(event => {
+    const {
+      clicks: [url],
+      email
+    } = event.msg;
+    if (url === TARGET_LINK_URL) {
+      // send follow-up message here using the Mailchimp Transactional API
+      // for more details, see https://mailchimp.com/developer/guides/send-your-first-transactional-email
+      console.log("Send follow up email with this payload:", generateMessage(email));
+    } else {
+      // lets us test the webhook using the Mailchimp Transactional UI (see next section)
+      console.log("webhook handled successfully!");
+    }
+  });
+  res.send("Done");
+});
+
+app.listen(3000, () => console.log("Now listening at http://localhost:3000"));
+```
+
+```php title="PHP"
+<?php
+const TARGET_LINK_URL = "https://www.eiffelflowers.biz/news/ultraviolet-sale";
+function generateEmail($email) {
+  $message = new stdClass();
+  $to = new stdClass();
+  $to->email = $email;
+  $to->type = 'to';
+  $message->html = '<p>We noticed you were interested in violets! How about we offer you a great deal on a dozen if you buy in the next 72 hours?</p>';
+  $message->text = 'We noticed you were interested in violets! How about we offer you a great deal on a dozen if you buy in the next 72 hours?';
+  $message->subject = 'Roses Are Red, Violets Are On Sale';
+  $message->from_email = 'hello@eiffelflowers.biz';
+  $message->from_name = 'Daisy @ Eiffel Flowers';
+  $message->to = [$to];
+  return $message;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $mandrillEvents = json_decode($_POST['mandrill_events']);
+  foreach ($mandrillEvents as $event) {
+    $url = $event->msg->clicks[0];
+    $email = $event->msg->email;
+    echo "url: $url";
+    if ($url === TARGET_LINK_URL) {
+      // send follow-up message here using the Mailchimp Transactional API
+      // for more details, see https://mailchimp.com/developer/guides/send-your-first-transactional-email
+      echo 'Send follow up email with this payload:' . generateMessage($email);
+    } else {
+      // lets us test the webhook using the Mailchimp Transactional UI (see next section)
+      echo 'webhook handled successfully!';
+    }
+  }
+  echo 'Done';
+}
+```
+
+```ruby title="Ruby"
+require 'MailchimpTransactional'
+require 'sinatra'
+
+
+TARGET_LINK_URL = "https://www.eiffelflowers.biz/news/ultraviolet-sale"
+
+configure do
+  set :port, 3000
+end
+
+def generate_message(email)
+  {
+    html:
+"<p>We noticed you were interested in violets! How about we offer you a great deal on a dozen if you buy in the next 72 hours?</p>",
+    text:
+     "We noticed you were interested in violets! How about we offer  
+you a great deal on a dozen if you buy in the next 72 hours?",
+    subject: "Roses Are Red, Violets Are On Sale",
+    from_email: "hello@eiffelflowers.biz",
+    from_name: "Daisy @ Eiffel Flowers",
+    to: [
+	{
+	  email: email,
+ 	  type: "to"
+	}
+    ]
+  }
+end
+
+head '/' do
+  200
+end
+
+post '/' do
+  events = JSON.parse(CGI.unescape(params['mandrill_events']))
+  events.each do |event|
+    msg = event['msg']
+    click = msg['clicks'][0]
+    email = msg['email']
+
+    if click && click['url'] == TARGET_LINK_URL
+      # send follow-up message here using the Mailchimp Transactional API
+      # for more details, see https://mailchimp.com/developer/guides/send-your-first-transactional-email
+
+      puts """
+Send follow up email with this payload:  #{generate_message(email)}
+	 """
+    else
+      puts 'webhook handled successfully!'
+    end
+  end
+  'Done!'
+end
+```
+
+```python title="Python"
+from flask import Flask,request
+
+app = Flask(__name__)
+
+@app.route('/', methods=['POST'])
+def index():
+  TARGET_LINK_URL = "https://www.eiffelflowers.biz/news/ultraviolet-sale"
+  mandrillEvents = request.form.to_dict(flat=False)['mandrill_events']
+  for event in mandrillEvents:
+    msg = event['msg']
+    click = msg['clicks'][0]
+    email = msg['email']
+    if click == TARGET_LINK_URL :
+      # send follow-up message here using the Mailchimp Transactional API
+      # for more details, see https://mailchimp.com/developer/guides/send-your-first-transactional-email
+      print("Send follow up email with this payload:")
+      generateMessage(email)
+    else :
+      # lets us test the webhook using the Mailchimp Transactional UI (see next section)
+      print("webhook handled successfully!")
+  return 'Done'
+  
+def generateMessage(email):
+  return {
+    "html":"<p>We noticed you were interested in violets! How about we offer you a great deal on a dozen if you buy in the next 72 hours?</p>",
+    "text":"We noticed you were interested in violets! How about we offer you a great deal on a dozen if you buy in the next 72 hours?",
+    "subject": "Roses Are Red, Violets Are On Sale",
+    "from_email": "hello@eiffelflowers.biz",
+    "from_name": "Daisy @ Eiffel Flowers",
+    "to": [
+      {
+        "email":email,
+        "type": "to"
+      }
+    ]
+  }
+  
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')
+```
+</CodeBlocks>
+
+You can find a full index of detailed webhook format responses in the [Webhooks docs](/transactional/docs/webhooks/#detailed-webhook-format-responses).
+
+## Test the webhook
+
+Now let’s run a simple test of the webhook without sending any emails. First, head back to[ **Webhooks**](https://mandrillapp.com/settings/webhooks). Find the entry for your webhook and click the **Send Test** button. 
+
+If your webhook handler is working, you should find the message `webhook handled successfully!` in your server logs.
+
+To test the webhook further, you’ll need to send an email containing a link with the `TARGET_LINK_URL` we used above, then have the recipient click the link. At that point, our handler should trigger, sending our follow-up email.
+
+For more information about testing and debugging webhooks, see the [Webhooks docs](/transactional/docs/webhooks/#test-and-debug-webhooks).
+
+## Authenticating webhook requests
+
+Finally, since our app exposes sensitive data—you know what plant-selling is like!—we’re going to want to ensure that requests are coming from Mailchimp Transactional rather than an imitator. Mailchimp signs all webhook requests, allowing you to verify that incoming requests weren’t generated by some nefarious third party. This step isn’t required, but it is recommended.
+
+First, we need to get our webhook authentication key. When you create a webhook via the Mailchimp Transactional app, a signing key is automatically generated. You’ll need this key to generate a signature in your code, and compare that to the signature that Mailchimp sent.
+
+If you’re using the [`webhooks/add`](/transactional/api) method, the key will be returned in the response. You can also view and reset the key from the [**Webhooks**](https://mandrillapp.com/settings/webhooks)** **page in your account. To retrieve a webhook key via the Transactional API, use [`webhooks/info`](/transactional/api) or [`webhooks/list`](/transactional/api).
+
+Next, we need to generate a signature. Mailchimp signs each webhook request using the following process:
+
+1. Create a string with the webhook’s URL, exactly as you entered it in Mailchimp Transactional (including any query strings, if applicable)
+2. Ensure that your string will either be interpreted literally or escape any characters that will be interpreted (i.e., the slashes)
+3. Append each POST variable’s key and value to the URL string, with no delimiter
+4. Hash the resulting string with HMAC-SHA1, using your webhook’s authentication key to generate a binary signature
+5. Base64 encode the binary signature
+
+Mailchimp includes an `X-Mandrill-Signature` HTTP header with webhook POST requests; this header will contain the signature for the request. To verify a webhook request, you’ll need to generate a signature using the same method and key that Mailchimp Transactional uses and compare that to the value of the `X-Mandrill-Signature` header. 
+
+<Note>
+**Note**: Some HMAC implementations can generate either a binary or hexadecimal signature. Mailchimp generates a binary signature and then Base64-encodes it; using a hexadecimal signature will not work.
+</Note>
+
+A function to accomplish this task may look something like:
+
+<CodeBlocks>
+```javascript title="Node"
+const crypto = require('crypto');
+
+function generateSignature(webhook_key, url, params) {
+    var signed_data = url;
+    const param_keys = Object.keys(params);
+    param_keys.sort();
+    param_keys.forEach(function (key) {
+        signed_data += key + params[key];
+    });
+
+    hmac = crypto.createHmac('sha1', webhook_key);
+    hmac.update(signed_data);
+
+    return hmac.digest('base64');
+}
+```
+
+```php title="PHP"
+/**
+ * Generates a base64-encoded signature for a Mailchimp Transactional webhook request.
+ * @param string $webhook_key the webhook's authentication key
+ * @param string $url the webhook url
+ * @param array $params the request's POST parameters
+ */
+function generateSignature($webhook_key, $url, $params) {
+    $signed_data = $url;
+    ksort($params);
+    foreach ($params as $key => $value) {
+        $signed_data .= $key;
+        $signed_data .= $value;
+    }
+
+    return base64_encode(hash_hmac('sha1', $signed_data, $webhook_key, true));
+}
+```
+
+```ruby title="Ruby"
+require 'openssl'
+require 'Base64'
+
+def generate_signature(webhook_key, url, params)
+  signed_data = url
+  params = params.sort_by(&:first).to_h
+  params.each do | key, value |
+    signed_data += key.to_s
+    signed_data += value
+  end
+
+  Base64.encode64(OpenSSL::HMAC.digest('sha1', webhook_key, signed_data))
+end
+```
+
+```python title="Python"
+import base64
+import hmac
+import hashlib
+
+def generate_signature(webhook_key, url, params):
+    """Generates a base64-encoded signature for a Mandrill webhook request.
+
+    Parameters:
+    webhook_key (bytes object): utf-8 encoded webhook auth key
+    url (string):  the webhook url
+    params (dict): the request's POST parameters
+
+    Returns:
+    string: A base64 encoded and hashed string
+    """
+
+    signed_data = url
+
+    for key, value in sorted(params.items()):
+        signed_data += key
+    	   signed_data += value
+    return base64.b64encode(hmac.new(webhook_key, msg=signed_data.encode("utf-8"), digestmod=hashlib.sha1).digest()).decode()
+```
+</CodeBlocks>
+
+You can reset a webhook’s authentication key at any time, and Mailchimp Transactional will immediately begin using the new key to sign requests. 
+
+To ensure that you don’t lose any webhook batches between the time you reset your key and when you update your application to start using that new key, your webhook processor should reject batches with failed signatures with a non-200 status code. Mailchimp will queue the batch and retry later, which will give you time to update your application with the new key. 
+
+## More resources
+
+- [Webhooks documentation](/transactional/docs/webhooks)
+- [Send Your First Transactional Email](/transactional/guides/send-first-email)
+- [Change Sending Behavior with the Rules Engine](/transactional/guides/change-behavior-rules-engine)

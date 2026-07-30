@@ -1,3 +1,83 @@
-# Contributing to Open Commerce
+---
+title: Contributing to Open Commerce
+description: Learn how to contribute to Open Commerce.
+---
 
-Learn how to contribute to the Mailchimp Open Commerce open-source project, including how to report issues, submit pull requests, and follow community guidelines.
+
+
+## The basics
+
+At Mailchimp Open Commerce, we're dedicated to the open source community. We've designed our entire platform to grow from the passion and creativity that an open source community ignites. We've already attracted a small, dedicated team of open source contributors, and there's always room for more. Anyone can contribute; all you need is a [GitHub account](https://github.com/). 
+
+If you'd like to join us, here's how to get started.
+
+## Find or open an issue
+
+To contribute, you can either add code to fix a bug or to create a new feature. 
+
+### Bug fixes
+
+You can either find an existing open issue, or open a new issue. In either case, start by running a search to be sure you’re not duplicating an already found issue. You can search issues by going to **Issues** on the appropriate repo and using the search box. Most bugs are marked with the “bug” label to make them easy to filter on. Doing this is really critical as opening multiple issues for the same problem doesn't allow us to see that this issue is impacting multiple users which may change its priority.
+
+You can create a new issue If you find that no one has opened one that addresses your bug. Be sure to fill out the entire template or your issue may be closed due to lack of information. Filling only the subject and none of the template almost guarantees that your issue will be closed immediately.
+
+### New features
+
+If you want to add a new feature, we also ask that you start a discussion on the [Feature Request forum](https://github.com/reactioncommerce/reaction/discussions/categories/feature-requests), so that we have a clear understanding of the problem you want to solve. This is a great place to discuss your implementation and see if anyone in the community has already created something similar.
+
+## Prepare a pull request
+
+**Avoid breaking changes without prior discussion. We’ll keep your PR on ice until we approve a new major release.**
+
+Make sure you branch off `trunk` to create your PR.
+
+### Use Git commit message conventions
+
+You'll need to follow the [Open Commerce Git Formatting Standards](/open-commerce/docs/git-formatting-conventions) for both your branch name and your commits. 
+
+### Give your PR a good title
+
+Make sure the PR title completely describes the new feature or bug fix.
+
+For example, a bad bugfix PR title would be something like `Fix broken query.` You'd want to use a more complete description like `Add missing filter parameter to products query`.
+
+Or a bad feature PR title would be `Shipping`, while the better choice would be `Add the ability to have multiple dynamic shipping providers via plugin`.
+
+### Fill out the pull request template
+
+Each item in [the template ](https://github.com/reactioncommerce/reaction/blob/trunk/.github/pull_request_template.md)is critical for us to evaluate the code in your PR.
+
+| Requested Info | What we use it for |
+| --- | --- |
+| Issue | This is the starting point for our review. If something is not clear, we’ll reject the PR and ask for clarity by requesting changes. While the original description of the issue may have useful information, the PR should contain the most up to date representation of the issue. |
+| Solution | This helps us determine a path to test the PR. We’ll research any included packages or techniques that you may have used that we’re not familiar with, and we'll ask questions if we’re confused. |
+| Breaking Changes | We test by applying the patch to an existing install of Open Commerce with existing users, orders, carts, etc. Specifically, we’ll test any parts of the app where the breaking change is involved and any data set that is involved in a migration. |
+| Testing | We’ll run through your steps to verify that the patch works as you’ve tested it. Then, we run through it on our own as we would test it. We’ll test the app as many times as we feel comfortable before approving or requesting changes. |
+
+**Note**: If a section is completely irrelevant, you can remove it. For example, you wouldn’t need testing instructions for fixing a typo in the docs. 
+
+### Pass all tests
+
+We’ll never merge a PR that doesn't pass build checks and tests. You should be able to run most tests locally using `pnpm run test`. Typically, we won't even begin the review process if your PR has not passed these tests. Any new functionality you add should also be covered by tests. Code without tests will be rejected. Take a look at our [Testing Requirements doc](/open-commerce/docs/testing-requirements) for more specifics. Additionally, there are many examples throughout the code that show how you can write different types of tests 
+
+## We review your PR
+
+The team triages all new pull requests as soon as the PR is complete, but if the PR doesn't follow our template, we'll reject it immediately and point you to this doc.
+
+In addition to the items from the PR template we also look for:
+
+- **Readability** - We use a linter, but we’ll call out anything that is difficult to understand or that we feel needs comments
+- **Documentation** - You should document any new functionality or any code that you've touched as outlined in the [JSDoc Style Guide](https://github.com/reactioncommerce/reaction-docs/blob/trunk/public-docs/jsdoc-style-guide.md).
+- **Security** - We’ll validate that the code is only functional to users with the correct permissions. You should filter any data you publish to ensure that only users with the correct permissions for the correct shops have access to it. We use [Snyk](https://snyk.io/) to test for security and won’t approve any code that fails to pass. We also won’t approve code that fails any automated tests.
+- **Performance** - We’ll test for performance. You should write code with performance in mind. Data publications should only publish data necessary to accomplish the specific goal at hand.
+- **Tests** - You should include tests with any new functionality.
+- **Dependencies** - You should update any newly introduced dependencies to the latest version.
+- **Linting** - Your code should pass all linting tests. If there are minor linting errors, the reviewer may fix them for speed.
+
+Reviewers will note any changes that they want to QA in the app, even if they aren't listed in the testing steps. For example,  if the code changes a cart button, we’ll test to be sure that the button still works.
+
+## Congrats! It's approved. What happens next?
+
+The Open Commerce team lead will merge PRs that can go in the current release. PRs that need to wait until a major release will either be left open or merged into a release branch.
+
+Once your PR is merged, your contribution will be released in the next release cycle. This normally happens weekly. If your PR includes a breaking change, though, we’ll only release it in the next major release.

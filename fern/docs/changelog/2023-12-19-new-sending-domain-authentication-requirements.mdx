@@ -1,0 +1,24 @@
+---
+title: New sending domain authentication requirements
+tags: ["Transactional"]
+---
+
+Beginning on March 15, 2024, we'll be enforcing new sending domain authentication requirements that you'll need to act on.
+
+Google and Yahoo recently announced new sending requirements that will go into effect soon. To comply with these changes, Mailchimp Transactional users will have to update their DKIM records and enact a DMARC policy on any sending domain that might be used. 
+
+If you fail to update your domain’s authentication, we’ll use a `mandrillapp.com` subdomain as the sending domain for your email address, but replies from recipients will still go to your email address. This change will apply to any email sent through Mandrill that is currently authenticated but doesn't meet our new authentication requirements after March 15.
+
+Here's how you can get started:
+
+**DKIM**
+
+Create two CNAME records: one with the name `mte1._domainkey.`**`yourdomain.com`** with the value **`dkim1.mandrillapp.com`**, and another with the name `mte2._domainkey.`**`yourdomain.com `**and the value **`dkim2.mandrillapp.com`** 
+
+**DMARC**
+
+Create and save a TXT record in your DNS with a name of `_dmarc.`**`yourdomain.com`** and a value of **`v=DMARC1; p=none`**
+
+Replace _`yourdomain.com`_ with the domain you're setting up. Some domain hosts automatically add `yourdomain.com` after the initial value—contact your domain provider for any specifics.
+
+We’ve updated the Mailchimp Transactional app and documentation to include these instructions, and to give you the ability to test these records on your Sending Domains page. 

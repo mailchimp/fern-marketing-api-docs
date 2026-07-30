@@ -1,0 +1,8 @@
+---
+title: Deprecated fields in the Growth History endpoint
+tags: ["Marketing API"]
+---
+
+We’ve stopped calculating the (deprecated) `existing`, `options`, and `imports` fields for the [Growth History endpoint](https://mailchimp.com/developer/api/marketing/list-growth-history/), and API responses will have a value of zero for these fields.
+
+The data in these fields can be accessed in a more understandable way in other fields, and returning the data in these fields was slow and added infrastructure load when these endpoints were requested.

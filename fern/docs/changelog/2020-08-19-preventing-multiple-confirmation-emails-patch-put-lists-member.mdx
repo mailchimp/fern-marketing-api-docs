@@ -1,0 +1,8 @@
+---
+title: Preventing multiple confirmation emails on PATCH or PUT to Lists/Member endpoint
+tags: ["Marketing API"]
+---
+
+It was possible to force multiple confirmation emails to be sent to a member when using identical [PATCH](https://mailchimp.com/developer/api/marketing/list-members/update-list-member/) or [PUT](https://mailchimp.com/developer/api/marketing/list-members/add-or-update-list-member/) requests to the [Members resource](https://mailchimp.com/developer/api/marketing/list-members/). We’ve corrected this behavior by preventing the duplicate confirmation emails from being sent.
+
+Before this change, multiple confirmation emails would be sent to a member’s inbox, which could potentially be used for abuse.

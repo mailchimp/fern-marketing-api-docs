@@ -1,0 +1,10 @@
+---
+title: Added Stripe SCA payments plugin
+tags: ["Open Commerce"]
+---
+
+We’ve created a new Stripe plugin, [`api-plugin-payments-stripe-sca`](https://github.com/reactioncommerce/api-plugin-payments-stripe-sca), and we recommend that all users of the existing Stripe plugin migrate to it. [`api-plugin-payments-stripe`](https://github.com/reactioncommerce/api-plugin-payments-stripe/) is now deprecated and will be supported until October 31, 2021. This release also affects the [`example-storefront`](https://github.com/reactioncommerce/example-storefront) repository, which now includes components to support 3D Secure validation. 
+
+Thanks to contributor Janus Reith for his input.
+
+The new plugin is designed to comply with the current [Strong Customer Authentication (SCA) regulation](https://stripe.com/docs/strong-customer-authentication), part of PSD2 regulation in Europe, which requires changes to how your European customers authenticate online payments.

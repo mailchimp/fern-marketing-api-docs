@@ -1,0 +1,71 @@
+---
+title: "Mailchimp and WordPress"
+subtitle: "Bridging the Gap with Gravity Forms"
+---
+
+<a class="mc-blog-back" href="/blog">← Back to Blog</a>
+
+<p class="mc-blog-post-byline"><span class="mc-blog-author">Aaron Speer</span>, Senior Software Engineer</p>
+
+<img class="mc-blog-post-hero" src="https://mailchimp.com/developer/static/f5c7d9fd519fa11bbe882557d41a3cd5/8c3a2/Rocket-Genius_Illo_9-16.png" alt="Mailchimp and WordPress" />
+<p class="mc-blog-post-credit">Image Credit: Devin Wistendahl</p>
+
+Here at Mailchimp Engineering, we’re passionate about empowering our developer community. That’s why we share stories about the triumphs and challenges that our external developers experience while building on Mailchimp.
+
+Recently, we spoke with Aaron Speer, Senior Software Engineer at Gravity Forms. The WordPress form plugin, Gravity Forms, has its own Mailchimp Add-On which enables deep integration between the plugin and Mailchimp. This integration allows users to send data collected through forms on their WordPress websites to their Mailchimp dashboard. 
+
+We chatted with Aaron about development at Gravity Forms and about his experience building and maintaining the Mailchimp Add-On.
+
+### What can you do with Gravity Forms?
+
+Gravity Forms is a powerful form builder for WordPress. The plugin allows users to build just about any type of custom data capture form for WordPress websites - from basic contact forms, surveys, and quizzes, to payment forms and advanced solutions for many niche requirements. 
+
+The company behind Gravity Forms, Rocketgenius, was founded in 2008, and over the last 14 years the plugin has become renowned in the WordPress community for its advanced features and functionality, robust security and continued reliability. 
+
+Aaron told us:
+
+_“It’s almost silly to just call Gravity Forms a form plugin, because at this point it’s more like a user interaction ecosystem. Website owners and operators can use it to interact with their customer base and visitors in an impactful way. They can get detailed information—everything from contact to payment. And in a lot of ways our success has been due to our focus on backwards compatibility._
+
+_We want that person who installed it in 2012 to be able to keep updating and not worry about it. As a developer it can be tricky to support something that came out almost a decade ago—so much of the web is almost ethereal—but I think it’s paid off. People have confidence that they can install Gravity Forms, have it hang out on their website, and it’s not going to give them issues. I think that’s fantastic.”_
+
+### The origin of Gravity Forms Mailchimp Add-On
+
+One of the key features of Gravity Forms is its extensive ecosystem of integrations. Referred to as add-ons, Gravity Forms has built and maintained a wide assortment of add-ons for numerous email marketing and CRM providers, payment processors, anti-spam tools, and business automation solutions. 
+
+In the early days of Gravity Forms, the developers quickly realized that if the plugin was going to collect information, then they should probably make it as easy as possible for customers to use that information. This led to the development of integrations with other platforms, including Mailchimp.
+
+_“It was actually one of the first integrations we made,”_ says Aaron. _“Of course, one of the popular uses for signup forms is for newsletters—and when many of us think of newsletters, we immediately think of Mailchimp. Creating an integration was an easy call, so we dove straight in.”_
+
+### Building on Mailchimp: Getting Started
+
+While the Rocketgenius team now has experience creating add-ons, they had more fundamental questions to answer before they could even begin building. They had to determine, first and foremost: “What does connecting Gravity Forms to something else even look like?”
+
+[Learn more about the Gravity Forms Integration](https://mailchimp.com/integrations/gravityforms/)
+
+_“We came up with a concept we call ‘feeds.’— in an architectural sense, when a form is submitted we take those inputs and feed them to somewhere else. Once we had that in mind, it was pretty straightforward to set up various administration settings pages that were in line with how WordPress dashboards work in general. _
+
+_We didn’t want to present a UI to users that was different to everything else there, which would be a frustrating experience, so there wasn’t a ton to do as far as UI or UX goes. We just created an interface where people could look at fields in their forms and choose where the data from each of those fields fed to. _
+
+_And once we had the Mailchimp side set up, it became relatively trivial to connect those UI dots and give people a way to map from one to the other.”_
+
+### Working with Mailchimp
+
+The Product team at Gravity Forms relies on a number of different development tools. They use PhpStorm, a cross-platform IDE, to quickly set up machines and environments with the other tools they need. _It’s our Swiss army knife, _Aaron says.
+
+He also vouches for Insomnia for their RESTful needs: 
+
+_“It’s similar to Postman, but newer, and really nice for working with APIs because it’s set up to talk to them exactly how you need it to. I know some companies provide API explorers on their developer pages for previewing what you’re going to see, but I like getting my hands dirty with raw requests in Insomnia.”_
+
+They also used the PHP SDK, although that’s normally something they avoid because of their focus on backwards compatibility. Gravity Forms targets PHP 5.6 as a minimum supported version, so instead of using SDKs that are regularly updated the Product team “hand roll” their own libraries.
+
+_“But, honestly, we’ve never had to do a lot of updates, because Mailchimp’s API is rock-solid and industry standard. Making our own can be a nightmare when there’s a lack of documentation, or the API is nonsensical, but working with Mailchimp was as comfortable as putting on a nice pair of slippers._
+
+_I have a lot of experience here—going back a long way, to before the world of RESTful APIs, and before even the idea of shuttling information around the web in a standardized way—but there weren’t any speed bumps. Every request was what I expected, and every response was too. It just made sense. _
+
+_Our most recent significant integration update came in late 2021, when we switched to using OAuth, and the documentation site had had a major visual overhaul that was very nice as well. It’s not often you see companies put as much design mojo into developer-facing things._
+
+_If you’ve had negative experiences working with APIs elsewhere, like with some monster like Google or AWS, then you’ll be pleasantly surprised by the Mailchimp API. There are far fewer hoops to jump through, and for developers just trying to get their feet wet with APIs in general Mailchimp is a wonderful one to start with.”_
+
+### What’s next for Gravity Forms and their Mailchimp Add-On? 
+
+As the Gravity Forms user base continues to grow, so do the use cases for the plugin. Trusted by non-profits, government organizations, major universities, and big businesses, Gravity Forms looks forward to continuing the support and development of their Mailchimp Add-On - a must have integration that helps ensure the needs of its customers are met across the board. 

@@ -1,0 +1,9 @@
+---
+title: Subject and TO header no longer require encoding
+tags: ["Transactional"]
+---
+
+We’ve recently updated how we encode email headers, so that Subject Lines and the recipient headers (like TO, CC, etc) no longer require users to encode non-ASCII characters.
+
+
+We made this change to make it easier for users to send emoji or non-standard text in the Subject, To Address, and To Name. Now, you can pass in those characters directly instead of having to encode them in your email. 

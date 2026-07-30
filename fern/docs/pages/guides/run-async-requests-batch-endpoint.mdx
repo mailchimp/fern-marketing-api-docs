@@ -1,5 +1,886 @@
 ---
 title: Run Async Requests with the Batch Endpoint
+description: Scale large or long-running calls to the Marketing API with batch requests.
 ---
 
-Content coming soon.
+
+
+## At a glance
+
+The Batch endpoint lets you scale more efficiently by leveraging Mailchimp’s infrastructure to enqueue and monitor longer-running requests. Batch operations run in the background on Mailchimp’s servers, and are particularly useful in three contexts:
+
+1. Requests to the Marketing API time out at 120 seconds, so if you’re making a long-running request that won’t finish in that time, you may need to use the Batch endpoint to complete the request.
+2. The Marketing API has a limit of 10 concurrent connections for your API key. If you’re expecting to make a higher volume of requests from your application, Batch requests will let you work around this limitation.
+3. Depending on your server language or architecture, you may not want a request to the Marketing API to block other threads. Batch requests are fast and won’t block while long operations take place.
+
+You can use the Batch endpoint to do things like: 
+
+- Update audience members in bulk from your external CRM or databases
+- Update your databases with Mailchimp audience member data
+- Retrieve reports or report data in bulk
+
+In this guide, we’re going to use the Batch endpoint to do a big job: adding 1,000 new contacts from an external database into a Mailchimp audience. We collected those names and email addresses through the sign-up form on our application; now, we’re launching a marketing newsletter, so it’s time to break out the Batch endpoint. 
+
+(Don’t worry: We were optimistic when we built our application—we didn’t have a marketing budget, but we hoped we’d be able to afford marketing someday—so we included language in our sign-up process that ensured we’d be in compliance with data privacy laws.)
+
+Using the Batch endpoint, we’ll walk through making the batch request, checking its status, and getting the results—and we’ll also walk through how to set up notifications for results using batch webhooks. 
+
+## What you’ll need
+
+- A Mailchimp account
+- [An audience](https://mailchimp.com/help/create-audience/) in your Mailchimp account (for this example)
+- The [Audience ID](https://mailchimp.com/help/find-audience-id/) for that audience (for this example)
+- [Your API key and server prefix](/marketing/guides/quick-start/#generate-your-api-key)
+
+## Make a batch operations request
+
+We’re ready to turn our 1,000 names and email addresses into 1,000 Mailchimp contacts. Rather than make 1,000 separate API calls, we’ll use the Batch endpoint to add 1,000 contacts in a single call. With that single call, the Batch endpoint will call other endpoints on our behalf—here, we’ll be implementing the[ Members endpoint](/marketing/api) at scale.
+
+When you POST to the Batch endpoint, it expects a JSON object with a single key: `operations`, which is an array of objects that describe the API calls you want to make. To add a single member to our audience, that `operations` object will look like this:
+
+```json
+{
+  "operations": [{
+    "method": "POST", # The http verb for the operation
+    "path": "/lists/{list_id}/members", # The relative path of the operation (relative to /api/3.0)
+    "operation_id": "my-id", # A string you provide that identifies the operation
+    # Optional: The JSON payload for PUT, POST, or PATCH requests
+    "body": "{  \"email_address\": \"freddie@example.com\", \"status\": \"subscribed\" }",
+    "params": {...}, # Optional: A JSON representation of URL query params, only used for GET requests
+  }]
+}
+```
+
+Of course, we’re batch-adding 1,000 contacts, so to finish the job, our operations array will include 1,000 of the objects above for each of the contacts we want to add.
+
+The final code might look like this:
+
+<CodeBlocks>
+```bash title="cURL"
+#!/bin/bash
+set -euo pipefail
+
+server="YOUR_SERVER_PREFIX"
+apikey="YOUR_API_KEY"
+listid="YOUR_LIST_ID"
+
+declare -A subscriber1=(
+	[email]="user1@example.com"
+	[id]=1
+	[status]="subscribed"
+)
+
+declare -A subscriber2=(
+	[email]="user2@example.com"
+	[id]=2
+	[status]="subscribed"
+)
+
+curl -sS --request POST \
+  "https://${server}.api.mailchimp.com/3.0/batches" \
+  --user "`anystring`:${apikey}" \
+  --data @- \
+<<EOF | jq 'del(._links)'
+{
+	"operations":[
+    	{
+        	"method": "POST",
+        	"path": "/lists/${listid}/members",
+        	"operation_id": "${subscriber1[id]}",
+        	"body": "{\"email_address\":\"${subscriber1[email]}\",\"status\":\"${subscriber1[status]}\"}"
+    	},
+    	{
+        	"method": "POST",
+        	"path": "/lists/${listid}/members",
+        	"operation_id": "${subscriber2[id]}",
+        	"body": "{\"email_address\":\"${subscriber2[email]}\",\"status\":\"${subscriber2[status]}\"}"
+    	}
+	]
+}
+EOF
+```
+
+```javascript title="Node"
+const mailchimp = require("@mailchimp/mailchimp_marketing");
+
+mailchimp.setConfig({
+  apiKey: "YOUR_API_KEY",
+  server: "YOUR_SERVER_PREFIX"
+});
+
+const listId = "YOUR_LIST_ID";
+
+async function run() {
+  const myUsers = [
+    {
+      id: "1",
+      email: "user1@example.com"
+    },
+    {
+      id: "2",
+      email: "user2@example.com"
+    }
+    // etc...
+  ];
+
+  const operations = myUsers.map((user, i) => ({
+    method: "POST",
+    path: `/lists/${listId}/members}`,
+    operation_id: user.id,
+    body: JSON.stringify({
+      email_address: user.email,
+      status: "subscribed"
+    })
+  }));
+
+  const response = await mailchimp.batches.start({
+    operations
+  });
+  console.log(response);
+}
+
+run();
+```
+
+```php title="PHP"
+require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
+
+$mailchimp = new MailchimpMarketing\ApiClient();
+
+$mailchimp->setConfig([
+    'apiKey' => 'YOUR_API_KEY',
+    'server' => 'YOUR_SERVER_PREFIX'
+]);
+
+$list_id = "YOUR_LIST_ID";
+
+$users = [
+    [
+        'id' => '1',
+        'email' => 'user1@example.com'
+    ],
+    [
+        'id' => '2',
+        'email' => 'user2@example.com'
+    ],
+];
+
+$operations = [];
+foreach ($users as $user) {
+    $operation = [
+        'method' => 'POST',
+        'path' => "/lists/$list_id/members",
+        'operation_id' => $user['id'],
+        'body' => json_encode([
+            'email_address' => $user['email'],
+            'status' => 'subscribed'
+        ])
+    ];
+    array_push($operations, $operation);
+}
+
+try {
+    $response = $mailchimp->batches->start($operations);
+    echo $response;
+} catch (\MailchimpMarketing\ApiException $e) {
+    echo $e->getMessage();
+}
+```
+
+```ruby title="Ruby"
+require "MailchimpMarketing"
+
+mailchimp = MailchimpMarketing::Client.new
+mailchimp.set_config({
+  :api_key => ENV["API_KEY"],
+  :server => ENV["API_SERVER"]
+})
+list_id = ENV["LIST_ID"]
+
+mock_users = [
+  {
+    id: 1,
+    email: "user1@example.com"
+  },
+  {
+    id: 2,
+    email: "user2@example.com"
+  }
+]
+
+operations = mock_users.map do |user|
+  {
+    method: "POST",
+    path: "/lists/#{list_id}/members",
+    operation_id: user[:id],
+    body: {
+      email_address: user[:email],
+      status: "subscribed"
+    }
+  }
+end
+
+response = mailchimp.batches.start operations
+puts response
+```
+
+```python title="Python"
+from mailchimp_marketing import Client
+import json
+
+mailchimp = Client()
+mailchimp.set_config({
+  "api_key": "YOUR_API_KEY",
+  "server": "YOUR_SERVER_PREFIX"
+})
+
+list_id = 'YOUR_LIST_ID'
+
+users = [
+    {
+        'id': '1',
+        'email': 'user1@example.com'
+    },
+    {
+        'id': '2',
+        'email': 'user2@example.com'
+    },
+]
+
+operations = []
+for user in users:
+    operation = {
+        "method": "POST",
+        "path": f"/lists/{list_id}/members",
+        "operation_id": user['id'],
+        "body": json.dumps({
+            "email_address": user['email'],
+            "status": "subscribed"
+        })
+    }
+    operations.append(operation)
+
+payload = {
+    "operations": operations
+}
+
+response = mailchimp.batches.start(payload)
+print(response)
+```
+</CodeBlocks>
+
+The response will look something like this:
+
+```json
+{
+  "id": "123abc", # Unique id of the batch call
+  "status": "pending", # Status for the whole call
+                       # Pending, preprocessing, started, finalizing, or finished
+  "total_operations": 1000, # Number of operations in the batch
+  "finished_operations": 1, # Number of finished operations
+  "errored_operations": 0, # Number of errored operations
+  "submitted_at": "...", # Datetime the call was made
+  "completed_at": "...", # Datetime when all the operations completed
+  "response_body_url": "...", # URL to use to retrieve results
+}
+```
+
+Batch requests are limited to 500 pending requests, meaning at any one time, you can have at most 500 batch requests with a status of `pending`. In addition to 500 pending batch requests, we also allow up to 500 pending batch webhook requests before we begin to throttle batch requests. For each batch webhook you have configured, we generate a batch webhook request for each completed batch.
+
+A few other things to keep in mind when making a call to the Batch endpoint:
+
+- Operations in a request are not guaranteed to run in order.
+- GET requests that do not include a `count` parameter automatically page through the entire collection.
+
+<Note>
+**Note**: Each operation you define in a batch request can include an `optional operation_id` parameter, which is a string. The `optional operation_id` you supply in the request is returned with the results of that call, allowing you to match a set of results to a specific operation in the original request. We recommend using a unique and meaningful value for `optional operation_id`, though the Batch endpoint does not enforce uniqueness for the `optional operation_id`; it’s purely for your use.
+</Note>
+
+## Check the status of a batch operation
+
+Our operations are queued, but to find out if they’re finished, we need to check the status. We can retrieve that status using the id returned in the response when we created the batch request:
+
+<CodeBlocks>
+```bash title="cURL"
+#!/bin/bash
+set -euo pipefail
+
+server="YOUR_SERVER_PREFIX"
+apikey="YOUR_API_KEY"
+batchid="YOUR_BATCH_ID"
+
+curl -sS \
+  "https://${server}.api.mailchimp.com/3.0/batches/${batchid}" \
+  --user "`anystring`:${apikey}" | jq '.status'
+```
+
+```javascript title="Node"
+const batchId = "YOUR_BATCH_OPERATION_ID";
+
+async function run() {
+  const response = await mailchimp.batches.status(batchId);
+  console.log(response.status);
+}
+
+run();
+```
+
+```php title="PHP"
+require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
+
+$mailchimp = new MailchimpMarketing\ApiClient();
+
+$mailchimp->setConfig([
+    'apiKey' => 'YOUR_API_KEY',
+    'server' => 'YOUR_SERVER_PREFIX'
+]);
+
+$batch_id = 'YOUR_BATCH_ID';
+
+try {
+    $response = $mailchimp->batches->status($batch_id);
+    echo $response["status"];
+} catch (\MailchimpMarketing\ApiException $e) {
+    echo $e->getMessage();
+}
+```
+
+```ruby title="Ruby"
+require "MailchimpMarketing"
+
+mailchimp = MailchimpMarketing::Client.new
+mailchimp.set_config({
+  :api_key => ENV["API_KEY"],
+  :server => ENV["API_SERVER"]
+})
+batch_id = ENV["BATCH_OPERATION_ID"]
+
+response = mailchimp.batches.status batch_id
+puts response.status
+```
+
+```python title="Python"
+batch_id = 'YOUR_BATCH_ID'
+
+response = mailchimp.batches.status(batch_id)
+print(response)
+```
+</CodeBlocks>
+
+The status check response will look like the response from our initial call to the Batch endpoint. For now, we’re concerned with the status of our operation, which can be in any of the following states:
+
+| State | Description |
+| --- | --- |
+| `pending` | Processing on the batch operation has not started. |
+| `preprocessing` | The batch request is being broken up into smaller operations to speed up processing. |
+| `started` | Processing has started. |
+| `finalizing` | Processing is complete, but the results are being compiled and saved. |
+| `finished` | Processing is done. You can now retrieve the results from the URL in `response_body_url`. |
+
+Other useful information included in the payload:
+
+| Status | Description |
+| --- | --- |
+| `total_operations` | The total number of operations to be processed. |
+| `finished_operations` | The number of operations that have been processed. |
+| `errored_operations` | The number of operations that returned a non-200 response. |
+| `response_body_url` | The URL where you can download the gzipped archive of the results of all the operations. |
+
+<Note>
+**Note**: You can retrieve a list of all requested batch operations from the last seven days with the [List batches endpoint](/marketing/api).
+</Note>
+
+## Get the results of a batch operation
+
+When the `status` of our job is `finished`, we can retrieve the results. In this case, we want to save the `web_id` of each contact in our application so we can link directly to that contact in the Mailchimp web application from our tools. 
+
+A GET request to the `response_body_url` returns a gzipped tar archive of JSON files. You can expect a single file per operation, unless one of your operations contains paged data; in that case, those responses may also be split across multiple files. The JSON results of each operation will be returned in the following format:
+
+```json
+[
+  {
+      "status_code": 200,
+      "operation_id": "my-id",
+      "response": "{...}"
+  },...
+]
+```
+
+This array of results contains the HTTP status (if everything went well, a 200), the `operation_id` we set when we created the batch request, and the response body from the actual API call. Since we used our application’s internal user IDs as the operation_id in each operation, we can process the results of our batch request and map the results to the users we just processed. 
+
+Here, we’re going to save the Mailchimp `web_id` to our database:
+
+<CodeBlocks>
+```javascript title="Node"
+const fetch = require("node-fetch");
+
+const responseBodyUrl = "RESPONSE_BODY_URL_FROM_PREVIOUS_STEPS";
+
+async function run() {
+  const response = await fetch(responseBodyUrl);
+
+  // Extract data from gzipped archive, return as JSON array
+  // Implementation details not included
+  const results = processBatchArchive(response);
+  results.forEach(result => {
+    const user = fakeDB.findUser(result.operation_id);
+    fakeDb.updateUser(user, {
+      mailchimpWebId: result.response.web_id
+    });
+  });
+}
+
+run();
+```
+
+```php title="PHP"
+require dirname(__DIR__).'/vendor/autoload.php';
+
+$url = "RESPONSE_BODY_URL_FROM_PREVIOUS_STEPS";
+$guzzle = new GuzzleHttp\Client();
+$response = $guzzle->get($url);
+
+// Extract data from gzipped archive, return as array
+// Implementation details not included
+$results = processBatchArchive($response);
+
+foreach ($results as $result)
+{
+    $user = FakeUser::find($result['operation_id']);
+    $user->setMailchimpWebId(result['response']['web_id']);
+    $user->save();
+}
+```
+
+```ruby title="Ruby"
+require "net/http"
+
+response_body_url = URI.parse("RESPONSE_BODY_URL_FROM_PREVIOUS_STEPS")
+response = Net::HTTP.get(response_body_url)
+
+# Example data extraction from gzipped archive, returns as array of hashes
+results = processBatchArchive(response)
+results.each do |result|
+  user = User.find(result[:operation_id])
+  user.update mailchimp_web_id: result[:response][:web_id]
+end
+```
+
+```python title="Python"
+import urllib.request
+
+response_body_url = "RESPONSE_BODY_URL_FROM_PREVIOUS_STEPS"
+data = ""
+with urllib.request.urlopen(response_body_url) as response:
+   data = response.read()
+
+# Extract data from gzipped archive, return as JSON array
+results = process_batch_archive(data)
+for result in results:
+    user = fakeDB.findUser(result["operation_id"])
+    fakeDB.updateUser(user, {
+        "mailchimp_web_id": result["response"]["web_id"]
+    })
+```
+</CodeBlocks>
+
+<Note>
+**Note**: The results of your batch operation are available to download for seven days after you make the request. For security reasons, however, any `response_body_url` is only valid for ten minutes after it’s generated. You can always generate a new `response_body_url` by making another [Batch status call](/marketing/api).
+</Note>
+
+## Batch webhooks
+
+In one-off usage like the contact sync in our example, periodically checking the status of batch operations works well enough. But if you’re regularly making batch requests in your application—for example, if you’ve set up an internal dashboard for generating reports on-demand—setting up a batch webhook may be a better option.
+
+A batch webhook lets Mailchimp tell your app when all the operations enqueued by a batch request are complete. You only need to set up a batch webhook once—Mailchimp will POST all completed batch requests to the webhook you create. You can have a maximum of 20 batch webhooks available at any time; if you try to create more than 20, you’ll get an error, and will have to delete an existing webhook before you’ll be able to create a new one.
+
+Now that our 1,000 contacts are in Mailchimp, let’s say we’ve also built an internal admin tool for generating Mailchimp reports on demand: it makes sense to create a batch webhook to notify us when our reports are ready rather than periodically polling for them.
+
+First, we need to specify the URL that Mailchimp should send a POST request to; that request will include information about your completed process, including the `response_body_url`, which you can use to retrieve the actual results.
+
+<Note>
+**Note**: On creation, Mailchimp’s servers will validate your webhook URL by making a GET request to the provided address to ensure that it is valid, so the webhook URL should be able to handle both GET and POST requests.
+</Note>
+
+To create a batch webhook, use the [Batch Webhooks endpoint](/marketing/api): 
+
+<CodeBlocks>
+```bash title="cURL"
+#!/bin/bash
+set -euo pipefail
+
+server="SERVER_PREFIX"
+apikey="YOUR_API_KEY"
+
+url="https://example.com/your-webhook-url"
+
+curl -sS --request POST \
+  "https://${server}.api.mailchimp.com/3.0/batch-webhooks" \
+  --user "foo:${apikey}" \
+  --data @- \
+<<EOF | jq
+{
+	"url": "${url}"
+}
+EOF
+```
+
+```javascript title="Node"
+const url = 'https://example.com/your-webhook-url';
+
+async function run() {
+  const response = await mailchimp.batchWebhooks.create({ url });
+  console.log(response);
+}
+
+run();
+```
+
+```php title="PHP"
+require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
+
+$mailchimp = new MailchimpMarketing\ApiClient();
+
+$mailchimp->setConfig([
+    'apiKey' => 'YOUR_API_KEY',
+    'server' => 'YOUR_SERVER_PREFIX'
+]);
+
+try {
+    $response = $mailchimp->batchWebhooks->create([
+        "url" => "https://example.com/your-webhook-url",
+    ]);
+
+    echo $response;
+} catch (\MailchimpMarketing\ApiException $e) {
+    echo $e->getMessage();
+}
+```
+
+```ruby title="Ruby"
+require "MailchimpMarketing"
+
+mailchimp = MailchimpMarketing::Client.new
+mailchimp.set_config({
+  :api_key => ENV["API_KEY"],
+  :server => ENV["API_SERVER"]
+})
+
+url = "https://example.com/your-webhook-url"
+
+response = mailchimp.batchWebhooks.create url
+puts response
+```
+
+```python title="Python"
+webhook_url = "YOUR_WEBHOOK_ABSOLUTE_URL"
+payload = {
+    "url": webhook_url
+}
+
+response = mailchimp.batchWebhooks.create(payload)
+print(response)
+```
+</CodeBlocks>
+
+Now that we’ve created the batch webhook, Mailchimp will send information about completed batch operations to our webhook URL. The body of the POST request will contain a URL-encoded, plain-text string of key/value pairs that will closely resemble a [URL query string](https://en.wikipedia.org/wiki/Query_string). A truncated version might look like this:
+
+`data%5Bresponse_body_url%5D=https://storage.googleapis.com/rsg-api-batches-prod/123456789/1234abcd56cd-response.tar.gz?GoogleAccessId=shard-client%40rsg-base-prod.iam.gserviceaccount.com&Expires=1653480000&Signature=XXXXXXXXXXXXXXXXXXXX`
+
+We’ll need to decode the query string to access specific values we may want. Most often, the `response_body_url` will be the parameter we’re interested in, since it’s what we can use to download the gzipped results of our operation. 
+
+<Note>
+**Note**: This is the same `response_body_url` described in the [Check the status of a batch operation](/marketing/guides/run-async-requests-batch-endpoint/#check-the-status-of-a-batch-operation) section above. You can use it to download the gzipped tar archive as normal, but keep in mind that the same 10-minute expiration period applies. After 10 minutes, you can generate another `response_body_url` by making a call to the [Batch status endpoint.](/marketing/api)
+</Note>
+
+Accessing that value might look like this:
+
+<CodeBlocks>
+```javascript title="Node"
+async function handleWebhook(req) {
+  const decodedText = decodeURIComponent(req.body);
+  const params = new URLSearchParams(decodedText);
+  const responseBodyUrl = params.get("data[response_body_url]");
+  console.log(`You can fetch the gzipped response with ${responseBodyUrl}.`);
+}
+```
+
+```php title="PHP"
+function handleWebhook($req) {
+    $params = $req->body;
+    $response_body_url = $params['data[response_body_url]'];
+    echo "You can fetch the gzipped response with {$response_body_url}.";
+}
+```
+
+```ruby title="Ruby"
+require "cgi"
+
+def handle_webhook request
+  params = CGI.parse request.body
+  response_body_url = params["data[response_body_url]"]
+  puts "You can fetch the gzipped response with #{response_body_url}"
+end
+```
+
+```python title="Python"
+from urllib.parse import parse_qs
+
+
+def handle_webhook(response_body):
+    response_body_url = urllib.parse.parse_qs(response_body)
+    print(f"You can fetch the gzipped response with {response_body_url['data[response_body_url]']}")
+```
+</CodeBlocks>
+
+The full payload, parsed and represented as JSON, would look like this:
+
+```json
+{
+"data[_links][0][href]": "https://usX.api.mailchimp.com/3.0/batches",
+"data[_links][0][method]": "GET",
+"data[_links][0][rel]":  "parent",
+"data[_links][0][schema]": "https://usX.api.mailchimp.com/schema/3.0/CollectionLinks/Batches.json",
+"data[_links][0][targetSchema]": "https://usX.api.mailchimp.com/schema/3.0/Definitions/Batches/CollectionResponse.json",
+"data[_links][1][href]": "https://usX.api.mailchimp.com/3.0/batches/1234ab56cd",
+"data[_links][1][method]": "GET",
+"data[_links][1][rel]":  "self",
+"data[_links][1][targetSchema]": "https://usX.api.mailchimp.com/schema/3.0/Definitions/Batches/Response.json",
+"data[_links][2][href]": "https://usX.api.mailchimp.com/3.0/batches/1234ab56cd",
+"data[_links][2][method]": "DELETE",
+"data[_links][2][rel]":  "delete",
+"data[completed_at]":  "2017-02-10T14:44:22+00:00",
+"data[errored_operations]":  "0",
+"data[finished_operations]": "1",
+"data[id]":  "1234ab56cd",
+"data[response_body_url]": "https://storage.googleapis.com/rsg-api-batches-prod/123456789/1234abcd56cd-response.tar.gz?GoogleAccessId=shard-client%40rsg-base-prod.iam.gserviceaccount.com&Expires=1653480000&Signature=XXXXXXXXXXXXXXXXXXXX",
+"data[status]":  "finished",
+"data[submitted_at]":  "2017-02-10T14:44:14+00:00",
+"data[total_operations]":  "1",
+"fired_at":  "2017-02-10 14:59:37",
+"type":  "batch_operation_completed"
+}
+```
+
+Just keep in mind that that payload will not be delivered as JSON, but as a URI-encoded query string. Your code is responsible for parsing that string for the values you need.
+
+## Verifying batch webhook signatures
+
+When you enable HMAC signing on a batch webhook, Mailchimp includes a signature in every completion notification so your endpoint can confirm the delivery is authentic.
+
+The signing scheme is identical to audience webhooks — see [Verifying webhook signatures](https://mailchimp.com/developer/marketing/guides/sync-audience-data-webhooks/#verifying-webhook-signatures) for the full background. The examples below are adapted for the batch webhook context.
+
+<Note>
+**Note:** Batch webhook payloads arrive as URL-encoded form data (e.g. `type=batch_operation_completed&data%5Bid%5D=...`). Always verify the signature against the **raw, unmodified request body bytes** — do not URL-decode or parse the payload before verification, as that will change the bytes and break the signature check.
+</Note>
+
+## How it works
+
+1. When you create a signed batch webhook, Mailchimp generates a **signing secret** and returns it in the API response. Copy and store this value securely — it is shown exactly once and cannot be retrieved later. If you lose it, delete and recreate the webhook.
+2. For every batch completion notification, Mailchimp computes `HMAC-SHA256(key=signing_secret, message="{timestamp}.{raw_body}")`.
+3. Mailchimp sends the result in the `X-Mailchimp-Signature` header: `t={timestamp},v1={hex_signature}`.
+4. Verify using a timing-safe comparison; reject if the signatures don't match or the timestamp is more than 5 minutes old.
+
+<CodeBlocks>
+```php title="PHP"
+<?php
+
+function verifyMailchimpWebhook(
+    string $signingSecret,
+    string $signatureHeader,
+    string $rawBody,
+    int $toleranceSeconds = 300
+): void {
+    if (!preg_match('/\bt=(\d+)\b/', $signatureHeader, $tsMatch)
+        || !preg_match('/\bv1=([0-9a-f]{64})\b/', $signatureHeader, $sigMatch)) {
+        throw new RuntimeException('Missing or malformed X-Mailchimp-Signature header.');
+    }
+
+    $timestamp   = (int) $tsMatch[1];
+    $receivedSig = $sigMatch[1];
+
+    if (abs(time() - $timestamp) > $toleranceSeconds) {
+        throw new RuntimeException('Webhook timestamp is outside the tolerance window.');
+    }
+
+    $expectedSig = hash_hmac('sha256', $timestamp . '.' . $rawBody, $signingSecret);
+
+    if (!hash_equals($expectedSig, $receivedSig)) {
+        throw new RuntimeException('Webhook signature verification failed.');
+    }
+}
+
+$signingSecret   = getenv('MAILCHIMP_WEBHOOK_SECRET');
+$signatureHeader = $_SERVER['HTTP_X_MAILCHIMP_SIGNATURE'] ?? '';
+$rawBody         = file_get_contents('php://input');
+
+try {
+    verifyMailchimpWebhook($signingSecret, $signatureHeader, $rawBody);
+} catch (RuntimeException $e) {
+    http_response_code(400);
+    exit;
+}
+
+$event = json_decode($rawBody, true);
+```
+
+```javascript title="Node"
+const crypto = require('crypto');
+const http = require('http');
+
+function verifyMailchimpWebhook(signingSecret, signatureHeader, rawBody, toleranceSeconds = 300) {
+  const tsMatch  = signatureHeader.match(/\bt=(\d+)\b/);
+  const sigMatch = signatureHeader.match(/\bv1=([0-9a-f]{64})\b/);
+
+  if (!tsMatch || !sigMatch) {
+    throw new Error('Missing or malformed X-Mailchimp-Signature header.');
+  }
+
+  const timestamp   = parseInt(tsMatch[1], 10);
+  const receivedSig = sigMatch[1];
+
+  if (Math.abs(Math.floor(Date.now() / 1000) - timestamp) > toleranceSeconds) {
+    throw new Error('Webhook timestamp is outside the tolerance window.');
+  }
+
+  const expectedSig = crypto
+    .createHmac('sha256', signingSecret)
+    .update(`${timestamp}.${rawBody}`)
+    .digest('hex');
+
+  const expected = Buffer.from(expectedSig, 'hex');
+  const received = Buffer.from(receivedSig, 'hex');
+
+  if (expected.length !== received.length || !crypto.timingSafeEqual(expected, received)) {
+    throw new Error('Webhook signature verification failed.');
+  }
+}
+
+http.createServer((req, res) => {
+  if (req.method !== 'POST') { res.writeHead(405).end(); return; }
+
+  const chunks = [];
+  req.on('data', chunk => chunks.push(chunk));
+  req.on('end', () => {
+    const rawBody = Buffer.concat(chunks);
+    try {
+      verifyMailchimpWebhook(
+        process.env.MAILCHIMP_WEBHOOK_SECRET,
+        req.headers['x-mailchimp-signature'] ?? '',
+        rawBody
+      );
+    } catch (err) {
+      res.writeHead(400).end('Invalid signature.');
+      return;
+    }
+
+    const event = JSON.parse(rawBody);
+    res.writeHead(200).end();
+  });
+}).listen(3000);
+```
+
+```python title="Python"
+import hashlib
+import hmac
+import json
+import os
+import re
+import time
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+def verify_mailchimp_webhook(
+    signing_secret: str,
+    signature_header: str,
+    raw_body: bytes,
+    tolerance_seconds: int = 300,
+) -> None:
+    ts_match  = re.search(r'\bt=(\d+)\b', signature_header)
+    sig_match = re.search(r'\bv1=([0-9a-f]{64})\b', signature_header)
+
+    if not ts_match or not sig_match:
+        raise ValueError('Missing or malformed X-Mailchimp-Signature header.')
+
+    timestamp    = int(ts_match.group(1))
+    received_sig = sig_match.group(1)
+
+    if abs(int(time.time()) - timestamp) > tolerance_seconds:
+        raise ValueError('Webhook timestamp is outside the tolerance window.')
+
+    signed_string = f'{timestamp}.'.encode() + raw_body
+    expected_sig  = hmac.new(signing_secret.encode(), signed_string, hashlib.sha256).hexdigest()
+
+    if not hmac.compare_digest(expected_sig, received_sig):
+        raise ValueError('Webhook signature verification failed.')
+
+
+class WebhookHandler(BaseHTTPRequestHandler):
+    def do_POST(self):
+        raw_body = self.rfile.read(int(self.headers['Content-Length']))
+        try:
+            verify_mailchimp_webhook(
+                os.environ['MAILCHIMP_WEBHOOK_SECRET'],
+                self.headers.get('X-Mailchimp-Signature', ''),
+                raw_body,
+            )
+        except ValueError:
+            self.send_response(400); self.end_headers(); return
+
+        event = json.loads(raw_body)
+        self.send_response(200); self.end_headers()
+
+HTTPServer(('', 3000), WebhookHandler).serve_forever()
+```
+
+```ruby title="Ruby"
+require 'json'
+require 'openssl'
+require 'rack'
+require 'rack/utils'
+require 'webrick'
+
+def verify_mailchimp_webhook(signing_secret, signature_header, raw_body, tolerance_seconds: 300)
+  ts_match  = signature_header.match(/\bt=(\d+)\b/)
+  sig_match = signature_header.match(/\bv1=([0-9a-f]{64})\b/)
+
+  raise 'Missing or malformed X-Mailchimp-Signature header.' unless ts_match && sig_match
+
+  timestamp    = ts_match[1].to_i
+  received_sig = sig_match[1]
+
+  raise 'Webhook timestamp is outside the tolerance window.' \
+    if (Time.now.to_i - timestamp).abs > tolerance_seconds
+
+  expected_sig = OpenSSL::HMAC.hexdigest('SHA256', signing_secret, "#{timestamp}.#{raw_body}")
+
+  raise 'Webhook signature verification failed.' \
+    unless Rack::Utils.secure_compare(expected_sig, received_sig)
+end
+
+app = lambda do |env|
+  req     = Rack::Request.new(env)
+  raw_body = req.body.read
+
+  begin
+    verify_mailchimp_webhook(
+      ENV.fetch('MAILCHIMP_WEBHOOK_SECRET'),
+      env['HTTP_X_MAILCHIMP_SIGNATURE'] || '',
+      raw_body
+    )
+  rescue RuntimeError
+    return [400, {}, ['Invalid signature.']]
+  end
+
+  event = JSON.parse(raw_body)
+  [200, {}, ['']]
+end
+
+Rack::Handler::WEBrick.run app, Port: 3000
+```
+</CodeBlocks>
+
+## More resources
+
+- [Synchronize Audience Data with Webhooks](/marketing/guides/sync-audience-data-webhooks)
+- [Batch API Reference](/marketing/api)
+- [Marketing Fundamentals](/marketing/docs/fundamentals)

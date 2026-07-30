@@ -1,0 +1,16 @@
+---
+title: Descriptive errors when adding E-commerce customers
+tags: ["Marketing API"]
+---
+
+We’ve started providing more specific error messaging when adding or updating e-commerce customers.
+
+Previously, when managing e-commerce customers, the API would sometimes return a vague error with the message, “Your request could not be processed.” 
+
+We fixed these errors to be more actionable. The large majority are related to email validation and will look like:
+
+`{
+  "title": "Customer Was Not Saved",
+  "status": 400,
+  "detail": "invalid@gmaill.con is an invalid email address and cannot be imported.",
+}`

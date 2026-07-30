@@ -1,3 +1,221 @@
-# Fundamentals
+---
+title: Fundamentals
+description: Learn the basics to start sending with Mailchimp Transactional.
+---
 
-Learn the core concepts behind the Mailchimp Transactional API, including how requests are structured and how responses are returned.
+
+
+## The basics
+
+Mailchimp Transactional is a powerful email delivery service that lets you send personalized, one-to-one emails like password resets, order confirmations, and welcome messages. 
+
+To sign up for Mailchimp Transactional, you need a Mailchimp account. You can try the [Mailchimp Transactional demo](https://mailchimp.com/help/transactional-email-demo/) with any level account, but to use the full version you must have a [Standard or Premium account](https://mailchimp.com/help/add-or-remove-transactional-email/). 
+
+### Sending via the API or SMTP 
+
+Once you’ve [set up your account](/transactional/docs/fundamentals/#getting-started) and [verified your domain](/transactional/docs/authentication-delivery/#authentication), there are two routes to start sending: via the [Transactional API](/transactional/guides/quick-start) or with [SMTP integration](/transactional/docs/smtp-integration). If you’re already sending transactional emails through SMTP, you can typically change your SMTP credentials to Mailchimp Transactional’s and begin sending immediately. SMTP is a sending-only protocol, but the Transactional API allows you not only to send but also to view and parse reporting data in your own app or system. The API also offers more comprehensive integration, so it reports more specific errors when sending.
+
+There are no discernible differences in terms of deliverability between using the API or SMTP integration—the actual process Mailchimp Transactional uses to send your emails is the same for both, and ISPs will see both your information and Mailchimp’s in your message headers.
+
+Generally, the Transactional API is faster in terms of accepting mail because HTTP is less “chatty” than SMTP, but we’ve taken steps to help reduce the latency when you’re using SMTP, so you may not see as much of a difference between the two. If speed is a consideration, you may want to test both, including any content generation, to see which is faster overall for your particular environment.
+
+Mailchimp Transactional offers many ways to customize how your emails are tracked, tagged, and more. Throughout the documentation, you’ll often see parallel instructions, one using the API, and one using SMTP. To review the full list of Transactional API endpoints and parameters, see [the API Reference](/transactional/api); for a complete list of custom SMTP headers, check out [the SMTP docs](/transactional/docs/smtp-integration/#customize-messages-with-smtp-headers).
+
+### Using Mailchimp Transactional
+
+Whether you send via the API or SMTP, Mailchimp Transactional has a host of features to help optimize, track, and analyze your sends. 
+
+To learn the basics of sending—like scheduling, prioritization, and unsubscribing—check out the [outbound email docs](/transactional/docs/outbound-email). You can create [templates](/transactional/docs/templates-dynamic-content) that let you reuse email designs and inject dynamic content with one of several merge languages. And if you need to send email on behalf of multiple clients or separate sending for different users, you can set up [subaccounts](/transactional/docs/subaccounts) as well.
+
+Once you’ve started sending, you can monitor your [reputation](/transactional/docs/reputation-rejections), which is partly determined by your ratio of bounces, spam complaints, and other factors to overall sending. You can also add [tags and metadata](/transactional/docs/tags-metadata) to help track your messages, alongside other [reporting tools](/transactional/docs/activity-reports) like open and click tracking, Google Analytics, and more. 
+
+And finally, to receive and respond to information about your email events, you can set up [inbound email processing](/transactional/guides/set-up-inbound-email-processing) as well as [webhooks](/transactional/docs/webhooks), or set up [conditional rules](/transactional/docs/rules-engine) that let you take specific actions when events or messages meet criteria you’ve set.
+
+### Contact lists
+
+Contact lists cannot be uploaded or stored in Mailchimp Transactional. Your application's database should serve as the source of truth for user emails and contact lists; you will only pass that information to Mailchimp in your API request or SMTP message when you’re ready to send an email.
+
+<Note>
+**Note**:** **If you’re looking for a service that provides list management and the ability to create and track bulk emails, you should use Mailchimp, rather than Mailchimp Transactional. View our [Acceptable Use Policy](http://mailchimp.com/legal/acceptable_use/) for additional details.
+</Note>
+
+### Mailchimp Transactional and Mandrill
+
+Throughout the Mailchimp Transactional guides and docs, you may notice the occasional reference to the product’s original name, Mandrill. Mandrill is in the process of being fully integrated into Mailchimp proper, and while this process is ongoing, you will from time to time see artifacts of this migration.
+
+## Getting started
+
+If you have a Mailchimp Standard plan or higher, you can enable Mailchimp Transactional from the [Billing](https://us1.admin.mailchimp.com/account/billing-plan/) section of your account; if you don’t have a Mailchimp account, you can [sign up directly](https://login.mailchimp.com/signup/?entrypoint=mandrill) for Mailchimp Transactional. 
+
+Once you enter your information, you can adjust how many blocks of emails you want to purchase each month, as well as set your preferences for when you run low on emails. You can change these settings at any time on the [Transactional page](https://us19.admin.mailchimp.com/transactional/) of your Mailchimp account.
+
+### Launch Mailchimp Transactional 
+
+The fastest way to launch Mailchimp Transactional is to go directly to [https://mandrillapp.com/](https://mandrillapp.com/) and log in. You can also click the **Launch App** button on the [Transactional page](https://us19.admin.mailchimp.com/transactional/) of your Mailchimp account.
+
+Once your account is up and running, you’ll need to do a few things before you can start sending messages. 
+
+### Set up your sending domain
+
+Before you start sending, you’ll need to [authenticate your sending domain](/transactional/docs/authentication-delivery/#authentication) by configuring DKIM and DMARC records in your DNS and verifying ownership of your domain. While the authentication docs will give you everything you need to get started, you can also walk through the process with the [Send Your First Email](/transactional/guides/send-first-email) guide. 
+
+### Sending messages
+
+Whether you’re sending via the API or SMTP, you’ll need to generate an API key first. You can do that via the [**Settings**](https://mandrillapp.com//settings) page in the app. That’s also where you can get your SMTP credentials; for more information about setting up SMTP, see [the SMTP docs](/transactional/docs/smtp-integration). If you’re sending via the API, the [Quick Start](/transactional/guides/quick-start) walks through installing your preferred client library and making your first API call. After that, you’ll be ready to [start sending messages](/transactional/guides/send-first-email).
+
+## API conventions
+
+While you’re reviewing the API reference for an overview of endpoints and parameters, it’s also a good idea to familiarize yourself with some of the basics of the API itself, outlined below. 
+
+<Note>
+**Note**: These API conventions are less relevant if you choose to use one of our client libraries; for more information, check out the [Tools](https://mailchimp.com/developer/tools/) page.
+</Note>
+
+### Root API endpoint
+
+All API URLs listed in this documentation are relative to `https://mandrillapp.com/api/1.0/`. All methods are accessed via `https://mandrillapp.com/api/1.0/SOME_METHOD.OUTPUT_FORMAT`
+
+For example, the [`/users/ping`](/transactional/api) call is reachable at `https://mandrillapp.com/api/1.0/users/ping.json`.
+
+### RESTful deviations
+
+The Transactional API is mostly [RESTful](http://en.wikipedia.org/wiki/RESTful#RESTful_web_services), but there are a couple of deviations:
+
+- All API calls should be made with HTTP POST.
+- You can consider any non-200 HTTP response code an error—the returned data will contain more detailed information.
+
+### Passing request data
+
+Request data is passed to the API by posting JSON objects to the API endpoints with the appropriate parameters. The [documentation for each API call](/transactional/api) contains more detail on the parameters accepted by the call. As an alternative, you can also use HTTP POST parameters, just like submitting an HTML `form`, but JSON objects are recommended.
+
+### Authentication
+
+You can authenticate requests to the Transactional API using your API key. All requests to the Transactional API are POST requests, and at minimum, you’ll need to include a key parameter in the JSON body of your POST request to authenticate the API call, like so:
+
+```json
+{
+  // ...the rest of your payload, as needed
+  "key": "YOUR_TRANSACTIONAL_API_KEY"
+}
+```
+
+### Output formats
+
+We support four output formats. To use any of them, simply replace the `OUTPUT_FORMAT` file extension in the API URL with one of:
+
+- `json` (default)
+- `xml`
+- `yaml`
+- `php`
+
+Regardless of the output format, inputs are only accepted as JSON objects or HTTP POST parameters.
+
+## API error codes
+
+You may run into some errors when using the Transactional API. The errors are listed below with possible causes and solutions to help in troubleshooting:
+
+| Error Code Responses | Possible Causes | Solutions |
+| --- | --- | --- |
+| 401 Invalid API Key | Pasted API key wrong in the call, accidentally deleted API key from account, invalid JSON | Double check if the API key exists in the account and is correctly copied over, otherwise [create a new API key](https://mailchimp.com/developer/transactional/guides/quick-start/#generate-your-api-key). Check if your JSON is formatted properly |
+| 401 IP does not have permission to use this key | API keys can be limited by IP address, and the IP address does not have permission | Go to the [Settings](https://mandrillapp.com/settings) page in Transactional and edit the key to allow the IP address to make requests |
+| 401 This key does not have permission to call method name | API keys can be limited to call any given endpoint, and the endpoint called is not allowed | Go to the [Settings](https://mandrillapp.com/settings) page and edit the key to allow the endpoint(s) |
+| 404 No Such Template | The template ID passed in your API request does not exist or is incorrect | Recheck the template ID for the template you would like to use for the send |
+| 404 Invalid Message ID | The message ID is incorrect, no message ID was passed in the request, or the message has been recently sent and the ID is not available yet | Double check the message ID you are using, or wait a little longer before trying the API request |
+| 404 No message exists with the id | The message ID is incorrect, or the message has been recently sent and the ID is not available yet | Double check the message ID you are using, or wait a little longer before trying the API request |
+| 404 No subaccount exists with the id | The subaccount ID does not exist or is incorrect | Double check the subaccount ID you are using, or [create a new subaccount](https://mailchimp.com/developer/transactional/docs/subaccounts/#create-a-subaccount) |
+| 405 Method not allowed | You did not use the POST method in your API request. For example, you used DELETE, ADD, etc. | All endpoints should be called as POST method, as described [here](https://mailchimp.com/developer/transactional/docs/fundamentals/#restful-deviations) |
+
+## Account features
+
+You can manage account alerts, modify access, and more directly in the Mailchimp Transactional app. Issues around billing—including monitoring and adjusting your monthly message blocks—should be handled in [your main Mailchimp account](https://us19.admin.mailchimp.com/transactional/).
+
+### Account alerts
+
+There are five types of alerts in Mailchimp Transactional, several of which are turned on by default in every new account. 
+
+| Alert | Description |
+| --- | --- |
+| Poor Reputation | Your [account reputation](/transactional/docs/reputation-rejections/#reputation) has dropped to Poor |
+| Tag Reputation | A [tag’s reputation](/transactional/docs/tags-metadata/#tag-reputation) has dropped to Poor |
+| Subaccount Reputation | A [subaccount’s reputation](/transactional/docs/subaccounts) has dropped to Poor |
+| Webhook Failure | A [webhook](/transactional/docs/webhooks) has generated an error when posting an event |
+| Backlog Size | You’ve exceeded your hourly quota and your [backlog queue size](/transactional/docs/outbound-email/#the-backlog) has risen above the thresholds you configured |
+
+You can add or delete new alerts, as well as modify the ones you receive, on the [**Alerts**](https://mandrillapp.com/settings/alerts) page of your account. 
+
+### Create and modify alerts
+
+Alerts are conditional if/then statements, and you can modify which ones you receive as well as the way you receive them:  
+
+![Create a Transactional alert](https://images.ctfassets.net/cxsachrr7h0p/5pcKwx5M2X5olrK5slPk5z/384eecdf3301ebc8d62221d5c47d7a1d/fundamentals-createalerts.png)
+
+To create a new alert, navigate to the [**Alerts**](https://mandrillapp.com/settings/alerts) page of your account, choose the alert you want from the drop-down menu, and click **Create Alert**. 
+
+You can send alerts to the primary account contact or a custom email address. You can send SMS alerts to phone numbers in the United States, the United Kingdom, Canada, and some Caribbean islands.
+
+### View sent alerts
+
+Mailchimp Transactional keeps a brief log of recent alerts, including the SMS numbers or email addresses where alerts were sent, the alert type, and the date and time they were sent. You’ll see them on the [**Alerts**](https://mandrillapp.com/settings/alerts) page once you have a sending history. 
+
+Information used to trigger alerts for backlog size and account reputation is pulled once every hour; tag reputation information is pulled once a day. Webhook alerts are pushed in real time. 
+
+### Pause and delete alerts
+
+To delete an alert, choose the one you want to remove, click the **Edit** drop-down, and click **Delete**. Deleting an alert will also delete the corresponding log of recent instances of the alert. 
+
+You can also pause alerts instead of deleting them entirely: use the on/off toggle on the alert you want to pause. While an alert is paused, Mailchimp Transactional will not send you email notifications for that alert.
+
+### Account activity emails
+
+On the [**Username & Contact Info**](https://mandrillapp.com/account/contact) page, you can choose to send daily and/or weekly account activity emails to your primary account contact address. Daily emails show the previous day’s stats, while weekly emails are sent each Monday and show your stats from the previous week.
+
+### Multiple users
+
+Since you access Mailchimp Transactional through your main Mailchimp login, you can, like in the rest of Mailchimp, set up multiple user logins. Unlike your main Mailchimp account, however, Mailchimp Transactional does not support different levels of access within the account: all Admins and Owners will have full access, and everyone else will have no access. 
+
+You can manage multi-user access by generating multiple API keys and limiting privileges per key. To manage API keys, see the [**SMTP & API Info**](https://mandrillapp.com/settings/index) page in the app.
+
+If clients or other team members need to access reporting information, instead of granting access, you can use the [Transactional API](/transactional/api), [webhooks](/transactional/docs/webhooks), or [activity exports](/transactional/docs/activity-reports) to pull out relevant data and create custom reports for them.
+
+### Account security
+
+The [**Account Security**](https://mandrillapp.com/account/account-security) page shows the list of IP addresses that have accessed the account, along with the location, time, and date that they first and last accessed the account. Additionally, we log the access point—API, SMTP, or Web—used to login to the application.
+
+## Test mode
+
+Mailchimp Transactional has a test mode that lets you experiment and refine integrations for bounce and complaint handling without actually sending email. Test mode messages don’t count towards your monthly send totals and won’t damage your account reputation by forcing bounces or spam complaints.
+
+Note that you're limited to 10,000 test mode messages per day. This limit resets at midnight, or if they hit the limit, 24 hours after that limit is hit.
+
+### Test API keys
+
+Before you can send emails in test mode, you’ll need a test API key—a limited key that interacts with your account only in test mode. No emails are actually sent when you use a test API key for sending. Emails sent with a test API key are visible in the web interface when in test mode, but not while viewing the account normally.
+
+To create a test API key, navigate to [**Settings**](https://mandrillapp.com/settings) and click **+ New API Key**. After you’ve entered a description and selected the **Test Key** checkbox**, **click **Create API Key**.
+
+### Switch to test mode
+
+In the app, hover over your username and choose the option to switch to test mode. In test mode, the color of the header bar changes, and only activity for emails sent in test mode will be displayed.
+
+![Test mode](https://images.ctfassets.net/cxsachrr7h0p/4Xa8MCE9hRy7fPjkcpbn02/9289d15b27de85c0e748083f871f9924/fundamentals-test-mode.png)
+
+Switching to test mode doesn’t affect emails sent with non-test API keys—those emails will send normally.
+
+### Generating test bounces, spam complaints, and rejections
+
+Since no sending occurs when you use a test API key or send a message in test mode, you won’t generate bounces, rejects, or spam complaints directly; instead, you have to trigger them manually. 
+
+To test webhooks for certain types of events, send emails to these addresses using a test API key: 
+
+| Email Address | Event |
+| --- | --- |
+| reject@test.mandrillapp.com | Rejected email |
+| hard_bounce@test.mandrillapp.com | Hard-bounced email |
+| soft_bounce@test.mandrillapp.com | Soft-bounced email |
+| spam@test.mandrillapp.com | Spam complaint |
+
+Emails sent in test mode are specifically designed not to send, and won’t affect your account reputation.
+
+## Support
+
+Email support is available Monday through Friday between 9am and 5pm EST. When you’re logged in, click on the **Support** link at the bottom of any page to submit your request.

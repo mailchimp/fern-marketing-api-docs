@@ -1,0 +1,8 @@
+---
+title: Improved HTTP status for unhandled methods
+tags: ["Marketing API"]
+---
+
+We adjusted several endpoints to return a `405 Method Not Allowed` when processing unhandled methods instead of a `404 Not Found`.
+
+Our API endpoints were not consistent when responding to methods that aren’t supported by a given endpoint. By providing a `405 Method Not Allowed`, with an additional `Allow` header specifying the methods that are valid for the endpoint, it should be easier to discover and fix erroneous API calls.

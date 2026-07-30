@@ -1,3 +1,300 @@
-# SMTP Integration
+---
+title: SMTP Integration
+description: Set up sending with SMTP and modify your messages with custom headers.
+---
 
-Learn how to send transactional emails via SMTP using Mailchimp Transactional as an alternative to the HTTP API.
+
+
+## The basics
+
+Mailchimp Transactional allows you to send email via SMTP, which means you can easily integrate it into an existing SMTP library or framework. If you’re already sending transactional emails for your website through SMTP, you can typically change your SMTP configuration to use your Mailchimp Transactional credentials and begin sending immediately. 
+
+<Note>
+**Note**: While SMTP offers the same sending capabilities as the Transactional API, the latter also lets you view or parse reporting data in your own app or system. If you’re trying to decide between sending with SMTP or with the API, you can read more about the two routes in [Fundamentals](/transactional/docs/fundamentals/#sending-via-the-api-or-smtp).
+</Note>
+
+### Credentials and configuration
+
+After you’ve created a Mailchimp Transactional account, you can find your SMTP credentials on the [**SMTP & API Info**](https://mandrillapp.com/settings/index) page. 
+
+The host for all accounts is `smtp.mandrillapp.com`.
+
+You can use any active API key for your account as your SMTP password. Since the API key is sufficient for authentication, Mailchimp doesn’t use the SMTP username to authenticate your request, but we recommend using your Mailchimp account’s primary contact email as the username.
+
+Use ports 25, 587, or 2525 for non-encrypted communication between your system and Mailchimp Transactional. You can also use the [STARTTLS extension](http://en.wikipedia.org/wiki/STARTTLS) (also known as TLS encryption) on these ports. For secure SSL connections, use port 465.
+
+There is no configuration change needed within Mailchimp Transactional to activate one of the alternate ports. ISPs may redirect traffic on certain ports, which might determine which port you need to use.
+
+### Character encoding
+
+Generally, SMTP is a 7-bit-only protocol, which means any non-ASCII characters need to be escaped for safe transport. Typically your SMTP library or application will handle this kind of encoding automatically, and you should not need to do anything. 
+
+For example, to send the subject `Mailchimp likes ASCII, but ❤ Unicode`. over SMTP, your sending tools should encode the header according to [RFC 2047](https://www.ietf.org/rfc/rfc2047.txt) like this:
+
+`Subject: =?UTF-8?B?TWFuZHJpbGwgbGlrZXMgQVNDSUksIGJ1dCDinaQgVW5pY29kZS4=?=`
+
+Or like this:
+
+`Subject: Mailchimp likes ASCII, but =?UTF-8?Q?=E2=9D=A4?= Unicode.`
+
+For any non-ASCII characters in the body of your message (in either the text or HTML parts), escape those as well, using a `Content-Transfer-Encoding` like `base64` or `quoted-printable` according to [RFC 2045](https://www.ietf.org/rfc/rfc2045.txt).
+
+### Third-party plugins
+
+There are a number of third-party plugins and modules that allow you to route your site’s mail through Mailchimp Transactional; check with your CMS provider to see what they support. 
+
+Some things to note when working with third-party products: 
+
+- Mailchimp Transactional was formerly known as Mandrill and may still be referred to as such by third-party plug-ins or apps.
+- Mailchimp Transactional does not create or maintain third-party plugins, and we can’t guarantee these services or products.
+- Before you send email through your account, you must add [DKIM](/transactional/docs/authentication-delivery/#dkim) records and verify ownership of your sending domains.
+
+### Troubleshooting
+
+If you’re having trouble sending with SMTP, you can [investigate your sends in the API logs](/transactional/docs/outbound-email/#troubleshooting).
+
+If you’re just getting started, you might see “Relay Access Denied” or “Unable to Connect to Host” errors. A few things you can check: 
+
+- Make sure your hosting provider or ISP allows outbound SMTP connections. Some shared hosting providers only allow outbound SMTP connections on dedicated servers, while others block them completely. In some cases, hosting providers might redirect the connection, so instead of connecting to `smtp.mandrillapp.com`, you connect to their local server instead.
+- Make sure the port you’ve selected is one that your hosting provider or ISP has available for outbound SMTP connections. Some hosts block all connections on port 25, for example, so you can try using a different supported port.
+- Double check that you’re using a valid API key to connect via SMTP, not your password for the Mailchimp Transactional web app.
+- If you’re using Postfix, make sure that you have an SASL library (like libsasl2 or cyrus) installed and up to date. Otherwise, you may be connecting but not passing authentication credentials.
+- For other SMTP libraries, make sure you’re using `login` or `plain` authentication methods.
+
+Once you’ve confirmed all of the above, if you’re still seeing issues, enable additional logging in your SMTP program or library. If you’re using an integration, contact the integration developer for information on configuring logging of the SMTP conversation.
+
+If you suspect you’re unable to connect to Mailchimp’s SMTP servers, you can try connecting manually using telnet on your server. For example, you can open a new connection to smtp.mandrillapp.com on any one of our supported ports (25, 587, 2525, or 465):
+
+`telnet smtp.mandrillapp.com 2525`
+
+If the connection is successful, you’ll see a response like this one:
+
+`Trying 54.204.208.115...
+Connected to smtp.us-east-1.mandrillapp.com.
+Escape character is '^]'.
+220 smtp.mandrillapp.com ESMTP`
+
+You can also try pinging Mailchimp’s SMTP servers to test your connection status:
+
+`ping smtp.mandrillapp.com`
+
+## Send via SMTP with your programming language of choice
+
+Most likely, you’re developing your application using a framework or a set of third-party dependencies, and how you send via SMTP in your language of choice will vary depending on what your language or framework supports. 
+
+Rather than document other languages and third-party tools, we recommend that you look at the documentation for your tools to find the best way to send email via SMTP in that ecosystem.
+
+In general, however, to send via SMTP, you’ll need the following information, regardless of how your tools of choice are configured:
+
+- Address: `smtp.mandrillapp.com`
+- Port: 25, 587, 2525, or 465 (SSL)
+- Username: Any string (we recommend using the primary contact email on your Mailchimp account)
+- Password: Any valid Mailchimp Transactional API key
+
+Your tools may also require the following information:
+
+- Authentication type: `login` or `plain`
+- Domain: Your sending domain, e.g., `mail.example.com`
+
+## Customize messages with SMTP headers
+
+You can use SMTP headers to customize your messages, add tracking, or specify options for Mailchimp Transactional to apply to your emails. How you set the headers is dependent upon your environment; read the documentation for your tools for more information on how to set SMTP headers. 
+
+**X-MC-Track** — Enable open and click tracking
+
+**Example:** `X-MC-Track: opens, clicks_htmlonly`
+
+**Format:** Comma-separated list of strings, maximum of two strings (one for opens, one for clicks)
+
+`opens`: enables open tracking
+`clicks_all`: enables click tracking on all emails
+`clicks`: same as `clicks_all`
+`clicks_htmlonly`: enables click tracking only on HTML emails
+`clicks_textonly`: enables click tracking only on text emails
+
+If you provide any other values, open and click tracking will be disabled.
+
+**Purpose:** Manage [open and click tracking](/transactional/docs/activity-reports/#open-and-click-tracking) settings on a per-message basis.
+
+**X-MC-GoogleAnalytics** — Add Google Analytics tracking
+
+**Example:** Be sure to include any subdomains used in your URLs. If your message contains links to both http://www.example.com and http://example.com, your header should look like:
+
+`X-MC-GoogleAnalytics: www.example.com, example.com`
+
+**Format:** - `X-MC-GoogleAnalytics`: a comma-separated list of domains that tracking will be added to
+- `X-MC-GoogleAnalyticsCampaign`: the value Mailchimp Transactional will set for the `utm_campaign` variable
+
+**Purpose:** Add [Google Analytics tracking](/transactional/docs/activity-reports/#google-analytics-tracking) to links in your email for the specified domains. You can also add an optional value—`X-MC-GoogleAnalyticsCampaign`—to be used for the `utm_campaign` parameter in Google Analytics–tracked links.
+
+**X-MC-TrackingDomain** — Customize a tracking domain
+
+**Example:** `X-MC-TrackingDomain: example.com`
+
+**Format:** The domain name
+
+**Purpose:** Set a [custom tracking domain](/transactional/docs/activity-reports/#open-and-click-tracking)—rather than the default of mandrillapp.com—on a per-message basis.
+
+**X-MC-AutoText** — Generate plain text from HTML
+
+**Example:** `X-MC-AutoText: true`
+
+**Format:** - turn on: `true`, `on`, `yes`,  or `y`
+- turn off: `false`, `off`, `no`, or `n`
+
+**Purpose:** Automatically generate a [plain-text version of HTML emails](/transactional/docs/outbound-email/#plain-text-vs-html).
+
+**X-MC-AutoHtml** — Generate HTML from plain text 
+
+**Example:** `X-MC-AutoHtml: false`
+
+**Format:** - turn on: `true`, `on`, `yes`,  or `y`
+- turn off: `false`, `off`, `no`, or `n`
+
+**Purpose:** Automatically generate an [HTML version of plain-text emails](/transactional/docs/outbound-email/#plain-text-vs-html).
+
+**X-MC-Template** — Use stored templates
+
+**Example:** `X-MC-Template: my_template`
+
+**Format:** `template_name|block_name`
+
+- `template_name`: must match the Template Slug on your [**Templates**](https://mandrillapp.com/templates) page
+- `block_name`: specify which `mc:edit` content block of the template you wish to fill with this email’s body content. This is optional and defaults to `main`.
+
+**Purpose:** Use an [HTML template](/transactional/docs/templates-dynamic-content/#creating-templates) stored in your Mailchimp Transactional account.
+
+**X-MC-MergeLanguage** — Set the merge language
+
+**Example:** `X-MC-MergeLanguage: mailchimp`
+
+**Format:** `mailchimp` or `handlebars`
+
+**Purpose:** Sets the merge language for [injecting dynamic content](/transactional/docs/templates-dynamic-content/#dynamic-content) into your templates.
+
+**X-MC-MergeVars** — Use merge tags for dynamic content
+
+**Example:** To assign a global value for `var1` (the merge tag `*|VAR1|*`), Mailchimp expects to receive:
+
+`X-MC-MergeVars: {"var1": "global value 1"}`
+
+To set a recipient-specific value, use the name `_rcpt` with the recipient’s email address as the value, along with the merge tag name–value pairs, like this:
+
+`X-MC-MergeVars: {"_rcpt": "emailaddress@example.com", "fname": "John", "lname": "Smith"}`
+
+**Format:** - A JSON-formatted object with name–value pairs for each merge tag
+- You can add more than one instance of this header
+- Recipient-specific values: Add the `_rcpt` name with the recipient email address as the value, followed by other variable names and their values for that recipient.
+
+**Purpose:** Add [dynamic per-recipient data](/transactional/docs/templates-dynamic-content/#dynamic-content) to replace the merge tags that appear in your message content.
+
+Things to keep in mind:
+
+- If you only have one recipient, use the same format as the global values in the first example below. You don’t need to specify the recipient address since there’s only one.
+- Use a separate header for each recipient of an email being transmitted via SMTP. SMTP headers have a maximum length of 1,000 characters, so if the header content for the global values or for an individual recipient exceeds 1,000 characters, it can be broken into two (or more) headers. Just be sure to specify the recipient email address for every header for that recipient.
+- SMTP headers may contain only ASCII characters, so if you have non-ASCII characters like accents, they'll need to be escaped. Typically, you'll want to use a JSON library that automatically escapes any non-ASCII characters.
+
+**X-MC-Metadata** — Use custom metadata
+
+**Example:** `X-MC-Metadata: { "user_id": "45829", "location_id": "111" }`
+
+To include per-recipient metadata, include a `_rcpt` key in the JSON object to indicate which recipient the metadata should apply to:
+
+`X-MC-Metadata: { "group_id": "users_active" }
+X-MC-Metadata: { "_rcpt": "foo@example.com", "user_id": "123" }
+X-MC-Metadata: { "_rcpt": "bar@example.com", "user_id": "456" }`
+
+**Format:** - Up to 200 bytes of JSON-encoded data as an object
+- Set of name–value pairs as the value
+- Nested object structures aren’t supported, so the object should be flat
+
+Once the 200-byte limit is reached, no further metadata will be included. Since this is structured data, there’s no way for us to anticipate where to truncate which value.
+
+**Purpose:** Information about any [custom fields or data](/transactional/docs/tags-metadata/#metadata) you want to append to the message.
+
+**X-MC-Tags** — Tag your messages
+
+**Example:** ` X-MC-Tags: password_reset,user_initiated`
+
+**Format:** - Comma-separated list of strings: each string is a tag to apply to the message
+- No more than 50 characters per tag and 1,000 tags per account
+- Tags starting with an underscore are reserved for internal use and will cause errors
+
+**Purpose:** Use [tags](/transactional/docs/tags-metadata/#tags) to classify certain types or groups of emails you send.
+
+**X-MC-PreserveRecipients** — Preserve recipient headers
+
+**Example:** `X-MC-PreserveRecipients: true`
+
+**Format:** `true` or `false`
+
+**Purpose:** If you [send to more than one recipient at a time](/transactional/docs/outbound-email/#multiple-recipients) and want all recipients to see each other’s information, set this option to `true`. If it’s set to `false`, Mailchimp will rewrite the `To` and `Cc` headers to only show information about an individual recipient.
+
+**X-MC-InlineCSS** — Automatically inline CSS
+
+**Example:** `X-MC-InlineCSS: true`
+
+**Format:** `true` or `false`
+
+**Purpose:** Manage [inlining CSS](/transactional/docs/outbound-email/#inline-css) for the HTML version of an email.
+
+**X-MC-Subaccount** — Set a subaccount
+
+**Example:** `X-MC-Subaccount: my_subaccount`
+
+**Format:** - The unique ID of the subaccount for the message
+- The subaccount must exist—otherwise, the mail will be accepted by the SMTP server but ultimately fail to send.
+
+**Purpose:** Select a [subaccount](/transactional/docs/subaccounts) for sending mail.
+
+**X-MC-ViewContentLink** — View Content link
+
+**Example:** `X-MC-ViewContentLink: true`
+
+**Format:** true or `false`
+
+**Purpose:** Disable the default [View Content link](/transactional/docs/activity-reports/#email-content-storage) for sensitive emails. This won’t disable Mailchimp’s own internal logging or analysis of the message, just the visibility from within your account.
+
+**X-MC-BccAddress** — Send copies of messages to a BCCed address
+
+**Example:** `X-MC-BccAddress: foo@example.com`
+
+**Format:** - Can include a single email address only
+- The address won’t show up in **Outbound Activity** and won’t be tracked individually
+- Mimics the BCC recipient from the account’s **Sending Defaults**
+
+**Purpose:** An optional address that will receive an exact copy of the message, including all tracking data.
+
+**X-MC-Important** — Prioritize sending for a message
+
+**Example:** `X-MC-Important: true`
+
+**Format:** `true` or `false` (defaults to `false`)
+
+**Purpose:** [Flag important messages](/transactional/docs/outbound-email/#prioritization) to give them priority over other messages you’re currently sending.
+
+**X-MC-SendAt** — Schedule a message
+
+**Example:** `X-MC-SendAt: 2023-10-06 23:59:59`
+
+**Format:** UTC timestamp written as YYYY-MM-DD HH:mm:ss
+
+**Purpose:** [Schedule messages](/transactional/docs/outbound-email/#scheduling-messages) to be sent at a future date and time, up to one year from the date of scheduling.
+
+**X-MC-IPPool** — Choose a dedicated IP pool
+
+**Example:** `X-MC-IPPool: my_pool`
+
+**Format:** - The name of the dedicated IP pool that should be used to send the message.
+- If you do not have any dedicated IPs, this parameter has no effect.
+- If you specify a pool that doesn’t exist, your default pool will be used instead.
+
+**Purpose:** Set a [dedicated IP pool](/transactional/docs/authentication-delivery/#dedicated-ip) on a per-message basis.
+
+**X-MC-ReturnPathDomain** — Set a custom return path domain
+
+**Example:** `X-MC-ReturnPathDomain: return-path.example.com`
+
+**Format:** The domain to use for the return path.
+
+**Purpose:** Customize the [return-path domain](/transactional/docs/authentication-delivery/#custom-return-path-domains) to point to your own domain—rather than the default mandrillapp.com—on a per-message basis. The domain must be configured in your account already.

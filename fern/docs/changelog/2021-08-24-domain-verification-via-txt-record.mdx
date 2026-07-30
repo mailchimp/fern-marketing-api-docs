@@ -1,0 +1,8 @@
+---
+title: Domain verification via TXT record 
+tags: ["Transactional"]
+---
+
+You can now verify your domain via TXT record. A new API parameter, `verify_txt_key`, was added to several `/senders` endpoints, which can be appended to `mandrill_verify.` and added to your domain’s TXT records. More details can be found in the [Authentication and Delivery docs](/transactional/docs/authentication-delivery/#verify-domain-ownership).
+
+We previously offered a single method to verify your domain—via a link in an email—but some domains or subdomains may not have an inbox configured, or the email could have trouble arriving. With this additional method, domains can be verified by adding a TXT record alongside SPF and DKIM.

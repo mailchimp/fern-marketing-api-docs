@@ -1,0 +1,8 @@
+---
+title: Overwriting campaign_id and outreach_id
+tags: ["Marketing API"]
+---
+
+We've started writing over the `campaign_id` or `outreach_id` values on [Orders](https://mailchimp.com/developer/marketing/api/ecommerce-orders/) to align with [our new attribution model](https://mailchimp.com/help/about-mailchimp-attribution/) and user-configured settings. If your integration is sending `campaign_id` or `outreach_id` with [Add Order](https://mailchimp.com/developer/marketing/api/ecommerce-orders/add-order/) or [Update Order](https://mailchimp.com/developer/marketing/api/ecommerce-orders/update-order/) API calls, we recommend deprecating that logic.
+
+We’re rolling out [Mailchimp's native attribution model](https://mailchimp.com/help/about-mailchimp-attribution/) across all e-commerce integrations. This new model gives you more complete insights into how marketing campaigns contribute to customer purchases. It also improves marketing performance reporting for all Mailchimp customers using e-commerce integrations. Additionally, this reduces the need for complex custom logic for attributing orders to specific marketing messages.

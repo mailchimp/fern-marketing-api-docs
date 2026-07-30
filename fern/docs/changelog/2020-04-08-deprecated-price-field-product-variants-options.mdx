@@ -1,0 +1,13 @@
+---
+title: Deprecated price field on product variants and options
+tags: ["Open Commerce"]
+---
+
+A new `pricing` field has been added to Product and ProductVariant types, and the `price` field has been deprecated.
+
+When using the new field:
+
+- A price on a product can be a range (based on the product’s variants)
+- Prices (minimum, maximum, range) are now properly reported through the API for certain products.
+
+We wanted to keep fields consistent across packages and product types. Additionally, the `pricing` field makes the GraphQL API match the in-app pricing features.

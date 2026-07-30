@@ -1,0 +1,10 @@
+---
+title: No longer redirecting HTTP requests
+tags: ["Marketing API"]
+---
+
+Previously, when an HTTP request was sent to the Marketing API, we redirect it to HTTPS. We’ve now stopped redirecting these requests and will instead return an HTTP 426 error code indicating the request needs to use HTTPS.
+
+Users with affected API keys or Authorized Apps should have received an email about the change.
+
+Although the Marketing API only accepts HTTPS requests, providing a redirect meant it still supported sending an initial HTTP request that transmitted a user’s sensitive information in plaintext. Returning a 426 error with the appropriate message helps ensure integrations are sending their requests securely.

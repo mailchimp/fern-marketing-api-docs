@@ -1,0 +1,8 @@
+---
+title: Improving the _links
+tags: ["Marketing API"]
+---
+
+In API responses, we return links to related endpoints. Some of the `targetSchema` and `schema` fields pointed to outdated JSON Schema files. We changed these to reference the equivalent Swagger definition.
+
+In the past, we deprecated our use of JSON Schema in favor of Swagger. Note that although we’re updating some of the link definitions, we don’t advise relying on them—we’d like to investigate deprecating them in the future. Instead, we recommend using the [reference documentation](/marketing/api) or [Swagger spec](https://api.mailchimp.com/schema/3.0/Swagger.json?expand).

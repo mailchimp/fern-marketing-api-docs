@@ -1,0 +1,9 @@
+---
+title: API Swagger spec now OAS 2-compliant
+tags: ["Marketing API"]
+---
+
+We’ve updated our [Swagger file](https://api.mailchimp.com/schema/3.0/Swagger.json?expand) to make it [OAS 2-compliant](https://swagger.io/docs/specification/2-0/basic-structure/). Our API Reference documentation is generated from our Swagger file. Before this change, we used a number of non-standard field names to control formatting in those docs. We cleaned those fields up and added testing to prevent drift in the future.
+
+We’d heard from developers that an OAS 2-compliant Swagger would greatly improve the developer experience for the Marketing API. This update makes it possible, for example, to directly use our Swagger file in Postman to more easily make requests to our API endpoints, in addition to better integration with [many other OAS-friendly tools](https://openapi.tools/).
+

@@ -1,0 +1,10 @@
+---
+title: Response code updated for invalid template name
+tags: ["Transactional"]
+---
+
+We’ve been updating our API responses recently to provide a more semantic response for the requests you make. With this release, we’re changing the way our API responds if you provide an invalid template name when requesting template information or if you try to send a message using a template that doesn’t exist. Once this change goes live, we’ll respond with an HTTP 404 Not Found. 
+
+If you’re specifically targeting HTTP response codes other than 200, you may need to update your code. We’re releasing this change incrementally over the next few weeks.
+
+Previously, we responded with an HTTP 500 Server Error when you provided an invalid template name or slug. We’re updating this to bring our response in line with proper semantics and allow more efficient status monitoring.
