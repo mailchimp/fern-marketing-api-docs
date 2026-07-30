@@ -1,30 +1,13 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/product-yml.schema.json
 
-tabs:
-  overview:
-    display-name: Overview
-    skip-slug: true
-  guides:
-    display-name: Guides
-    icon: book
-    slug: guides
-  documentation:
-    display-name: Documentation
-    icon: house
-    slug: docs
-  api-reference:
-    display-name: API Reference
-    icon: puzzle
-    slug: api
-
 navigation:
-  - tab: overview
-    layout:
-      - page: Overview
-        path: ../docs/pages/transactional/landing.mdx
-        slug: ""
-  - tab: guides
-    layout:
+  - page: Overview
+    path: ../docs/pages/transactional/landing.mdx
+    slug: ""
+  - section: Guides
+    slug: guides
+    collapsed: true
+    contents:
       - page: Transactional API Quick Start
         path: ../docs/pages/transactional/guides/quick-start.mdx
         slug: quick-start
@@ -49,8 +32,10 @@ navigation:
       - page: How to Use Mailchimp's Transactional Messaging MCP
         path: ../docs/pages/transactional/guides/transactional-messaging-mcp.mdx
         slug: how-to-use-mailchimps-transactional-messaging-mcp
-  - tab: documentation
-    layout:
+  - section: Documentation
+    slug: docs
+    collapsed: true
+    contents:
       - page: Fundamentals
         path: ../docs/pages/transactional/documentation/fundamentals.mdx
       - page: Authentication and Delivery
@@ -81,10 +66,10 @@ navigation:
         path: ../docs/pages/transactional/documentation/webhooks.mdx
       - page: Transactional SMS
         path: ../docs/pages/transactional/documentation/transactional-sms.mdx
-  - tab: api-reference
-    layout:
-      - section: API Reference
-        skip-slug: true
-        contents:
-          - page: Overview
-            path: ../docs/pages/transactional/api-reference.mdx
+  - section: API Reference
+    slug: api
+    collapsed: true
+    contents:
+      - page: Overview
+        path: ../docs/pages/transactional/api-reference.mdx
+        slug: ""

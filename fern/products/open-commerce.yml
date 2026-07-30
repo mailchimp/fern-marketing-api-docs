@@ -1,37 +1,23 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/product-yml.schema.json
 
-tabs:
-  overview:
-    display-name: Overview
-    skip-slug: true
-  guides:
-    display-name: Guides
-    icon: book
-    slug: guides
-  documentation:
-    display-name: Documentation
-    icon: house
-    slug: docs
-  graphql-playground:
-    display-name: GraphQL Playground
-    icon: puzzle
-
 navigation:
-  - tab: overview
-    layout:
-      - page: Overview
-        path: ../docs/pages/open-commerce/landing.mdx
-        slug: ""
-  - tab: guides
-    layout:
+  - page: Overview
+    path: ../docs/pages/open-commerce/landing.mdx
+    slug: ""
+  - section: Guides
+    slug: guides
+    collapsed: true
+    contents:
       - page: Open Commerce Quick Start
         path: ../docs/pages/open-commerce/guides/quick-start.mdx
         slug: quick-start
       - page: Build an API Plugin
         path: ../docs/pages/open-commerce/guides/build-api-plugin.mdx
         slug: build-api-plugin
-  - tab: documentation
-    layout:
+  - section: Documentation
+    slug: docs
+    collapsed: true
+    contents:
       - page: Fundamentals
         path: ../docs/pages/open-commerce/documentation/fundamentals.mdx
       - page: Plugins and Environment Variables
@@ -56,10 +42,5 @@ navigation:
         path: ../docs/pages/open-commerce/documentation/git-formatting-conventions.mdx
       - page: Testing Requirements
         path: ../docs/pages/open-commerce/documentation/testing-requirements.mdx
-  - tab: graphql-playground
-    layout:
-      - section: GraphQL Playground
-        skip-slug: true
-        contents:
-          - page: GraphQL Playground
-            path: ../docs/pages/open-commerce/graphql-playground.mdx
+  - page: GraphQL Playground
+    path: ../docs/pages/open-commerce/graphql-playground.mdx

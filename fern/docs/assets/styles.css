@@ -767,6 +767,10 @@ a[href*="buildwithfern.com"] {
 .fern-header-tabs a > .fern-icon {
   display: none !important;
 }
+/* tabs now live in the sidebar (tabs-placement: sidebar) — hide their icon boxes too */
+#fern-sidebar a > span:has(> svg) {
+  display: none !important;
+}
 
 /* Left gutter so the active marker has room; keeps every row aligned */
 #fern-sidebar .fern-sidebar-link {
