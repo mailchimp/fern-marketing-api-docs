@@ -42,7 +42,7 @@ layout:
 
 logo:
   light: ./assets/mc-logo-mobile-dark.svg
-  dark: ./assets/mailchimp-logo-dark-bg.svg
+  dark: ./assets/mailchimp-logo-twotone-dark.svg
   height: 40
   href: /
 
