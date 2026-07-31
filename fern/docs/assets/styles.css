@@ -772,6 +772,28 @@ a[href*="buildwithfern.com"] {
   display: none !important;
 }
 
+/* =============================================
+   AUTO-HIDE HEADER (mc-header.js) + remove the gray divider line
+============================================= */
+header.fern-background-image { border-bottom: none !important; }
+.mc-header {
+  border-bottom: none !important;
+  transition: transform .3s ease;
+  will-change: transform;
+}
+.mc-header.mc-header-hidden { transform: translateY(-100%) !important; }
+/* floating logo that stays when the header is hidden */
+.mc-float-logo {
+  position: fixed;
+  top: 14px;
+  left: 24px;
+  z-index: 60;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .25s ease;
+}
+body.mc-header-is-hidden .mc-float-logo { opacity: 1; visibility: visible; }
+
 /* Left gutter so the active marker has room; keeps every row aligned */
 #fern-sidebar .fern-sidebar-link {
   position: relative;
