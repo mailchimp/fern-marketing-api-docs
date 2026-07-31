@@ -827,6 +827,72 @@ header.fern-background-image { border-bottom: none !important; }
   pointer-events: auto;
 }
 
+/* =============================================
+   PRODUCT SWITCHER (mc-switcher.js) — mega-menu like mailchimp.com/developer
+============================================= */
+/* hide Fern's native product selector; replaced by our own "Products" trigger */
+.fern-header-selectors { display: none !important; }
+
+/* "Products" trigger, sitting where the native selector was (next to the logo) */
+.mc-switcher-trigger {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-left: 20px;
+  background: transparent; border: 0; cursor: pointer;
+  font-family: 'Graphik Web', Helvetica, Arial, sans-serif;
+  font-size: 16px; font-weight: 500; line-height: 1;
+  color: #001d28; padding: 6px 0;
+}
+.dark .mc-switcher-trigger { color: #efeeea; }
+.mc-switcher-trigger:hover { color: #007c89; }
+.dark .mc-switcher-trigger:hover { color: #e7b75f; }
+.mc-switcher-caret { transition: transform .2s ease; }
+.mc-switcher-trigger.is-open .mc-switcher-caret { transform: rotate(180deg); }
+/* trigger disappears with the rest of the header when it collapses on scroll */
+.mc-header-collapsed .mc-switcher-trigger { opacity: 0 !important; pointer-events: none !important; }
+
+/* full-width dark mega-menu panel that drops below the header */
+.mc-switcher-panel {
+  position: fixed; left: 0; right: 0; top: 0;
+  z-index: 40;
+  background: #001d28;
+  border-top: 1px solid #18323b;
+  box-shadow: 0 24px 40px rgba(0, 0, 0, .35);
+  opacity: 0; visibility: hidden; transform: translateY(-10px);
+  transition: opacity .2s ease, transform .2s ease, visibility .2s;
+}
+.mc-switcher-panel.is-open { opacity: 1; visibility: visible; transform: none; }
+.mc-switcher-inner {
+  max-width: 88rem; margin: 0 auto; padding: 48px 80px 56px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px;
+}
+.mc-switcher-name {
+  display: block; text-decoration: none !important;
+  color: #efeeea !important; font-family: 'Means Web', Georgia, serif !important;
+  font-size: 24px; font-weight: 300; line-height: 1.1; letter-spacing: -.01em;
+  margin-bottom: 12px;
+}
+.mc-switcher-name:hover { color: #e7b75f !important; }
+.mc-switcher-desc {
+  color: #efeeea; font-family: 'Graphik Web', Helvetica, Arial, sans-serif;
+  font-size: 15px; line-height: 1.5; margin: 0 0 18px 0; opacity: .82;
+}
+.mc-switcher-links { list-style: none !important; margin: 0 !important; padding: 0 !important; }
+.mc-switcher-links li { margin: 0 !important; }
+.mc-switcher-links li::before { content: none !important; }
+.mc-switcher-links a {
+  display: inline-flex; align-items: center;
+  color: #e7b75f !important; text-decoration: none !important;
+  font-family: 'Graphik Web', Helvetica, Arial, sans-serif;
+  font-size: 15px; font-weight: 500; padding: 7px 0;
+}
+.mc-switcher-links a::before { content: "\2192"; color: #00c14e; margin-right: 10px; font-weight: 700; }
+.mc-switcher-links a:hover { color: #ff3ebf !important; }
+
+@media (max-width: 900px) {
+  .mc-switcher-inner { grid-template-columns: 1fr; gap: 32px; padding: 32px 24px 40px; }
+  .mc-switcher-trigger { margin-left: 12px; }
+}
+
 /* Left gutter so the active marker has room; keeps every row aligned */
 #fern-sidebar .fern-sidebar-link {
   position: relative;

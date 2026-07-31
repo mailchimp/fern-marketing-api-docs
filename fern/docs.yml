@@ -94,6 +94,8 @@ js:
     strategy: afterInteractive
   - path: docs/assets/mc-header.js
     strategy: afterInteractive
+  - path: docs/assets/mc-switcher.js
+    strategy: afterInteractive
 
 navbar-links:
   - type: minimal
@@ -110,37 +112,28 @@ navbar-links:
     url: https://login.mailchimp.com/signup/
 
 products:
-  - display-name: Home
-    href: /
-    icon: fa-duotone fa-house
   - display-name: Mailchimp Marketing API
     path: ./products/marketing-api.yml
-    icon: fa-duotone fa-bullhorn
     slug: marketing
     subtitle: Power timely, relevant marketing campaigns with custom data pulled directly from your app.
   - display-name: Mailchimp Transactional
     path: ./products/transactional.yml
-    icon: fa-duotone fa-envelope
     slug: transactional
     subtitle: Send targeted and event-driven messages to anyone, fast—with best-in-class deliverability.
   - display-name: Mailchimp Open Commerce
     path: ./products/open-commerce.yml
-    icon: fa-duotone fa-cart-shopping
     slug: open-commerce
     subtitle: Control your commerce future with a modular, API-first commerce stack.
   - display-name: Tools
     path: ./products/tools.yml
-    icon: fa-duotone fa-wrench
     slug: tools
     subtitle: Official client libraries and mobile SDKs for the Mailchimp APIs.
   - display-name: Release Notes
     path: ./products/release-notes.yml
-    icon: fa-duotone fa-bell
     slug: release-notes
     subtitle: The latest updates, improvements, and fixes across the Mailchimp APIs.
   - display-name: Blog
     path: ./products/blog.yml
-    icon: fa-duotone fa-newspaper
     slug: blog
     subtitle: Engineering stories and updates from the Mailchimp developer team.
 
