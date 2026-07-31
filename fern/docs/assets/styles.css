@@ -1157,7 +1157,12 @@ header.fern-background-image { border-bottom: none !important; }
 ============================================= */
 .mc-tools-hero {
   background-color: #001d28;
-  padding: 72px 0 88px;
+  padding: 72px 0 60px;
+}
+/* SDK libraries sit on a lighter charcoal band; cards go darker for contrast */
+.mc-tools-libraries {
+  background-color: #18323b;
+  padding: 56px 0 96px;
 }
 .mc-tools-title {
   color: #efeeea !important;
@@ -1191,22 +1196,22 @@ header.fern-background-image { border-bottom: none !important; }
 }
 .mc-tools-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-  gap: 16px;
-  max-width: 900px;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 20px;
+  max-width: 1060px;
 }
 .mc-tools-card {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 22px 24px;
-  background-color: #0c2832;
+  padding: 24px 26px;
+  background-color: #001d28;
   border-left: 4px solid #e7b75f;
   border-radius: 2px;
   text-decoration: none !important;
   transition: background-color .15s ease;
 }
-.mc-tools-card:hover { background-color: #143743; }
+.mc-tools-card:hover { background-color: #0c2832; }
 .mc-tools-card-logo {
   height: 30px;
   width: 30px;
