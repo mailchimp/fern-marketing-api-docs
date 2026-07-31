@@ -1002,8 +1002,11 @@ header.fern-background-image { border-bottom: none !important; }
   display: none !important;
 }
 /* On blog, fully remove the right TOC column (display:none, not just hidden) so
-   the article reclaims the space instead of being pushed left, and widen it. */
-.mc-blog-route .fern-main aside:has(.toc-root) {
+   the article reclaims the space instead of being pushed left, and widen it.
+   Hide the aside regardless of whether it contains a TOC — posts with no
+   headings get an empty aside that still reserves space and de-centers the
+   article (e.g. the featured "Reintroducing Mailchimp Transactional" post). */
+.mc-blog-route .fern-main aside {
   display: none !important;
 }
 .mc-blog-route article.w-content-width {
