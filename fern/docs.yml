@@ -94,8 +94,6 @@ js:
     strategy: afterInteractive
   - path: docs/assets/mc-header.js
     strategy: afterInteractive
-  - path: docs/assets/mc-switcher.js
-    strategy: afterInteractive
 
 navbar-links:
   - type: minimal
