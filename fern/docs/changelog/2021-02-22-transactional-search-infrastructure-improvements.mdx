@@ -1,0 +1,8 @@
+---
+title: Transactional search infrastructure improvements
+tags: ["Transactional"]
+---
+
+We upgraded the ElasticSearch cluster that backs our activity search feature, which will result in significant stability improvements.
+
+We were running an old version of ElasticSearch on old hardware that was struggling to keep up with our load. By migrating to new hardware and bumping several major ElasticSearch versions, we will cut the number of failed search requests in half.

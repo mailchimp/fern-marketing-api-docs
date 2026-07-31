@@ -1,0 +1,8 @@
+---
+title: Stricter rules for URL matching in OAuth 2
+tags: ["Marketing API"]
+---
+
+The security team has implemented stricter rules around redirect URL matching in our OAuth 2 implementation. We now only support exact matching on the redirect URI to adhere to the OAuth 2 spec.
+
+Before this change, our redirect URL matching didn’t conform to the OAuth 2 spec. Strictly adhering to the spec results in more predictable behavior and fewer surprises.

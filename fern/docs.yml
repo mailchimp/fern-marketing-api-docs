@@ -36,12 +36,13 @@ landing-page:
 
 layout:
   searchbar-placement: header
-  page-width: full
-  tabs-placement: header
+  page-width: 88rem
+  content-width: 46rem
+  tabs-placement: sidebar
 
 logo:
   light: ./assets/mc-logo-mobile-dark.svg
-  dark: ./assets/mailchimp-logo-dark-bg.svg
+  dark: ./assets/mailchimp-logo-twotone-dark.svg
   height: 40
   href: /
 
@@ -72,7 +73,8 @@ colors:
     dark: "#001D28"
     light: "#EFEEEA"
   sidebar-background:
-    dark: "#0C2832"
+    dark: "#001D28"
+    light: "#EFEEEA"
   header-background:
     dark: "#0C2832"
   card-background:
@@ -83,39 +85,51 @@ colors:
 
 css: docs/assets/styles.css
 
+js:
+  - path: docs/assets/mc-sidebar-toc.js
+    strategy: afterInteractive
+  - path: docs/assets/mc-blog.js
+    strategy: afterInteractive
+  - path: docs/assets/mc-carousel.js
+    strategy: afterInteractive
+  - path: docs/assets/mc-header.js
+    strategy: afterInteractive
+
 navbar-links:
   - type: minimal
     text: Tools
-    url: https://mailchimp.com/developer/tools/
+    url: /tools
   - type: minimal
     text: Release Notes
-    url: https://mailchimp.com/developer/release-notes/
+    url: /release-notes
   - type: minimal
     text: Blog
-    url: https://mailchimp.com/developer/blog/
+    url: /blog
   - type: filled
     text: Sign Up
     url: https://login.mailchimp.com/signup/
 
 products:
-  - display-name: Home
-    href: /
-    icon: fa-duotone fa-house
   - display-name: Mailchimp Marketing API
     path: ./products/marketing-api.yml
-    icon: fa-duotone fa-bullhorn
     slug: marketing
     subtitle: Power timely, relevant marketing campaigns with custom data pulled directly from your app.
   - display-name: Mailchimp Transactional
     path: ./products/transactional.yml
-    icon: fa-duotone fa-envelope
     slug: transactional
     subtitle: Send targeted and event-driven messages to anyone, fast—with best-in-class deliverability.
-  - display-name: Mailchimp Open Commerce
-    path: ./products/open-commerce.yml
-    icon: fa-duotone fa-cart-shopping
-    slug: open-commerce
-    subtitle: Control your commerce future with a modular, API-first commerce stack.
+  - display-name: Tools
+    path: ./products/tools.yml
+    slug: tools
+    subtitle: Official client libraries and mobile SDKs for the Mailchimp APIs.
+  - display-name: Release Notes
+    path: ./products/release-notes.yml
+    slug: release-notes
+    subtitle: The latest updates, improvements, and fixes across the Mailchimp APIs.
+  - display-name: Blog
+    path: ./products/blog.yml
+    slug: blog
+    subtitle: Engineering stories and updates from the Mailchimp developer team.
 
 footer: ./components/Footer.tsx
 

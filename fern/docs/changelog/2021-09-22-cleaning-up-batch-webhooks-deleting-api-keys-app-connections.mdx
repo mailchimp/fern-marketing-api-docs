@@ -1,0 +1,8 @@
+---
+title: Cleaning up batch webhooks when deleting API keys or app connections
+tags: ["Marketing API"]
+---
+
+When deleting an API key or removing an authorized app connection, we will remove the batch webhooks created by that key or connection.
+
+When a batch job completes, we send that response body to all created webhooks. Previously, these batch webhooks weren’t cleaned up when a user disconnected from an authorized app, or removed an API key.

@@ -1,0 +1,11 @@
+---
+title: Additional fields added to Batch Subscribe error response
+tags: ["Marketing API"]
+---
+
+We’ve added “`field`” and “`field_message`” to the [Batch Subscribe](https://mailchimp.com/developer/marketing/api/lists/batch-subscribe-or-unsubscribe/) error response. You’ll see data in these fields when a merge field error is encountered.
+
+
+Previously, when you encountered a merge field error during a Batch Subscribe operation, you didn’t see any details about the field in the error. This can cause headaches when you’re troubleshooting a remedy.
+
+These additional fields, when present, should provide more insight into how to resolve an issue.

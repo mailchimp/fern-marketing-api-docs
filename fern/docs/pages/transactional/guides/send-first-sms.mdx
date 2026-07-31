@@ -1,3 +1,50 @@
-# Send Your First Transactional SMS
+---
+title: Send Your First Transactional SMS
+description: Configure your account to start sending transactional SMS using the Transactional API
+---
 
-Learn how to send your first transactional SMS message using the Mailchimp Transactional API.
+
+
+## At a glance
+
+This guide will walk you through the essentials of sending your first SMS message using the Mailchimp Transactional API. We'll cover how to set up your account, obtain a phone number, and use the API to send a text message. This will ensure you have everything configured correctly to start sending transactional SMS messages to your customers.
+
+## What you'll need
+
+- A Standard or higher Mailchimp account with Transactional enabled and SMS credits
+- A phone number approved for sending SMS
+- [Your API key](/transactional/guides/quick-start/#generate-your-api-key)
+
+## Create an account
+
+If you don't have a Mailchimp Transactional account, you’ll need to [create a Mailchimp account](https://login.mailchimp.com/signup/) and enable Transactional. 
+
+If you have a Mailchimp Standard plan or higher, you can enable Mailchimp Transactional from the [Monthly plans or credits page of your account](https://us1.admin.mailchimp.com/account/billing-plan/). 
+
+You can [submit an SMS marketing application](https://mailchimp.com/help/set-up-your-sms-marketing-program/?_gl=1*1xmgqak*_up*MQ..*_gs*MQ..&gclid=CjwKCAjwlOrFBhBaEiwAw4bYDcxVp4dg6C6GY9QE3I6euXcHFzPIDo3YvAfeRzHZ7LTHhSiGa0F5DRoCg_QQAvD_BwE&gclsrc=aw.ds&gbraid=0AAAAADh1Fp08-HhUOb_Mfg-ZoakwPG80N#Submit_your_SMS_Marketing_application), and purchase SMS credits from the [SMS overview page](https://login.mailchimp.com/?referrer=%2Fsms%2F&_gl=1*1xmgqak*_up*MQ..*_gs*MQ..&gclid=CjwKCAjwlOrFBhBaEiwAw4bYDcxVp4dg6C6GY9QE3I6euXcHFzPIDo3YvAfeRzHZ7LTHhSiGa0F5DRoCg_QQAvD_BwE&gclsrc=aw.ds&gbraid=0AAAAADh1Fp08-HhUOb_Mfg-ZoakwPG80N), the [SMS settings page](https://login.mailchimp.com/?referrer=%2Fsms%2Fsettings%2F&_gl=1*ci3fic*_up*MQ..*_gs*MQ..&gclid=CjwKCAjwlOrFBhBaEiwAw4bYDcxVp4dg6C6GY9QE3I6euXcHFzPIDo3YvAfeRzHZ7LTHhSiGa0F5DRoCg_QQAvD_BwE&gclsrc=aw.ds&gbraid=0AAAAADh1Fp08-HhUOb_Mfg-ZoakwPG80N), or the SMS editor in Mailchimp. Transactional SMS messages may be sent from programs tied to your account.
+
+## Setup your API key
+
+To find out how to create an API key and make your first API call, see the [Transactional API Quick Start guide](https://mailchimp.com/developer/transactional/guides/quick-start/).
+
+## Send your first SMS
+
+With everything set up, we can start sending SMS messages.
+
+Using the [send-sms API endpoint](https://mailchimp.com/developer/transactional/api/messages/send-sms-message/), the minimum **required** fields to make an SMS send are:
+
+- `key` (string field): valid Mailchimp Transactional API key
+- `message` (object field): body of the message that must include the following parameters: `to` (string field): valid phone # of recipient. Required format: E.164 `from` (string field): valid phone # of approved SMS program. Required format: alphanumeric. Must be one of three: 1) E.164 phone number, 2) short code, 3) alphanumeric sender string in EU`text` (string field): SMS content to be sent`consent` (string field): consent type for the message. Possible values: "`onetime`", "`recurring`", or "`recurring-no-confirm`"
+
+An example SMS send may look like this:
+
+```bash
+MESSAGE='{"key": "$YOUR_API_KEY","message": {"sms": {"text": "Hello from Mandrill SMS! Visit https://example.com for more info.","to": "+0000000000", "from": "+0000000000", "consent": "onetime","track_clicks": true}}}' 
+  
+curl -X POST https://mandrillapp.com/api/1.1/messages/send-sms \
+  -H "Content-Type: application/json" \
+  -d "$MESSAGE"
+```
+
+
+For more information about this endpoint and accepted parameters, review the [API reference documentation](https://mailchimp.com/developer/transactional/api/messages/send-sms-message/).

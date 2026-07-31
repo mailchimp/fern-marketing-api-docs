@@ -1,0 +1,12 @@
+---
+title: Updated Mailchimp Transactional client libraries
+tags: ["Transactional"]
+---
+
+We've published an [updated package for the PHP client library](https://packagist.org/packages/mailchimp/transactional#1.0.57) that is compatible with PHP 8.2.
+
+We've also published an [updated package for the Node.js client](https://www.npmjs.com/package/@mailchimp/mailchimp_transactional/v/1.0.59) library that uses the latest version of Axios to address a security vulnerability.
+
+Older versions of the PHP client library caused errors when used with PHP 8.2.
+
+A vulnerability was found in versions 0.8.1 through 1.5.1 of Axios, which unintentionally exposed the `XSRF-TOKEN` that was stored in cookies by including it in the `X-XSRF-TOKEN` HTTP header for all requests to any host. This allowed malicious actors possible access to sensitive data. To address this issue, we have updated the Node.js client library to use the latest version of Axios.

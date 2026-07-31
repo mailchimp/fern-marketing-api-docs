@@ -1,176 +1,117 @@
 ---
-title: Mailchimp Marketing API | Mailchimp Developer
-hide-toc: true
+title: Mailchimp Developer
 layout: custom
+slug: ""
 ---
 
-<div class="mc-landing-page">
-  {/* ── MAIN CONTENT ── */}
-  <main id="mc-main-content">
-
-    {/* HERO */}
-    <section class="mc-hero-section">
-      <div class="mc-container-outer">
-        <div class="mc-container-inner">
-          <div class="mc-hero-inner">
-            <div class="mc-hero-left">
-              <h1 class="mc-hero-eyebrow">Mailchimp Marketing API</h1>
-              <h2 class="mc-hero-h2">Power your campaigns with our marketing engine</h2>
-              <p class="mc-hero-body">Manage audiences, integrate your data, and send timely, relevant email campaigns.</p>
-              <a href="/marketing/quick-start" class="mc-hero-button">View quick start</a>
-            </div>
-            <div class="mc-hero-right">
-              <picture>
-                <source
-                  type="image/webp"
-                  srcSet="https://mailchimp.com/developer/static/a09330e36cdd8f26345a68ce7652df97/e3305/Marketing_Hero.min.webp 375w, https://mailchimp.com/developer/static/a09330e36cdd8f26345a68ce7652df97/0cdd0/Marketing_Hero.min.webp 430w, https://mailchimp.com/developer/static/a09330e36cdd8f26345a68ce7652df97/482be/Marketing_Hero.min.webp 768w, https://mailchimp.com/developer/static/a09330e36cdd8f26345a68ce7652df97/087e3/Marketing_Hero.min.webp 860w"
-                  sizes="(min-width: 430px) 430px, 100vw"
-                />
-                <img
-                  class="mc-hero-image"
-                  src="https://mailchimp.com/developer/static/a09330e36cdd8f26345a68ce7652df97/a3c2c/Marketing_Hero.min.png"
-                  srcSet="https://mailchimp.com/developer/static/a09330e36cdd8f26345a68ce7652df97/98376/Marketing_Hero.min.png 375w, https://mailchimp.com/developer/static/a09330e36cdd8f26345a68ce7652df97/a3c2c/Marketing_Hero.min.png 430w, https://mailchimp.com/developer/static/a09330e36cdd8f26345a68ce7652df97/d6cbb/Marketing_Hero.min.png 768w, https://mailchimp.com/developer/static/a09330e36cdd8f26345a68ce7652df97/44240/Marketing_Hero.min.png 860w"
-                  sizes="(min-width: 430px) 430px, 100vw"
-                  alt="Mailchimp Marketing API Illustration"
-                  width="430"
-                  height="430"
-                />
-              </picture>
-            </div>
-          </div>
+<div class="mc-home">
+  <section class="mc-home-hero">
+    <div class="mc-container-outer">
+      <div class="mc-home-hero-inner">
+        <div class="mc-home-hero-left">
+          <h1 class="mc-home-hero-title">Build with Mailchimp</h1>
+          <p class="mc-home-hero-copy">Mailchimp’s developer tools provide everything you need to integrate your data with intelligent marketing tools and event-driven transactional email and SMS.</p>
         </div>
+        <div class="mc-home-hero-right"><img class="mc-home-hero-img" src="https://mailchimp.com/developer/static/ebd562c3d38789d4c89982f0819c08b9/a3c2c/Homepage_Hero.png" alt="" /></div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    {/* USE CASES */}
-    <section class="mc-use-cases-section">
-      <div class="mc-container-outer">
-        <ul class="mc-use-cases-list">
-
-              <li class="mc-use-case-item">
-                <div class="mc-use-case-left">
-                  <h3 class="mc-use-case-h3">
-                    <div class="mc-use-case-header"><p>Manage your audiences</p></div>
-                  </h3>
-                  <p class="mc-use-case-description">Leverage the Marketing API to integrate your users&#8217; data with Mailchimp&#8217;s marketing scale.</p>
-                </div>
-                <ul class="mc-use-case-links">
-                  <li class="mc-use-case-link-item">
-                    <a class="mc-use-case-link-anchor" href="/marketing/create-your-first-audience">Create an audience and add contacts</a>
-                    <p class="mc-use-case-link-description">Integrate your application with the Marketing API to create and add contacts to a new audience.</p>
-                  </li>
-                  <li class="mc-use-case-link-item">
-                    <a class="mc-use-case-link-anchor" href="/marketing/create-your-first-audience">Organize your contacts with tags</a>
-                    <p class="mc-use-case-link-description">Use tags to bring your application&#8217;s email targeting and organization strategy into Mailchimp.</p>
-                  </li>
-                </ul>
-              </li>
-
-              <li class="mc-use-case-item">
-                <div class="mc-use-case-left">
-                  <h3 class="mc-use-case-h3">
-                    <div class="mc-use-case-header"><p>Automate marketing activities</p></div>
-                  </h3>
-                  <p class="mc-use-case-description">Sync events in your app with Mailchimp to create powerful email automations at scale.</p>
-                </div>
-                <ul class="mc-use-case-links">
-                  <li class="mc-use-case-link-item">
-                    <a class="mc-use-case-link-anchor" href="/marketing/send-your-first-campaign">Track events that trigger automations</a>
-                    <p class="mc-use-case-link-description">Monitor and act on your users&#8217; behavior outside emails with the Events endpoint.</p>
-                  </li>
-                  <li class="mc-use-case-link-item">
-                    <a class="mc-use-case-link-anchor" href="/marketing/send-your-first-campaign">Run requests asynchronously with the batch endpoint</a>
-                    <p class="mc-use-case-link-description">Scale large or long-running calls to the Marketing API with batch requests.</p>
-                  </li>
-                </ul>
-              </li>
-
-              <li class="mc-use-case-item">
-                <div class="mc-use-case-left">
-                  <h3 class="mc-use-case-h3">
-                    <div class="mc-use-case-header"><p>Integrate your data</p></div>
-                  </h3>
-                  <p class="mc-use-case-description">Use the Marketing API to keep your data in sync with Mailchimp.</p>
-                </div>
-                <ul class="mc-use-case-links">
-                  <li class="mc-use-case-link-item">
-                    <a class="mc-use-case-link-anchor" href="/marketing/create-your-first-audience">Synchronize audience data with webhooks</a>
-                    <p class="mc-use-case-link-description">Keep your data store in sync with your Mailchimp audience via webhooks.</p>
-                  </li>
-                  <li class="mc-use-case-link-item">
-                    <a class="mc-use-case-link-anchor" href="/marketing/authentication">Access data on behalf of other users with OAuth 2</a>
-                    <p class="mc-use-case-link-description">Integrate your product with your users&#8217; Mailchimp accounts by authenticating via OAuth.</p>
-                  </li>
-                </ul>
-              </li>
-
+  <section class="mc-home-products">
+    <div class="mc-container-outer">
+      <div class="mc-home-product-row">
+      <div class="mc-home-product">
+        <p class="mc-home-product-eyebrow">Mailchimp Marketing API</p>
+        <a class="mc-home-product-title" href="/marketing">Send marketing campaigns</a>
+        <ul class="mc-home-plinks">
+          <li><a class="mc-home-plink" href="/marketing/guides/quick-start">Quick Start</a></li>
+          <li><a class="mc-home-plink" href="/marketing/api">API Reference</a></li>
+          <li><a class="mc-home-plink" href="/marketing/docs/fundamentals">Documentation</a></li>
         </ul>
+        <p class="mc-home-product-copy">Mailchimp’s Marketing API powers timely, relevant marketing campaigns with custom data pulled directly from your app.        </p>
       </div>
-    </section>
+      <div class="mc-home-product">
+        <p class="mc-home-product-eyebrow">Mailchimp Transactional</p>
+        <a class="mc-home-product-title" href="/transactional">Send transactional email and SMS</a>
+        <ul class="mc-home-plinks">
+          <li><a class="mc-home-plink" href="/transactional/guides/quick-start">Quick Start</a></li>
+          <li><a class="mc-home-plink" href="/transactional/api">API Reference</a></li>
+          <li><a class="mc-home-plink" href="/transactional/docs/fundamentals">Documentation</a></li>
+        </ul>
+        <p class="mc-home-product-copy">Mailchimp Transactional (formerly Mandrill) sends targeted and event-driven messages via the API or SMTP, fast—with best-in-class deliverability.</p>
+      </div>
+      </div>
+    </div>
+  </section>
 
-    {/* JOIN MAILCHIMP */}
-    <section class="mc-bottom-section">
-      <div class="mc-container-outer">
-        <div class="mc-bottom-inner">
-            <div class="mc-bottom-top-row">
-              <div class="mc-bottom-left">
-                <p class="mc-bottom-eyebrow">Join Mailchimp</p>
-                <h2 class="mc-bottom-heading">Helping you build your thing is our thing</h2>
-                <p class="mc-bottom-body">
-                  Creating a Mailchimp account is the first step to accessing our APIs and developer tools.
-                </p>
-                <div class="mc-bottom-cta-wrap">
-                  <a href="https://login.mailchimp.com/signup/" class="mc-bottom-button">Create a Mailchimp account</a>
-                  <a href="https://mailchimp.com/pricing/" class="mc-bottom-secondary-link">See Pricing</a>
-                </div>
-              </div>
-              <div class="mc-bottom-right">
-                <picture>
-                  <source
-                    type="image/webp"
-                    srcSet="https://mailchimp.com/developer/static/c7f14bd457923adb4315bcdf852033b0/0e0a3/Marketing_SPOT.min.webp 375w, https://mailchimp.com/developer/static/c7f14bd457923adb4315bcdf852033b0/c9934/Marketing_SPOT.min.webp 430w, https://mailchimp.com/developer/static/c7f14bd457923adb4315bcdf852033b0/7454b/Marketing_SPOT.min.webp 768w, https://mailchimp.com/developer/static/c7f14bd457923adb4315bcdf852033b0/5131d/Marketing_SPOT.min.webp 860w"
-                    sizes="(min-width: 430px) 430px, 100vw"
-                  />
-                  <img
-                    class="mc-bottom-image"
-                    src="https://mailchimp.com/developer/static/c7f14bd457923adb4315bcdf852033b0/37283/Marketing_SPOT.min.png"
-                    srcSet="https://mailchimp.com/developer/static/c7f14bd457923adb4315bcdf852033b0/c4250/Marketing_SPOT.min.png 375w, https://mailchimp.com/developer/static/c7f14bd457923adb4315bcdf852033b0/37283/Marketing_SPOT.min.png 430w, https://mailchimp.com/developer/static/c7f14bd457923adb4315bcdf852033b0/0f11a/Marketing_SPOT.min.png 768w, https://mailchimp.com/developer/static/c7f14bd457923adb4315bcdf852033b0/6082b/Marketing_SPOT.min.png 860w"
-                    sizes="(min-width: 430px) 430px, 100vw"
-                    alt="Mailchimp Marketing SPOT Illustration"
-                    width="430"
-                    height="429"
-                  />
-                </picture>
-              </div>
-            </div>
-
-            <div class="mc-bottom-details-divider"></div>
-            <div class="mc-bottom-details">
-              <div class="mc-bottom-detail">
-                <p class="mc-bottom-detail-heading">300+ app integrations</p>
-                <p class="mc-bottom-detail-body">
-                  Don&#8217;t reinvent the wheel. Connect all your tools to Mailchimp and unlock even more features.
-                </p>
-              </div>
-              <div class="mc-bottom-detail">
-                <p class="mc-bottom-detail-heading">Data-backed guidance</p>
-                <p class="mc-bottom-detail-body">
-                  Mailchimp&#8217;s proprietary intelligence gives you smart recommendations to help boost your marketing and revenue.
-                </p>
-              </div>
-              <div class="mc-bottom-detail">
-                <p class="mc-bottom-detail-heading">Award-winning support</p>
-                <p class="mc-bottom-detail-body">
-                  Get the help you need, whenever you need it with our 24/7 support.
-                </p>
-              </div>
-            </div>
-
-          </div>
+  <section class="mc-home-stats">
+    <div class="mc-container-outer">
+      <h2 class="mc-home-stats-title">You’ll be in good company</h2>
+      <p class="mc-home-stats-copy">When you build integrations with Mailchimp, you’re creating tools for a trusted and reliable platform that powers marketing, e-commerce, and more for millions of small businesses.</p>
+      <div class="mc-home-stats-grid">
+        <div class="mc-home-stat">
+          <div class="mc-home-stat-label">14M</div>
+          <p class="mc-home-stat-copy">Trusted by fourteen million customers and counting</p>
         </div>
-    </section>
+        <div class="mc-home-stat">
+          <div class="mc-home-stat-label">1B</div>
+          <p class="mc-home-stat-copy">Rock-solid reliability delivers 1 billion emails daily</p>
+        </div>
+        <div class="mc-home-stat">
+          <div class="mc-home-stat-label">300+</div>
+          <p class="mc-home-stat-copy">Dev teams have launched over 300 Mailchimp integrations so far</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  </main>
+  <section class="mc-home-promo mc-home-promo--light">
+    <div class="mc-container-outer">
+      <div class="mc-home-promo-inner">
+        <div>
+          <p class="mc-home-promo-eyebrow">Mailchimp Integration Partner Program</p>
+          <h2 class="mc-home-promo-title">A helping hand to scale your Mailchimp Integration</h2>
+          <p class="mc-home-promo-copy">As an Integration Partner, you’ll have access to exclusive benefits, insights, and opportunities to grow your business.</p>
+          <a class="mc-home-promo-btn" href="/integration-partner-program">Learn More</a>
+        </div>
+        <div class="mc-home-promo-img-wrap"><img class="mc-home-promo-img" src="https://mailchimp.com/developer/static/25b5003ddaaebe6d743408d84d675223/a3c2c/70.png" alt="" /></div>
+      </div>
+    </div>
+  </section>
 
+  <section class="mc-home-promo mc-home-promo--dark">
+    <div class="mc-container-outer">
+      <h2 class="mc-home-promo-title">$1 Million to the Developer Community</h2>
+      <p class="mc-home-promo-copy">We’ve invested in the developer community with a fund to power the creation of new Mailchimp integrations. Keep an eye on the integrations directory to see what’s new!</p>
+      <a class="mc-home-promo-link" href="https://mailchimp.com/integrations/">Browse Integrations</a>
+    </div>
+  </section>
 
+  <section class="mc-home-quote">
+    <div class="mc-container-outer">
+      <div class="mc-quote-carousel" data-mc-carousel>
+        <button class="mc-quote-arrow mc-quote-prev" aria-label="Previous testimonial"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <div class="mc-quote-track">
+          <figure class="mc-quote-slide is-active" data-idx="0">
+            <blockquote class="mc-quote-text">On the Mailchimp side, the fact that the API allows us to send automated emails to catch potential customers that might otherwise be lost is a great feature.</blockquote>
+            <figcaption class="mc-quote-author">Santiago Paragarino, Senior Magento developer &amp; Gonzalo Dominguez, Senior Engineer, Ebizmarts</figcaption>
+          </figure>
+          <figure class="mc-quote-slide" data-idx="1">
+            <blockquote class="mc-quote-text">Developing the integration using the Mailchimp API 3.0 was a good experience, documentation is easy to understand and very detailed with proper examples of all requests/responses.</blockquote>
+            <figcaption class="mc-quote-author">Danilo Alvarenga, CTO, 3dcart</figcaption>
+          </figure>
+          <figure class="mc-quote-slide" data-idx="2">
+            <blockquote class="mc-quote-text">We use the Mailchimp API to simplify our onboarding. We were able to cut down our onboarding by 80% because now a user can just sign in and start listening to music and then we can relate back the music you listen to to your profile.</blockquote>
+            <figcaption class="mc-quote-author">Patrick Hill, Executive Director, Disctopia</figcaption>
+          </figure>
+        </div>
+        <button class="mc-quote-arrow mc-quote-next" aria-label="Next testimonial"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+      </div>
+      <div class="mc-quote-dots">
+        <button class="mc-quote-dot is-active" data-idx="0" aria-label="Go to slide 1"></button>
+        <button class="mc-quote-dot" data-idx="1" aria-label="Go to slide 2"></button>
+        <button class="mc-quote-dot" data-idx="2" aria-label="Go to slide 3"></button>
+      </div>
+    </div>
+  </section>
 </div>

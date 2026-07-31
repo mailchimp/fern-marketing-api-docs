@@ -1,0 +1,8 @@
+---
+title: Added support for 401 Unauthorized response code
+tags: ["Transactional"]
+---
+
+We’re now supporting the 401 Unauthorized response code. When a customer makes a request using any invalid or revoked API Key, we’ll respond with 401 Unauthorized. If you’re specifically targeting HTTP response codes other than 200, you may need to update your code. 
+
+Previously, we responded to requests made with an invalid or revoked API key with a 500 Server Error status code. We updated this to bring our response in line with proper semantics and allow more efficient status monitoring.

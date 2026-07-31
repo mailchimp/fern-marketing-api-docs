@@ -1,5 +1,92 @@
 ---
 title: Audiences (BETA)
+description: Learn about the new audiences endpoints and the concepts they're introducing.
 ---
 
-Content coming soon.
+
+
+## Audiences Endpoints (BETA) Terms of Use
+
+Your use of the Audiences Endpoints (BETA) is considered part of your use of Mailchimp and subject to [Mailchimp’s Standard Terms of Use](https://mailchimp.com/legal/terms/) (including our [Acceptable Use Policy](https://mailchimp.com/legal/acceptable_use/), [API Use Policy](https://mailchimp.com/legal/api_use/), [Cookie Statement](https://mailchimp.com/legal/cookies/), [Data Processing Addendum](https://mailchimp.com/legal/data-processing-addendum/), [Copyright and Trademark Policy](https://mailchimp.com/legal/copyright/), and [Brand Guidelines](https://mailchimp.com/about/brand-assets/)). Capitalized terms used and not otherwise defined in this document have the meanings given to those terms in our Standard Terms of Use. By using the Audiences Endpoints (BETA)  you understand and agree that:
+
+1. This is a Beta Service made available to you for evaluation or testing purposes only.
+2. Mailchimp is providing the Beta Service "as is." We do not provide warranties, conditions, or undertakings of any kind in relation to the Beta Service, either express or implied.
+3. Certain functionality available in your Mailchimp account and/or Mailchimp APIs will not be available for this Beta Service. By using the Beta Service, you acknowledge and understand that this functionality is not available for the Beta Service.
+4. Mailchimp may update or modify functionality available through the Audiences Endpoints (BETA) at any time by posting the changes on this site or notifying you via email. These changes may affect your use of the  Audiences Endpoints (BETA) or the way your Integration interacts with the API. If we make a change that’s unacceptable to you, you should stop using the API.
+5. You are responsible for understanding and complying with all applicable laws, rules, codes, regulations, and policies (including, without limitation, those related to SMS messages and data privacy) currently in effect, as they are amended and as they become effective, that are applicable to your use of the Audiences Endpoints (BETA) and determining whether our Service, including the Audiences Endpoints (BETA), is suitable for you in light of such laws, rules, and regulations (including any applicable carrier or SMS Provider(s) requirements).
+6. You agree to use the Audiences Endpoints (BETA) in full compliance with our Standard Terms of Use and other policies. We may suspend or terminate your access to the Audiences Endpoints (BETA) and/or suspend or terminate your Mailchimp account if you violate any of these terms.
+7. You agree to indemnify, defend us, and hold us and our Team harmless against all costs, claims, and liability that we may incur in connection with your use of Audiences Endpoints (BETA).
+8. Some features and/or functionality, including but not limited to those related to SMS Marketing, require an add-on subscription.
+9. The Audiences Endpoints (BETA) provides tools to help you manage contact information and their marketing preferences, you, as the API user, are solely responsible for ensuring that your use of these tools and your methods of collecting, recording, and managing consent comply with all applicable laws and regulations in the jurisdictions where your contacts reside. It is your responsibility to accurately map the consent you have obtained from individuals to the appropriate `marketing_consent` status (`denied`, `unknown`, `consented`, `confirmed`) when using these endpoints.
+10. In instances where a consent value is not supported, it is your responsibility to manually update the contact’s subscription status.
+
+## The basics
+
+Until now, Mailchimp’s API has been centered around email-only contacts, which meant that contact-level and email channel-specific properties were combined without hierarchical differentiation.
+
+For example, when [adding a member to a list](https://mailchimp.com/developer/marketing/api/list-members/add-member-to-list/), the `email_type` and `status` fields apply to the email channel, while fields like `merge_fields` belong to the contact itself.
+
+With the new Audiences endpoints, we now provide a clear distinction between the contact model and the individual channel models (`email_channel `and `sms_channel`).
+
+### Contact status vs. channel-level subscription status
+
+The [List Members endpoint](https://mailchimp.com/developer/marketing/api/list-members/) has historically aligned the definition of `status` with a contact’s email subscription status.
+
+With this release, we introduce a separation:
+
+- The `status` field now represents the overall contact status, with possible values of `active` or `archived`.
+- The `effective_subscription_status` field represents the subscription status for each of a contact’s channels, such as email or SMS. This value is specific to the channel and is read-only.
+
+To help clarify these ideas, we define two key concepts:
+
+**Marketing Consent**
+
+_Marketing consent _is the current consent state for a contact on a specific channel, such as Email or SMS. It is provided when creating or updating a contact and is expressed using one of the predefined values listed in the table below. The selected value is one of the inputs that informs the contact’s effective subscription status on that channel. 
+
+**Effective Subscription Status**
+
+_Effective subscription status_ is a read-only field that reflects  the output of a computation triggered whenever relevant inputs change. Some of these inputs are supplied by API users, while others are tracked internally by Mailchimp. Currently, the calculation takes into account:
+
+- Audience opt-in configuration, such as single opt-in or double opt-in.
+- Marketing consent status, as described above.
+- Deliverability status, which refers to whether a contact is reachable on a given channel. This is managed internally and updated based on platform-specific rules. For example, if a phone number becomes unregistered and can no longer receive messages, the deliverability status may change to "undeliverable." As a result, the effective subscription status could also change, even if the contact’s marketing consent remains the same.
+
+| Channel (Audience Opt-in Config) | Consent Value + Deliverability | Effective Subscription Status |
+| --- | --- | --- |
+| Email (Double opt-in) | Denied + Any | Unsubscribed |
+| Email (Double opt-in) | Unknown + Unset, Yes | Non-subscribed |
+| Email (Double opt-in) | Consented  + Yes | Pending* |
+| Email (Double opt-in) | Confirmed + Yes | Subscribed |
+| Email (Single opt-in) | Denied + Any | Unsubscribed |
+| Email (Single opt-in) | Unknown + Not set, Yes | Non-subscribed |
+| Email (Single opt-in) | Consented + Any | **Not Supported Yet**** |
+| Email (Single opt-in) | Confirmed + Not set, Yes | Subscribed |
+| SMS (Double opt-in) | Denied + Any | **Not Supported Yet**** |
+| SMS (Double opt-in) | Unknown + Not set, Yes | Non-subscribed |
+| SMS (Double opt-in) | Consented + Yes | Pending* |
+| SMS (Double opt-in) | Confirmed + Yes | Subscribed |
+| SMS (Single opt-in) | Denied + Any | **Not Supported Yet***** |
+| SMS (Single opt-in) | Unknown + Not Set, Yes | Non-subscribed |
+| SMS (Single opt-in) | Consented + Any | **Not Supported Yet**** |
+| SMS (Single opt-in) | Confirmed + Yes | Subscribed |
+
+_*Pending: waiting for user action to confirm the double opt-in via email confirmation or SMS message. This will either turn the status of effective subscription status later to __`subscribed`__ or __`unsubscribed.`_
+
+_** In this beta release, the case of __`consented`__ status with single opt-in option is not supported._
+
+_*** At this stage of our release, __`denied`__ consent status is not acceptable for SMS channels. Unsubscribed contacts must be created/updated manually. _
+
+
+Consent values are defined in the following table.
+
+| Consent Value + Channel | Definition |
+| --- | --- |
+| Denied (Email) | The contact has made an explicit decision to withdraw their consent for marketing communications (or any other communication). |
+| Denied (SMS) | Not yet supported. Unsubscribed SMS contacts cannot be added at this time. |
+| Unknown (Email) | The contact has not confirmed their consent regarding marketing communication. This option can be best used when we would like to mark the contact open for transactional communication (Example: Order status updates, shipping status updates, etc). |
+| Unknown (SMS) | The contact has not confirmed their consent regarding marketing communication. |
+| Consented (Email) | The contact has interacted with you but has not confirmed their consent to receiving marketing communications. Further verification of consent might be required depending on the audience’s list opt-in configurations (single opt-in vs. double opt-in). |
+| Consented (SMS) | The contact has interacted with you, but has not confirmed their consent to receiving marketing communications. Further verification of consent might be required depending on the audience’s list opt-in configurations (single opt-in vs. double opt-in). **Not supported for single opt-in.** |
+| Confirmed (Email and SMS) | The contact has confirmed their consent and verification of consent. This status means that the contact needs no further verification of their consent decision. Use this status when importing contacts to Mailchimp whom you’ve acquired consent and verification for from a previous/different system. This status means the contact will not go through double opt-in flow when importing into the system. |
+
+Consent statuses can be set via the `create` and `update` endpoints and will internally be mapped to a subscription status similar to the List Members endpoints. The one exception is the `cleaned` status, which is not supported through this mapping. If you need to set a contact’s email subscription status to `cleaned`, please use the [List Members endpoints](https://mailchimp.com/developer/marketing/api/list-members/).

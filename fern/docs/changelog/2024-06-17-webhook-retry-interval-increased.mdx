@@ -1,0 +1,8 @@
+---
+title: Webhook retry interval increased
+tags: ["Transactional"]
+---
+
+We’ve increased the number of times that a webhook will retry when we don’t initially receive a 200 response. We will now retry up to 20 times, at intervals of 15-25 minutes per retry. After 20 unsuccessful attempts, the webhook will be disabled.
+
+Increasing this interval gives users more time to troubleshoot their webhook endpoint, and retains the webhook payload for longer. 

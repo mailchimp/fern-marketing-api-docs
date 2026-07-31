@@ -1,0 +1,8 @@
+---
+title: Better error on invalid request to ecommerce/stores/.../orders
+tags: ["Marketing API"]
+---
+
+The `lines` parameter is required on this endpoint, but previously we’d return a generic 404 error message. Now we’ll return a 400 error with information about why the request failed.
+
+A user reported being confused about the error message; we should be more informative about validation errors.

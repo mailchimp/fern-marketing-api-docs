@@ -1,3 +1,119 @@
-# How to Use Mailchimp's Transactional Messaging MCP
+---
+title: How to Use Mailchimp's Transactional Messaging MCP
+description: Learn how to use Mailchimp's transactional messaging MCP to allow AI agents to interact with our transactional API
+---
 
-Learn how to use Mailchimp's Transactional Messaging Model Context Protocol (MCP) to integrate transactional email sending into your AI workflows.
+
+
+## What is an MCP?
+
+An [MCP (Model Context Protocol)](https://modelcontextprotocol.info/) allows AI agents to interact with API, knowledge bases, or other content. Our MCP specifically allows you to interact with the Transactional Messaging API, give onboarding help regarding Transactional Messaging, and submit feedback.
+
+## What can the MCP do?
+
+Our MCP mirrors what our API can already do.
+
+| Tool | Description |
+| --- | --- |
+| account_status | Check account status |
+| build_template | Build/construct a template |
+| call_api | Call a Transactional Messaging API endpoint |
+| describe_api | Describe a specific API endpoint (parameters, schema) |
+| diagnose_failed_send | Diagnose why a send failed |
+| integrate_api | Help integrate with the API |
+| list_api | List available Transactional Messaging API endpoints |
+| onboarding | Onboarding assistance |
+| submit_feedback | Submit feedback |
+
+## Prerequisites
+
+In order to complete some of the MCP actions, we recommend to have the following setup in advance:
+
+- [Create an API key](https://mailchimp.com/developer/transactional/guides/quick-start/#generate-your-api-key)
+- [Authenticate a sending domain](https://mailchimp.com/developer/transactional/docs/authentication-delivery/)
+- If you are using Transactional SMS, [have an SMS number setup](https://mailchimp.com/developer/transactional/guides/send-first-sms/#create-an-account)
+
+## How do I set up the MCP?
+
+The MCP server URL is https://mandrillapp.com/mcp. Setup varies by client:
+
+**Claude Desktop**
+Open Claude Desktop, go to Claude menu → Settings → Developer → Edit Config. This opens claude_desktop_config.json. Add the following under mcpServers:
+
+```json
+{
+  "mcpServers": {
+    "mctx-mcp": {
+      "type": "http",
+      "url": "https://mandrillapp.com/mcp",
+      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
+    }
+  }
+}
+```
+
+Save the file and restart Claude Desktop. You should see an MCP indicator in the bottom-right of the chat input.
+
+**Claude Code (CLI)**
+Run this command once:
+
+```bash
+claude mcp add --transport http mctx-mcp https://mandrillapp.com/mcp \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+**Cursor**
+Add to ~/.cursor/mcp.json (create it if it doesn't exist):
+
+```json
+{
+  "mcpServers": {
+    "mctx-mcp": {
+      "type": "http",
+      "url": "https://mandrillapp.com/mcp",
+      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
+    }
+  }
+}
+```
+
+**VS Code**
+Add to .vscode/mcp.json in your project:
+
+```json
+{
+  "servers": {
+    "mctx-mcp": {
+      "type": "http",
+      "url": "https://mandrillapp.com/mcp",
+      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
+    }
+  }
+}
+```
+
+## Managing MCP Access
+
+It is important that the API key used to authorize the MCP has the ability to complete the actions the MCP can do. If your API key is created with no restrictions, by default the MCP can be used. 
+
+If you want to only allow the API key to use certain API calls **and** be able to use the MCP, the API key permissions must have the “AI Agents” group enabled. 
+
+![Transactional AI Agent API Key Setting](https://images.ctfassets.net/cxsachrr7h0p/4aPSERfuq8g9V6w6y94mma/1231fbcc4ccfc9928b20003a1de5d617/Screenshot_2026-03-24_at_11.59.56.png)
+
+## Troubleshooting
+
+- API key issues Does it exist? Is it enabled?Does it have the correct permissions?
+- Make sure you have your sending domain and/or SMS number setup before sending email and/or SMS messages
+- Review the mcp.json file in your AI client of choice: [https://code.claude.com/docs/en/mcp](https://code.claude.com/docs/en/mcp)[https://cursor.com/docs/mcp](https://cursor.com/docs/mcp)[https://code.visualstudio.com/docs/copilot/customization/mcp-servers](https://code.visualstudio.com/docs/copilot/customization/mcp-servers)
+- For API error responses, refer to our [API error code documentation](https://mailchimp.com/developer/transactional/docs/fundamentals/#api-error-codes)
+
+## Example Prompts
+
+**Connection Check
+**_“Verify that my Mandrill MCP integration is active and confirm that you can access my account.”_
+
+**Send Email Test
+**_“Send an email to sample@gmail.com with the message: ‘Hey, my MCP sent this!’”_
+
+**Engagement Metrics Retrieval
+**_“Retrieve open and click metrics from my account, including data for the last three emails sent.”_

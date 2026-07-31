@@ -1,0 +1,10 @@
+---
+title: Changing messages/info server response
+tags: ["Transactional"]
+---
+
+We’ve been updating our API responses recently to provide a more semantic response for the requests you make. With this release, our servers will respond an HTTP 404 Not Found if you provide an invalid message ID when requesting message information. 
+
+If you’re specifically targeting HTTP response codes other than 200, you may need to update your code. 
+
+Previously, we responded with an HTTP 500 Server Error when you provided an invalid message ID. We’re updating this to bring our response in line with proper semantics and allow more efficient status monitoring.

@@ -1,0 +1,8 @@
+---
+title: Fixing a PHP client library include and exclude fields bug
+tags: ["Marketing API"]
+---
+
+The Marketing API’s [PHP client library](https://github.com/mailchimp/mailchimp-marketing-php) was not handling the `fields` and `exclude_fields` query parameters correctly. We’ve fixed a bug in the client generation that will process the arrays as CSV strings. This change will affect version 3.0.35 of the PHP client library.
+
+A user reported unexpected behavior when passing in an array of strings, and we discovered that the Swagger Codegen utility was not parsing the `collectionFormat` for query parameters as expected.

@@ -1,0 +1,8 @@
+---
+title: Adding a limit to Batch Webhooks
+tags: ["Marketing API"]
+---
+
+We’ve added a limit to the number of batch webhooks you can create: going forward, you will not be able to exceed 20 batch webhooks for a given Mailchimp account. If you attempt to create a new batch webhook via the [POST `/batch-webhooks`](https://mailchimp.com/developer/marketing/api/batch-webhooks/add-batch-webhook/) endpoint and have already exceeded the limit, a 400 status code will be returned. In order to resolve this error, you will have to delete an existing batch webhook via the [DELETE `/batch-webhooks`](https://mailchimp.com/developer/marketing/api/batch-webhooks/delete-batch-webhook/) endpoint.
+
+Most users of the Batch Webhooks endpoint create fewer than 20 webhooks for their account. Allowing an unlimited number of webhooks for each account can have performance implications for the API.

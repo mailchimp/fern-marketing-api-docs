@@ -11,7 +11,6 @@ export default function Footer() {
                 <ul>
                   <li><a href="https://mailchimp.com/developer/marketing/">Mailchimp Marketing API</a></li>
                   <li><a href="https://mailchimp.com/developer/transactional/">Mailchimp Transactional</a></li>
-                  <li><a href="https://mailchimp.com/developer/open-commerce/">Mailchimp Open Commerce</a></li>
                 </ul>
               </div>
               <div className="mc-footer-link-section">

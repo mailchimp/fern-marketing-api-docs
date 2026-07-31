@@ -1,0 +1,8 @@
+---
+title: Better handling of rss_opts for POST Campaigns
+tags: ["Marketing API"]
+---
+
+We fixed a bug in the [POST Campaigns endpoint](https://mailchimp.com/developer/api/marketing/campaigns/add-campaign/) regarding invalid request body parameters for non-rss campaigns.
+
+We were receiving requests that were attempting to create non-`rss` type campaigns with an `rss_opts` field. These requests were throwing exceptions and returning `500` status codes to users. We now return a `400` status code if `rss_opts` are provided for non-`rss` type campaigns.

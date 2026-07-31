@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/product-yml.schema.json
+
+tabs:
+  notes:
+    display-name: Release Notes
+    skip-slug: true
+
+navigation:
+  - tab: notes
+    layout:
+      - changelog: ../docs/changelog
+        slug: ""

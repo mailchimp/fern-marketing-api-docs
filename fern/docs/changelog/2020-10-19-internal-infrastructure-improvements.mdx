@@ -1,0 +1,9 @@
+---
+title: Internal infrastructure improvements
+tags: ["Marketing API"]
+---
+
+We rewrote large parts of the API internals. There should be little to no external impact on API behavior, besides slight performance fluctuations.
+
+The internals of the API had accumulated a fair bit of kludge over the past 5-10 years, so we rewrote a good portion of them and have identified several discrepancies in behavior across endpoints. During the rewrite, we learned about and ironed out many of the discrepancies that were causing friction internally—and in the process, we identified further changes that we’ll implement in the future to make behaviors across the APIs more consistent. 
+

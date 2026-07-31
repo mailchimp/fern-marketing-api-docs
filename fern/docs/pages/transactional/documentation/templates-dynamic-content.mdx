@@ -1,3 +1,792 @@
-# Templates and Dynamic Content
+---
+title: Templates and Dynamic Content
+description: Create reusable templates and inject dynamic data in your sends.
+---
 
-Learn how to use stored templates and dynamic content to personalize your transactional emails at scale.
+
+
+## The basics
+
+Templates allow you to create, store, and reuse designs in your messages—including text, images, borders, and padding—and then inject those designs with dynamic, recipient-specific content.
+
+Templates can give you: 
+
+- **Efficiency**: API calls only need to provide the dynamic portions of the content when you send an email, simplifying the payload and reducing the amount of data you’re transmitting.
+- **Flexibility**: Non-developers can edit template designs and copy in your Mailchimp Transactional account.
+
+Once you’ve created your templates, you can personalize messages with recipients’ information two ways: with a custom integration of the open-source merge language Handlebars, or if you’re already familiar with Mailchimp template editing, with the Mailchimp merge language. With the latter, you can also use editable content areas** **to inject dynamic information into large sections of content.
+
+## Creating templates
+
+You can write your template HTML directly in the [**Templates**](https://mandrillapp.com/templates) section of the Mailchimp Transactional app, but it’s more likely that you’ll write it elsewhere and paste or import it into your account. There are a few ways to do so:
+
+1. Add your custom code to a template via the [Transactional API](/transactional/api)
+2. In [**Templates**](https://mandrillapp.com/templates), paste your custom code into the editor
+3. Send a template from your main Mailchimp account to your Transactional account
+
+To ensure your templates display as expected when sent, you’ll want to [inline the CSS](/transactional/docs/outbound-email/#inline-css).
+
+<Note>
+**Note**: You can include images in your messages, though you cannot upload them to templates, and Mailchimp Transactional does not store images. You can, however, use [Mailchimp’s Content Studio](https://mailchimp.com/features/content-studio/) to store images.
+</Note>
+
+### Template fields
+
+Templates have several default options, including a subject line, sender, HTML content, and text content. None of these fields are required when creating or changing a template, but if you’re planning to use the [`messages/send-template`](https://mailchimp.com/developer/api/transactional/messages/send-using-message-template/) endpoint, be sure to have either HTML or text content specified, since it will form the body of your email.
+
+<Note>
+**Note**: In addition to [`messages/send-template`](/transactional/api) or specifying a template through SMTP headers, you can also apply templates using the [rules engine](/transactional/docs/rules-engine) or when A/B split testing.
+</Note>
+
+### Mailchimp templates
+
+You can use Mailchimp’s [pre-designed templates](https://mailchimp.com/features/templates/) and the [classic editor](https://mailchimp.com/help/design-an-email-classic-builder/) to create your email design, and then send it over to your Mailchimp Transactional account.
+
+To export a template from your main Mailchimp account, navigate to [**Templates**](https://us19.admin.mailchimp.com/templates/), locate the template you want to copy, and select **Send To Mandrill** from the **Edit **drop-down menu. 
+
+<Note>
+**Note**:** **If you update your template in Mailchimp, you must send the template to Mailchimp Transactional again to update it; updates are not pushed automatically.
+</Note>
+
+## Test your templates
+
+Once you’ve created, uploaded, or imported a template, you’ll want to send a test version. 
+
+A few things to know before you send a test: 
+
+- Test emails are billed like all other emails sent from your Mailchimp Transactional account
+- Any sending options enabled for your account will also be applied to test emails
+- If you’ve met your hourly quota, the test email will be queued just like other messages and will be sent the next hour
+
+To send a test, navigate to [**Templates**](https://mandrillapp.com/templates) and select **edit** for the template you want to test. Under the **Preview and Test** drop-down, choose the **Send Test **option.
+
+Mailchimp automatically tags test messages with template-test so you can search and filter your [**Outbound Activity**](https://mandrillapp.com/activity) based on these tests.
+
+<Note>
+**Note**: Both the **Screenshot** and **Spam Filter Test** features are no longer supported, offering limited functionality but likely not working as expected.
+</Note>
+
+## Dynamic content
+
+Merge tags let you personalize templated messages with recipients’ names, addresses, order information, or other customized content. You can add them to stored templates in your account or to content that you provide at the time of sending in your API request or SMTP message.
+
+There are two main ways to add dynamic content via merge tags: Handlebars or the Mailchimp merge language. You may already be familiar with the [Mailchimp merge language](https://mailchimp.com/help/getting-started-with-merge-tags/) from creating and editing Mailchimp templates. We also offer a custom implementation of [Handlebars](https://handlebarsjs.com/), which is open source and offers greater flexibility. 
+
+To set your merge language, navigate to [**Sending Defaults**](https://mandrillapp.com/settings/sending-options) and select Mailchimp or Handlebars from the **Merge Language** drop-down menu. You can also change the merge language on a per-message basis using the Transactional API or with an SMTP header. With the API, set the `merge_language` parameter in [`messages/send`](https://mailchimp.com/developer/api/transactional/messages/send-new-message/) or [`messages/send-template`](https://mailchimp.com/developer/api/transactional/messages/send-using-message-template/) request. With SMTP, set the [`X-MC-MergeLanguage`](/transactional/docs/smtp-integration/#x-mc-mergelanguage) header to the language of your choice. 
+
+<Note>
+**Note**: If you export a template from your main Mailchimp account and Handlebars is set as your default merge language in Mailchimp Transactional, we’ll convert Mailchimp merge tags to Handlebars for you automatically.
+</Note>
+
+### Merge tag formatting
+
+Merge tags can be composed of alphanumeric characters and underscores. Colons (`:`) cannot be used. Content length for merge tags in Mailchimp Transactional is generally unlimited, so you can give as little or as much data as needed. 
+
+If you're sending via SMTP, custom SMTP headers are limited in length, so there’s an upper limit on the amount of content that can be passed in a single SMTP header.
+
+### Provide merge data through the API
+
+You can provide merge data via the sending API calls ([`messages/send`](/transactional/api) or [`messages/send-template`](/transactional/api)) or template-rendering call ([`templates/render`](/transactional/api)), giving default values for merge tags by using the `global_merge_vars` parameter. These will be used in case a recipient-specific value isn’t defined.
+
+Use the `merge_var` parameter to store recipient-specific values if you’re sending to more than one recipient at a time. For `global_merge_vars` and `merge_vars`, provide the name of the merge tag and the value to be used as key–value pairs:
+
+```json
+   ...
+    "message": {
+            "global_merge_vars": [
+                {
+                    "name": "var1",
+                    "content": "Global Value 1"
+                }
+            ],
+            "merge_vars": [
+                {
+                    "rcpt": "jsmith@example.com",
+                    "vars": [
+                        {
+                            "name": "fname",
+                            "content": "John"
+                        },
+                        {
+                            "name": "lname",
+                            "content": "Smith"
+                        }
+                    ]
+                }
+            ],
+    ...
+
+```
+
+### Provide merge data using SMTP headers
+
+If you send via SMTP, you can provide global and recipient-specific merge values using the [`X-MC-MergeVars`](/transactional/docs/smtp-integration/#x-mc-mergevars) header, regardless of your chosen merge language. Each header should be a JSON-formatted object, with key–value pairs separated by commas. To assign a global value for “var1” (the merge tag `*|VAR1|*`), Mailchimp Transactional expects to receive:
+
+`X-MC-MergeVars: {"var1": "global value 1"}`
+
+To set a recipient-specific value, use the key `_rcpt` with the recipient's email address as the value, along with the merge data key–value pairs:
+
+`X-MC-MergeVars: {"_rcpt": "jsmith@example.com", "fname": "John", "lname": "Smith"}`
+
+You should use a separate header for each recipient. SMTP headers have a maximum length of 1,000 characters, so if the header content for the global values or for an individual recipient exceeds 1,000 characters, it can be broken into two (or more) headers. Be sure to specify the recipient email address for every header for that recipient. If you only have one recipient, you should omit `_rcpt` and use the same format as for global values in the previous example.
+
+## Handlebars
+
+A Handlebars** expression** starts with two left curly brackets (`{{`) and ends with two right curly brackets (`}}`). The content inside the opening and closing brackets defines how your dynamic content is inserted in a template.
+
+<Note>
+**Note: **This feature is currently not supported for the new email editor code blocks.
+</Note>
+
+Handlebars templates are made up of data, paths, helpers, and comments. **Data **is your content: anything not in a Handlebars expression. **Paths** are how you inject content into templates, e.g., `{{thing}}` will be replaced with the value of the `thing` merge tag. Use dot notation to reference nested merge tags.
+
+<Note>
+**Note**: If you need to include double curly brackets in your email without invoking a Handlebars expression, use a backslash (`\`) to escape the opening bracket: `\{{thing}} `will print “{{thing}}” into the template. If you need to include a backslash, escape it with another backslash: `\\{{thing}}` will print `\` to the template, and then render the path named “thing”.
+</Note>
+
+### Using helpers
+
+Helpers allow you to perform complex templating tasks. There are two types: **inline helpers**, which operate only on template paths, and **block helpers**, which can have template data, nested paths, and conditional branches. 
+
+Inline helpers look like the following:
+
+`{{helperName arg1 arg2 arg3}}`
+
+Block helpers have opening and closing tags. A block is opened with a Handlebars expression starting with a hash (`#`) and ended with a Handlebars expression starting with a forward slash (`/`). The opening and closing helpers should correspond to one another, like:
+
+```
+{{#helperName arg1 arg2}}
+template text
+{{else}}
+more text
+{{/helperName}}
+```
+
+### Inline helpers 
+
+Mailchimp Transactional supports the following inline helpers:
+
+| Name | Function | Example |
+| --- | --- | --- |
+| upper | uppercase the text provided | `{{upper "your text"}}` results in: `YOUR TEXT` |
+| lower | lowercase the text provided | `{{lower "Your Text"}}` results in: `your text` |
+| title | title-case the text provided | `{{title "your text is neat"}}` results in: `Your Text is Neat` |
+| url | URL-encode the text provided | `{{url "http://example.com"}}` results in: `http%3A%2F%2Fexample.com` |
+| date | print the current date with a given format, defaults to `d/m/Y` | `{{date "Y-m-d"}}` results in a date such as: `2021-03-10` |
+| striptags | strip any HTML tags from the given data | `{{striptags "<p>your text</p>"}}` results in: `your text` |
+| unsub | adds an unsubscribe link to your email | see below |
+
+The `{{unsub}}` helper adds an [automatic unsubscribe link](/transactional/docs/outbound-email/#unsubscribes) to your emails. But the `unsub` helper creates a URL that, when clicked, adds the recipient’s address to the [Rejection Denylist](/transactional/docs/reputation-rejections/#rejected-emails), and marks them as an unsubscribe in Mailchimp Transactional (regardless of what they do after they click the URL). Pass the unsubscribe URL, enclosed in double quotes, as the argument of  the helper. 
+
+For example:
+
+`<a href='{{unsub "http://example.com/unsub"}}'>Unsubscribe</a>`
+
+The URL in the example above would point to your application, where you might confirm the unsubscribe or give the user further options. 
+
+You can also pass the redirect URL as merge data:
+
+`<a href='{{unsub redirect_merge_var}}'>Unsubscribe</a>`
+
+with the merge data defined as:
+
+```json
+"global_merge_vars": [
+	{
+		"name": "redirect_merge_var",
+		"content": "http://example.com/unsub"
+	}
+]
+```
+
+<Note>
+**Note**: When using the `{{unsub}}` helper inside of an anchor tag, be sure to use single quotes around the value of the `href` attribute.
+</Note>
+
+### Block helpers 
+
+The following helpers are included with and [documented by Handlebars](https://handlebarsjs.com/guide/builtin-helpers.html#built-in-helpers):
+
+**The if helper**
+
+When using the `{{#if}}` helper in Handlebars, any expression whose value is not `false`, `undefined`,  `null`,  `""`,  `0`, or `[]` will evaluate as true.
+
+In your template, you might have something like:
+
+```html
+<div class="entry">
+  {{#if user_name}}
+    <p>Thanks for registering! Your username is {{user_name}}.</p>
+  {{/if}}
+</div>
+```
+
+And in your API call, you’d provide:
+
+```json
+"global_merge_vars": [
+  {
+    "name": "user_name",
+    "content": "dear_prudence"
+  }
+]
+```
+
+For the following result:
+
+```html
+<div class="entry">
+  <p>Thanks for registering! Your username is dear_prudence.</p>
+</div>
+```
+
+**The unless helper**
+
+The `{{#unless}}` helper—which is equivalent to `if not`—was inspired by Ruby’s `unless` conditional operator, and it works in the same way. The content inside the block will be displayed when the expression is evaluated to false.
+
+In your template, you might provide:
+
+```html
+<div class="entry">
+  {{#unless user_name}}
+    <p>You haven't chosen a username. Please enter a username to register.</p>
+  {{/unless}}
+</div>
+```
+
+And in your API request:
+
+```json
+"global_merge_vars": [
+  {
+    "name": "user_name",
+    "content": ""
+  }
+]
+```
+
+For the following result:
+
+```html
+<div class="entry">
+  <p>You haven't chosen a username. Please enter a username to register.</p>
+</div>
+```
+
+**The each helper**
+
+The `{{#each}}` helper iterates over items in an array. The `{{this}}` helper can be used to reference the current element of the iteration.
+
+In your template:
+
+```html
+<div class="entry">
+<ul>
+{{#each browsers}}
+<li>{{this}}</li>
+{{/each}}
+</ul>
+</div>
+```
+
+In your API request:
+
+```json
+"global_merge_vars": [
+  {
+    "name": "browsers",
+    "content": [
+      "Chrome",
+      "Firefox",
+      "Explorer",
+      "Safari",
+      "Opera"
+    ]
+  }
+]
+```
+
+The final result:
+
+```html
+<div class="entry">
+<ul>
+<li>Chrome</li>
+<li>Firefox</li>
+<li>Explorer</li>
+<li>Safari</li>
+<li>Opera</li>
+</ul>
+</div>
+```
+
+Whenever an expression evaluates to an array, Handlebars will iterate over each item in the array automatically. So the same results that were just displayed could have been achieved with the following template:
+
+```html
+<div class="entry">
+<ul>
+{{#browsers}}
+<li>{{this}}</li>
+{{/browsers}}
+</ul>
+</div>
+```
+
+### The with helper
+
+The `{{#with}}` helper allows you to shift the context for a section of a template, which can be extremely helpful when accessing nested values. It is equivalent to using dot notation.
+
+In your template:
+
+```html
+<div class="entry">
+<h2>{{incident}}</h2>
+<p>Impact: {{impact}}</p>
+<p>Created At: {{created_at}}</p>
+<p>Updates: {{#with updates}} {{body}}: {{status}} {{/with}}</p>
+<p>Updated At: {{updated_at}}</p>
+</div>
+```
+
+In your API request:
+
+```json
+"global_merge_vars": [
+  {
+    "name": "incident",
+    "content": "Error in connection"
+  },
+  {
+    "name": "impact",
+    "content": "none"
+  },
+  {
+    "name": "updates",
+    "content": {
+      "id": "9e86a19c-9f9b-447d-b4a8-81f9e71efd85",
+      "incident_id": "5a99c8c5-e63f-43f0-b375-df0152211bd8",
+      "body": "Testing global variables",
+      "status": "update",
+      "created_at": "2015-02-27T16:01:55+0000",
+      "updated_at": "2015-02-27T16:01:55+0000"
+    }
+  },
+  {
+    "name": "created_at",
+    "content": "2015-02-27T15:27:23+0000"
+  },
+  {
+    "name": "updated_at",
+    "content": "2015-02-27T16:02:18+0000"
+  }
+]
+```
+
+Final result:
+
+```html
+<div class="entry">
+<h2>Error in connection</h2>
+<p>Impact: none</p>
+<p>Created At: 2015-02-27T15:27:23+0000</p>
+<p>Updates: Testing global variables: update</p>
+<p>Updated At: 2015-02-27T16:02:18+0000</p>
+</div>
+```
+
+This could also be accomplished by using dot notation as in this template:
+
+```html
+<div class="entry">
+<h2>{{incident}}</h2>
+<p>Impact: {{impact}}</p>
+<p>Created At: {{created_at}}</p>
+<p>Updates: {{updates.body}}: {{updates.status}}</p>
+<p>Updated At: {{updated_at}}</p>
+</div>
+```
+
+### Deviations from standard Handlebars
+
+- Some helpers aren’t currently supported, including `lookup`, `log`, `helperMissing`, and `blockHelperMissing`. If you see a need for one of these, please let us know the use case so we can re-evaluate support.
+- Path names are case-insensitive, so `{{MYTHING}}` and `{{MyThing}}` and `{{mything}}` will all print the same thing.
+- Partials are currently unsupported.
+- Handlebars templates can be rendered in a text context (for headers and message text parts). In text mode, all values are unescaped; there is no difference between enclosing an expression in double or triple curly brackets.
+
+### Additions to standard Handlebars
+
+- In addition to `{{else}}`, you can also use an arbitrary number of `{{elseif cond}}` blocks. These blocks will run using standard conditional logic.
+
+We’ve added a very simple “comparison” type that can be used as argument values in addition to, strings, booleans, and paths . For example, `{{#if `i < 5`}}` will evaluate whether the “i” path is less than the number 5.
+
+### More examples
+
+**Comparison expressions**
+
+You can compare values with an argument surrounded by backticks (```). These can be very helpful when using the `if` block helper.
+
+In your template:
+
+```html
+<div>
+  {{#if `purchases > 3`}}
+    <ul>
+      {{#items}}
+        <li>{{this}}</li>
+      {{/items}}
+    </ul>
+  {{/if}}
+</div>
+```
+
+In your API request:
+
+```json
+"global_merge_vars": [
+  {
+    "name": "items",
+     "content": [
+       "Computer",
+       "Monitor",
+       "Keyboard",
+       "1-Year Insurance",
+       "Mouse Pad",
+       "Mouse"
+     ]
+  },
+  {
+    "purchases": 6
+  }
+]
+```
+
+The result:
+
+```html
+<div>
+<ul>
+<li>Computer</li>
+<li>Monitor</li>
+<li>Keyboard</li>
+<li>1-Year Insurance</li>
+<li>Mouse Pad</li>
+<li>Mouse</li>
+</ul>
+</div>
+```
+
+Strings can also be used for comparisons, but you’ll have to make sure to enclose the string in double quotes; single quotes won’t work.
+
+In your template:
+
+```html
+{{#if `operating_system == "macOS"`}}
+  <p>Click here for instructions to install on a Mac</p>
+{{elseif `operating_system == "Windows"`}}
+  <p>Click here for instructions to install on a PC</p>
+{{/if}}
+```
+
+In your API request:
+
+```json
+"global_merge_vars": [
+  {
+    "name": "operating_system",
+    "content": "Windows"
+  }
+]
+```
+
+The result:
+
+```html
+<p>Click here for instructions to install on a PC</p>
+```
+
+**HTML escaping**
+
+Handlebars HTML-escapes values returned by an expression in double curly brackets: `{{expression}}`. If you don’t want Handlebars to escape a value, use triple curly brackets: `{{{expression}}}`.
+
+In your template:
+
+```html
+<div>
+  {{{html_tag_content}}}
+</div>
+```
+
+In your API request:
+
+```json
+"global_merge_vars": [
+  {
+    "name": "html_tag_content",
+    "content": "This example<br>is all about<br>the magical world of Handlebars"
+  }
+]
+```
+
+The result:
+
+```html
+This example
+is all about
+the magical world of Handlebars
+```
+
+## Mailchimp merge language
+
+Mailchimp Transactional supports a subset of the [Mailchimp merge language](https://mailchimp.com/help/all-the-merge-tags-cheat-sheet/), which you may be familiar with from Mailchimp’s marketing product. Mailchimp merge tags are formatted with a pipe (`|`) and asterisk (`*`) on each side of the tag name: `*|MERGETAG|*`.
+
+In your templated message, merge tags might look like this:
+
+```
+Dear *|FNAME|*,
+
+Thanks for your purchase on *|ORDERDATE|* from ABC Widget Company. We appreciate your business and have included a copy of your invoice below.
+
+*|INVOICEDETAILS|*
+
+-- ABC Widget Co.
+```
+
+The following merge tags are available by default in any message:
+
+- `*|FNAME|*`
+- `*|LNAME|*`
+- `*|EMAIL|*`
+- `*|DATE:FORMAT|*`
+- `*|CURRENT_YEAR|*`
+
+For `*|FNAME|*` and `*|LNAME|*`, Mailchimp Transactional will try to parse the name in the `To` header of the message to get the recipient's name. For `*|EMAIL|*`, we’ll look at the recipient's email address in the `To` header to populate the value for that tag.
+
+Use `*|DATE:FORMAT|*` to show the current date in a specific format. For example, `*|DATE:d/m/y|*` where `d` is replaced by the 2-digit day of the month, `m` by the 2-digit month, and `y` by the 2-digit year. 
+
+Most other Mailchimp merge tags won't work by default in Mailchimp Transactional. Tags like `*|ARCHIVE|*`, `*|LIST:ADDRESS|*`, integration-specific tags, and RSS-to-email merge tags have a specific meaning in Mailchimp, since they’re tied to a list or campaign.
+
+<Note>
+**Note**: Mailchimp Transactional doesn’t store lists or campaign data, so you can use merge tags to personalize emails, but you also need to provide the values for those merge tags at the time of send in your API call or via SMTP headers.
+</Note>
+
+### Conditional or dynamic merge tags
+
+Mailchimp Transactional supports conditional merge tags, but all merge tag values need to be provided in the API call or SMTP headers, and conditions will be checked against those values.
+
+Conditional merge tags support traditional `IF`, `ELSE`, `ELSEIF`, `IFNOT` logic, as well as the following operators:
+
+- `=` equal to
+- `!=` does not equal
+- `>` greater than
+- `<` less than
+- `>=` greater than or equal to
+- `<=` less than or equal to
+
+**Basic IF and ELSE conditions**
+
+Use IF conditions to display content only when the condition evaluates as true.
+
+```
+*|IF:MERGE|*
+content to display if a value for MERGE is provided
+*|END:IF|*
+
+
+*|IF:MERGE=x|*
+    content to display if the value for MERGE is x
+*|END:IF|*
+```
+
+<Note>
+**Note**: When using a condition like `*|IF:MERGE=x|*`, and no value for `MERGE` is provided, the condition will evaluate as false.
+</Note>
+
+Use IF and ELSE conditions to display content when a condition is true, but alternate content when the condition evaluates as false.
+
+```
+*|IF:MERGE|*
+    content to display
+*|ELSE:|*
+    alternative content
+*|END:IF|*
+```
+
+**The ELSEIF condition**
+
+Use ELSEIF to display one of several options. Only the content following the first condition evaluated as true displays; other conditions are skipped.
+
+```
+*|IF:MERGE=x|*
+    <p>content to display if the value for MERGE is x</p>
+*|ELSEIF:MERGE=y|*
+    <p>content to display if the value for MERGE is not x, but is y</p>
+*|ELSEIF:MERGE=z|*
+    <p>content to display if the value for MERGE is not x or y, but is z</p>
+*|ELSE:|*
+    <p>alternate content to display if the value for MERGE is not x, y, or z</p>
+*|END:IF|*
+```
+
+**Nested conditions**
+
+```
+*|IF:MERGE1=x|*
+    *|IF:MERGE2=y|*
+          <div mc:edit="main"> 
+                <p>content to display if both conditions are true</p>
+          </div>
+    *|END:IF|*
+*|END:IF|*
+```
+
+**Negative conditions**
+
+```
+*|IF:MERGE!=x|*
+    content to display if the value for MERGE is not x
+*|ELSE:|*
+    content to display if the value for MERGE is x
+*|END:IF|*
+
+
+*|IFNOT:MERGE|*
+    content to display if MERGE is not provided
+*|ELSE:|*
+    content to display if MERGE is provided
+*|END:IF|*
+```
+
+**Numerical comparisons**
+
+Use greater than, less than, equal to, etc. to display content based on numerical comparisons:
+
+```
+*|IF:AGE >= 18|* 
+Don't forget to vote this Tuesday! 
+*|END:IF|*
+*|IF:PURCHASES >= 20|* 
+Enjoy this 40% off coupon! *|COUPON20|* 
+*|ELSEIF:PURCHASES >= 10|* 
+Enjoy this 20% off coupon! *|COUPON10|* 
+*|ELSE:|* 
+Enjoy this 10% off coupon! *|COUPON|* 
+*|END:IF|*
+```
+
+### Content-encoding merge tags
+
+Use the content-encoding class of merge tags to change how the content inside your merge tags displays.
+
+| Tag | Function |
+| --- | --- |
+| `*\|HTML:YOUR_MERGETAG\|*` | Handles merge field contents as raw HTML and makes no changes. |
+| `*\|URL:YOUR_MERGETAG\|*` | URL-encodes the value of your merge tag. |
+| `*\|TITLE:YOUR_MERGETAG\|*` | Changes the value of your merge tag to be title case. |
+| `*\|LOWER:YOUR_MERGETAG\|*` | Changes the value of your merge tag to be all lowercase. |
+| `*\|UPPER:YOUR_MERGETAG\|*` | Changes the value of your merge tag to be all uppercase. |
+| `*\|UNSUB:http://example.com/unsub\|*` | See below. |
+
+Mailchimp Transactional provides an [easy-to-use merge tag](/transactional/docs/outbound-email/#unsubscribes) to add an unsubscribe link in your emails automatically. The `*|UNSUB|*` merge tag uses a similar format to the Mailchimp unsubscribe merge tag: it consists of the word UNSUB, followed by a colon, and a full web address (with `http://` or `https://`) where recipients should be redirected when the unsubscribe is processed. You can also provide a link to your own unsubscribe process.
+
+### Merge tags in email headers
+
+In addition to using merge tags to personalize your message content, you can also use merge tags to customize email headers. Merge tags are currently only supported in the `From` name and subject headers, as well as the body of an email. Merge tags can't be included in custom `X-` headers or the `List-Unsubscribe` header.
+
+For example, to include an order ID in a subject line, first add the merge tag in the value for the `subject` parameter in your [API request](/transactional/api):
+
+```json
+"subject": "Your order: *|ORDERID|* has been received",
+```
+
+Then provide global or per-recipient merge data:
+
+```json
+           "merge_vars": [
+                    {
+                        "rcpt": "recipient@example.com",
+                        "vars": [
+                            {
+                                "name": "FNAME",
+                                "content": "Jane"
+                            },
+                             {
+                                "name": "ORDERID",
+                                "content": "123456"
+                            }
+                        ]
+                    }
+                ]
+```
+
+With SMTP, you can add merge tags in your message headers and then use the custom SMTP header [`X-MC-MergeVars`](/transactional/docs/smtp-integration/#x-mc-mergevars) to provide global or per-recipient values for those merge tags.
+
+<Note>
+**Note**: Remember that email headers have maximum lengths, so if the _values_ of your tags are particularly long, messages may not display properly. We strongly recommend sending a handful of live test emails to various email clients when using merge tags in message headers.
+</Note>
+
+You may not always want or need to provide merge data, but would still prefer sensible defaults for merge tags used in headers. You can add default merge tags in the **Template Defaults** part of your Mailchimp Transactional templates. To do so:
+
+1. Navigate to [**Templates**](https://mandrillapp.com/templates) and click the name of the template you want to edit.
+2. Under **Template Defaults**, add your merge tags under **From Name** or **Subject**. It's not possible to use a merge tag as the default From Address for your template.
+
+These are only defaults, so if you provide a different subject or `From` name in your API request or SMTP headers, those values will appear instead.
+
+## Editable content areas
+
+In addition to merge tags, [Mailchimp’s template language](https://mailchimp.com/help/getting-started-with-mailchimps-template-language/) includes editable content areas, which are also known as `mc:edit` regions. Editable content areas are regions in your templates that can be completely replaced with customized content. 
+
+<Note>
+**Note**: `mc:edit` regions are only supported in emails that use Mailchimp merge tags—you cannot combine them with Handlebars.
+</Note>
+
+To add an editable region to your template, add the following in an HTML tag:
+
+`mc:edit="section-name"`
+
+Every `mc:edit` region should have a unique identifier, and it’s best to standardize the identifiers you use. For example:
+
+- `mc:edit="header"`: used to name the header of your email.
+- `mc:edit="sidecolumn"`: used to name an editable left- or right-side column.
+- `mc:edit="main"`: used to name the main content space of your email.
+- `mc:edit="footer"`: used to name the footer of your email.
+
+In your HTML, that might look like this:
+
+```html
+<div mc:edit="header">
+     <h2>Thank you for your purchase</h2>
+</div>
+<div mc:edit="main" style="color:#000000;">
+     We appreciate your business. Here are the details of your order.
+</div>
+<div mc:edit="footer">
+     Company contact information will go here.
+</div>
+```
+
+Because the Mailchimp template language is designed to support editable regions in the Mailchimp visual editor, mc:edit regions should not be nested; in Mailchimp Transactional, nested regions might not be replaced as expected.
+
+### Providing dynamic content for mc:edit regions
+
+Like other dynamic content, you can inject content for `mc:edit` regions via the API or SMTP. 
+
+With the [`messages/send`](/transactional/api) endpoint in the Transactional API, use the `template_content` parameter to distinguish any regions to be replaced and the content to be injected into the template’s HTML. Your call to the API could look something like this:
+
+```json
+   "template_content": [
+        {
+            "name": "header",
+            "content": "<h2>Your Order is Complete</h2>"
+        },
+        {
+            "name": "main",
+            "content": "We appreciate your business. Your order information is below."
+        }
+    ]
+```
+
+If you’re sending through SMTP, you can use the [`X-MC-Template`](/transactional/docs/smtp-integration/#x-mc-template) header to provide content for a single `mc:edit` region in your template.
+
+<Note>
+**Note: **Some elements of the Mailchimp template language won’t be recognized in Mailchimp Transactional, so if you’ve created a Mailchimp template that you want to use in Mailchimp Transactional, it may need a bit of tweaking to allow editable regions to be replaced by your dynamic content. For example, repeatable areas in Mailchimp templates won’t work in Mailchimp Transactional templates—you’ll instead want to add multiple `mc:edit` regions for the number of sections you want to include.
+</Note>

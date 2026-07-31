@@ -1,0 +1,8 @@
+---
+title: Better JSON parsing errors
+tags: ["Marketing API"]
+---
+
+Improperly formatted JSON request bodies will return a `400` status with details about the parsing error in the `detail` field and a title of “JSON Parse Exception”.
+
+We weren’t properly capturing parsing errors when handling API requests. Now that we do, we’re able to return more helpful details to the caller so that they can fix their requests.

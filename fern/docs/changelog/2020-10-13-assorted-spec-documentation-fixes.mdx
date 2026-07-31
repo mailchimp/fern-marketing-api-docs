@@ -1,0 +1,8 @@
+---
+title: Assorted spec and documentation fixes
+tags: ["Marketing API"]
+---
+
+We made a variety of fixes to our Swagger spec to improve the documentation.
+
+There were endpoints included in the documentation that have no function except to organize the path hierarchy. For example: `/reporting`. We removed them since they’re not useful on their own. Additionally, there were some `body` parameters included incorrectly, for properties that are read-only and can’t be passed in as a parameter

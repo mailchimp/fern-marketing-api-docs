@@ -1,0 +1,10 @@
+---
+title: Removing Campaign tracking tags
+tags: ["Marketing API"]
+---
+
+You can now remove the tracking slugs for `google_analytics` or `clicktale` when you [update Campaign tracking](/marketing/api) by passing in an empty string.
+
+
+
+There was a bug that caused empty strings to be ignored when setting these properties. We’ve fixed updating Campaigns to properly handle these fields: no change if they’re not included in the PATCH body, but removed if they’re passed in as an empty string.

@@ -1,0 +1,113 @@
+---
+title: "Scaling in the age of COVID\u00a0"
+subtitle: "When your product supports other products, what happens when the world goes online overnight?"
+---
+
+<a class="mc-blog-back" href="/blog">← Back to Blog</a>
+
+<p class="mc-blog-post-byline"><span class="mc-blog-author">Katie Silverio</span>, Senior Engineer and Tech Lead, Transactional Platform</p>
+
+<img class="mc-blog-post-hero" src="https://mailchimp.com/developer/static/cab7f0e87e819670a54738264d8e7341/062c8/ILLO_Dev-Blog_03_Scaling-In-The-Age-Of-COVID_2000x1124.jpg" alt="Scaling in the age of COVID " />
+<p class="mc-blog-post-credit">Image Credit: James Daw</p>
+
+Think back to March of 2020—I know it was decades ago at this point. It was the early days of the pandemic. Social and business activities had shifted online, but the migration was sudden and abrupt; it would take another decade (read: month) for the world to name the fatigue. 
+
+Products that support collaboration and socialization experienced a sharp rise in usage in March of 2020—and so, in turn, did products that support those products. I do scaling and modernization work for one such product: [Mailchimp Transactional](https://mailchimp.com/developer/transactional), which lets customers send one-off emails like password resets, order confirmations, and meeting reminders. 
+
+As our clients saw that sharp rise in usage at the onset of the pandemic, so did we. For backend engineers like myself, more usage is simultaneously exciting and scary. We usually design infrastructure to support a particular scale and pattern of usage, and changes to either of those things can impact the performance of critical systems. 
+
+But the spikes we saw at the start of the pandemic were unprecedented: both a general increase in traffic _and_ a dramatic increase in usage for a small number of users. Like many web applications, Transactional’s database layer is most impacted by load changes, because most operations taken by users result in a need to read or write data. Any system that relies on the main database (so: all of them) might experience a partial outage if heavy traffic causes the database layer to be slow or otherwise unresponsive. 
+
+We spent our early pandemic days firefighting outages that were mostly caused by the strain on our database as it worked to keep up with the newly elevated and asymmetric load. We began monitoring the systems assiduously, which gave us advance warning of performance degradation. As the year went on, we moved from a period of unexpected interruptions to a period of constant vigilance. Both of these states are tiring and not desirable, but the latter gave us the control necessary to be proactive. 
+
+More than a year later, the highest-volume Transactional users are still sending significantly more emails than our average customers. But while our overall usage continues to be high compared to pre-pandemic levels, we’ve improved the health of our database and given our on-call engineers some relief.
+
+Here’s what happens when a perfectly reasonable scaling scheme hits a sudden change in usage patterns—and how we adapted to it.
+
+### Mailchimp Transactional: When you’re busy, we’re busy
+
+Mailchimp Transactional is a service for sending transactional email. Most Transactional customers are developers who embed calls to our product from within their own applications so they can trigger emails in response to actions taken by their own users—things like password reset requests, login notifications, and more. 
+
+Transactional is a product that supports other products. For most software engineers, we’re a third-party service that provides a reliable way to communicate with their own users. As the pandemic drove social, educational, and business activities online, companies that host those activities needed to send correspondingly higher volumes of one-time passwords, account verification messages, and other email-based notifications—and we needed to continue providing the same standard of delivery speed that we’re known for, despite the higher load.
+
+Originally called Mandrill, Transactional was created nine years ago, and until last year, it operated primarily with its original architecture. Software is not eternal, and in 2019, Mailchimp leadership committed to modernizing and maintaining the product. But, of course, they had no way of knowing what the next year had in store. 
+
+If 2020 had not been a global trash fire, we probably would have spent more time optimizing some of our core technologies, which could have sped up our platform and allowed us to upgrade some of our third-party dependencies. We still need to do that work, but in 2020, what our users needed most was a stable platform, not a slightly faster one. As a non-product-facing team, we had the freedom to adjust our roadmap based on our users’ immediate needs, and we were able to instantly pivot to addressing our emergent scaling problems.
+
+Scaling work is well within our team’s purview. Our team of application and infrastructure engineers spent the past year upgrading Transactional’s hardware and software dependencies and rearchitecting systems that did not meet our reliability expectations in light of the higher load or that weren’t scaling well. We upgraded our database and Elasticsearch integration and improved the performance of a few features by multiple orders of magnitude.
+
+But we also found ourselves sinking hours into babysitting the scheduled sending processes and manually cleaning up Postgres deletion flags. And, despite our best efforts, the performance hits were occasionally noticeable to our users. At the end of the day, the gold standard for application stability is happy users, so we stalled our original agenda to investigate why our application was struggling to handle our increased scale.
+
+### Built to last...for “ordinary” use
+
+Part of why Transactional was able to operate for so long without major, scale-related failures is that the original developers _did_ anticipate increases in user numbers and sending volume—and their strategy worked for eight-plus years, which is basically a century in web infrastructure time. 
+
+The original developers envisioned a future in which the number of users would grow, but the sending volume wouldn’t vary too much across the user base. Some users would always be higher-volume than others, but they assumed that future users would be developers at companies of comparable size, using the platform to send comparable volumes of email.
+
+They also knew that if the product grew successfully, the amount of data they’d someday need to store would outgrow the maximum volume of a single server. With that future in mind, they implemented sharding by user ID for most data. 
+
+Sharding is a technique used to distribute large data tables into smaller chunks that can be hosted on separate servers. Without sharding, all new rows for a table would get written to the same table on the same server. Eventually, that table would get very large, and disk space on the server would fill up. To allow the table to continue to grow, you could upgrade to a larger server—this is called vertical scaling. Alternately, you could split the table among many servers—this is called horizontal scaling. Each segment of the table is a partition/shard, and sharding is how you decide which partition each row is stored on. 
+
+A typical strategy is to hash a characteristic of the row—usually a column value or combination of values—modulo the number of shards. Every row with the same shard key (the value that gets hashed) ends up on the same partition, so shard keys are frequently chosen such that common read operations only need to access one shard. Like many web applications, Transactional frequently needs to fetch data for specific users, so sharding by user ID is a natural choice.
+
+(Although our sharding strategy is fairly typical, our nomenclature is a little nonstandard. We call partitions “logical shards,” and they’re implemented as separate schema in Postgres. These logical shards are distributed evenly across physical database servers, which we call “physical shards.”) 
+
+Here’s where the assumption that all users have a similar amount of data comes into play. The sharding algorithm distributes users evenly across the logical shards, so if all users have about the same amount of data, sharding by user ID will spread that data evenly across logical shards. Because each physical shard has the same number of logical shards, the resulting load should be distributed evenly across physical shards.
+
+For years, that assumption was a pretty good one. Although the product was successful and our users sent a lot of emails (thank you!), we didn’t have superusers with outlying amounts of activity. 
+
+But the COVID-related increase in online activities drastically changed the distribution of usage across our user base. The most active Transactional customers now had orders of magnitude more data than the average user. The logical shards that housed superusers’ data were getting significantly more reads and writes than the other logical shards, putting extra stress on their physical shards. Physical shards with hot logical shards have higher CPU load and higher memory usage, which makes them less performant. 
+
+![In the early days, we had a lot of headroom on each database shard. When the pandemic hit, we started to see some shards carrying disproportionately large amounts of data.](https://images.ctfassets.net/cxsachrr7h0p/1NmxJw8mhxft4nJI2rTDoh/068196ab7eb72a9971db350e10e21c85/Silverio_01.png)
+
+_In the early days, we had a lot of headroom on each database shard. When the pandemic hit, we started to see some shards carrying disproportionately large amounts of data._
+
+Nobody wants a database to struggle. Basically every operation in a web application relies on the database layer at some point, so our overloaded shards were concerning. But in the end, it was an unfortunate coincidence that pushed our concerning situation over the edge into a source of frequent fire drills.
+
+### What’s the likelihood of a hash collision anyway?
+
+So, we had logical shards that were struggling to keep up with the sending volume of our new superusers. These logical shards were hot because they house large instances of a table related to our search feature, which lets users examine their recent activity and requires one database row per message sent. The Search table is quite large (we send a lot of emails) and because it’s directly tied to user activity, that table shows the most variation in size per shard. 
+
+When I plotted table size per logical shard in April of 2020, I found that the mean size of the table was twice the median, indicating that the mean was strongly impacted by large outliers. Because the Search table is generally quite large, the logical shards containing the outlying Search tables also consumed an outlying amount of disk space.
+
+We also store our job queues in a database table in the main database, sharded by the queue identifier. Even before the pandemic, I would have preferred that our job queues were not in our main database. The Job table has a lot of reads and writes, and most jobs initiate reads and writes to other tables, so a busy job queue that causes elevated load on the database can start a feedback loop if it’s stored on the same database it’s straining. 
+
+As a still-growing team, we hadn’t had bandwidth to change that yet, and we expected that the system would hold for the time being. Unfortunately for us, once the pandemic hit, the logical shard that contained the largest instance of the Search table happened to be on the same physical shard as the busiest job queue.
+
+That shard became known as a Problem for our on-call engineers. With the elevated pandemic traffic, the Problem shard was continuously operating near a dangerous performance threshold, below which users would notice unusual latency for common operations. Slight variations in traffic could push shard health over the threshold, disrupting users’ normal experiences (and paging us!). We worked hard throughout the summer to minimize customer disruption, quickly responding to pages from various monitoring systems. As anyone who has been on an on-call rotation can attest, keeping a product operational is deeply rewarding and also deeply exhausting—we were highly motivated to address the high database pressure.
+
+Unfortunately, even operations that would normally relieve database pressure also occasionally worked against us—routine cleanup of delete flags, which reclaim disk space taken up by records of deleted rows, struggled to complete on the giant Search table. The extra resources taken by those cleanup operations would push the shard into dangerous territory, and every time we tried to repack Search, the scheduled send queue would back up.
+
+Our team spent most of the spring and summer putting out fires caused by the non-performant database server. Operations involving the Search table in particular became less reliable for users on the impacted physical shard. Event-tracking systems also use the Search data, so the unreliability of the Search table occasionally resulted in cascading delays of open-and-click processing. The busy scheduled send job queue became prone to backups that correlated with database health, and would resolve itself as soon as the physical shard’s CPU dropped back to an acceptable threshold. We are proud of our response times and dedication to our customer base during this period of firefighting, but clearly needed to resolve the core problem. 
+
+![We were confused about job queue length fluctuations that had seemingly nothing to do with our actions…until we realized they correlated strongly with changes in database CPU.](https://images.ctfassets.net/cxsachrr7h0p/3PO60rw57RQ1E4wvarE1C6/bd17a13b09c95f55c7b0b7918915f67f/Silverio_02.png)
+
+_We were confused about job queue length fluctuations that had seemingly nothing to do with our actions…until we realized they correlated strongly with changes in database CPU._
+
+From an outside perspective, these systems (Search and scheduled sends) are not strongly connected, making the correlated symptoms puzzling for users. While we worked to set up comprehensive dashboards and metrics, the behavior was occasionally puzzling to us, too. We’d see a job queue back up and then mysteriously “resolve,” not realizing that the backup and draining of the queue correlated with the beginning and end of a background process that used the Search table.
+
+### Let’s put this fire *away* from the rest of the fire
+
+Turns out, this isn’t a particularly difficult problem to solve. The primary problem is that two hot datasets live on the same server, so we ultimately need to separate the datasets. From a software-architecture perspective, it’s the path that will ultimately give us the most runway to grow. If we had been game for a quick-and-dirty solution, we could accomplish separating the hot datasets by forcing a shard rebalance—in other words, by changing the distribution of logical shards over the physical shards. 
+
+However, neither dataset is particularly well-suited to be in the main database. The scaling requirements of the Search dataset are very different from the rest of Transactional’s data, which don’t vary as strongly with user ID. Search data also expires, which requires frequent deletes. In Postgres, the DBMS we use, deletes are implemented by saving the deleted row with a delete flag, and then actually deleting the flagged data later with another process called `VACUUM`. Most other tables in the main database don’t have such high turnover; Search, with its high variance and constant need to be vacuumed, is an oddball. 
+
+Job queues have very different read and write patterns from general application data, meaning that pulling them out of the main database would also bolster the database’s health. Unlike Search, however, job queues are a poor fit for relational databases in general. They have high I/O and a short lifespan, and they’re usually generated from some main application code and then picked up by a pool of independent workers, so they’re a good fit for pub/sub systems. From a software architecture perspective, both the Search table and the job queues should be moved to separate datastores. Due to the relatively untouched nature of our codebase, those refactors are quite large and require significant discovery work as well as actual implementation effort.
+
+![Isolation helps prevent load-intensive processes from impacting each other: separating Search data and job queues will ensure that load changes will remain localized.](https://images.ctfassets.net/cxsachrr7h0p/GJ6SGnybQMZjIUpuYVegG/c6121cc95a9bb88e10028b2eef28fb7a/Silverio_03.png)
+
+_Isolation helps prevent load-intensive processes from impacting each other: separating Search data and job queues will ensure that load changes will remain localized._
+
+Our team was primarily composed of operations engineers, with only a handful of application engineers, which makes infrastructure changes much easier for us to execute than large-scale refactoring of the application. The extreme sensitivity of our core systems over the summer made immediate action necessary, so our operations engineers bumped all of our Postgres servers to upgraded hardware. 
+
+That improvement resulted in immediate relief for the hot shard. The busy job queue is now much more resilient, the event-processing queues are much less likely to churn, and Search operations are performing well. We’re still addressing the primary problem, but the fast response of our operations engineers has bought us time to plan and implement the large-scale refactor.
+
+### Is the moral of the story to just throw hardware at the problem?
+
+I would love to be able to say that the migration is already complete. Horizontal scaling (spreading across more hosts) is a longer-term solution than vertical scaling (bumping host size), so until Search is in a separate database, we still have room to optimize. 
+
+But as of the time of this writing, the migration is well underway. Our work thus far, focused on restructuring the ORM so it can tie in to another datastore for Search, has primarily resulted in rebuilding lost institutional knowledge of Transactional internals. While it’s been frustrating at times to spend a lot of time laying groundwork in a hard year, we’re taking solace in the fact that the groundwork will help us accomplish the eventual migration with confidence, and both Search and scheduled sends are performing, with minimal intervention from us. 
+
+So yeah, we threw hardware at the problem, and it’s helped a lot. But the true moral of the story is, in my opinion, nontechnical. We’ve shown that it’s possible to improve Transactional—and we’ve shown that delivering a series of incremental improvements can reduce toil and establish breathing room for larger-scale refactors. 
+
+At the end of the day, all software becomes legacy as soon as it is deployed. Our users’ needs may have changed suddenly, but they would have changed someday, anyway, and it’s our job to listen hard and change our system fast.

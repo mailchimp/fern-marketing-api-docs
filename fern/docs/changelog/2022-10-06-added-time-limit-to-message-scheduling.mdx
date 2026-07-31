@@ -1,0 +1,15 @@
+---
+title: Added time limit to message scheduling
+tags: ["Transactional"]
+---
+
+We’ve added a limit to how far in the future you can schedule messages. Currently, we’re allowing you to schedule messages within a year from the date of scheduling.
+
+This validation change affects the following APIs:
+
+- `messages/send`
+- `messages/sendRaw`
+- `messages/sentTemplate`
+- `messages/reschedule`
+
+We’re adding this validation limit to increase database efficiency and performance.

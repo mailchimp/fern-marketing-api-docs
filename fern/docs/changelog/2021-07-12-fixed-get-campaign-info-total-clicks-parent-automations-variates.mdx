@@ -1,0 +1,8 @@
+---
+title: Fixed Get Campaign Info to return total clicks for parent automations and variates
+tags: ["Marketing API"]
+---
+
+We fixed a bug in the `report_summary` section of the [individual campaigns endpoint](/marketing/api) for parent automation and variate campaigns. Previously, we reported 0 total clicks for those campaign types; now we will report the sum of clicks between the child campaigns.
+
+This falls in line with the expected behavior elsewhere in the `report_summary` section for other stats (like opens).

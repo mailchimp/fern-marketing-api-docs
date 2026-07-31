@@ -1,0 +1,105 @@
+---
+title: "Breaking down the remote collaboration conundrum"
+subtitle: "How to pair program in the middle of a pandemic when you can\u2019t even be in the same room"
+---
+
+<a class="mc-blog-back" href="/blog">← Back to Blog</a>
+
+<p class="mc-blog-post-byline"><span class="mc-blog-author">Mehdi Vasigh</span>, Senior Software Engineer and <span class="mc-blog-author">John Hutcheson</span>, Senior Software Engineer</p>
+
+<img class="mc-blog-post-hero" src="https://mailchimp.com/developer/static/4281ffc74303952c2c5164120c905b1a/8c3a2/Malota_Pair_Program_2000x1124.png" alt="Breaking down the remote collaboration conundrum" />
+<p class="mc-blog-post-credit">Image Credit: Mar Hernández</p>
+
+_Reorganizing any team can be difficult—but that’s especially true during a pandemic. When Mehdi Vasigh and John “Hutch” Hutcheson found themselves working together on the same engineering team during the summer of 2020, they were struggling with many of their usual processes. They were siloed away in their homes, and so too was the information they needed to be sharing to effectively collaborate. The solution? Developing their own form of remote pair programming._
+
+_Pair programming isn’t that common at Mailchimp, but left to their own devices, they organically developed a style that worked for everyone on their team. They eventually codified their “rules” in a kind of constitutional document that still guides them. It hasn’t been totally smooth sailing: they had to work with each other’s personalities, handle differences of opinion regarding tools, and the Zoom fatigue is still real. But even if they eventually return to the office, there will still be those who prefer home working—and this experiment has taught them some important lessons about the future of hybrid working._
+
+_Here, Mehdi and Hutch talk through the journey they took from newly acquainted coworkers to full-fledged collaborators over the course of the last 18 months:_
+
+**Hutch:** Like a lot of office workers, Mailchimp employees started working from home in March 2020, and it took a while for our team to figure out how to work as a unit. I was in the Recommendations squad—a cross-functional team of product managers, product designers, and engineers—working closely with data science on putting smart recommendations in our app. We’d had remote coworkers before, but the majority of people worked in our Ponce City Market offices [in Atlanta] so it was fairly easy to get up from your desk and bother someone. It became a big issue pretty quickly when we couldn’t just do that any more.
+
+**Mehdi: **And I joined Mailchimp a few months after the pandemic had started, in June 2020. The depth of my remote-working experience was the last three months at my previous company.
+
+**Hutch:** The hardest thing at first was remaining focused—my fiancée and I were living in a studio apartment—but then, secondly, not being able to have ad hoc conversations became a big issue. We ended up with meetings on our calendar for things that could’ve been Slack messages, like “What color should this button be?”
+
+Another engineer and I were having problems combining our work. I would build something, he would build something, we’d try to reconcile them, and then we’d realize we built very disparate things. We were in our own little worlds—me going off and doing the backend work, him doing the frontend work—and it became very clear that what we were doing wasn’t sustainable. Mehdi, I think you were around for the last half of adding Smart Recommendations in the checklist, right?
+
+**Mehdi:** Yeah.
+
+**Hutch:** I built a filtering layer for these recommendations that were coming into Mailchimp, and it would serve the data structure in a particular manner. We’d discussed it on Slack, but when it came time to reconcile it with the UI another engineer had built, we looked at it and were like, “...Ohhh no, this data structure does not fit into this UI, _at all._” We had to rebuild it all. In the office, if I wanted to ask another engineer something, I could just be like “Hey, can I watch you do this?” versus having to set up a whole meeting. With this information siloing issue, it became very clear that what we were doing wasn’t tenable or sustainable.
+
+### Reach out and touch base
+
+**Hutch:** The way pairing came about was kind of a slow burn. 
+
+**Mehdi:** Yeah, from last June up until early this year. It’s very common for engineering teams to parallelize work. Backend and frontend are separate parts, but they have this contract, and sometimes it requires a lot of upfront work to figure out what that contract looks like. But in a small team—like ours has been in my time here—sometimes it’s more productive to be fluid about it rather than try to foresee everything.
+
+**Hutch: **We drafted our eventual [“Ways of Working” doc](https://docs.google.com/document/d/e/2PACX-1vSqxQHcyYK17XiZM1YMcAcH5bRbP5Fz2SuoDtsfWwNC-j3DYlx_Az0g9D0sWtF8FDRpZS3g0WtXrwpd/pub)—or at least the original version—in February 2021.
+
+**Mehdi: **Right. We had an engineer who’s not with Mailchimp anymore—Daniel Swain—and he was a huge part of putting this document together. Making the experience equitable was a big deal for us, especially when there were more than just two people on a call. Defining roles, ensuring that the person writing the code feels comfortable driving, and defining a navigator who’s there to bounce ideas off or direct, so that it doesn’t feel like you’re on a call with a crowd of people telling you how to write your code.
+
+**Hutch: **Us—me, Mehdi, and Daniel—having good personal relationships definitely assisted in having empathy as a group whenever one person felt like something wasn’t working.
+
+**Mehdi: **The process went through multiple passes. We’d do it one way without much planning, figure out what was wrong, go back, talk about it and improve it, and then do it again, iterating it over and over.
+
+**Hutch: **Personal dynamics, professional dynamics, people’s titles can all change—and as those things change, you need to be adjusting your processes, because they’re not going to work forever. 
+
+**Mehdi: **And because it was new to me as well, it taught me a lot about myself, and what I could do to build trust with my teammates—everything from making sure that I’m continuously soliciting feedback, to, if I’m navigator, making sure that people are writing their own code and I’m not dictating. Those are all still things that I work on, but it gives you a different kind of space for self-evaluation compared to pulling tickets and pushing commits.
+
+**Hutch:** I mean, there were some selfish motivators—like I didn’t want to be writing PHP all day, and it was convenient to be able to say, “Hey, I want a pair on this,” just so I’m not having to write PHP. 
+
+There was a point last year when we really started to flesh out how pairings were going to happen, and I got the opportunity to write code in front of Mehdi and a couple of other engineers, and I remember I started to write a class component, and you and the other engineers were kind of like, “You know you can just write this as a function?” And I was like, “...oh, I had no idea that was a new thing in React!” So, just from a personal development standpoint, it’s also been beneficial to be in front of engineers who are more in the loop.
+
+**Mehdi: **A hugely important part of this was that personality mesh. We have a new team now, and it’s really important to keep evaluating things to make sure they’re still working the way you want.
+
+### We can remote, we have the technology
+
+**Hutch: **I mean, I was the holdout when it came to the tools we were using. I was using IntelliJ, and everyone else was using Visual Studio Code, and I didn’t want to switch…
+
+**Mehdi: **Yeah, a lot of those early sessions were just us ragging on Hutch for IntelliJ being super slow.
+
+**Hutch:** ...but I did switch. And it turned out everyone else was right.
+
+**Mehdi:** That was fun, I enjoyed it very much. Our tools definitely evolved. Late last year we started experimenting with an extension to Visual Studio Code called VS Live Share. It’s really cool, like Google Docs for coding. While it’s definitely got its own quirks and bugs, it’s been a huge improvement because it gives you the option of following someone around and assisting when something comes up. If Hutch is driving and I’m navigating, I can say, “Hey, I’m going to go and write your index file for you,” and do that in the background while he’s working on the meat and potatoes. That’s been huge for us. 
+
+Diagramming has also helped us a lot. A lot of the time when we’re starting a new project, we don’t start it in code—we either start it in a Google doc, or Miro.
+
+**Hutch: **Yeah. We’ve developed diagrams in Miro—like merge-tag taxonomies, for example—that we did for our squad, but which have ended up being more widely used by other teams that have attached their work to ours.
+
+**Mehdi:** A lot of the time we sketch ideas out in Miro, drawing boxes and data relationships so we know how we’re architecting something, and how the data is going to flow through a system—“OK, what’s the UI gonna look like for this? Where’s the data going to come from?” Doing that early is a big deal because engineers might have different mental models, subtly or substantially, of how they would architect something, and getting to a consensus is a big step towards not wasting or duplicating effort. Miro’s been a really good tool for consensus  building, not just diagramming.
+
+**Hutch: **A big part of what we’ve been doing that I would like to preserve post-pandemic is to have an artifact that comes out of everything we do. Like with diagramming, traditionally, as Mehdi said, that would be done on a whiteboard at an office, but that’s very temporary. Now we have that document or diagram indefinitely, and we can share it. I’d like to see that stick around, because six months from now when I say, “...what was I thinking?!” it’s much easier to check.
+
+**Mehdi:** At my last company there was an example of a well-intentioned but failed attempt to include remote folks. In Texas, our main team of engineers and data scientists would write ideas on a whiteboard, and it became this completely unwieldy, dense amount of information—and then someone would take a picture and drop it into Slack for folks in California to solve like it was the world’s most complicated puzzle. 
+
+It would be great to have a way of organically creating Miro diagrams in an office together where folks can watch live, but it also produces something that has a version history, and it’s cleaner and easier to read than the traditional whiteboard. I wonder if it’s a thing where either the tech isn’t there yet, or maybe it’s the skills. I feel like I’m a little bit better at diagramming now than I was before, but I have experience with those kinds of devices too, and…they haven’t been good.
+
+**Hutch: **We did try Google Jamboards at the old office, but they typically didn’t work out. They ended up being more like that whiteboard experience where everything just seemed jumbled, and thoughts were conflated, and…yeah, not legible.
+
+### Dangerous driving
+
+**Mehdi:** Early on, the way we were pairing was basically just the driver sharing their screen, and if you’ve watched a programmer—like, what they do with their computer—it can be very frantic. For me, I’m switching windows, moving back and forth, all the time. My font size is super small, my theme will be really dark and low contrast, and I realized that I was making people nauseous. Things are in your head, but other folks on the call have to read the code that you’re writing and parse it, so there’s an additional processing overhead. 
+
+That was an adjustment I had to make early on. Switching to a higher-contrast editor theme and zooming in to around 150 percent made my code more readable. I also stop frequently to explain my code and to check in with everyone before diving back in. It gives navigators and spectators more clarity, and space and time for thinking of suggestions. Speaking is just as important as typing for communicating your intent clearly.
+
+**Hutch: **And I don’t particularly like being on Zoom calls. It’s not that I _dis_like it—it’s just very draining. You do have to be more conscious of meeting fatigue. It’s not something that’s going to go away just because it’s a pairing session, but at least your brain doesn’t actually have to be working as intensely all the time. If I run into a code problem, Mehdi and [other team members] Erik [Lopez Ramirez] and Sowmya [Andalam] are all there to help. It’s a trade-off: there’s going to be meeting fatigue, but there’s also the collective brainpower of your peers behind you.
+
+**Mehdi: **When it comes to the isolation aspect of remote work, I always feel more productive working heads-down. But the communication? That’s been the hardest, especially because when I started at Mailchimp it was really hard to build trust with my team and other folks around me.** **We’ve had some cool department-wide events for remote workers, like when a comedian performed for the engineering and customer teams. We’ve had team-building exercises over Zoom as well, which is fine, even if they don’t really capture the same energy as in real life. The best social interactions were outdoor park hangouts with coworkers, mostly because I feel like the best way to relieve people who have been on Zoom all day is just to give them some time off it.
+
+I think the future of hybrid working presents the challenge of how you combine the in-person and the remote experience so that they’re equitable. How do you create an experience that’s equally accessible to the person in the office and the person in their home? I think that’s a whole new ball game. People need to be very much aware of the folks who are remote, and be able to do everything remote-first, even if they’re in the same room.
+
+### Trust us…we’re engineers
+
+**Mehdi: **One thing that’s maybe a worry for some folks—although it hasn’t been my experience at Mailchimp at all—might be the fear that your manager is going to perceive pairing as two engineers halving their productivity. What’s important is communication: why we do it, and what the expectation is for what we should be able to produce in a given amount of time so that other teams can plan around it. 
+
+**Hutch: **Providing a description of the benefits up front is important to that. As an example, when we were writing that “Ways of Working” document, one benefit we pointed out—and it’s still very true today—is that there’s a lot more shared knowledge. If somebody wants an estimate of a timescale, for example, with just Mehdi in the room, they can do that because he has all the information he needs to make an educated statement. I’ve worked on teams that struggled with that, and needed to have every engineer in the room. But now we don’t, which is nice.
+
+**Mehdi: **Pairing has definitely given us more confidence in that way. And importantly, people receive praise equally, too. We get praised as a team, and we give praise as a team. I enjoy working in environments where people on a team aren’t competing with one another, and I think pairing helped facilitate that as well. 
+
+**Hutch: **I concur with pretty much all of that. I don’t feel like I have to represent backend engineering at every meeting—I trust the other engineers on my squad. On previous teams I’ve been worried that if I go on vacation I’m gonna come back to mountains of work, and that’s very much not been the case for us.
+
+**Mehdi: **So pairing is definitely not for every team, and there’s probably a universe in which it wasn’t the right thing for us—if we were working with different people, or on different things. I think the overt pressure of “You have to pair on everything” is kind of mortifying to me, honestly. I don’t want to be in that kind of environment either. It’s more nuanced. Pair programming isn’t supposed to be dogmatic, so don’t go and tell your organization, “We need to pair on _everything_, it’s going to make everything better!” because it’s not true. 
+
+**Hutch: **Yeah, you do need to be constantly evaluating whether this is right for you, and right for everybody. If an engineer chooses not to participate in a pairing—whether because it doesn’t suit their working style, or they just have Zoom fatigue—that should be OK. On our team, when we set up a pairing meeting, it is not a hard-and-fast rule that you need to be there. It _should_ be that everyone wants to be there, but that’s not a requirement. 
+
+**Mehdi: **It really comes down to the needs of your team around you, and then also evaluating whether it’s getting you the solution that you want. Every team is different, and there are many ways to create a collaborative environment where information is freely shared. For your team, it may be pair programming, producing and sharing artifacts, thorough documentation, or something else entirely. It’s worth investing the time to craft and refine your team processes.

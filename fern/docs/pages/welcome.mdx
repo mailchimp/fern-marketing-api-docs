@@ -1,99 +1,148 @@
 ---
-title: Quick start
-subtitle: Get up and running with the Mailchimp Marketing API
-slug: quick-start
-description: Learn how to make your first API call with the Mailchimp Marketing API using API keys or OAuth 2 authentication.
+title: Marketing API Quick Start
+description: Use this guide to start using the Mailchimp Marketing API. Learn how to generate your API key, install the client library, and make your first API call.
 ---
 
-The Mailchimp Marketing API provides programmatic access to Mailchimp data and functionality, allowing you to build custom features to do things like sync your audience data, manage campaigns, and more.
 
-## Before you begin
 
-To use the Mailchimp Marketing API, you need:
+## At a glance
 
-- A [Mailchimp account](https://login.mailchimp.com/signup/)
-- An API key or OAuth 2 access token
+This guide will give you everything you need to start using the Mailchimp Marketing API to manage audiences, control automation workflows, sync email activity with your database, and more. We’ll walk through generating your API key, installing the client library for your preferred language, and making your first API call—a simple request to the [Ping endpoint](/marketing/api).
 
-## Generate an API key
+## Create an account
 
-1. Log in to your Mailchimp account.
-2. Navigate to **Profile > Extras > API keys**.
-3. Click **Create A Key** and give it a descriptive label.
-4. Copy your new API key. You won't be able to see it again.
+If you don't have a Mailchimp account already, you’ll need to [create one](https://login.mailchimp.com/signup/) in order to use the API.
 
-<Warning>
-Keep your API key secure. Do not share it in publicly accessible areas such as GitHub or client-side code.
-</Warning>
+## Generate your API key
 
-## Make your first API call
+The simplest way to authenticate a request to the Marketing API is using [an API key](https://mailchimp.com/help/about-api-keys/). 
 
-Use your API key to call the API root endpoint and verify your credentials:
+Here’s how you can generate one for yourself: 
+
+1. Navigate to the [API Keys section](https://us1.admin.mailchimp.com/account/api/) of your Mailchimp account.
+2. Click **Create New Key** and give it a descriptive name that will remind you which application it’s used for. Copy the generated key immediately and store it in a secure location. You won’t be able to see or copy the key once you finish generating it.
+
+<Note>
+**Note**: It’s important to remember that your Mailchimp API key provides full account access, so you should keep it secure, as you would with a password. Because of the potential security risks associated with exposing account API keys, Mailchimp does not support client-side calls to the Marketing API using CORS requests, nor should API keys be used in mobile apps.
+</Note>
+
+If you’re creating integrations that require access to Mailchimp on behalf of other Mailchimp users, you’ll want to [set up authentication via Oauth 2](/marketing/guides/access-user-data-oauth-2) instead. 
+
+## Install the client library for your language
+
+You can make calls to the Marketing API with whichever method you usually use to make HTTP requests, but Mailchimp offers [client libraries](https://mailchimp.com/developer/tools/) that make interacting with the API even simpler. 
+
+To install the client library for your preferred language:
 
 <CodeBlocks>
 ```bash title="cURL"
-curl -X GET "https://us1.api.mailchimp.com/3.0/" \
-  --user "anystring:YOUR_API_KEY"
+# No client installation necessary; just using curl
 ```
 
-```javascript title="JavaScript"
+```javascript title="Node"
+yarn add @mailchimp/mailchimp_marketing
+# OR
+npm install @mailchimp/mailchimp_marketing
+```
+
+```php title="PHP"
+composer require mailchimp/marketing
+```
+
+```ruby title="Ruby"
+gem install MailchimpMarketing
+```
+
+```python title="Python"
+pip install mailchimp-marketing
+```
+</CodeBlocks>
+
+## Make your first API call
+
+To test that you have everything set up correctly, we’ll make a simple request to the Ping endpoint. Hitting this endpoint acts as a health check on the Mailchimp API service; it won’t affect your account in any way. 
+
+To find the value for the `server` parameter used in `mailchimp.setConfig`, log into your Mailchimp account and look at the URL in your browser. You’ll see something like `https://us19.admin.mailchimp.com/`; the `us19` part is the server prefix. Note that your specific value may be different.
+
+<CodeBlocks>
+```bash title="cURL"
+# install jq: https://stedolan.github.io/jq/download/
+
+dc="YOUR_DC"
+apikey="YOUR_API_KEY"
+
+curl -sS \
+  "https://${dc}.api.mailchimp.com/3.0/ping" \
+  --user "anystring:${apikey}" | jq -r
+```
+
+```javascript title="Node"
 const mailchimp = require("@mailchimp/mailchimp_marketing");
 
 mailchimp.setConfig({
   apiKey: "YOUR_API_KEY",
-  server: "us1",
+  server: "YOUR_SERVER_PREFIX",
 });
 
-async function callPing() {
+async function run() {
   const response = await mailchimp.ping.get();
   console.log(response);
 }
 
-callPing();
+run();
 ```
 
 ```php title="PHP"
 require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
 
-$mailchimp = new MailchimpMarketing\ApiClient();
+$mailchimp = new \MailchimpMarketing\ApiClient();
+
 $mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY',
-    'server' => 'us1',
+	'apiKey' => 'YOUR_API_KEY',
+	'server' => 'YOUR_SERVER_PREFIX'
 ]);
 
 $response = $mailchimp->ping->get();
 print_r($response);
 ```
+
+```ruby title="Ruby"
+require "MailchimpMarketing"
+
+mailchimp = MailchimpMarketing::Client.new
+mailchimp.set_config({
+  :api_key => ENV["API_KEY"],
+  :server => ENV["API_SERVER"]
+})
+
+response = mailchimp.ping.get
+puts response
+```
+
+```python title="Python"
+from mailchimp_marketing import Client
+
+mailchimp = Client()
+mailchimp.set_config({
+  "api_key": "YOUR_API_KEY",
+  "server": "YOUR_SERVER_PREFIX"
+})
+
+response = mailchimp.ping.get()
+print(response)
+```
 </CodeBlocks>
 
-A successful response returns information about the authenticated account:
+If everything was set up correctly and the request to `ping` was a success, the response should look like the following: 
 
 ```json
 {
-  "account_id": "abc123",
-  "login_id": "user@example.com",
-  "account_name": "Your Account",
-  "email": "user@example.com",
-  ...
+   "health_status": "Everything's Chimpy!"
 }
-```
-
-## Determine your server prefix
-
-Your API key includes your server prefix as the last characters after the dash. For example, if your API key is `abc123def456-us6`, your server prefix is `us6`.
-
-All API requests use the format:
-
-```
-https://{server_prefix}.api.mailchimp.com/3.0/
 ```
 
 ## Next steps
 
-<CardGroup cols={2}>
-  <Card title="Authentication" icon="duotone lock" href="/marketing/authentication">
-    Learn about API key and OAuth 2 authentication methods.
-  </Card>
-  <Card title="API Reference" icon="duotone code" href="/marketing/api-reference">
-    Explore all available endpoints.
-  </Card>
-</CardGroup>
+Now that you’re successfully making authenticated requests to the API with your API key and client library of choice, you’re ready to dive into the Mailchimp Marketing API. 
+
+The first thing you may want to do is learn how to [create your first audience](/marketing/guides/create-your-first-audience) and add new contacts to that audience using the API. You may also want to familiarize yourself with the [Marketing API docs](/marketing/docs/fundamentals), which outline some of the common conventions you’ll run into across the API, or browse the extensive [API Reference documentation](/marketing/api).

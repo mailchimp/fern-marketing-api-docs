@@ -1,5 +1,96 @@
 ---
 title: Integrations
+description: Build an application that connects your platform with Mailchimp.
 ---
 
-Content coming soon.
+
+
+## The basics
+
+An integration is an application that any Mailchimp user can authorize to pass their data between other platforms and Mailchimp. Integrations utilize [Marketing API endpoints](/marketing/api) to pass this data, with authentication via OAuth 2. You can build an integration to do things like import data from a CRM into Mailchimp, connect e-commerce customers and orders, or sync files like photos to use in campaigns. 
+
+Once you’ve built your integration, you’ll want to get it in front of Mailchimp users. To do so, you’ll need to join the [Integration Partner Program](#integration-partner-program). To be included in the program, your integration must meet certain [requirements](#integration-requirements); once it’s approved, it will be listed in the [Mailchimp Marketplace](https://mailchimp.com/marketplace/). 
+
+This documentation will outline what an integration is and some of the basics of building one, as well as the requirements to participate in the Integration Partner Program.
+
+## Building integrations
+
+Mailchimp integrations are built on the full surface of the [Marketing API](/marketing/api). The specifics will vary depending on what you’re trying to build, but there are some general best practices to keep in mind as you start development, from authentication to managing data to surfacing errors.
+
+### Authentication
+
+To authenticate users of your integration with Mailchimp, you should use OAuth 2. OAuth is more secure than traditional API keys, and it’s a requirement to join the Integration Partner Program and have your integration listed in the Marketplace.
+
+If you haven’t set up OAuth with Mailchimp before, we’d recommend following the [Access Data on Behalf of Other Users with OAuth 2](/marketing/guides/access-user-data-oauth-2) guide, which includes the basic workflow, registering your app, and sample code for implementing OAuth 2 on your server. 
+
+### Synchronizing data
+
+When a user installs your integration, you may want to sync existing contacts on your platform with Mailchimp. Some good options for this are:
+
+- Using the [Batch Subscribe or Unsubscribe endpoint](/marketing/api)
+- Asynchronously using the [Batch endpoint](/marketing/guides/run-async-requests-batch-endpoint)
+
+If you need to keep your platform’s audience synchronized with changes made on Mailchimp, see the [Synchronize Audience Data with Webhooks](/marketing/guides/sync-audience-data-webhooks) guide.
+
+If a user deletes or uninstalls an integration, it’s important that the integration also deletes any relevant data like OAuth tokens and other syncing configurations. Uninstalling an integration should be intuitive—the user experience should be as simple as possible.
+
+### Common endpoints
+
+Depending on the type of integration you’re building, Mailchimp provides a variety of endpoints to send your data. Beyond the [API reference](/marketing/api), the Marketing API guides and docs help you get started figuring out how to write your code and walk through common use cases including: 
+
+- [Track Outside Activity with Events](/marketing/guides/track-outside-activity-events)
+- [Organize Contacts with Tags](/marketing/guides/organize-contacts-with-tags)
+- [E-Commerce documentation](/marketing/docs/e-commerce)
+
+For example, let’s say we’re creating an integration between Mailchimp and a photo editing application. We want users to be able to embed the photos they create in our photo editor in their Mailchimp campaigns, and we also want users to be able to pull photos from Mailchimp and edit them within the photo editor.
+
+To get started, our user will select the integration via their Mailchimp account, and they’ll install it in their photo editor. They’ll then be prompted to [OAuth with the application](/marketing/guides/access-user-data-oauth-2). 
+
+When the user clicks a photo to upload in the photo editor, the application will encode the image and POST the encoded data to Mailchimp’s [File Manager endpoint](/marketing/api). When the user wants to send photos from Mailchimp back to the photo editor, the integration will pull photos from Mailchimp by performing [GET to the File Manager endpoint](/marketing/api).
+
+### Surfacing errors
+
+When building your integration, consider surfacing errors from the Mailchimp API to your end users. This may help them fix issues in their Mailchimp account on their own or find the right support channel.
+
+You should also log and monitor the errors you receive from the Mailchimp API and adjust your code if any are persistent. Consult the [Errors documentation](/marketing/docs/errors) for information about common errors as well as a glossary. 
+
+## Integration Partner Program
+
+To showcase your integration in the [Mailchimp Marketplace](https://mailchimp.com/marketplace/), you must be a Mailchimp Integration Partner. In addition to getting your integration in front of millions of Mailchimp users, you’ll gain access to premium email support and chat assistance, and receive exclusive partner-branded assets. 
+
+Before applying to be a partner, your integration must meet a series of requirements (see below). Once you submit your application, we’ll review and test your integration to verify it meets the requirements and to ensure it works as intended.
+
+Learn more about the [Integration Partner Program](https://mailchimp.com/developer/integration-partner-program/) or [apply now](https://mailchimppp.smapply.io/prog/integration_partner_program_application/).
+
+### Integration requirements
+
+To qualify for the Integration Partner Program, your integration: 
+
+1. Must be built on the current version of the [Mailchimp Marketing API](/marketing), ensuring integrations are stable and supportable.
+2. Should support [OAuth2 authentication](/marketing/guides/access-user-data-oauth-2), ensuring integrations are securely accessing Marketing API data on behalf of other Mailchimp users.
+3. Should have 25+ active users within the last 90 days. An active user is a unique OAuth sending API calls.
+4. Should enable at least three Mailchimp core functionality features, ensuring integrations support Mailchimp’s core strategic efforts for our customers.
+
+These features include: 
+
+- Adding rich segmentation data including [Tags](/marketing/api), [Custom Events](/marketing/api), and [Merge Fields](/marketing/api)
+- Creating [Audience Segments](/marketing/api)
+- Creating [Automations](/marketing/api)
+- Creating [Connected Sites](/marketing/api)
+- Creating [Email Templates](/marketing/api)
+- Creating [Landing Pages](/marketing/api)
+- Embedding [Signup Forms](/marketing/api)
+- Sending emails via [Mailchimp Transactional](/transactional)
+- Syncing all available [e-commerce data](/marketing/docs/e-commerce) including [Products](/marketing/api), [Orders](/marketing/api), [Customers](/marketing/api), [Promo Codes](/marketing/api), and [Carts](/marketing/api)
+- Syncing [Contacts](/marketing/api) with [appropriate subscription statuses](/marketing/api), respecting GDPR fields
+- Syncing [Conversations](/marketing/api) from Mailchimp
+- Syncing [Images to Content Studio](/marketing/api)
+- Syncing [Reports](/marketing/api) from Mailchimp
+
+### Partner requirements
+
+Additionally, to become an Integration Partner you must: 
+
+1. Provide a test account with full access and password reset ability using the email address `integrationtest@mailchimp.com`.
+2. Provide end user support. This ensures customers are receiving the best experience while connecting and using your integration. Mailchimp will direct any inquiries about your integration to your chosen method(s) of user support.
+3. Agree to partnership terms and conditions. Alignment and adherence to partnership expectations is required.

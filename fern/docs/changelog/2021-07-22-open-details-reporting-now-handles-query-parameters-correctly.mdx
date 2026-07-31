@@ -1,0 +1,8 @@
+---
+title: Open Details reporting now handles query parameters correctly
+tags: ["Marketing API"]
+---
+
+Previously, when using the [`/reports/{campaign_id}/open-details/`](/marketing/api) endpoint within a [batch operation](/marketing/api), you could get an `Unknown Filter` error if you had more than 1,000 entries in the collection, or if you submitted query parameters other than since.
+
+The endpoint was not correctly handling parameters, and would throw the `Unknown Filter` exception in cases when it should not. We removed this exceptional case, and will now ignore unexpected query parameters. Batch requests using this endpoint should now resolve successfully.

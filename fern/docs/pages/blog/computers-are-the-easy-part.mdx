@@ -1,0 +1,73 @@
+---
+title: "Computers are the easy part"
+subtitle: "Software systems are complex\u2014and so are their human operators"
+---
+
+<a class="mc-blog-back" href="/blog">← Back to Blog</a>
+
+<p class="mc-blog-post-byline"><span class="mc-blog-author">Ray Ashman</span>, Software Engineer</p>
+
+<img class="mc-blog-post-hero" src="https://mailchimp.com/developer/static/dea05a4d2131d6ea15145c3f77dcfdca/062c8/ILLO_Dev-Blog_02_Computers-Are-The-Easy-Part_2000x1124.jpg" alt="Computers are the easy part" />
+<p class="mc-blog-post-credit">Image Credit: Mar Hernández</p>
+
+In the world of aircraft safety, a Controlled Flight Into Terrain (CFIT) is an accident where an aircraft that has no mechanical failures, and is fully under the control of its pilots, is unintentionally piloted into the ground. As a concept, CFIT has long been studied to try and understand the human factors involved in failure. The [FAA reports](https://www.faa.gov/news/safety_briefing/2018/media/SE_Topic_18-11.pdf) that contrary to what one might expect, the majority of CFIT accidents occur in broad daylight and with good visual conditions—so how, then, is it possible that highly trained and skilled pilots could accidentally fly a plane into the side of a mountain?
+
+It’s tempting to ascribe such a tragedy to human error. But the work of researchers like Sidney Dekker challenges this view, instead framing human error as a symptom of larger issues within a system. “Underneath every simple, obvious story about ‘human error,’” Dekker writes in_ _[_The Field Guide to Human Error_](https://books.google.com/books?id=NTP5iLn4XHkC&q=underneath#v=snippet&q=underneath&f=false), “there is a deeper, more complex story about the organization.”
+
+These systemic faults—often cultural in nature, rather than purely technical—are how a group of highly skilled individuals reacting rationally to an incident could nonetheless end up taking the wrong course of action, or ignore the warning signs right in front of them.
+
+We don’t pilot aircraft at Mailchimp, but millions of small businesses do rely on our marketing platform to keep their businesses running. When things do go wrong—and as we work to fix them and analyze what happened—we run up against similar questions about technical versus systemic failures. 
+
+We recently experienced an internal outage that lasted for multiple days. While it fortunately didn’t impact any customers, it still puzzled us, and prompted a lot of introspection. Human factors, the weight of history, and the difficulties of coordination caused this issue to stretch out far longer than it could have, but it taught us something about our systems—and ourselves—in the process.
+
+### The investigation
+
+It was the late afternoon on a day where many of our on-call engineers were already tired from dealing with other issues that we started receiving alerts in the form of what we call “locked unstarted jobs”—essentially, individual units of work being claimed for execution but never run. This is a particular failure mode that is well known to us, and while uncommon, has a generally well-understood cause: some kind of unrecoverable failure during the execution of a task. Our on-call engineers began triaging the issue, first trying to identify whether any code had been shipped at the time the incident began that could have caused the problem.
+
+Incident response at Mailchimp is transparent to all of our employees—when we become aware that something’s wrong, we spin up a “war room” channel in Slack that the whole company can observe. The responding engineers, based on our prior experience dealing with this type of failure, first suspected that we’d shipped a change that was introducing errors into the job runner and began mapping the start of the issue against changes that were deployed at the time. However, the only change that had landed in production as the incident began was a small change to a logging statement, which couldn’t possibly have caused this type of failure. 
+
+Our internal job runner—which executes a huge variety of long-running tasks asynchronously—is a long-serving part of our infrastructure, developed early in Mailchimp’s history. It runs huge numbers of tasks daily without very many issues—which, on the surface, is exactly what the operator of a software system wants. But this also means that collectively, we don’t often build the expertise to debug novel failures, compared to the battle scars that engineers develop on systems that fail more regularly. The job system has a handful of well-understood failure modes and over the years, we’ve developed a collection of automations and runbooks that make rectifying these issues a routine and low-risk affair. 
+
+When a war-room incident starts up, on-call engineers from various disciplines gather together to take a look. Having been intimately familiar with the various quirks of the job system over the years, we had a reasonably solid mental model that when a failure of this nature occurs, it’s generally an issue with a particular class of job being run or some kind of hardware issue. 
+
+Through our collective efforts, we were able to quickly rule out hardware failures on both the servers running the job system and the database servers that support it. Further investigation didn’t really turn up any job class in particular that might be causing issues. But by late in the evening, we still hadn’t had any breakthroughs, so we put a temporary fix in place to get us through the night and waited for fresh eyes in the morning.
+
+### Fresh perspectives
+
+By the second day, the duration of the incident had attracted a bunch of new responders who hoped to pitch in with resolution. Based on what we’d seen so far, we had ruled out any obvious hardware failures or obviously broken code, so the new responders began investigating whether there were any patterns of user behavior that might be creating problems.
+
+As we began to dig into user traffic patterns, we noticed a number of integrations that were generating huge numbers of a particular job type. We attempted a change to apply more back pressure for this job class to see if it would mitigate the issue, but that didn’t really help. 
+
+The numbers of locked and unstarted jobs continued to climb, and we realized that this was a failure mode that didn’t really line up with our mental model of how the job system breaks down. As an organization, we have a long memory of the way that the job runner can break, what causes it to break in those ways, and the best way to recover from such a failure. This institutional memory is a cultural and historical force, shaping the way we view problems and their solutions. 
+
+But we were now facing a potentially brand-new type of issue that we hadn’t seen in a decade-plus of supporting the job system—it was time to start looking for a novel root cause. We began adding more instrumentation to the job system in an effort to find any clues that we’d overlooked in the first day of the investigation, including some more diagnostic logging to help trace any unusual failures during the execution of specific jobs.
+
+### A breakthrough
+
+With this new instrumentation in place, we noticed something incredibly strange. The logging that had been added included the job class that was being executed, and some jobs were reporting that they were two different types of job at the same time—which should have been impossible.
+
+Since the whole company had visibility into our progress on the incident, a couple of engineers who had been observing realized that they’d seen this exact kind of issue some years before. Our log processing pipeline does a bit of normalization to ensure that logs are formatted consistently; a quirk of this processing code meant that trying to log a PHP object that is [Iterable](https://www.php.net/manual/en/class.iterator.php) would result in that object’s iterator methods being invoked (for example, to normalize the log format of an Array).
+
+Normally, this is an innocuous behavior—but in our case, the harmless logging change that had shipped at the start of the incident was attempting to log PHP exception objects. Since they were occurring during job execution, these exceptions held a stacktrace that included the method the job runner uses to claim jobs for execution (“locking”)—meaning that each time one of these exceptions made it into the logs, the logging pipeline itself was invoking the job runner’s methods and locking jobs that would never be actually run! 
+
+Having identified the cause, we quickly reverted the not-so-harmless logging change, and our systems very quickly returned to normal.
+
+### Overlooking the obvious
+
+From the outside, this incident may seem totally absurd. The code change that immediately preceded the problem was, in fact, the culprit. Should have been obvious, right? The visual conditions were clear, and yet we still managed to ignore what was right in front of us.
+
+As we breathed a collective sigh of relief, we also had to ask ourselves how it took us so long to figure this out: a large group of very talented people acting completely rationally had managed to overlook a pretty simple cause for almost two days.
+
+We rely on heuristics and collections of mental models to work effectively with complex systems whose details simply can’t be kept in our heads. On top of this, a software organization will tend to develop histories and lore—incidents and failures that have been seen in the past and could likely be the cause of what we’re seeing now. This works perfectly fine as long as problems tend to match similar patterns, but for the small percentage of truly novel issues, an organization can find itself struggling to adapt.
+
+The net effect of all of this is to put folks into a “frame”—a particular way of perceiving the reality we’re inhabiting. But once you’re in a frame, it’s exceedingly difficult to move out of it, especially during a crisis. When debugging an issue, humans will naturally (and often unconsciously) [fit the evidence they see into their frame](https://www.researchgate.net/publication/220579480_Problem_detection). That’s certainly what happened here.
+
+Given the large amount of cultural knowledge about how our job runner works and how it fails, we’d been primed to assume that the issue was part of a set of known failure modes. And since logging changes are so often completely safe, we disregarded the fact that there was only one change to our systems that had gone out before the incident started—had that change been something more complicated, we might have considered it a smoking gun much sooner.
+
+Even our fresh eyes—new responders who joined the incident mid-investigation—tended to avoid reopening threads that were already considered closed. More than once, a new responder asked if we’d considered any changes that shipped out at the start of the incident that could cause this, but hearing that it was “just a logging change,” they also moved on to other avenues of investigation.
+
+We all collectively overlooked the fact that complicated systems don’t always fail in complicated ways. Having exhausted most of our culturally familiar failure modes for the job runner, we weren’t looking for the simplest solution; we assumed that a piece of our infrastructure as old as the job runner must have started exhibiting a novel and unknown problem.
+
+Doing our incident response in full view of the entire engineering team was critical here, since it enabled us to attract the attention of people who were familiar with this obscure type of failure—but this also further highlighted the trap we’d fallen into. With the benefit of hindsight, the responders could have started their investigation from first principles, or tried reverting the logging change as the initial and simplest explanation. Instead, we needed to be bailed out by folks who happened to have seen this exact kind of failure in the past—which is not a resolution that an organization can count on all the time.
+
+This was an incredibly valuable reminder for us: the weight of history and culture within a software organization is a powerful force for priming individuals to think in particular ways and can result in difficulty adapting to novel problems. Approaching incidents like this from first principles and starting with the simplest explanations—no matter how likely they seem—can help us overcome these kinds of mental traps and make our response to incidents much more flexible and resilient.

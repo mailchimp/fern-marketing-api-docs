@@ -1,3 +1,247 @@
-# Authentication and Delivery
+---
+title: Authentication and Delivery
+description: Learn how to configure your sending domain and monitor delivery responses.
+---
 
-Learn how to authenticate your Mailchimp Transactional API requests and understand delivery settings that affect how your messages are sent.
+
+
+## The basics
+
+Authentication and delivery are at the heart of sending email with Mailchimp Transactional: the authentication process is necessary to start sending messages, and monitoring delivery ensures that those messages will continue to reach recipients’ mailboxes in a timely fashion. 
+
+Setting up authentication requires adding a sending domain to Mailchimp Transactional, setting up a DMARC policy, configuring your DNS for DKIM authentication, and then verifying that everything’s working as expected. This documentation covers everything you need to know for each of these steps, but to walk through the process with code examples, see the [Send Your First Transactional Email](/transactional/guides/send-first-email) guide.
+
+## Authentication
+
+Authentication is a way to prove an email isn’t forged. Mailchimp Transactional automatically authenticates all emails sent through our servers, but by adding DNS records to your domain, we’re able to send on your behalf and digitally “sign” your emails.
+
+Many ISPs use authentication to track sending reputation, and since authentication is handled by your domain, you maintain some control over the emails that affect deliverability for that domain. A positive reputation builds trust and improves deliverability, reducing the chance that your emails are caught by spam filters and improving how quickly the receiving servers will accept mail from your domain.
+
+You’ll need to add DMARC and a DKIM record, and verify ownership of your sending domains before you can send email through your account. Mailchimp Transactional won't send any email from unverified domains or domains without a valid DMARC policy and DKIM records.
+
+A message that is rejected as `unsigned` indicates that the sending domain hasn't been properly set up, and that your account is unable to authenticate and send email from that domain. Verifying a domain prevents other Mailchimp Transactional users from sending from your domain unless they also complete the verification process.
+
+ In this section, we’ll walk through the steps required to set up and authenticate your sending domain with Mailchimp Transactional.
+
+### Add a sending domain
+
+To get started with authentication, you’ll need to add the domain that you want to send messages from. 
+
+In the app: 
+
+1. Navigate to **Settings** and choose [**Domains**](https://mandrillapp.com/settings/sending-domains)
+2. Type a new domain in the domain input and click **Add**
+
+You can also add a sender domain via the [Transactional API](/transactional/api).
+
+### Configure your DNS
+
+Once you’ve added your sending domain, you’ll need to create DNS records that enable [DKIM](https://en.wikipedia.org/wiki/Sender_Policy_Framework) email authentication for that domain. 
+
+To add the DKIM records for your sending domains, you'll need to add two CNAME records through your hosting provider, domain registrar, or DNS provider. We recommend referring to your provider’s documentation or support for specific information on adding CNAME records.
+
+### DKIM
+
+Next to your domain, click **View DKIM settings**. A modal will appear with instructions for setting up DKIM on your DNS provider. Add two new CNAME records with the names `mte1._domainkey.example.com `and `mte2._domainkey.example.com` (replace `example.com `with the domain you’re setting up`).`
+
+The value for the record should first CNAME should be `dkim1.mandrillapp.com`, and the value for the second record should be `dkim2.mandrillapp.com`.
+
+### Test DNS settings
+
+Once you’ve set up the CNAME records for DKIM, you can verify that you configured everything correctly by clicking the **Test DNS Settings** button. Your DKIM settings should now indicate that they’re valid; for more detailed information about your current settings, click **View DKIM Settings**.
+
+![TX DKIM DMARC verify](https://images.ctfassets.net/cxsachrr7h0p/3lU9u8G3vZZmitkIzGPfqm/69258c2e97af115ae734609f4fcfc5f2/auth-delivery-testdns.png)
+
+If there's an error validating your records, you can view the error details in Mailchimp Transactional by visiting the** **[**Sending Domains**](https://mandrillapp.com/settings/sending-domains) page. Each DNS provider may handle adding or editing records differently, so your host’s technical support or documentation is the best resource for any limitations or specific formatting. Some DNS providers take longer than others to publish and push a record. If you are adding a new record, those often validate in several minutes. Changing records can take longer, but can vary based on your DNS provider and [TTL](http://en.wikipedia.org/wiki/Time_to_live) for the record.
+
+### Verify domain ownership
+
+Domain verification is required to configure a sending domain. All domains that are actively used for sending should have three green checkmarks on the [**Sending Domains**](https://mandrillapp.com/settings/sending-domains) page:
+
+![TX DMARC DKIM authentication](https://images.ctfassets.net/cxsachrr7h0p/2BMhkbDhIqfjNT0sCj0rae/08684ae4f699b7665818cfdb50705018/auth-delivery-verified.png)
+
+To verify a domain, click on **View details** beneath that domain. You will see a unique key, something like:
+
+> `mandrill_verify.Yfe0JuqvZBiYIUXmTwQNiA`
+
+Add this to your domain’s TXT records, and then click **Test DNS Settings** to check if the record is available. Just like with DKIM, your domain’s TTL may require several minutes’ wait for the record to appear. Using the [/senders/add-domain](/transactional/api) endpoint, we will return a `verify_txt_key` which can be appended to `mandrill_verify. `in the same way.
+
+Alternatively, you can use email to verify your domain. You should ensure that your server is set up to accept inbound email (there are many ways to do this, but check out [Set Up Inbound Email Processing](/transactional/guides/set-up-inbound-email-processing) for more guidance). Verifying your email is as simple as entering a valid email address where you can receive email, then clicking a verification link that Mailchimp sends to that address.
+
+To send the verification email, click the **View details** link below the **Requires verification** warning; enter a valid email address and click **Send Verification Email**.
+
+![Verify domain email](https://images.ctfassets.net/cxsachrr7h0p/39oDFYL0QJBvZvvS0hAAtg/181cf7faf16cf932aee130251a848200/verify-domain-example.png)
+
+In the email, you’ll receive a verification link that looks like this:
+
+`http://mandrillapp.com/settings/verify-domain?domain=example.com&key=VERIFICATION_KEY`
+
+Click the link, and your domain should now be verified.
+
+You can also verify a domain with the Transactional API using the [`/senders/verify-domain`](/transactional/api) endpoint.
+
+### DMARC
+
+In addition to DKIM, you are required to set up a [DMARC](https://dmarc.org/) (Domain-based Message Authentication, Reporting, and Conformance) policy. This is a method of email authentication that helps identify that the email you send is from the real you. It helps protect both senders and recipients from activities like phishing, spamming, and spoofing. 
+
+DMARC uses DKIM to evaluate the authenticity of email messages. When both DMARC and DKIM are set up correctly, you can send an email via an email service provider like Mailchimp Transactional.
+
+We only require that you have a DMARC policy; it can be set with `p=none` in relaxed mode, which indicates that email that fails should be delivered normally.
+
+In your Domain’s DNS settings, add a TXT record named `_dmarc.`_`yourdomain.com`_ (Substitute _`yourdomain.com`__ _with the domain name you are authenticating. Note that some domain hosts automatically add the domain name after `_dmarc`, so make sure it doesn't appear twice.)
+
+In the TXT record value, use `v=DMARC1; p=none`** **at minimum. For more information on setting up DMARC, see Google’s example for [How to Add Your DMARC Record.](https://support.google.com/a/answer/2466563?hl=en&ref_topic=2759254&sjid=12561196777983301446-NA)
+
+Use **Test DNS Settings** on your Sending Domains page to verify that the DMARC record is valid.
+
+## Delivery
+
+Your messages’ deliverability has a direct effect on your [reputation](/transactional/docs/reputation-rejections): spam complaints, bounces, and other rejections can lead to a lower reputation, which in turn can lower your hourly quota for sending. Alongside the tools and features in [Activity and Reports](/transactional/docs/activity-reports), you can monitor your delivery stats and adjust accordingly to ensure your reputation remains as high as possible.
+
+### SMTP delivery responses
+
+Regardless of whether you send via SMTP or the API, your recipients’ mail servers provide SMTP responses when messages are accepted for delivery, when they bounce, and when they can’t be delivered for any other reason. 
+
+Mailchimp Transactional records these SMTP responses automatically. To view them, navigate to **Outbound **and choose [**Activity**](https://mandrillapp.com/activity). You can filter by delivered emails, hard bounces, or soft bounces, or you can search for a recipient email address manually.
+
+To see the full SMTP response, click the message status link: 
+
+![SMTP response](https://images.ctfassets.net/cxsachrr7h0p/6Jc7nFujpQTv3KSFJPioEu/7a99e27670784a353a14fad9bebe9656/auth-delivery-smtp-response.png)
+
+We’ll show you the originating IP address, the IP address for the mail host that accepted the email, and the size of the sent message.
+
+You can also view responses via the [Transactional API](/transactional/api) and webhooks in the `smtp_events` array.
+
+SMTP replies vary based on the server or ISP that issues them, though there are some general guidelines. Each response will include (at the very least) a three-digit code. The first digit typically indicates whether the server was able to accept the message or not:
+
+- `2XX`:  the message was accepted without error
+- `4XX`:  typically a temporary error (we’ll usually retry delivery on these)
+- `5XX`:  usually a soft or hard bounce
+
+The second and third digits can provide additional info, but are usually highly contextual and specific to the particular mail server.
+
+Some successfully delivered emails will include a “queued” notation in the SMTP response, such as `250 OK; queued as 12345`. This indicates that the email was delivered to the recipient as expected, but may require additional processing before it lands in the recipient’s inbox.
+
+<Note>
+**Note**: Rejected emails won’t include SMTP events, because these messages aren’t sent.
+</Note>
+
+### Custom return-path domains
+
+The return-path header shows where [SMTP responses](/transactional/docs/smtp-integration) and [bounce messages](/transactional/docs/reputation-rejections/#bounces) should be sent. By default, this address points to `mandrillapp.com`, but you can customize the address to point to your own domain instead. Customizing your return-path domain is often considered a cosmetic change, but it can also make your mail look more trustworthy to receiving servers.
+
+<Note>
+**Note**: Even if you use a custom return-path domain, Mailchimp Transactional still handles the bounces. If you need to receive bounce details in your own application or at a specific email address, you can set up [webhooks](/transactional/docs/webhooks) and Mailchimp will send information to your webhook URL when these events occur. From there, you can process the events as needed in your application or database, or use code to forward the bounce information along in a new email.
+</Note>
+
+Before getting started, set up a [CNAME record](http://en.wikipedia.org/wiki/CNAME_record) pointing your subdomain to mandrillapp.com. You must use a subdomain (like mail.example.com) and not a root domain (like example.com). You can use any valid tracking domain as a return-path domain, but we suggest creating a unique subdomain specifically for this purpose.
+
+To save a custom return-path domain: 
+
+1. Navigate to **Settings **and then [**Tracking & Return Path Domains**](https://mandrillapp.com/settings/tracking-domains)
+2. Enter your subdomain and click **Add**
+3. Click **Test DNS Settings** to verify the settings for the subdomain you added
+
+Once the return-path domain is added, you can set it to apply to messages globally on the **Sending Defaults** page. You can also change the domain on a per-message basis using the `return_path_domain parameter` (API) or the `X-MC-ReturnPathDomain` header (SMTP).
+
+<Note>
+**Note**: You can only add a return-path domain to one Mailchimp Transactional account; if you try to add the same domain to different accounts, it will result in an error. If you have a specific reason to use the same return-path domains across multiple accounts, contact [support](/transactional/docs/fundamentals/#support).
+</Note>
+
+### Spam filters
+
+You may notice that your email ends up in your recipients’ spam or junk folders every so often, even when they don’t [mark it as spam](/transactional/docs/reputation-rejections/#spam-complaints). Every recipient server is different, and spam filters are constantly being changed to adapt to new spammer techniques; what lands in an inbox today could be spam-filtered tomorrow. In most cases, recipient servers are trying to stay ahead of spammer techniques, so they won’t be able to provide you with any information about why your messages are getting caught in their filters. 
+
+There are things you can do to try to avoid spam filters, though. Many major email providers use engagement-based filtering to detect spam: the more recipients interact with your emails, the more highly engaged your audience is, and the more likely you’ll end up in their inboxes. Conversely, if a lot of users are marking a message as spam, it’s more likely to end up in other people’s spam folders. If users move emails out of the spam folder, that’s a positive indicator, and can help ensure future emails will be delivered to the inbox instead.
+
+In addition to engagement, most spam filters use some kind of scoring mechanism to figure out how likely it is that an email is spam. If the email exceeds a certain threshold, it’s filtered to the spam folder. The threshold changes for every receiving server, and some are configurable by the recipients. 
+
+If you're tracking opens and clicks, offering unsubscribe options, and using feedback loops (Mailchimp handles FBLs for you), you’ll get a good amount of data that can help you gauge how your emails are doing engagement-wise. You can read more about spam filters in the [Mailchimp Knowledge Base](https://mailchimp.com/help/about-spam-filters/).
+
+## Dedicated IP
+
+By default, your messages are sent from an IP address that’s shared by multiple Mailchimp Transactional users. Mailchimp automatically routes your emails based on a variety of factors, including how much email is sent from a particular shared IP.
+
+You can also set up a dedicated IP—an IP address for sending email employed by a single user or account. Since only your email will be sent from that IP, only you will determine the volume of mail and the reputation of the IP. 
+
+Dedicated IP addresses are available as an optional add-on for an additional monthly fee of $29.95. This fee will be charged to the account as soon as the dedicated IP request is approved and added to the account, and is prorated for the remainder of the current billing cycle. 
+
+<Note>
+**Note**: You cannot use dedicated IPs to connect to Mailchimp Transactional to relay email—they’re only for sending messages.
+</Note>
+
+### Choosing to use a dedicated IP
+
+A lot of users ask whether they should use a dedicated IP. The real answer is that it depends on your sending volume and the type of recipients you’re sending to.
+
+The primary benefit of using a dedicated IP is that the reputation of that IP is based only on the mail you’re sending. Shared IPs, on the other hand, have many users sending, so their reputation is based on all of the email from those many users. A dedicated IP also means that your mail comes from a specific IP; with shared IPs, the IP used will rotate and won’t always be the same. 
+
+It’s important to note that a dedicated IP is never guaranteed to solve delivery problems. Poor list management, unsolicited emails, or unengaged recipients can cause issues on both shared and dedicated IPs.
+
+And if you’re not sending a lot of mail, a dedicated IP can actually hurt your deliverability—receiving servers won’t see enough email to know whether to trust the IP or not. Each time you send an email, they have to re-evaluate every aspect of the email as though it’s a new IP.
+
+In our experience, you should be sending at least 5,000 emails per day at least three days per week to justify a dedicated IP. A single dedicated IP can handle up to 500,000 emails per day (distributed throughout the day). Some ISPs limit how much mail they will accept from individual IPs, per hour or per day. Because of this, if your recipients are concentrated in certain ISPs, the amount of email you can send from a single IP may be lower.
+
+If you’re sending to a lot of corporate domains that need to be able to automatically allow the IP you’re sending from, a dedicated IP can be a really good option. That will make it easier for your clients to automatically allow only your IP instead of all of Mailchimp Transactional’s shared IPs.
+
+### Add a dedicated IP
+
+To add a dedicated IP address, navigate to [**Add Ons**](https://mandrillapp.com/account/billing/add-ons) and under **Dedicated IPs**, click **Add Dedicated IP**.** **If you’re sending large volumes of email, you can also choose to start warming up the IP immediately—just check the box **Start Warming Up IP Immediately**.
+
+You'll be prompted to accept any charges for your account after the dedicated IP is provisioned. Mailchimp will manually approve your request (usually in about 24–48 hours) and once it has been, all mail will begin sending over the new IP. You’ll receive a notification email to your primary contact address when the IP is ready for use. If for some reason your request isn’t approved, Mailchimp will respond with an email asking you for more information.
+
+You can also add dedicated IPs with the [Transactional API](/transactional/api).
+
+### Warm up an IP address
+
+When you choose to warm up a dedicated IP address, Mailchimp gradually increases the percentage of your mail sent via that IP over the next month. This allows ISPs to get to know you as a sender and the type and volume of email you send.
+
+There are three ways to warm up a dedicated IP address: 
+
+1. When you first add a dedicated IP for your account, check the **Start Warming Up IP** **Immediately** box.
+2. On the [**Add Ons**](https://mandrillapp.com/account/billing/add-ons) page, locate a dedicated IP address and choose **Warm up IP** from the drop-down menu.
+3. Using the [`ips/start-warmup`](/transactional/api) endpoint in the Transactional API.
+
+If you regularly send more than 5,000 emails per day at least three days per week, it’s a good idea to warm up an IP, but if you're sending at lower volumes, you generally won’t need to.
+
+If you have more than one dedicated IP, Mailchimp will send the rest of your mail over your other dedicated IPs during the warm-up period. If you have only one dedicated IP, we’ll send the rest of your mail over our shared pool of IPs during the warm up period.
+
+You can switch an existing dedicated IP into warm-up mode at any time. This is useful if you want to reduce the traffic that an existing IP is sending and then slowly ramp it back up over time.
+
+<Note>
+**Note**: If you’re planning to send more in the future, beginning the warm-up process for a dedicated IP can be beneficial—but be sure that you don’t warm it up and then leave it dormant for awhile, because consistency in sending behavior is important when it comes to warming up IPs.
+</Note>
+
+### Remove a dedicated IP
+
+To remove a dedicated IP address, navigate to the [**Add Ons**](https://mandrillapp.com/account/billing/add-ons)** **page, locate the dedicated IP address you’d like to remove, and choose **Delete this IP** from the Actions menu. You can also remove a dedicated IP with the [Transactional API](/transactional/api). 
+
+Deleting a dedicated IP address will remove it from your account right away, and this cannot be undone. The monthly fee is not prorated for the billing cycle in which a dedicated IP is removed.
+
+### Reverse DNS
+
+Setting up reverse DNS lets you connect a dedicated IP address to a custom domain name. You can manage this in the app, or with the [Transactional API](/transactional/api).
+
+Before getting started, you must set up an A record pointing your subdomain to your dedicated IP address. You must use a subdomain (like mail.example.com) and not a root domain (like example.com).
+
+To add reverse DNS settings:
+
+1. Navigate to [**Add Ons**](https://mandrillapp.com/account/billing/add-ons)** **and click **Configure reverse DNS** under your dedicated IP address
+2. Enter your subdomain and select **Check Settings**
+3. In the modal window, select **Add Reverse DNS**
+
+The reverse DNS setup process takes about 24 hours, since Mailchimp needs to configure a PTR record mapping your dedicated IP address back to the domain name. Many ISPs verify the [TTL](http://en.wikipedia.org/wiki/Time_to_live) on PTR records and may reject the email based on their spam filtering heuristics if the TTL is less than 24 hours.
+
+If you have more than one dedicated IP, Mailchimp Transactional will send the rest of your mail over your other dedicated IPs during the reverse DNS setup phase. If you have only one dedicated IP, we’ll send the rest of your mail over our shared pool of IPs during that time.
+
+You can also edit or remove a reverse DNS entry under the respective IP address in [**Add Ons**](https://mandrillapp.com/account/billing/add-ons). If you remove it, the domain name will revert back to the `mandrillapp.com` domain within 24 hours, during which time your email will send over our shared pool of IPs (or your other dedicated IPs if you have more than one).
+
+### Dedicated IP pools
+
+When you have more than one dedicated IP address, you can create different pools to manage those IPs. As you send larger volumes of email, it can be helpful to use different IPs for different types of mail. For example, you could send password reset emails from one dedicated IP and order confirmations over another.
+
+By default, Mailchimp Transactional creates a main pool for you, but you can create and manage pools within your account or with the [Transactional API](/transactional/api).
+
+To create a new dedicated pool, navigate to the [**Add Ons**](https://mandrillapp.com/account/billing/add-ons) page and under **Dedicated IPs**, click **Create New Pool**. To move a dedicated IP address to a different pool, select the IP you want to move and under the **Actions** drop-down menu, choose the pool.
+
+Once you’ve set up your pool, you can select it to apply globally in [**Sending Defaults**](https://mandrillapp.com/settings/sending-options). To change your dedicated pool on a per-message basis, `use `[`ip_pool`](/transactional/api) (API) or the [`X-MC-IPPool`](/transactional/docs/smtp-integration/#x-mc-ippool) header (SMTP).

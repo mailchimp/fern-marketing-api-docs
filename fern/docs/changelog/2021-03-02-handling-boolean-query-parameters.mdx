@@ -1,0 +1,8 @@
+---
+title: Handling boolean query parameters
+tags: ["Marketing API"]
+---
+
+We now handle boolean query parameters in a more explicit way.  For query parameters that are defined as a boolean type in our documentation, the case-insensitive strings `true` and `1` will be handled as a `true` value, and the case-insensitive strings `false` and `0` will be handled as the `false` value.  Other values will be defaulted to `false`, if provided.
+
+We didn’t have a clear statement on what the accepted values for boolean query parameters were.

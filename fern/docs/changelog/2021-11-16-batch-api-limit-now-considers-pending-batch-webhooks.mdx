@@ -1,0 +1,8 @@
+---
+title: Batch API limit now considers pending batch webhooks
+tags: ["Marketing API"]
+---
+
+We now allow a user to submit up to 500 pending API batches. For each completed batch, we send those results to each batch webhook that has been created. A user will not be able to create more API batches if there are 500 outstanding batch webhooks that have yet to complete. A 429 status code will be returned in this instance.
+
+Previously, we did not have a limit on how many batch webhooks could be instantiated for a given user. This unbounded nature can have an impact on the performance of the API, which this new limit will help mitigate.

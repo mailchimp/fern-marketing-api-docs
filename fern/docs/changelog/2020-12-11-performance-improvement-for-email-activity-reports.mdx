@@ -1,0 +1,10 @@
+---
+title: Performance improvement for Email Activity Reports
+tags: ["Marketing API"]
+---
+
+We improved performance on the [List Email Activity](https://mailchimp.com/developer/api/marketing/email-activity-reports/) endpoint.
+
+We realized we were fetching bounce activity from an inefficient source. With a more efficient method to fetch this information, this endpoint is now running an order of magnitude faster—the average request time has gone from 6 seconds to 200 milliseconds. 
+
+This change also makes this endpoint more consistent with bounce activity displayed in the web application. Previously, if an email server returned multiple bounces for a single recipient in a given campaign, this endpoint would include the latest one, whereas the web application would show the first one. As of this change, this endpoint will respond with the first bounce.

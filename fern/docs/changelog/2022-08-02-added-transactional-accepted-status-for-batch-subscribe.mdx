@@ -1,0 +1,8 @@
+---
+title: Added transactional as an accepted status for Batch Subscribe
+tags: ["Marketing API"]
+---
+
+The [Batch Subscribe](https://mailchimp.com/developer/marketing/api/lists/batch-subscribe-or-unsubscribe/) endpoint now accepts ‘`transactional`’ as a possible status value.
+
+Previously, the Batch Subscribe endpoint did not accept ‘`transactional`’ in the `status` field, which did not match the behavior of adding an individual list member. This change allows you to add transactional list members using the Batch Subscribe endpoint moving forward.

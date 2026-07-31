@@ -1,3 +1,139 @@
-# Transactional API Quick Start
+---
+title: Transactional API Quick Start
+description: Use this guide to start using the Mailchimp Transactional API to send fast, personalized transactional emails. Learn how to make a Transactional API call.
+---
 
-Get started with the Mailchimp Transactional API to send targeted, event-driven emails with best-in-class deliverability.
+
+
+## At a glance
+
+This guide will give you everything you need to start using the Mailchimp Transactional API to send fast, personalized transactional emails. We’ll cover creating a Mailchimp Transactional account, generating your API key, installing the client library for your preferred language, and making your first call to the Transactional API. 
+
+<Note>
+**Note**: There are actually two routes for sending through Mailchimp Transactional: via the Transactional API, or via SMTP. If you’re just getting started with Mailchimp Transactional, you can check out [the breakdown in the docs](/transactional/docs/fundamentals/#sending-via-the-api-or-smtp) to figure out which route is right for you. If you’d prefer to send via SMTP, review credentials, configuration, and a full index of custom SMTP headers in the [SMTP docs](/transactional/docs/smtp-integration).
+</Note>
+
+## Create an account
+
+If you don't have a Mailchimp Transactional account, you’ll need to [create one](https://login.mailchimp.com/signup/?entrypoint=mandrill&locale=en) in order to get started using the API. If you have a Mailchimp Standard plan or higher, you can enable Mailchimp Transactional from the [Monthly plans or credits page of your account](https://us1.admin.mailchimp.com/account/billing-plan/).
+
+## Generate your API key
+
+You authenticate a request to the Transactional API using an API key. 
+
+To generate one: 
+
+1. Navigate to the [**Settings**](https://mandrillapp.com/settings) of your Mailchimp Transactional account and look for the **API Keys** section
+2. Click **Create New Key** and give it a description.  Copy the generated key immediately and store it in a secure location. You won’t be able to see or copy the key once you finish generating it.
+
+<Note>
+**Note**: It’s important to remember that your Mailchimp Transactional API key provides full account access, so you should keep it secure, as you would a password.
+</Note>
+
+## Install the client library for your language
+
+You can make calls to the Transactional API with whichever method you usually use to make HTTP requests, but Mailchimp offers [client libraries](https://mailchimp.com/developer/tools) that make interacting with the API even simpler. 
+
+To install the client library for your preferred language: 
+
+<CodeBlocks>
+```bash title="cURL"
+# No client installation necessary; just using curl
+```
+
+```javascript title="Node"
+yarn add @mailchimp/mailchimp_transactional
+# OR
+npm install @mailchimp/mailchimp_transactional
+```
+
+```php title="PHP"
+composer require mailchimp/transactional
+```
+
+```ruby title="Ruby"
+# command line
+gem install MailchimpTransactional
+# or in your projects Gemfile...
+gem ‘MailchimpTransactional’, ‘~> 1.0.6’
+```
+
+```python title="Python"
+pip install mailchimp_transactional
+```
+</CodeBlocks>
+
+## Make your first API call
+
+To test that you have everything set up correctly, we'll make a simple request to the `/users/ping` endpoint. Hitting this endpoint acts as a health check on the Mailchimp Transactional API service, and will not affect your account in any way.
+
+<CodeBlocks>
+```bash title="cURL"
+curl -sS -X POST "https://mandrillapp.com/api/1.0/users/ping" \
+  --header 'Content-Type: application/json' \
+  --data-raw '{ "key": "YOUR_API_KEY" }'
+```
+
+```javascript title="Node"
+const mailchimpTx = require("mailchimp_transactional")("YOUR_API_KEY");
+
+async function run() {
+  const response = await mailchimpTx.users.ping();
+  console.log(response);
+}
+
+run();
+```
+
+```php title="PHP"
+<?php
+require_once('/path/to/MailchimpTransactional/vendor/autoload.php');
+
+function run(){
+ try {
+    $mailchimp = new MailchimpTransactional\ApiClient();
+    $mailchimp->setApiKey('YOUR_API_KEY');
+    $response = $mailchimp->users->ping();
+    print_r($response);
+  } catch (Error $e) {
+        echo 'Error: ',  $e->getMessage(), "\n";
+  }
+}
+run();
+```
+
+```ruby title="Ruby"
+require 'MailchimpTransactional'
+
+begin
+  client = MailchimpTransactional::Client.new(ENV[‘YOUR_API_KEY’])
+  result = client.users.ping() # => 'PONG!'
+  p result
+rescue MailchimpTransactional::ApiError => e
+  puts "Error: #{e}"
+end
+```
+
+```python title="Python"
+import mailchimp_transactional as MailchimpTransactional
+from mailchimp_transactional.api_client import ApiClientError
+
+def run():
+  try:
+    mailchimp = MailchimpTransactional.Client('YOUR_API_KEY')
+    response = mailchimp.users.ping()
+    print('API called successfully: {}'.format(response))
+  except ApiClientError as error:
+    print('An exception occurred: {}'.format(error.text))
+
+run()
+```
+</CodeBlocks>
+
+If the call was successful, the response you receive will be a string reading `PONG!`. 
+
+## Next steps
+
+Now that you’re successfully making authenticated requests to the API with your API key and client library of choice, you’re ready to dive into the Transactional API. 
+
+We recommend starting with the [Send Your First Transactional Email](/transactional/guides/send-first-email) guide, which will walk you through, well, sending your first transactional email. You can also review the [Mailchimp Transactional docs](/transactional/docs/fundamentals)—details on authentication, reports, templates, and more—or browse the extensive [API Reference documentation](/transactional/api).

@@ -1,0 +1,8 @@
+---
+title: Added new webhook event type
+tags: ["Transactional"]
+---
+
+We’ve added a `delivered` webhook event that will trigger when we receive a successful SMTP response from the receiving server. 
+
+You receive a `send` event when the message reaches our system, a `deferral `event if the message is deferred by the receiving server, and a `bounce` event if it eventually bounces. Now, we’ve added `delivered` as confirmation that the receiving server has responded successfully. 

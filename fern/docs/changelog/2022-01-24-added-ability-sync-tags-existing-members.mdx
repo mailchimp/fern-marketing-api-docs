@@ -1,0 +1,8 @@
+---
+title: Added ability to sync tags to existing members
+tags: ["Marketing API"]
+---
+
+When syncing members in bulk via the Lists endpoint, tags are now properly added to existing members. If you would like to completely replace the tags of a member with the tags being passed in the request, we have added a new boolean param `sync_tags`, which will cause the call to replace any tags on the existing member. This will only work when making the call with `updated_existing` set to true.
+
+Previously, when updating members in bulk via the Lists or Members endpoints, tags would not be added to an existing member. There was also no way to overwrite the tags completely.

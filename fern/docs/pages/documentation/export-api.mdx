@@ -1,5 +1,87 @@
 ---
 title: Export API
+description: Retrieve audience or contact activity information to keep it synced with your external platform.
 ---
 
-Content coming soon.
+
+
+## The basics
+
+The single-purpose Export API provides support for some of Mailchimp’s [account export functionality](https://mailchimp.com/help/export-back-up-data/). You can use the Export API to retrieve list/audience or contact activity information, or to keep campaign subscriber or audience data synced over to your external platform. (Note that the Export API does not support result filtering, sorting, or pagination.)
+
+While the Export API continues to be supported, if you’re new to Mailchimp, we recommend using the Batch endpoint for these purposes instead. To get started, see the [Run Async Requests with the Batch Endpoint](/marketing/guides/run-async-requests-batch-endpoint) guide.
+
+## API parameters
+
+The root directory of the Export API is:
+
+`https://<dc>.api.mailchimp.com/export/1.0/`
+
+The `<dc>` part of the URL corresponds to the data center for your account. For example, if the last part of your Mailchimp API key is us6, all API endpoints for your account are available at `https://us6.api.mailchimp.com/export/1.0/`.
+
+Unlike the Marketing API, the Export API does not use [HTTP basic authentication](/marketing/docs/fundamentals/#authenticate-with-an-api-key). Instead, you’ll authenticate requests by providing your account’s API key as the value for the `apikey` parameter.
+
+To make a request, POST the request parameters (documented below) as form data or a JSON object. When using form data, be sure to include the trailing slash in the URL before appending your query parameters.
+
+## Output formats
+
+JSON is the only supported output format. A call to the Export API will not return a single valid JSON object, but instead a series of valid JSON objects separated by newline characters.
+
+This may seem counterintuitive at first, but the format is better suited to large datasets than a single JSON object would be. Rather than receiving and processing the entire response (which could be many megabytes of data) and working with a similarly large JSON object, you can operate on each item immediately. This allows your application to perform the desired actions on each item and then discard the data, keeping the memory footprint of your application low.
+
+<Note>
+**Note**: To receive and process export data in a more traditional fashion, take a look at [the Batch endpoint](/marketing/guides/run-async-requests-batch-endpoint).
+</Note>
+
+## Errors
+
+The Export API returns errors as an error message and code. The code is a custom Mailchimp status code, and does not correspond to an HTTP status code. Export API errors will still return an HTTP status code of 200, except in the case of unexpected backend failures, which will return HTTP 500.
+
+## List/audience export
+
+Similar to [exporting via the Mailchimp app](https://mailchimp.com/help/export-back-up-data/), the list/audience export will give you contacts in a list/audience and all of their associated details. This endpoint is only available when authenticated at the [Admin or Owner user level](https://mailchimp.com/help/manage-user-levels-in-your-account/).
+
+The full URL is `https://<dc>.api.mailchimp.com/export/1.0/list/` and the request parameters are as follows: 
+
+| Parameter | Description |
+| --- | --- |
+| `apikey` | A valid API key for your Mailchimp account. |
+| `id` | The list ID to get contacts from. |
+| `status` | Optional: Filters by contact status (`subscribed`, `unsubscribed`, `cleaned`) in the list/audience; defaults to `subscribed`. |
+| segment | Optional: Pulls only a certain segment of your list/audience. |
+| `since` | Optional: Only returns contacts whose data has changed since a UTC timestamp, in YYYY-MM-DD HH:mm:ss format. |
+| `hashed` | Optional: If, instead of full list/audience data, you’d prefer a hashed list of email addresses, set this to the hashing algorithm you expect. Currently, only `sha256` is supported. |
+| `include_tags` | Optional: Whether to include tags in the response (`true` or `false`). The default without this parameter is `false`, tags are not returned. |
+
+This export will return a plain-text dump of JSON objects, with the first row as a header row and each additional row as an individual JSON object. Rows are delimited using a newline (`\n`), so implementations can read in a single line at a time, handle it, and move on.
+
+```json
+["Email Address","First Name","Last
+Name","Birthday","MEMBER_RATING","OPTIN_TIME","OPTIN_IP","CONFIRM_TIME","CONFIRM_IP","LATITUDE","LONGITUDE","GMTOFF","DSTOFF","TIMEZONE","CC","REGION","LAST_CHANGED","LEID","EUID","NOTES"]
+["gladys.mcvankab@example.com","Gladys","McVankab","",4,"2018-03-15 17:51:42",null,"2018-03-15
+17:51:42","205.201.132.5",null,null,null,null,null,null,null,"2018-03-15 17:51:42",67042739,"77514fa407",null]
+["cat@example.com","Kitty","Cat","",2,"2021-02-23 15:22:16",null,"2021-02-23
+15:22:16","205.201.132.5",null,null,null,null,null,null,null,"2021-02-23 15:22:16",171106435,"52e230f061",null]
+```
+
+## Subscriber activity export
+
+The subscriber activity export gives you all subscriber activity for a campaign. This endpoint is only available for [Manager and higher access levels](https://mailchimp.com/help/manage-user-levels-in-your-account/).
+
+The full URL is `https://<dc>.api.mailchimp.com/export/1.0/campaignSubscriberActivity/` and the request parameters are as follows: 
+
+| Parameter | Description |
+| --- | --- |
+| `apikey` | A valid API key for your Mailchimp account. |
+| `id` | The campaign ID to get contact activity from. |
+| `include_empty` | Optional: If set to `true`, a record will be returned for every contact a message has been sent to, even if there is no activity data for them. Defaults to `false`. |
+| `since` | Optional: Only returns activity recorded since a UTC timestamp, in YYYY-MM-DD HH:mm:ss format. |
+
+Like the list/audience export, the subscriber activity export will return a plain-text dump of JSON objects, with each row as an individual JSON object. Rows are delimited using a newline (`\n`).
+
+```json
+{"gladys.mcvankab@example.com":[{"action":"open","timestamp":"2017-02-04
+09:03:37","url":null,"ip":"66.249.88.40"},{"action":"open","timestamp":"2017-02-04
+13:22:40","url":null,"ip":"66.249.88.49"}]}
+{"cat@example.com":[{"action":"open","timestamp":"2017-02-05 02:01:33","url":null,"ip":"64.233.172.140"}]}
+```
