@@ -1213,14 +1213,16 @@ header.fern-background-image { border-bottom: none !important; }
 /* Product overview (dark) — card separation: vertical rule between the two,
    horizontal rule above the full-width Open Commerce card */
 .mc-home-products { background: #001d28; padding: 96px 0; }
+/* Top box (matches mailchimp.com/developer): Marketing | Transactional split
+   by a vertical divider, with LEFT and RIGHT borders only — no top/bottom. */
 .mc-home-product-row {
   display: grid; grid-template-columns: 1fr 1fr;
-  border-bottom: 1px solid #26424c;
-  margin-bottom: 56px;
+  border-left: 1px solid #18323b;
+  border-right: 1px solid #18323b;
+  margin-bottom: 40px;
 }
-.mc-home-product-row > .mc-home-product { padding-bottom: 56px; }
-.mc-home-product-row > .mc-home-product:first-child { border-right: 1px solid #26424c; padding-right: 56px; }
-.mc-home-product-row > .mc-home-product:last-child { padding-left: 56px; }
+.mc-home-product-row > .mc-home-product { padding: 44px; }
+.mc-home-product-row > .mc-home-product:first-child { border-right: 1px solid #18323b; }
 .mc-home-product-eyebrow {
   display: block; text-decoration: none !important;
   color: #00c14e; font-family: 'Input Mono Regular', Courier, monospace;
@@ -1255,10 +1257,15 @@ header.fern-background-image { border-bottom: none !important; }
 }
 .mc-home-plink:hover { color: #ff3ebf !important; }
 /* full width so the GitHub pill can sit at the far right; text stays narrow on the left */
-.mc-home-product--wide { position: relative; max-width: none; }
+/* Bottom box: Open Commerce in a fully-bordered box (all four sides). */
+.mc-home-product--wide {
+  position: relative; max-width: none;
+  border: 1px solid #18323b;
+  padding: 44px;
+}
 .mc-home-product--wide > *:not(.mc-gh-pill) { max-width: 640px; }
-/* on the main-landing Open Commerce card, pin the pill to the far right at eyebrow level */
-.mc-home-product--wide .mc-gh-pill { position: absolute; top: 0; right: 0; }
+/* pin the pill to the top-right inside the box padding, at eyebrow level */
+.mc-home-product--wide .mc-gh-pill { position: absolute; top: 44px; right: 44px; }
 
 /* ---- GitHub stars pill (shared: OC product-landing hero + main-landing OC card) ---- */
 .mc-gh-pill {
@@ -1384,8 +1391,9 @@ header.fern-background-image { border-bottom: none !important; }
   .mc-home-hero-inner, .mc-home-promo-inner { flex-direction: column; align-items: flex-start; }
   .mc-home-hero-right, .mc-home-promo-img-wrap { display: none; }
   .mc-home-product-row { grid-template-columns: 1fr; }
-  .mc-home-product-row > .mc-home-product:first-child { border-right: none; border-bottom: 1px solid #26424c; padding-right: 0; }
-  .mc-home-product-row > .mc-home-product:last-child { padding-left: 0; padding-top: 40px; }
+  .mc-home-product-row > .mc-home-product { padding: 28px; }
+  .mc-home-product-row > .mc-home-product:first-child { border-right: none; border-bottom: 1px solid #18323b; }
+  .mc-home-product--wide { padding: 28px; }
   .mc-home-stats-grid { grid-template-columns: 1fr; }
   .mc-home-hero-title { font-size: 44px !important; }
   .mc-home-product--wide .mc-gh-pill { position: static; margin-top: 16px; }
