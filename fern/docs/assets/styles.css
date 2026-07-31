@@ -1162,61 +1162,61 @@ header.fern-background-image { border-bottom: none !important; }
 .mc-tools-title {
   color: #efeeea !important;
   font-family: 'Means Web', Georgia, serif !important;
-  font-size: 48px !important;
+  font-size: 54px !important;
   font-weight: 300 !important;
   letter-spacing: -.03em !important;
-  margin: 0 0 16px 0 !important;
+  margin: 0 0 18px 0 !important;
 }
 .mc-tools-intro {
-  color: #96a8ad;
+  color: #efeeea;
   font-family: 'Graphik Web', Helvetica, Arial, sans-serif;
-  font-size: 18px;
-  line-height: 1.5;
-  max-width: 620px;
-  margin: 0 0 56px 0 !important;
+  font-size: 20px;
+  line-height: 1.55;
+  max-width: 640px;
+  margin: 0 0 64px 0 !important;
 }
 .mc-tools-heading {
   color: #efeeea !important;
   font-family: 'Means Web', Georgia, serif !important;
-  font-size: 26px !important;
-  font-weight: 400 !important;
-  margin: 0 0 28px 0 !important;
+  font-size: 32px !important;
+  font-weight: 300 !important;
+  margin: 0 0 32px 0 !important;
 }
 .mc-tools-subheading {
   color: #efeeea !important;
-  font-family: 'Graphik Web', Helvetica, Arial, sans-serif !important;
-  font-size: 15px !important;
-  font-weight: 500 !important;
-  margin: 32px 0 14px 0 !important;
+  font-family: 'Means Web', Georgia, serif !important;
+  font-size: 20px !important;
+  font-weight: 300 !important;
+  margin: 40px 0 18px 0 !important;
 }
 .mc-tools-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 12px;
-  max-width: 620px;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 16px;
+  max-width: 900px;
 }
 .mc-tools-card {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 18px;
+  gap: 16px;
+  padding: 22px 24px;
   background-color: #0c2832;
-  border-left: 3px solid #e7b75f;
+  border-left: 4px solid #e7b75f;
   border-radius: 2px;
   text-decoration: none !important;
   transition: background-color .15s ease;
 }
 .mc-tools-card:hover { background-color: #143743; }
 .mc-tools-card-logo {
-  height: 22px;
-  width: 22px;
+  height: 30px;
+  width: 30px;
   object-fit: contain;
   filter: brightness(0) invert(1);
 }
 .mc-tools-card-label {
   color: #efeeea;
   font-family: 'Graphik Web', Helvetica, Arial, sans-serif;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 400;
 }
 .mc-tools-intg-section {

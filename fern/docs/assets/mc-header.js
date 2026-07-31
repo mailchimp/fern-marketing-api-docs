@@ -110,7 +110,7 @@
     {
       name: "Mailchimp Open Commerce", href: "/open-commerce",
       desc: "Control your commerce future with a modular, API-first commerce stack.",
-      links: [["Guides", "/open-commerce/guides/quick-start"], ["Documentation", "/open-commerce/docs/fundamentals"], ["GraphQL Playground", "/open-commerce/graphql-playground"]]
+      links: [["Guides", "/open-commerce/guides/quick-start"], ["Documentation", "/open-commerce/docs/fundamentals"], ["GraphQL Playground", "/open-commerce/playground"]]
     }
   ];
 
