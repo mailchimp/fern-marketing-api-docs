@@ -1193,7 +1193,7 @@ header.fern-background-image { border-bottom: none !important; }
 .mc-home a { pointer-events: auto; }
 
 /* Hero (light) */
-.mc-home-hero { background: #efeeea; padding: 96px 0 104px; }
+.mc-home-hero { background: #efeeea; padding: 56px 0 64px; }
 .mc-home-hero-inner { display: flex; align-items: center; justify-content: space-between; gap: 48px; }
 .mc-home-hero-left { flex: 1 1 55%; max-width: 620px; }
 .mc-home-hero-title {
@@ -1205,7 +1205,7 @@ header.fern-background-image { border-bottom: none !important; }
 }
 .mc-home-hero-copy {
   color: #3d535b; font-family: 'Graphik Web', Helvetica, Arial, sans-serif;
-  font-size: 20px; line-height: 1.5; margin: 0 !important;
+  font-size: 22px; line-height: 1.5; margin: 0 !important;
 }
 .mc-home-hero-right { flex: 0 1 40%; display: flex; justify-content: flex-end; }
 .mc-home-hero-img { max-width: 440px; width: 100%; }
