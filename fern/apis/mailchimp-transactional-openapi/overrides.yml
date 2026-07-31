@@ -1,0 +1,72 @@
+# OpenAPI overrides for Mailchimp Transactional API
+# (Group names are cleaned by renaming tags in openapi.json — Fern ignores
+#  tag x-displayName for API-reference group labels.)
+# - Shorten a handful of long/awkward endpoint titles for the side nav.
+
+paths:
+  /messages/send:
+    post:
+      summary: Send a message
+  /messages/send-template:
+    post:
+      summary: Send using a template
+  /messages/send-raw:
+    post:
+      summary: Send a raw message
+  /messages/info:
+    post:
+      summary: Get message info
+  /messages/content:
+    post:
+      summary: Get message content
+  /messages/search-time-series:
+    post:
+      summary: Search time series
+  /users/info:
+    post:
+      summary: Get account info
+  /users/ping:
+    post:
+      summary: Ping
+  /users/ping2:
+    post:
+      summary: Ping (strict JSON)
+  /users/senders:
+    post:
+      summary: List account senders
+  /mctemplates/info:
+    post:
+      summary: Get template info
+  /mctemplates/list:
+    post:
+      summary: List templates
+  /mctemplates/render:
+    post:
+      summary: Render template
+  /mctemplates/time-series:
+    post:
+      summary: Get template time series
+  /rejects/add-sms:
+    post:
+      summary: Add SMS to denylist
+  /rejects/delete:
+    post:
+      summary: Remove from blacklist
+  /rejects/delete-sms:
+    post:
+      summary: Remove SMS from denylist
+  /rejects/list-sms:
+    post:
+      summary: List SMS denylist
+  /senders/info:
+    post:
+      summary: Get sender info
+  /tags/info:
+    post:
+      summary: Get tag info
+  /tags/time-series:
+    post:
+      summary: Get tag time series
+  /exports/whitelist:
+    post:
+      summary: Export allowlist (legacy)

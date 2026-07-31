@@ -3,3 +3,4 @@
 api:
   specs:
     - openapi: openapi.json
+      overrides: overrides.yml
