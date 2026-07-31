@@ -792,7 +792,7 @@ header.fern-background-image { border-bottom: none !important; }
 /* Header present (not collapsed): a solid, opaque background bar. Light mode
    uses the same cream as the landing-page hero so they blend seamlessly. */
 .mc-header:not(.mc-header-collapsed) { background-color: #efeeea !important; }
-.dark .mc-header:not(.mc-header-collapsed) { background-color: #0c2832 !important; }
+.dark .mc-header:not(.mc-header-collapsed) { background-color: #001d28 !important; }
 
 /* Collapsed (scrolled down): fully transparent + click-through. */
 .mc-header.mc-header-collapsed {
