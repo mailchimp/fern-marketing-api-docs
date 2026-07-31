@@ -1231,7 +1231,19 @@ header.fern-background-image { border-bottom: none !important; }
   background-color: #efeeea;
   padding: 80px 0 96px;
 }
-.mc-tools-intg { max-width: 560px; }
+.mc-tools-intg-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 48px;
+}
+.mc-tools-intg { max-width: 560px; flex: 1 1 55%; }
+.mc-tools-intg-img-wrap { flex: 0 1 44%; display: flex; justify-content: flex-end; }
+.mc-tools-intg-img { max-width: 436px; width: 100%; height: auto; }
+@media (max-width: 900px) {
+  .mc-tools-intg-inner { flex-direction: column; align-items: flex-start; gap: 32px; }
+  .mc-tools-intg-img-wrap { display: none; }
+}
 .mc-tools-intg-heading {
   color: #001d28 !important;
   font-family: 'Means Web', Georgia, serif !important;

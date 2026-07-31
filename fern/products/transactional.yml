@@ -70,6 +70,7 @@ navigation:
     slug: api
     collapsed: true
     contents:
-      - page: Overview
-        path: ../docs/pages/transactional/api-reference.mdx
-        slug: ""
+      - api: Mailchimp Transactional API
+        api-name: mailchimp-transactional-openapi
+        skip-slug: true
+        paginated: true
