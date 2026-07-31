@@ -106,11 +106,6 @@
       name: "Mailchimp Transactional", href: "/transactional",
       desc: "Send targeted and event-driven messages to anyone, fast—with best-in-class deliverability.",
       links: [["Guides", "/transactional/guides/quick-start"], ["Documentation", "/transactional/docs/fundamentals"], ["API Reference", "/transactional/api"]]
-    },
-    {
-      name: "Mailchimp Open Commerce", href: "/open-commerce",
-      desc: "Control your commerce future with a modular, API-first commerce stack.",
-      links: [["Guides", "/open-commerce/guides/quick-start"], ["Documentation", "/open-commerce/docs/fundamentals"], ["GraphQL Playground", "/open-commerce/playground"]]
     }
   ];
 

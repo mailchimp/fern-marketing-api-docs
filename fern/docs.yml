@@ -118,10 +118,6 @@ products:
     path: ./products/transactional.yml
     slug: transactional
     subtitle: Send targeted and event-driven messages to anyone, fast—with best-in-class deliverability.
-  - display-name: Mailchimp Open Commerce
-    path: ./products/open-commerce.yml
-    slug: open-commerce
-    subtitle: Control your commerce future with a modular, API-first commerce stack.
   - display-name: Tools
     path: ./products/tools.yml
     slug: tools

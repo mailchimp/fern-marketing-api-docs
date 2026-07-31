@@ -1,8 +1,0 @@
----
-title: Fixed image uploads
-tags: ["Open Commerce"]
----
-
-Uploading product images from the admin dashboard was consistently failing. We fixed a bug in the image-uploading pipeline between file collections, the image upload server, and the frontend code. 
-
-We discovered that upload failures were occurring when the process of writing the image data to GridFS finished and threw `undefined` errors that weren’t being properly handled. The event handlers now cover this case, allowing the image uploads to complete.

@@ -6,7 +6,7 @@
 (function () {
   var RE = /(^|\/)(blog|tools|release-notes)(\/|$)/;
   // product landing pages live at the exact product root (…/marketing, not …/marketing/guides)
-  var PROD_ROOT = /(^|\/)(marketing|transactional|open-commerce)$/;
+  var PROD_ROOT = /(^|\/)(marketing|transactional)$/;
   function apply() {
     var p = location.pathname.replace(/\/+$/, "");
     document.body.classList.toggle("mc-blog-route", RE.test(p) || PROD_ROOT.test(p));

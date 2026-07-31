@@ -863,7 +863,7 @@ header.fern-background-image { border-bottom: none !important; }
 .mc-switcher-panel.is-open { opacity: 1; visibility: visible; transform: none; }
 .mc-switcher-inner {
   max-width: 88rem; margin: 0 auto; padding: 48px 80px 56px;
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px;
+  display: grid; grid-template-columns: repeat(2, minmax(280px, 420px)); gap: 56px;
 }
 .mc-switcher-name {
   display: block; text-decoration: none !important;
