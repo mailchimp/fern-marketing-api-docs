@@ -1205,7 +1205,9 @@ header.fern-background-image { border-bottom: none !important; }
 }
 .mc-home-hero-copy {
   color: #3d535b; font-family: 'Graphik Web', Helvetica, Arial, sans-serif;
-  font-size: 22px; line-height: 1.5; margin: 0 !important;
+  font-size: 19px; line-height: 1.5; margin: 0 !important;
+  /* wrap at the same width as the hero title above it */
+  max-width: 475px;
 }
 .mc-home-hero-right { flex: 0 1 40%; display: flex; justify-content: flex-end; }
 .mc-home-hero-img { max-width: 440px; width: 100%; }
@@ -1240,7 +1242,7 @@ header.fern-background-image { border-bottom: none !important; }
 }
 .mc-home-product-title:hover { color: #e7b75f !important; }
 .mc-home-product-copy {
-  color: #96a8ad; font-family: 'Graphik Web', Helvetica, Arial, sans-serif;
+  color: #efeeea; font-family: 'Graphik Web', Helvetica, Arial, sans-serif;
   font-size: 20px; line-height: 1.5; margin: 0 0 4px 0 !important;
 }
 /* the links ARE the bullets: a plain vertical list (no divider lines, no stray prose bullet) */
@@ -1305,7 +1307,7 @@ header.fern-background-image { border-bottom: none !important; }
   font-size: 32px !important; font-weight: 300 !important; margin: 0 0 16px 0 !important;
 }
 .mc-home-stats-copy {
-  color: #96a8ad; font-family: 'Graphik Web', Helvetica, Arial, sans-serif;
+  color: #efeeea; font-family: 'Graphik Web', Helvetica, Arial, sans-serif;
   font-size: 19px; line-height: 1.55; max-width: 660px; margin: 0 0 52px 0 !important;
 }
 .mc-home-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
@@ -1314,7 +1316,7 @@ header.fern-background-image { border-bottom: none !important; }
   color: #00c14e; font-family: 'Means Web', Georgia, serif; font-size: 74px; font-weight: 300; line-height: 1.1; margin-bottom: 14px;
 }
 .mc-home-stat-copy {
-  color: #c7d0d2; font-family: 'Graphik Web', Helvetica, Arial, sans-serif; font-size: 18px; line-height: 1.5; margin: 0 !important;
+  color: #efeeea; font-family: 'Graphik Web', Helvetica, Arial, sans-serif; font-size: 18px; line-height: 1.5; margin: 0 !important;
 }
 
 /* Promos */
@@ -1335,7 +1337,7 @@ header.fern-background-image { border-bottom: none !important; }
 .mc-home-promo--dark .mc-home-promo-title { color: #efeeea !important; }
 .mc-home-promo-copy { font-family: 'Graphik Web', Helvetica, Arial, sans-serif; font-size: 20px; line-height: 1.55; margin: 0 0 30px 0 !important; max-width: 660px; }
 .mc-home-promo--light .mc-home-promo-copy { color: #3d535b; }
-.mc-home-promo--dark .mc-home-promo-copy { color: #96a8ad; }
+.mc-home-promo--dark .mc-home-promo-copy { color: #efeeea; }
 .mc-home-promo-btn {
   display: inline-block; background: #007c89; color: #efeeea !important;
   font-family: 'Graphik Web', Helvetica, Arial, sans-serif; font-size: 17px;
@@ -1365,7 +1367,7 @@ header.fern-background-image { border-bottom: none !important; }
 .mc-quote-text::before { content: open-quote; }
 .mc-quote-text::after { content: close-quote; }
 .mc-quote-author {
-  color: #96a8ad; font-family: 'Graphik Web', Helvetica, Arial, sans-serif;
+  color: #efeeea; font-family: 'Graphik Web', Helvetica, Arial, sans-serif;
   font-size: 15px; margin: 0 !important;
 }
 /* plain chevrons — no circle */
