@@ -4,3 +4,93 @@ api:
   specs:
     - openapi: openapi.json
       overrides: overrides.yml
+
+# Mailchimp Transactional API (Mandrill) SDKs — one group per language.
+# Standalone SDKs (separate from the Marketing SDKs) because the Transactional
+# API lives on a different host (mandrillapp.com/api/1.4) and authenticates with
+# an API `key` passed in the request body rather than the Marketing API's
+# bearer/oauth2 client auth. Each group publishes to its own
+# fern-demo/mailchimp-transactional-<lang>-sdk repo as a reviewable PR.
+groups:
+  typescript-sdk:
+    generators:
+      - name: fernapi/fern-typescript-sdk
+        version: 3.86.0
+        output:
+          location: npm
+          package-name: "@mailchimp/mailchimp-transactional"
+        github:
+          repository: fern-demo/mailchimp-transactional-typescript-sdk
+          mode: pull-request
+        config:
+          namespaceExport: MailchimpTransactional
+          allowCustomFetcher: true
+          skipResponseValidation: true
+          includeApiReference: true
+
+  python-sdk:
+    generators:
+      - name: fernapi/fern-python-sdk
+        version: 5.26.0
+        github:
+          repository: fern-demo/mailchimp-transactional-python-sdk
+          mode: pull-request
+
+  go-sdk:
+    generators:
+      - name: fernapi/fern-go-sdk
+        version: 1.55.0
+        github:
+          repository: fern-demo/mailchimp-transactional-go-sdk
+          mode: pull-request
+
+  java-sdk:
+    generators:
+      - name: fernapi/fern-java-sdk
+        version: 4.16.0
+        github:
+          repository: fern-demo/mailchimp-transactional-java-sdk
+          mode: pull-request
+
+  csharp-sdk:
+    generators:
+      - name: fernapi/fern-csharp-sdk
+        version: 2.80.0
+        github:
+          repository: fern-demo/mailchimp-transactional-csharp-sdk
+          mode: pull-request
+
+  php-sdk:
+    generators:
+      - name: fernapi/fern-php-sdk
+        version: 2.17.0
+        github:
+          repository: fern-demo/mailchimp-transactional-php-sdk
+          mode: pull-request
+        config:
+          clientName: MailchimpTransactionalClient
+          packageName: mailchimp/transactional-sdk
+
+  ruby-sdk:
+    generators:
+      - name: fernapi/fern-ruby-sdk
+        version: 1.21.0
+        github:
+          repository: fern-demo/mailchimp-transactional-ruby-sdk
+          mode: pull-request
+
+  swift-sdk:
+    generators:
+      - name: fernapi/fern-swift-sdk
+        version: 0.36.0
+        github:
+          repository: fern-demo/mailchimp-transactional-swift-sdk
+          mode: pull-request
+
+  rust-sdk:
+    generators:
+      - name: fernapi/fern-rust-sdk
+        version: 0.44.0
+        github:
+          repository: fern-demo/mailchimp-transactional-rust-sdk
+          mode: pull-request

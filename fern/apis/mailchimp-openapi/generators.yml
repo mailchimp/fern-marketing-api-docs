@@ -5,11 +5,15 @@ api:
     - openapi: openapi.json
       overrides: overrides.yml
 
+# Mailchimp Marketing API SDKs — one group per language.
+# Each group publishes to its own fern-demo/mailchimp-<lang>-sdk repo as a
+# reviewable PR (mode: pull-request). Auth (basic/oauth2), servers (us1..us22
+# datacenter variable), and pagination are configured in overrides.yml.
 groups:
   typescript-sdk:
     generators:
       - name: fernapi/fern-typescript-sdk
-        version: 3.60.9
+        version: 3.86.0
         output:
           location: npm
           package-name: "@mailchimp/mailchimp-marketing"
@@ -22,13 +26,69 @@ groups:
           skipResponseValidation: true
           includeApiReference: true
 
+  python-sdk:
+    generators:
+      - name: fernapi/fern-python-sdk
+        version: 5.26.0
+        github:
+          repository: fern-demo/mailchimp-python-sdk
+          mode: pull-request
+
+  go-sdk:
+    generators:
+      - name: fernapi/fern-go-sdk
+        version: 1.55.0
+        github:
+          repository: fern-demo/mailchimp-go-sdk
+          mode: pull-request
+
+  java-sdk:
+    generators:
+      - name: fernapi/fern-java-sdk
+        version: 4.16.0
+        github:
+          repository: fern-demo/mailchimp-java-sdk
+          mode: pull-request
+
+  csharp-sdk:
+    generators:
+      - name: fernapi/fern-csharp-sdk
+        version: 2.80.0
+        github:
+          repository: fern-demo/mailchimp-csharp-sdk
+          mode: pull-request
+
   php-sdk:
     generators:
       - name: fernapi/fern-php-sdk
-        version: 2.2.6
+        version: 2.17.0
         github:
           repository: fern-demo/mailchimp-php-sdk
           mode: pull-request
         config:
           clientName: MailchimpClient
           packageName: mailchimp/marketing-sdk
+
+  ruby-sdk:
+    generators:
+      - name: fernapi/fern-ruby-sdk
+        version: 1.21.0
+        github:
+          repository: fern-demo/mailchimp-ruby-sdk
+          mode: pull-request
+
+  swift-sdk:
+    generators:
+      - name: fernapi/fern-swift-sdk
+        version: 0.36.0
+        github:
+          repository: fern-demo/mailchimp-swift-sdk
+          mode: pull-request
+
+  rust-sdk:
+    generators:
+      - name: fernapi/fern-rust-sdk
+        version: 0.44.0
+        github:
+          repository: fern-demo/mailchimp-rust-sdk
+          mode: pull-request
