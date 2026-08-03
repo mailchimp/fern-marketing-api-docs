@@ -1529,3 +1529,103 @@ header.fern-background-image { border-bottom: none !important; }
   .mc-nav-wrap { display: none; }
   .mc-subnav { overflow-x: auto; }
 }
+
+/* =============================================
+   DOCS PARITY WITH mailchimp.com/developer
+   (bigger headings, sidebar product title, guides banner, landing sub-nav)
+============================================= */
+
+/* --- #2 Larger in-content headings ---------------------------------------
+   Real site: h1 ~50px light serif (Means), h2 ~30px medium (Graphik).
+   Scoped to Fern content layouts so the custom `layout: custom` landing
+   pages (which use their own .mc-hero-* classes) are untouched. */
+.fern-page-heading {
+  font-size: 3.15rem !important;   /* ~50px */
+  font-weight: 400 !important;      /* Means Light */
+  line-height: 1.05 !important;
+  letter-spacing: -0.01em;
+}
+.fern-layout-guide h2,
+.fern-layout-overview h2,
+.fern-layout-page h2,
+.fern-layout-reference h2 {
+  font-size: 1.875rem !important;   /* ~30px */
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+}
+.fern-layout-guide h3,
+.fern-layout-overview h3,
+.fern-layout-page h3,
+.fern-layout-reference h3 {
+  font-size: 1.4rem !important;     /* ~22px */
+  font-weight: 600 !important;
+}
+
+/* --- #1 Sidebar product title --------------------------------------------
+   Injected by mc-sidebar-product-title.js at the top of the sidebar; styled
+   as an uppercase monospace label like the real site's "MAILCHIMP MARKETING
+   API". */
+.mc-sidebar-product-title {
+  font-family: "Input Mono Regular", ui-monospace, monospace;
+  font-size: 0.8125rem;             /* ~13px */
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mc-text-muted, #96A8AD);
+  padding: 0.25rem 0 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+/* --- #3 Guides/Documentation banner --------------------------------------
+   Decorative binary-header banner above the page title on content pages,
+   mirroring the real site. Inlined as a data-URI (the repo's pattern for
+   CSS images) so it resolves in both `fern docs dev` and production. */
+.fern-layout-guide .fern-page-heading::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 150px;
+  margin-bottom: 1.75rem;
+  background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4ODAgMTYwIiBmaWxsPSJub25lIj48cmVjdCB4PSIxMiIgeT0iMTIiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgcng9IjIiIHN0cm9rZT0iIzE4MzIzQiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz48Y2lyY2xlIGN4PSI2NiIgY3k9IjIyIiByPSI2IiBmaWxsPSIjMTgzMjNCIiBvcGFjaXR5PSIwLjUiLz48cmVjdCB4PSIxMDAiIHk9IjEyIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHJ4PSIyIiBmaWxsPSIjMDA3Qzg5IiBvcGFjaXR5PSIwLjkiLz48bGluZSB4MT0iMTQ0IiB5MT0iMzIiIHgyPSIxNjQiIHkyPSIxMiIgc3Ryb2tlPSIjMTgzMjNCIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSIvPjxjaXJjbGUgY3g9IjE5OCIgY3k9IjIyIiByPSIxMCIgc3Ryb2tlPSIjMTgzMjNCIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSIvPjxyZWN0IHg9IjIzMiIgeT0iMTIiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgcng9IjIiIHN0cm9rZT0iIzE4MzIzQiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz48Y2lyY2xlIGN4PSIyODYiIGN5PSIyMiIgcj0iNiIgZmlsbD0iIzE4MzIzQiIgb3BhY2l0eT0iMC41Ii8+PHJlY3QgeD0iMzIwIiB5PSIxMiIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMiIgZmlsbD0iIzE4MzIzQiIgb3BhY2l0eT0iMC41Ii8+PGxpbmUgeDE9IjM2NCIgeTE9IjMyIiB4Mj0iMzg0IiB5Mj0iMTIiIHN0cm9rZT0iIzE4MzIzQiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz48Y2lyY2xlIGN4PSI0MTgiIGN5PSIyMiIgcj0iMTAiIHN0cm9rZT0iIzE4MzIzQiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz48cmVjdCB4PSI0NTIiIHk9IjEyIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHJ4PSIyIiBzdHJva2U9IiMxODMyM0IiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+PGNpcmNsZSBjeD0iNTA2IiBjeT0iMjIiIHI9IjYiIGZpbGw9IiMxODMyM0IiIG9wYWNpdHk9IjAuNSIvPjxyZWN0IHg9IjU0MCIgeT0iMTIiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgcng9IjIiIGZpbGw9IiMxODMyM0IiIG9wYWNpdHk9IjAuNSIvPjxsaW5lIHgxPSI1ODQiIHkxPSIzMiIgeDI9IjYwNCIgeTI9IjEyIiBzdHJva2U9IiMxODMyM0IiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+PGNpcmNsZSBjeD0iNjM4IiBjeT0iMjIiIHI9IjEwIiBzdHJva2U9IiMxODMyM0IiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+PHJlY3QgeD0iNjcyIiB5PSIxMiIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMiIgc3Ryb2tlPSIjMDA3Qzg5IiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuOSIvPjxjaXJjbGUgY3g9IjcyNiIgY3k9IjIyIiByPSI2IiBmaWxsPSIjMTgzMjNCIiBvcGFjaXR5PSIwLjUiLz48cmVjdCB4PSI3NjAiIHk9IjEyIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHJ4PSIyIiBmaWxsPSIjMTgzMjNCIiBvcGFjaXR5PSIwLjUiLz48bGluZSB4MT0iODA0IiB5MT0iMzIiIHgyPSI4MjQiIHkyPSIxMiIgc3Ryb2tlPSIjMTgzMjNCIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSIvPjxjaXJjbGUgY3g9Ijg1OCIgY3k9IjIyIiByPSIxMCIgc3Ryb2tlPSIjMTgzMjNCIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSIvPjxjaXJjbGUgY3g9IjIyIiBjeT0iNjYiIHI9IjEwIiBzdHJva2U9IiMxODMyM0IiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+PHJlY3QgeD0iNTYiIHk9IjU2IiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHJ4PSIyIiBzdHJva2U9IiMxODMyM0IiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+PGNpcmNsZSBjeD0iMTEwIiBjeT0iNjYiIHI9IjYiIGZpbGw9IiMxODMyM0IiIG9wYWNpdHk9IjAuNSIvPjxyZWN0IHg9IjE0NCIgeT0iNTYiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgcng9IjIiIGZpbGw9IiMxODMyM0IiIG9wYWNpdHk9IjAuNSIvPjxsaW5lIHgxPSIxODgiIHkxPSI3NiIgeDI9IjIwOCIgeTI9IjU2IiBzdHJva2U9IiMxODMyM0IiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+PGNpcmNsZSBjeD0iMjQyIiBjeT0iNjYiIHI9IjEwIiBzdHJva2U9IiMxODMyM0IiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+PHJlY3QgeD0iMjc2IiB5PSI1NiIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMiIgc3Ryb2tlPSIjMDA3Qzg5IiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuOSIvPjxjaXJjbGUgY3g9IjMzMCIgY3k9IjY2IiByPSI2IiBmaWxsPSIjMTgzMjNCIiBvcGFjaXR5PSIwLjUiLz48cmVjdCB4PSIzNjQiIHk9IjU2IiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHJ4PSIyIiBmaWxsPSIjMTgzMjNCIiBvcGFjaXR5PSIwLjUiLz48bGluZSB4MT0iNDA4IiB5MT0iNzYiIHgyPSI0MjgiIHkyPSI1NiIgc3Ryb2tlPSIjMTgzMjNCIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSIvPjxjaXJjbGUgY3g9IjQ2MiIgY3k9IjY2IiByPSIxMCIgc3Ryb2tlPSIjMTgzMjNCIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSIvPjxyZWN0IHg9IjQ5NiIgeT0iNTYiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgcng9IjIiIHN0cm9rZT0iIzE4MzIzQiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz48Y2lyY2xlIGN4PSI1NTAiIGN5PSI2NiIgcj0iNiIgZmlsbD0iIzE4MzIzQiIgb3BhY2l0eT0iMC41Ii8+PHJlY3QgeD0iNTg0IiB5PSI1NiIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMiIgZmlsbD0iIzAwN0M4OSIgb3BhY2l0eT0iMC45Ii8+PGxpbmUgeDE9IjYyOCIgeTE9Ijc2IiB4Mj0iNjQ4IiB5Mj0iNTYiIHN0cm9rZT0iIzE4MzIzQiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz48Y2lyY2xlIGN4PSI2ODIiIGN5PSI2NiIgcj0iMTAiIHN0cm9rZT0iIzE4MzIzQiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz48cmVjdCB4PSI3MTYiIHk9IjU2IiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHJ4PSIyIiBzdHJva2U9IiMxODMyM0IiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+PGNpcmNsZSBjeD0iNzcwIiBjeT0iNjYiIHI9IjYiIGZpbGw9IiMxODMyM0IiIG9wYWNpdHk9IjAuNSIvPjxyZWN0IHg9IjgwNCIgeT0iNTYiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgcng9IjIiIGZpbGw9IiMxODMyM0IiIG9wYWNpdHk9IjAuNSIvPjxsaW5lIHgxPSI4NDgiIHkxPSI3NiIgeDI9Ijg2OCIgeTI9IjU2IiBzdHJva2U9IiMxODMyM0IiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+PGxpbmUgeDE9IjEyIiB5MT0iMTIwIiB4Mj0iMzIiIHkyPSIxMDAiIHN0cm9rZT0iIzE4MzIzQiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz48Y2lyY2xlIGN4PSI2NiIgY3k9IjExMCIgcj0iMTAiIHN0cm9rZT0iIzE4MzIzQiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz48cmVjdCB4PSIxMDAiIHk9IjEwMCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMiIgc3Ryb2tlPSIjMTgzMjNCIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSIvPjxjaXJjbGUgY3g9IjE1NCIgY3k9IjExMCIgcj0iNiIgZmlsbD0iIzE4MzIzQiIgb3BhY2l0eT0iMC41Ii8+PHJlY3QgeD0iMTg4IiB5PSIxMDAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgcng9IjIiIGZpbGw9IiMxODMyM0IiIG9wYWNpdHk9IjAuNSIvPjxsaW5lIHgxPSIyMzIiIHkxPSIxMjAiIHgyPSIyNTIiIHkyPSIxMDAiIHN0cm9rZT0iIzE4MzIzQiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz48Y2lyY2xlIGN4PSIyODYiIGN5PSIxMTAiIHI9IjEwIiBzdHJva2U9IiMxODMyM0IiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+PHJlY3QgeD0iMzIwIiB5PSIxMDAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgcng9IjIiIHN0cm9rZT0iIzE4MzIzQiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz48Y2lyY2xlIGN4PSIzNzQiIGN5PSIxMTAiIHI9IjYiIGZpbGw9IiMxODMyM0IiIG9wYWNpdHk9IjAuNSIvPjxyZWN0IHg9IjQwOCIgeT0iMTAwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHJ4PSIyIiBmaWxsPSIjMTgzMjNCIiBvcGFjaXR5PSIwLjUiLz48bGluZSB4MT0iNDUyIiB5MT0iMTIwIiB4Mj0iNDcyIiB5Mj0iMTAwIiBzdHJva2U9IiMxODMyM0IiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+PGNpcmNsZSBjeD0iNTA2IiBjeT0iMTEwIiByPSIxMCIgc3Ryb2tlPSIjRTdCNzVGIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuOSIvPjxyZWN0IHg9IjU0MCIgeT0iMTAwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHJ4PSIyIiBzdHJva2U9IiMxODMyM0IiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+PGNpcmNsZSBjeD0iNTk0IiBjeT0iMTEwIiByPSI2IiBmaWxsPSIjMTgzMjNCIiBvcGFjaXR5PSIwLjUiLz48cmVjdCB4PSI2MjgiIHk9IjEwMCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMiIgZmlsbD0iIzE4MzIzQiIgb3BhY2l0eT0iMC41Ii8+PGxpbmUgeDE9IjY3MiIgeTE9IjEyMCIgeDI9IjY5MiIgeTI9IjEwMCIgc3Ryb2tlPSIjMTgzMjNCIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSIvPjxjaXJjbGUgY3g9IjcyNiIgY3k9IjExMCIgcj0iMTAiIHN0cm9rZT0iIzE4MzIzQiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjUiLz48cmVjdCB4PSI3NjAiIHk9IjEwMCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMiIgc3Ryb2tlPSIjMTgzMjNCIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSIvPjxjaXJjbGUgY3g9IjgxNCIgY3k9IjExMCIgcj0iNiIgZmlsbD0iIzE4MzIzQiIgb3BhY2l0eT0iMC41Ii8+PHJlY3QgeD0iODQ4IiB5PSIxMDAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgcng9IjIiIGZpbGw9IiMxODMyM0IiIG9wYWNpdHk9IjAuNSIvPjwvc3ZnPg==") left center / cover no-repeat;
+}
+
+/* --- #4 Product-landing secondary nav (under the hero) -------------------- */
+.mc-landing-nav {
+  border-bottom: 1px solid var(--mc-dark-border, #18323B);
+}
+.mc-landing-nav-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+  list-style: none !important;
+  list-style-type: none !important;
+  margin: 0;
+  padding: 0.25rem 0 0;
+}
+.mc-landing-nav-list > li {
+  list-style: none !important;
+  list-style-type: none !important;
+  margin: 0;
+}
+.mc-landing-nav-list > li::marker {
+  content: "" !important;
+}
+.mc-landing-nav-link {
+  display: inline-block;
+  padding: 0.85rem 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: inherit;            /* follow the landing's theme-aware text color */
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  opacity: 0.7;
+  transition: opacity 0.15s ease, border-color 0.15s ease;
+}
+.mc-landing-nav-link:hover { opacity: 1; }
+.mc-landing-nav-link.is-active {
+  opacity: 1;
+  border-bottom-color: var(--mc-yellow, #E7B75F);
+}
+@media (max-width: 768px) {
+  .mc-landing-nav-list { gap: 1.5rem; overflow-x: auto; }
+}
