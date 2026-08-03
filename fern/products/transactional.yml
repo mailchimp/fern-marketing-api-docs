@@ -73,4 +73,12 @@ navigation:
       - api: Mailchimp Transactional API
         api-name: mailchimp-transactional-openapi
         skip-slug: true
+        snippets:
+          typescript: "@mailchimp/mailchimp-transactional"
+          python: mailchimp-transactional
+          go: github.com/fern-demo/mailchimp-transactional-go-sdk
+          java: com.mailchimp:mailchimp-transactional
+          csharp: Mailchimp.Transactional
+          ruby: mailchimp-transactional
+          php: mailchimp/transactional-sdk
         paginated: true

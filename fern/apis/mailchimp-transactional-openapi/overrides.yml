@@ -70,3 +70,42 @@ paths:
   /exports/whitelist:
     post:
       summary: Export allowlist (legacy)
+
+# --- Response typing fixes (tighten loose schemas -> concrete SDK types) ---
+# The source spec models InboundSendRawResponse as oneOf[typed array, {untyped
+# "null" branch}]. The untyped branch makes generators fall back to a loose type
+# (`unknown` in TS, `mixed` in PHP) — and PHP unions it to the illegal
+# `mixed|null` at InboundClient::sendRaw(), which breaks the PHP build. Replace
+# the oneOf with the single typed array branch so every SDK emits a concrete
+# return type (a nullable array of matched-route results).
+components:
+  schemas:
+    InboundSendRawResponse:
+      description: >-
+        Array of processing results showing matched routes (empty or absent when
+        no recipients are processed or the message is invalid).
+      # Fern overrides merge oneOf element-wise, so we re-state both branches:
+      # [0] the typed array of matched-route results, and [1] the "no results"
+      # branch retyped from an untyped object (-> `unknown`/`mixed`) to an
+      # explicit `null`, yielding a clean nullable array in every SDK.
+      oneOf:
+        - type: array
+          items:
+            type: object
+            required:
+              - email
+              - pattern
+              - url
+            properties:
+              email:
+                type: string
+                format: email
+                description: The email address that was processed.
+              pattern:
+                type: string
+                description: The route pattern that matched this email.
+              url:
+                type: string
+                format: uri
+                description: The webhook URL where this message was sent.
+        - type: "null"

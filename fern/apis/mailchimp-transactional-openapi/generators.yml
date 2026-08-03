@@ -11,11 +11,13 @@ api:
 # an API `key` passed in the request body rather than the Marketing API's
 # bearer/oauth2 client auth. Each group publishes to its own
 # fern-demo/mailchimp-transactional-<lang>-sdk repo as a reviewable PR.
+# Distinct package/client names avoid colliding with the Marketing SDKs.
 groups:
   typescript-sdk:
     generators:
       - name: fernapi/fern-typescript-sdk
         version: 3.86.0
+        smart-casing: true
         output:
           location: npm
           package-name: "@mailchimp/mailchimp-transactional"
@@ -32,38 +34,54 @@ groups:
     generators:
       - name: fernapi/fern-python-sdk
         version: 5.26.0
+        smart-casing: true
         github:
           repository: fern-demo/mailchimp-transactional-python-sdk
           mode: pull-request
+        config:
+          package_name: mailchimp_transactional
+          client_class_name: MailchimpTransactionalClient
 
   go-sdk:
     generators:
       - name: fernapi/fern-go-sdk
         version: 1.55.0
+        smart-casing: true
         github:
           repository: fern-demo/mailchimp-transactional-go-sdk
           mode: pull-request
+        config:
+          clientName: MailchimpTransactionalClient
 
   java-sdk:
     generators:
       - name: fernapi/fern-java-sdk
         version: 4.16.0
+        smart-casing: true
         github:
           repository: fern-demo/mailchimp-transactional-java-sdk
           mode: pull-request
+        config:
+          client-class-name: MailchimpTransactionalClient
+          package-prefix: com.mailchimp.transactional
 
   csharp-sdk:
     generators:
       - name: fernapi/fern-csharp-sdk
         version: 2.80.0
+        smart-casing: true
         github:
           repository: fern-demo/mailchimp-transactional-csharp-sdk
           mode: pull-request
+        config:
+          namespace: Mailchimp.Transactional
+          client-class-name: MailchimpTransactionalClient
 
   php-sdk:
     generators:
       - name: fernapi/fern-php-sdk
         version: 2.17.0
+        smart-casing: true
         github:
           repository: fern-demo/mailchimp-transactional-php-sdk
           mode: pull-request
@@ -75,22 +93,33 @@ groups:
     generators:
       - name: fernapi/fern-ruby-sdk
         version: 1.21.0
+        smart-casing: true
         github:
           repository: fern-demo/mailchimp-transactional-ruby-sdk
           mode: pull-request
+        config:
+          moduleName: MailchimpTransactional
 
   swift-sdk:
     generators:
       - name: fernapi/fern-swift-sdk
         version: 0.36.0
+        smart-casing: true
         github:
           repository: fern-demo/mailchimp-transactional-swift-sdk
           mode: pull-request
+        config:
+          clientClassName: MailchimpTransactionalClient
+          moduleName: MailchimpTransactional
 
   rust-sdk:
     generators:
       - name: fernapi/fern-rust-sdk
         version: 0.44.0
+        smart-casing: true
         github:
           repository: fern-demo/mailchimp-transactional-rust-sdk
           mode: pull-request
+        config:
+          crateName: mailchimp_transactional
+          clientClassName: MailchimpTransactionalClient

@@ -545,9 +545,15 @@ paths:
   /3.0/lists/{list_id}/surveys:
     get:
       x-fern-sdk-method-name: list-surveys
+    post:
+      x-fern-sdk-method-name: create-survey
   /3.0/lists/{list_id}/surveys/{survey_id}:
     get:
       x-fern-sdk-method-name: get-survey
+    patch:
+      x-fern-sdk-method-name: update-survey
+    delete:
+      x-fern-sdk-method-name: delete-survey
   /3.0/lists/{list_id}/surveys/{survey_id}/actions/create-email:
     post:
       x-fern-sdk-method-name: create-list-survey-action-create-email
@@ -726,3 +732,33 @@ paths:
   /3.0/verified-domains/{domain_name}/actions/verify:
     post:
       x-fern-sdk-method-name: create-action-verify
+  /3.0/lists/{list_id}/surveys/{survey_id}/actions/replicate:
+    post:
+      x-fern-sdk-method-name: create-list-survey-action-replicate
+  # SMS Campaigns group (added to the spec after this file was first authored).
+  /3.0/sms-campaigns:
+    get:
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-method-name: create
+  /3.0/sms-campaigns/{sms_campaign_id}:
+    get:
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-method-name: update
+    delete:
+      x-fern-sdk-method-name: delete
+  /3.0/sms-campaigns/{sms_campaign_id}/actions/cancel-send:
+    post:
+      x-fern-sdk-method-name: create-action-cancel-send
+  /3.0/sms-campaigns/{sms_campaign_id}/actions/schedule:
+    post:
+      x-fern-sdk-method-name: create-action-schedule
+  /3.0/sms-campaigns/{sms_campaign_id}/actions/send:
+    post:
+      x-fern-sdk-method-name: create-action-send
+  /3.0/sms-campaigns/{sms_campaign_id}/content:
+    get:
+      x-fern-sdk-method-name: get-content
+    put:
+      x-fern-sdk-method-name: upsert-content

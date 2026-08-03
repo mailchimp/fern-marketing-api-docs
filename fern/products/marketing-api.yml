@@ -71,5 +71,10 @@ navigation:
         skip-slug: true
         snippets:
           typescript: "@mailchimp/mailchimp-marketing"
-          php: mailchimp/marketing
+          python: mailchimp-marketing
+          go: github.com/fern-demo/mailchimp-go-sdk
+          java: com.mailchimp:mailchimp-marketing
+          csharp: Mailchimp.Marketing
+          ruby: mailchimp-marketing
+          php: mailchimp/marketing-sdk
         paginated: true
