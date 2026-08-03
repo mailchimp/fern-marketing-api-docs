@@ -97,8 +97,8 @@ groups:
         github:
           repository: fern-demo/mailchimp-transactional-ruby-sdk
           mode: pull-request
-        config:
-          moduleName: MailchimpTransactional
+        # No moduleName override — see the Marketing Ruby group note (explicit
+        # moduleName breaks the rubocop Naming/FileName lint on the entry file).
 
   swift-sdk:
     generators:

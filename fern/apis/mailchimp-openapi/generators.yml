@@ -101,8 +101,11 @@ groups:
         github:
           repository: fern-demo/mailchimp-ruby-sdk
           mode: pull-request
-        config:
-          moduleName: Mailchimp
+        # NOTE: no moduleName override — setting it makes the generator name the
+        # entry file after the module verbatim (lib/Mailchimp.rb) instead of
+        # snake_case (lib/mailchimp.rb), which fails the generated rubocop
+        # Naming/FileName lint. The gem name + repo already differentiate the two
+        # Ruby SDKs. (Filed as an upstream generator bug.)
 
   swift-sdk:
     generators:
