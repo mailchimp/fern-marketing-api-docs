@@ -39,6 +39,7 @@ jobs:
     needs: prepare
     runs-on: ubuntu-latest
     strategy:
+      max-parallel: 4
       fail-fast: false
       matrix:
         group: ${{ fromJSON(needs.prepare.outputs.matrix) }}
@@ -57,4 +58,4 @@ jobs:
       - name: Generate ${{ matrix.group }}
         env:
           FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
-        run: fern generate --api mailchimp-transactional-openapi --group ${{ matrix.group }} --log-level debug
+        run: fern generate --api mailchimp-transactional-openapi --group ${{ matrix.group }} --retry-rate-limited --log-level debug
