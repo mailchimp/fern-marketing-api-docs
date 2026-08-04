@@ -1220,7 +1220,11 @@ header.fern-background-image { border-bottom: none !important; }
   height: 30px;
   width: 30px;
   object-fit: contain;
-  filter: brightness(0) invert(1);
+  /* show the real brand-colored logos (no white-silhouette filter) */
+}
+/* Rust's logo is black — invert it so it reads on the dark card. */
+.mc-tools-card-logo[src*="rust"] {
+  filter: invert(1);
 }
 .mc-tools-card-label {
   color: #efeeea;
@@ -1371,8 +1375,9 @@ header.fern-background-image { border-bottom: none !important; }
 .mc-home-products .mc-gh-pill { color: #efeeea !important; border-color: rgba(239, 238, 234, 0.28); }
 .mc-home-products .mc-gh-pill:hover { border-color: rgba(239, 238, 234, 0.55); }
 
-/* sharp-cornered buttons (match live) */
-.mc-hero-button, .mc-bottom-button, .mc-home-promo-btn, .mc-tools-intg-btn, .mc-tools-card { border-radius: 0 !important; }
+/* Rounded buttons to match the MCDS button style (per design audit). */
+.mc-hero-button, .mc-bottom-button, .mc-home-promo-btn, .mc-tools-intg-btn { border-radius: 8px !important; }
+.mc-tools-card { border-radius: 4px !important; }
 
 /* product-landing hero blurbs (Open Commerce) — light band continuing the hero */
 .mc-lp-blurbs { background: #efeeea; padding: 8px 0 76px; }

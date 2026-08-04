@@ -66,19 +66,15 @@ navigation:
         path: ../docs/pages/transactional/documentation/webhooks.mdx
       - page: Transactional SMS
         path: ../docs/pages/transactional/documentation/transactional-sms.mdx
-  - section: API Reference
+  - api: API Reference
+    api-name: mailchimp-transactional-openapi
     slug: api
-    collapsed: true
-    contents:
-      - api: Mailchimp Transactional API
-        api-name: mailchimp-transactional-openapi
-        skip-slug: true
-        snippets:
-          typescript: "@mailchimp/mailchimp-transactional"
-          python: mailchimp-transactional
-          go: github.com/fern-demo/mailchimp-transactional-go-sdk
-          java: com.mailchimp:mailchimp-transactional
-          csharp: Mailchimp.Transactional
-          ruby: mailchimp-transactional
-          php: mailchimp/transactional-sdk
-        paginated: true
+    snippets:
+      typescript: "@mailchimp/mailchimp-transactional"
+      python: mailchimp-transactional
+      go: github.com/fern-demo/mailchimp-transactional-go-sdk
+      java: com.mailchimp:mailchimp-transactional
+      csharp: Mailchimp.Transactional
+      ruby: mailchimp-transactional
+      php: mailchimp/transactional-sdk
+    paginated: true

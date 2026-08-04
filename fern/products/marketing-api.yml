@@ -62,19 +62,15 @@ navigation:
         slug: audiences-introduction
       - page: Account Exports
         path: ../docs/pages/documentation/account-exports.mdx
-  - section: API Reference
+  - api: API Reference
+    api-name: mailchimp-openapi
     slug: api
-    collapsed: true
-    contents:
-      - api: Mailchimp API
-        api-name: mailchimp-openapi
-        skip-slug: true
-        snippets:
-          typescript: "@mailchimp/mailchimp-marketing"
-          python: mailchimp-marketing
-          go: github.com/fern-demo/mailchimp-go-sdk
-          java: com.mailchimp:mailchimp-marketing
-          csharp: Mailchimp.Marketing
-          ruby: mailchimp-marketing
-          php: mailchimp/marketing-sdk
-        paginated: true
+    snippets:
+      typescript: "@mailchimp/mailchimp-marketing"
+      python: mailchimp-marketing
+      go: github.com/fern-demo/mailchimp-go-sdk
+      java: com.mailchimp:mailchimp-marketing
+      csharp: Mailchimp.Marketing
+      ruby: mailchimp-marketing
+      php: mailchimp/marketing-sdk
+    paginated: true
