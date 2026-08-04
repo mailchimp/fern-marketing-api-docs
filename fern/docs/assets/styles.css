@@ -1287,7 +1287,7 @@ header.fern-background-image { border-bottom: none !important; }
 .mc-home a { pointer-events: auto; }
 
 /* Hero (light) */
-.mc-home-hero { background: #efeeea; padding: 56px 0 64px; }
+.mc-home-hero { background: #efeeea; padding: 36px 0 40px; }
 .mc-home-hero-inner { display: flex; align-items: center; justify-content: space-between; gap: 48px; }
 .mc-home-hero-left { flex: 1 1 55%; max-width: 620px; }
 .mc-home-hero-title {
@@ -1304,7 +1304,7 @@ header.fern-background-image { border-bottom: none !important; }
   max-width: 475px;
 }
 .mc-home-hero-right { flex: 0 1 40%; display: flex; justify-content: flex-end; }
-.mc-home-hero-img { max-width: 440px; width: 100%; }
+.mc-home-hero-img { max-width: 300px; width: 100%; }
 
 /* Product overview (dark) — card separation: vertical rule between the two,
    horizontal rule above the full-width Open Commerce card */
