@@ -121,6 +121,17 @@
   padding: 2.5em 3em;
   width: 100%;
 }
+/* Fern 5.89 caps the header content at page-width (max-w-page / 88rem) and it
+   ends up left-aligned inside our full-width custom header. Uncap it so the
+   header items span the full header width again. */
+.mc-header .width-before-scroll-bar,
+.mc-header .fern-header-content,
+.mc-header .fern-header-content [class*="max-w-page"],
+.mc-header .fern-header-content > * {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
 .mc-desktop-logo-wrap {
   display: flex;
   height: 40px;
