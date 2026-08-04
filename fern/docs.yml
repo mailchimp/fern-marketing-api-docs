@@ -38,7 +38,7 @@ layout:
   searchbar-placement: header
   page-width: 88rem
   content-width: 46rem
-  tabs-placement: sidebar
+  tabs-placement: header
 
 logo:
   light: ./assets/mc-logo-mobile-dark.svg

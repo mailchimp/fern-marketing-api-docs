@@ -1603,6 +1603,11 @@ header.fern-background-image { border-bottom: none !important; }
 }
 
 /* --- #4 Product-landing secondary nav (under the hero) -------------------- */
+/* On the Overview landing pages, hide the header tab bar — the under-hero nav
+   below already provides Overview/Guides/Documentation/API Reference. */
+body:has(.mc-landing-nav) .fern-header-tabs {
+  display: none !important;
+}
 .mc-landing-nav {
   border-bottom: 1px solid var(--mc-dark-border, #18323B);
 }

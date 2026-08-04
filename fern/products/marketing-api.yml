@@ -1,13 +1,31 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/product-yml.schema.json
 
-navigation:
-  - page: Overview
-    path: ../docs/pages/marketing/landing.mdx
-    slug: ""
-  - section: Guides
+# Header tabs (docs.yml layout.tabs-placement: header): Overview / Guides /
+# Documentation / API Reference render as a horizontal bar below the header.
+# Slugs live on the tab DEFINITIONS (not the `- tab:` nav items) so URLs stay
+# /marketing, /marketing/guides/*, /marketing/docs/*, /marketing/api/*.
+tabs:
+  overview:
+    display-name: Overview
+    skip-slug: true
+  guides:
+    display-name: Guides
     slug: guides
-    collapsed: true
-    contents:
+  documentation:
+    display-name: Documentation
+    slug: docs
+  api:
+    display-name: API Reference
+    slug: api
+
+navigation:
+  - tab: overview
+    layout:
+      - page: Overview
+        path: ../docs/pages/marketing/landing.mdx
+        slug: ""
+  - tab: guides
+    layout:
       - page: Marketing API Quick Start
         path: ../docs/pages/welcome.mdx
         slug: quick-start
@@ -33,10 +51,8 @@ navigation:
       - page: Create a Webhook for Customer Journey Builder or Campaign Manager
         path: ../docs/pages/guides/create-webhook-customer-journey.mdx
         slug: create-webhook-customer-journey-builder-campaign-manager
-  - section: Documentation
-    slug: docs
-    collapsed: true
-    contents:
+  - tab: documentation
+    layout:
       - page: Fundamentals
         path: ../docs/pages/documentation/fundamentals.mdx
       - page: Methods and Parameters
@@ -62,15 +78,17 @@ navigation:
         slug: audiences-introduction
       - page: Account Exports
         path: ../docs/pages/documentation/account-exports.mdx
-  - api: API Reference
-    api-name: mailchimp-openapi
-    slug: api
-    snippets:
-      typescript: "@mailchimp/mailchimp-marketing"
-      python: mailchimp-marketing
-      go: github.com/fern-demo/mailchimp-go-sdk
-      java: com.mailchimp:mailchimp-marketing
-      csharp: Mailchimp.Marketing
-      ruby: mailchimp-marketing
-      php: mailchimp/marketing-sdk
-    paginated: true
+  - tab: api
+    layout:
+      - api: API Reference
+        api-name: mailchimp-openapi
+        skip-slug: true
+        paginated: true
+        snippets:
+          typescript: "@mailchimp/mailchimp-marketing"
+          python: mailchimp-marketing
+          go: github.com/fern-demo/mailchimp-go-sdk
+          java: com.mailchimp:mailchimp-marketing
+          csharp: Mailchimp.Marketing
+          ruby: mailchimp-marketing
+          php: mailchimp/marketing-sdk
