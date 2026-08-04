@@ -27,7 +27,7 @@ ai-search:
   location:
     - docs
 ai-examples:
-  enabled: false
+  enabled: true
 
 landing-page:
   page: Welcome
