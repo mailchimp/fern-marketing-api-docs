@@ -1619,6 +1619,19 @@ header.fern-background-image { border-bottom: none !important; }
 body:has(.mc-landing-nav) .fern-header-tabs {
   display: none !important;
 }
+/* Hide the header tab bar when a product has just one tab (Tools, Release
+   Notes, Blog) — a lone tab is a redundant nav header. */
+.fern-header-tabs:has([role="tablist"] > a[role="tab"]:only-child) {
+  display: none !important;
+}
+
+/* Landing pages: headings are display text, not clickable anchor links
+   (Fern makes headings anchor links; remove that behavior on the landings). */
+.mc-home :is(h1, h2, h3, h4, h5, h6),
+.mc-landing-page :is(h1, h2, h3, h4, h5, h6) {
+  cursor: default !important;
+  pointer-events: none !important;
+}
 .mc-landing-nav {
   border-bottom: 1px solid var(--mc-dark-border, #18323B);
 }
