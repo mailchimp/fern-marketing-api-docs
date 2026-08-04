@@ -1,0 +1,763 @@
+# Auto-generated: group every operation by its tag so the API reference
+# nav (and SDKs) organize endpoints into sections instead of a flat list.
+# Group id = the operation's tag; Fern renders it via the tag x-displayName.
+paths:
+  /3.0/:
+    get:
+      x-fern-sdk-group-name: root
+  /3.0/account-exports:
+    get:
+      x-fern-sdk-group-name: account-exports
+    post:
+      x-fern-sdk-group-name: account-exports
+  /3.0/account-exports/{export_id}:
+    get:
+      x-fern-sdk-group-name: account-exports
+  /3.0/activity-feed:
+    get:
+      x-fern-sdk-group-name: activity-feed
+  /3.0/activity-feed/chimp-chatter:
+    get:
+      x-fern-sdk-group-name: activity-feed
+  /3.0/authorized-apps:
+    get:
+      x-fern-sdk-group-name: authorized-apps
+  /3.0/authorized-apps/{app_id}:
+    get:
+      x-fern-sdk-group-name: authorized-apps
+  /3.0/automations:
+    get:
+      x-fern-sdk-group-name: automations
+    post:
+      x-fern-sdk-group-name: automations
+  /3.0/automations/{workflow_id}:
+    get:
+      x-fern-sdk-group-name: automations
+  /3.0/automations/{workflow_id}/actions/archive:
+    post:
+      x-fern-sdk-group-name: automations
+  /3.0/automations/{workflow_id}/actions/pause-all-emails:
+    post:
+      x-fern-sdk-group-name: automations
+  /3.0/automations/{workflow_id}/actions/start-all-emails:
+    post:
+      x-fern-sdk-group-name: automations
+  /3.0/automations/{workflow_id}/emails:
+    get:
+      x-fern-sdk-group-name: automations
+  /3.0/automations/{workflow_id}/emails/{workflow_email_id}:
+    get:
+      x-fern-sdk-group-name: automations
+    patch:
+      x-fern-sdk-group-name: automations
+    delete:
+      x-fern-sdk-group-name: automations
+  /3.0/automations/{workflow_id}/emails/{workflow_email_id}/actions/pause:
+    post:
+      x-fern-sdk-group-name: automations
+  /3.0/automations/{workflow_id}/emails/{workflow_email_id}/actions/start:
+    post:
+      x-fern-sdk-group-name: automations
+  /3.0/automations/{workflow_id}/emails/{workflow_email_id}/queue:
+    get:
+      x-fern-sdk-group-name: automations
+    post:
+      x-fern-sdk-group-name: automations
+  /3.0/automations/{workflow_id}/emails/{workflow_email_id}/queue/{subscriber_hash}:
+    get:
+      x-fern-sdk-group-name: automations
+  /3.0/automations/{workflow_id}/removed-subscribers:
+    get:
+      x-fern-sdk-group-name: automations
+    post:
+      x-fern-sdk-group-name: automations
+  /3.0/automations/{workflow_id}/removed-subscribers/{subscriber_hash}:
+    get:
+      x-fern-sdk-group-name: automations
+  /3.0/batch-webhooks:
+    get:
+      x-fern-sdk-group-name: batch-webhooks
+    post:
+      x-fern-sdk-group-name: batch-webhooks
+  /3.0/batch-webhooks/{batch_webhook_id}:
+    get:
+      x-fern-sdk-group-name: batch-webhooks
+    patch:
+      x-fern-sdk-group-name: batch-webhooks
+    delete:
+      x-fern-sdk-group-name: batch-webhooks
+  /3.0/batches:
+    get:
+      x-fern-sdk-group-name: batches
+    post:
+      x-fern-sdk-group-name: batches
+  /3.0/batches/{batch_id}:
+    get:
+      x-fern-sdk-group-name: batches
+    delete:
+      x-fern-sdk-group-name: batches
+  /3.0/campaign-folders:
+    get:
+      x-fern-sdk-group-name: campaign-folders
+    post:
+      x-fern-sdk-group-name: campaign-folders
+  /3.0/campaign-folders/{folder_id}:
+    get:
+      x-fern-sdk-group-name: campaign-folders
+    patch:
+      x-fern-sdk-group-name: campaign-folders
+    delete:
+      x-fern-sdk-group-name: campaign-folders
+  /3.0/campaigns:
+    get:
+      x-fern-sdk-group-name: campaigns
+    post:
+      x-fern-sdk-group-name: campaigns
+  /3.0/campaigns/{campaign_id}:
+    get:
+      x-fern-sdk-group-name: campaigns
+    patch:
+      x-fern-sdk-group-name: campaigns
+    delete:
+      x-fern-sdk-group-name: campaigns
+  /3.0/campaigns/{campaign_id}/actions/cancel-send:
+    post:
+      x-fern-sdk-group-name: campaigns
+  /3.0/campaigns/{campaign_id}/actions/create-resend:
+    post:
+      x-fern-sdk-group-name: campaigns
+  /3.0/campaigns/{campaign_id}/actions/pause:
+    post:
+      x-fern-sdk-group-name: campaigns
+  /3.0/campaigns/{campaign_id}/actions/replicate:
+    post:
+      x-fern-sdk-group-name: campaigns
+  /3.0/campaigns/{campaign_id}/actions/resume:
+    post:
+      x-fern-sdk-group-name: campaigns
+  /3.0/campaigns/{campaign_id}/actions/schedule:
+    post:
+      x-fern-sdk-group-name: campaigns
+  /3.0/campaigns/{campaign_id}/actions/send:
+    post:
+      x-fern-sdk-group-name: campaigns
+  /3.0/campaigns/{campaign_id}/actions/test:
+    post:
+      x-fern-sdk-group-name: campaigns
+  /3.0/campaigns/{campaign_id}/actions/unschedule:
+    post:
+      x-fern-sdk-group-name: campaigns
+  /3.0/campaigns/{campaign_id}/content:
+    get:
+      x-fern-sdk-group-name: campaigns
+    put:
+      x-fern-sdk-group-name: campaigns
+  /3.0/campaigns/{campaign_id}/feedback:
+    get:
+      x-fern-sdk-group-name: campaigns
+    post:
+      x-fern-sdk-group-name: campaigns
+  /3.0/campaigns/{campaign_id}/feedback/{feedback_id}:
+    get:
+      x-fern-sdk-group-name: campaigns
+    patch:
+      x-fern-sdk-group-name: campaigns
+    delete:
+      x-fern-sdk-group-name: campaigns
+  /3.0/campaigns/{campaign_id}/send-checklist:
+    get:
+      x-fern-sdk-group-name: campaigns
+  /3.0/connected-sites:
+    get:
+      x-fern-sdk-group-name: connected-sites
+    post:
+      x-fern-sdk-group-name: connected-sites
+  /3.0/connected-sites/{connected_site_id}:
+    get:
+      x-fern-sdk-group-name: connected-sites
+    delete:
+      x-fern-sdk-group-name: connected-sites
+  /3.0/connected-sites/{connected_site_id}/actions/verify-script-installation:
+    post:
+      x-fern-sdk-group-name: connected-sites
+  /3.0/conversations:
+    get:
+      x-fern-sdk-group-name: conversations
+  /3.0/conversations/{conversation_id}:
+    get:
+      x-fern-sdk-group-name: conversations
+  /3.0/conversations/{conversation_id}/messages:
+    get:
+      x-fern-sdk-group-name: conversations
+  /3.0/conversations/{conversation_id}/messages/{message_id}:
+    get:
+      x-fern-sdk-group-name: conversations
+  /3.0/customer-journeys/journeys/{journey_id}/steps/{step_id}/actions/trigger:
+    post:
+      x-fern-sdk-group-name: customer-journeys
+  /3.0/ecommerce:
+    get:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/orders:
+    get:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    post:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    patch:
+      x-fern-sdk-group-name: ecommerce
+    delete:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/carts:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    post:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/carts/{cart_id}:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    patch:
+      x-fern-sdk-group-name: ecommerce
+    delete:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/carts/{cart_id}/lines:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    post:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/carts/{cart_id}/lines/{line_id}:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    patch:
+      x-fern-sdk-group-name: ecommerce
+    delete:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/customers:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    post:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/customers/{customer_id}:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    put:
+      x-fern-sdk-group-name: ecommerce
+    patch:
+      x-fern-sdk-group-name: ecommerce
+    delete:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/orders:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    post:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/orders/{order_id}:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    patch:
+      x-fern-sdk-group-name: ecommerce
+    delete:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/orders/{order_id}/lines:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    post:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/orders/{order_id}/lines/{line_id}:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    patch:
+      x-fern-sdk-group-name: ecommerce
+    delete:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/products:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    post:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/products/{product_id}:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    put:
+      x-fern-sdk-group-name: ecommerce
+    patch:
+      x-fern-sdk-group-name: ecommerce
+    delete:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/products/{product_id}/images:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    post:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/products/{product_id}/images/{image_id}:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    patch:
+      x-fern-sdk-group-name: ecommerce
+    delete:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/products/{product_id}/variants:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    post:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/products/{product_id}/variants/{variant_id}:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    put:
+      x-fern-sdk-group-name: ecommerce
+    patch:
+      x-fern-sdk-group-name: ecommerce
+    delete:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/promo-rules:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    post:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    patch:
+      x-fern-sdk-group-name: ecommerce
+    delete:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    post:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes/{promo_code_id}:
+    get:
+      x-fern-sdk-group-name: ecommerce
+    patch:
+      x-fern-sdk-group-name: ecommerce
+    delete:
+      x-fern-sdk-group-name: ecommerce
+  /3.0/facebook-ads:
+    get:
+      x-fern-sdk-group-name: facebook-ads
+  /3.0/facebook-ads/{outreach_id}:
+    get:
+      x-fern-sdk-group-name: facebook-ads
+  /3.0/file-manager:
+    get:
+      x-fern-sdk-group-name: file-manager
+  /3.0/file-manager/files:
+    get:
+      x-fern-sdk-group-name: file-manager
+    post:
+      x-fern-sdk-group-name: file-manager
+  /3.0/file-manager/files/{file_id}:
+    get:
+      x-fern-sdk-group-name: file-manager
+    patch:
+      x-fern-sdk-group-name: file-manager
+    delete:
+      x-fern-sdk-group-name: file-manager
+  /3.0/file-manager/folders:
+    get:
+      x-fern-sdk-group-name: file-manager
+    post:
+      x-fern-sdk-group-name: file-manager
+  /3.0/file-manager/folders/{folder_id}:
+    get:
+      x-fern-sdk-group-name: file-manager
+    patch:
+      x-fern-sdk-group-name: file-manager
+    delete:
+      x-fern-sdk-group-name: file-manager
+  /3.0/file-manager/folders/{folder_id}/files:
+    get:
+      x-fern-sdk-group-name: file-manager
+  /3.0/landing-pages:
+    get:
+      x-fern-sdk-group-name: landing-pages
+    post:
+      x-fern-sdk-group-name: landing-pages
+  /3.0/landing-pages/{page_id}:
+    get:
+      x-fern-sdk-group-name: landing-pages
+    patch:
+      x-fern-sdk-group-name: landing-pages
+    delete:
+      x-fern-sdk-group-name: landing-pages
+  /3.0/landing-pages/{page_id}/actions/publish:
+    post:
+      x-fern-sdk-group-name: landing-pages
+  /3.0/landing-pages/{page_id}/actions/unpublish:
+    post:
+      x-fern-sdk-group-name: landing-pages
+  /3.0/landing-pages/{page_id}/content:
+    get:
+      x-fern-sdk-group-name: landing-pages
+  /3.0/lists:
+    get:
+      x-fern-sdk-group-name: lists
+    post:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}:
+    get:
+      x-fern-sdk-group-name: lists
+    post:
+      x-fern-sdk-group-name: lists
+    patch:
+      x-fern-sdk-group-name: lists
+    delete:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/abuse-reports:
+    get:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/abuse-reports/{report_id}:
+    get:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/activity:
+    get:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/clients:
+    get:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/growth-history:
+    get:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/growth-history/{month}:
+    get:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/interest-categories:
+    get:
+      x-fern-sdk-group-name: lists
+    post:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/interest-categories/{interest_category_id}:
+    get:
+      x-fern-sdk-group-name: lists
+    patch:
+      x-fern-sdk-group-name: lists
+    delete:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/interest-categories/{interest_category_id}/interests:
+    get:
+      x-fern-sdk-group-name: lists
+    post:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/interest-categories/{interest_category_id}/interests/{interest_id}:
+    get:
+      x-fern-sdk-group-name: lists
+    patch:
+      x-fern-sdk-group-name: lists
+    delete:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/locations:
+    get:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/members:
+    get:
+      x-fern-sdk-group-name: lists
+    post:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/members/{subscriber_hash}:
+    get:
+      x-fern-sdk-group-name: lists
+    put:
+      x-fern-sdk-group-name: lists
+    patch:
+      x-fern-sdk-group-name: lists
+    delete:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/members/{subscriber_hash}/actions/delete-permanent:
+    post:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/members/{subscriber_hash}/activity:
+    get:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/members/{subscriber_hash}/activity-feed:
+    get:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/members/{subscriber_hash}/events:
+    get:
+      x-fern-sdk-group-name: lists
+    post:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/members/{subscriber_hash}/goals:
+    get:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/members/{subscriber_hash}/notes:
+    get:
+      x-fern-sdk-group-name: lists
+    post:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/members/{subscriber_hash}/notes/{note_id}:
+    get:
+      x-fern-sdk-group-name: lists
+    patch:
+      x-fern-sdk-group-name: lists
+    delete:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/members/{subscriber_hash}/tags:
+    get:
+      x-fern-sdk-group-name: lists
+    post:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/merge-fields:
+    get:
+      x-fern-sdk-group-name: lists
+    post:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/merge-fields/{merge_id}:
+    get:
+      x-fern-sdk-group-name: lists
+    patch:
+      x-fern-sdk-group-name: lists
+    delete:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/segments:
+    get:
+      x-fern-sdk-group-name: lists
+    post:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/segments/{segment_id}:
+    get:
+      x-fern-sdk-group-name: lists
+    post:
+      x-fern-sdk-group-name: lists
+    patch:
+      x-fern-sdk-group-name: lists
+    delete:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/segments/{segment_id}/members:
+    get:
+      x-fern-sdk-group-name: lists
+    post:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/segments/{segment_id}/members/{subscriber_hash}:
+    delete:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/signup-forms:
+    get:
+      x-fern-sdk-group-name: lists
+    post:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/surveys:
+    get:
+      x-fern-sdk-group-name: lists
+    post:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/surveys/{survey_id}:
+    get:
+      x-fern-sdk-group-name: lists
+    patch:
+      x-fern-sdk-group-name: lists
+    delete:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/surveys/{survey_id}/actions/create-email:
+    post:
+      x-fern-sdk-group-name: surveys
+  /3.0/lists/{list_id}/surveys/{survey_id}/actions/publish:
+    post:
+      x-fern-sdk-group-name: surveys
+  /3.0/lists/{list_id}/surveys/{survey_id}/actions/unpublish:
+    post:
+      x-fern-sdk-group-name: surveys
+  /3.0/lists/{list_id}/surveys/{survey_id}/actions/replicate:
+    post:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/tag-search:
+    get:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/webhooks:
+    get:
+      x-fern-sdk-group-name: lists
+    post:
+      x-fern-sdk-group-name: lists
+  /3.0/lists/{list_id}/webhooks/{webhook_id}:
+    get:
+      x-fern-sdk-group-name: lists
+    patch:
+      x-fern-sdk-group-name: lists
+    delete:
+      x-fern-sdk-group-name: lists
+  /3.0/ping:
+    get:
+      x-fern-sdk-group-name: ping
+  /3.0/reporting:
+    get:
+      x-fern-sdk-group-name: reporting
+  /3.0/reporting/facebook-ads:
+    get:
+      x-fern-sdk-group-name: reporting
+  /3.0/reporting/facebook-ads/{outreach_id}:
+    get:
+      x-fern-sdk-group-name: reporting
+  /3.0/reporting/facebook-ads/{outreach_id}/ecommerce-product-activity:
+    get:
+      x-fern-sdk-group-name: reporting
+  /3.0/reporting/landing-pages:
+    get:
+      x-fern-sdk-group-name: reporting
+  /3.0/reporting/landing-pages/{outreach_id}:
+    get:
+      x-fern-sdk-group-name: reporting
+  /3.0/reporting/surveys:
+    get:
+      x-fern-sdk-group-name: reporting
+  /3.0/reporting/surveys/{survey_id}:
+    get:
+      x-fern-sdk-group-name: reporting
+  /3.0/reporting/surveys/{survey_id}/questions:
+    get:
+      x-fern-sdk-group-name: reporting
+  /3.0/reporting/surveys/{survey_id}/questions/{question_id}:
+    get:
+      x-fern-sdk-group-name: reporting
+  /3.0/reporting/surveys/{survey_id}/questions/{question_id}/answers:
+    get:
+      x-fern-sdk-group-name: reporting
+  /3.0/reporting/surveys/{survey_id}/responses:
+    get:
+      x-fern-sdk-group-name: reporting
+  /3.0/reporting/surveys/{survey_id}/responses/{response_id}:
+    get:
+      x-fern-sdk-group-name: reporting
+  /3.0/reports:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/abuse-reports:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/abuse-reports/{report_id}:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/advice:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/click-details:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/click-details/{link_id}:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/click-details/{link_id}/members:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/click-details/{link_id}/members/{subscriber_hash}:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/domain-performance:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/ecommerce-product-activity:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/eepurl:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/email-activity:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/email-activity/{subscriber_hash}:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/locations:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/open-details:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/open-details/{subscriber_hash}:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/sent-to:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/sent-to/{subscriber_hash}:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/sub-reports:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/unsubscribed:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/reports/{campaign_id}/unsubscribed/{subscriber_hash}:
+    get:
+      x-fern-sdk-group-name: reports
+  /3.0/search-campaigns:
+    get:
+      x-fern-sdk-group-name: search-campaigns
+  /3.0/sms-campaigns:
+    get:
+      x-fern-sdk-group-name: sms-campaigns
+    post:
+      x-fern-sdk-group-name: sms-campaigns
+  /3.0/sms-campaigns/{sms_campaign_id}:
+    get:
+      x-fern-sdk-group-name: sms-campaigns
+    patch:
+      x-fern-sdk-group-name: sms-campaigns
+    delete:
+      x-fern-sdk-group-name: sms-campaigns
+  /3.0/sms-campaigns/{sms_campaign_id}/actions/cancel-send:
+    post:
+      x-fern-sdk-group-name: sms-campaigns
+  /3.0/sms-campaigns/{sms_campaign_id}/actions/schedule:
+    post:
+      x-fern-sdk-group-name: sms-campaigns
+  /3.0/sms-campaigns/{sms_campaign_id}/actions/send:
+    post:
+      x-fern-sdk-group-name: sms-campaigns
+  /3.0/sms-campaigns/{sms_campaign_id}/content:
+    get:
+      x-fern-sdk-group-name: sms-campaigns
+    put:
+      x-fern-sdk-group-name: sms-campaigns
+  /3.0/search-members:
+    get:
+      x-fern-sdk-group-name: search-members
+  /3.0/template-folders:
+    get:
+      x-fern-sdk-group-name: template-folders
+    post:
+      x-fern-sdk-group-name: template-folders
+  /3.0/template-folders/{folder_id}:
+    get:
+      x-fern-sdk-group-name: template-folders
+    patch:
+      x-fern-sdk-group-name: template-folders
+    delete:
+      x-fern-sdk-group-name: template-folders
+  /3.0/templates:
+    get:
+      x-fern-sdk-group-name: templates
+    post:
+      x-fern-sdk-group-name: templates
+  /3.0/templates/{template_id}:
+    get:
+      x-fern-sdk-group-name: templates
+    patch:
+      x-fern-sdk-group-name: templates
+    delete:
+      x-fern-sdk-group-name: templates
+  /3.0/templates/{template_id}/default-content:
+    get:
+      x-fern-sdk-group-name: templates
+  /3.0/verified-domains:
+    get:
+      x-fern-sdk-group-name: verified-domains
+    post:
+      x-fern-sdk-group-name: verified-domains
+  /3.0/verified-domains/{domain_name}:
+    get:
+      x-fern-sdk-group-name: verified-domains
+    delete:
+      x-fern-sdk-group-name: verified-domains
+  /3.0/verified-domains/{domain_name}/actions/verify:
+    post:
+      x-fern-sdk-group-name: verified-domains

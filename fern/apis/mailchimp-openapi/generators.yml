@@ -10,6 +10,9 @@ api:
         # verb+path operationIds. The same file drives the CLI command names.
         - overrides.yml
         - ../mailchimp-cli/method-names.yml
+        # Group every operation by its tag so the API reference nav organizes
+        # endpoints into resource sections (not one flat expanded list).
+        - group-names.yml
 
 # Mailchimp Marketing API SDKs — one group per language.
 # Each group publishes to its own fern-demo/mailchimp-<lang>-sdk repo as a

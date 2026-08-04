@@ -1220,7 +1220,10 @@ header.fern-background-image { border-bottom: none !important; }
   height: 30px;
   width: 30px;
   object-fit: contain;
-  /* show the real brand-colored logos (no white-silhouette filter) */
+  /* left-align every logo (override the global img `margin:auto` that was
+     centering them and making the row look staggered) */
+  margin: 0 !important;
+  flex: 0 0 30px;
 }
 /* Rust's logo is black — invert it so it reads on the dark card. */
 .mc-tools-card-logo[src*="rust"] {
