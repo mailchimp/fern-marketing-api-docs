@@ -1822,10 +1822,15 @@ body:has(.mc-landing-nav) .fern-header-tabs {
 /* Start building (charred) — two columns split by hairlines, two yellow links,
    no button, no image. */
 .mc-ipp-build { background: #001d28; padding: 88px 0; }
-.mc-ipp-build-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: start; }
-.mc-ipp-build-col:first-child { padding-right: 56px; }
-/* Middle divider spans only the right column's content (shorter than the whole
-   section); the right text begins at the divider's top. */
+/* Two tall outer frame lines; the middle divider is shorter than these. */
+.mc-ipp-build-grid {
+  display: grid; grid-template-columns: 1fr 1fr; align-items: start;
+  border-left: 1px solid #3d535b; border-right: 1px solid #3d535b;
+}
+.mc-ipp-build-col:first-child { padding: 0 56px; }
+.mc-ipp-build-col:last-child { padding-right: 56px; }
+/* Middle divider spans only the right column's content (shorter than the outer
+   lines); the right text begins at the divider's top. */
 .mc-ipp-build-right { border-left: 1px solid #3d535b; padding-left: 56px; margin-top: 92px; }
 .mc-ipp-eyebrow--light { color: #efeeea; }
 .mc-ipp-build-title {
@@ -1879,7 +1884,7 @@ body:has(.mc-landing-nav) .fern-header-tabs {
   .mc-ipp-benefits-grid, .mc-ipp-cards, .mc-ipp-build-grid { grid-template-columns: 1fr; }
   .mc-ipp-benefit + .mc-ipp-benefit { border-left: 0; border-top: 1px solid rgba(255, 255, 255, .28); }
   .mc-ipp-card:not(:first-child) { padding-left: 0; }
-  .mc-ipp-build-col:first-child { padding-right: 0; }
+  .mc-ipp-build-col:first-child, .mc-ipp-build-col:last-child { padding: 0 28px; }
   .mc-ipp-build-right { border-left: 0; padding-left: 0; margin-top: 40px; }
   .mc-ipp-hero-title { font-size: 44px !important; }
   .mc-ipp-mkt-title { font-size: 36px !important; }
