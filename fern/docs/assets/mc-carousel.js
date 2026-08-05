@@ -8,7 +8,7 @@
     document.querySelectorAll("[data-mc-carousel]").forEach(function (car) {
       if (car.__mcInit) return;
       car.__mcInit = true;
-      var section = car.closest(".mc-home-quote") || car.parentElement;
+      var section = car.closest(".mc-home-quote, .mc-ipp-quote") || car.parentElement;
       var slides = car.querySelectorAll(".mc-quote-slide");
       var dots = section.querySelectorAll(".mc-quote-dot");
       var prev = car.querySelector(".mc-quote-prev");
