@@ -1693,6 +1693,14 @@ body:has(.mc-landing-nav) .fern-header-tabs {
   pointer-events: none !important;
 }
 
+/* Changelog / Release Notes renders full-width with no left nav. When a tag
+   filter navigates (?filter=...), Fern momentarily flashes the product sidebar
+   (titled "Changelog") before hiding it. Force-hide the sidebar whenever the
+   changelog feed is present so it never appears — the filter tags still work. */
+body:has(.fern-changelog-feed) .fern-sidebar-desktop {
+  display: none !important;
+}
+
 /* ===========================================================================
    Integration Partner Program (custom landing page, linked from the homepage)
    Faithful copy of mailchimp.com/developer/integration-partner-program:
