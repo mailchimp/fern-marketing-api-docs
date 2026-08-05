@@ -1693,14 +1693,6 @@ body:has(.mc-landing-nav) .fern-header-tabs {
   pointer-events: none !important;
 }
 
-/* Changelog / Release Notes: hide the tag filter badges (All / Transactional /
-   Marketing API) in the controls row. Clicking one triggered a Fern re-render
-   that briefly flashed the changelog side nav before collapsing it. The
-   per-entry tag labels remain, and the search box still filters the feed. */
-.fern-changelog-controls .fern-filter-badge {
-  display: none !important;
-}
-
 /* ===========================================================================
    Integration Partner Program (custom landing page, linked from the homepage)
    Faithful copy of mailchimp.com/developer/integration-partner-program:
