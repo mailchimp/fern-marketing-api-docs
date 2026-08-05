@@ -35,6 +35,9 @@ groups:
       - name: fernapi/fern-python-sdk
         version: 5.26.0
         smart-casing: true
+        output:
+          location: pypi
+          package-name: mailchimp-transactional
         github:
           repository: fern-demo/mailchimp-transactional-python-sdk
           mode: pull-request
@@ -58,6 +61,9 @@ groups:
       - name: fernapi/fern-java-sdk
         version: 4.16.0
         smart-casing: true
+        output:
+          location: maven
+          coordinate: com.mailchimp:mailchimp-transactional
         github:
           repository: fern-demo/mailchimp-transactional-java-sdk
           mode: pull-request
@@ -70,6 +76,9 @@ groups:
       - name: fernapi/fern-csharp-sdk
         version: 2.80.0
         smart-casing: true
+        output:
+          location: nuget
+          package-name: Mailchimp.Transactional
         github:
           repository: fern-demo/mailchimp-transactional-csharp-sdk
           mode: pull-request
@@ -94,6 +103,9 @@ groups:
       - name: fernapi/fern-ruby-sdk
         version: 1.21.0
         smart-casing: true
+        output:
+          location: rubygems
+          package-name: mailchimp-transactional
         github:
           repository: fern-demo/mailchimp-transactional-ruby-sdk
           mode: pull-request
