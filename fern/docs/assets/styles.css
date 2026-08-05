@@ -1739,7 +1739,13 @@ body:has(.mc-landing-nav) .fern-header-tabs {
   font-family: 'Graphik Web', Helvetica, Arial, sans-serif; font-size: 20px; line-height: 30px;
   color: #efeeea; max-width: 720px; margin: 0 0 52px 0 !important;
 }
-.mc-ipp-benefits-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 44px; }
+/* Vertical white hairlines separating the three benefits (no top/bottom rules) */
+.mc-ipp-benefits-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+  border-left: 1px solid rgba(255, 255, 255, .28); border-right: 1px solid rgba(255, 255, 255, .28);
+}
+.mc-ipp-benefit { padding: 6px 40px; }
+.mc-ipp-benefit + .mc-ipp-benefit { border-left: 1px solid rgba(255, 255, 255, .28); }
 .mc-ipp-benefit-num {
   font-family: 'Means Web', Georgia, serif; font-size: 74px; font-weight: 300;
   color: #00c14e; line-height: 89px; margin: 0 0 4px 0;
@@ -1757,11 +1763,21 @@ body:has(.mc-landing-nav) .fern-header-tabs {
 /* Testimonials (darker teal) — 3-slide carousel with circular company logo.
    Reuses the homepage .mc-quote-* carousel markup + mc-carousel.js. */
 .mc-ipp-quote { background: #18323b; padding: 96px 0; }
-.mc-ipp-carousel .mc-quote-track { min-height: 360px; }
+.mc-ipp-carousel .mc-quote-track { min-height: 380px; }
+/* Company logo sits BELOW the quote + author */
 .mc-ipp-quote-logo {
-  width: 92px; height: 92px; border-radius: 50%; object-fit: cover;
-  display: block; margin: 0 auto 28px auto !important;
+  width: 116px; height: 116px; border-radius: 10px; object-fit: cover;
+  display: block; margin: 34px auto 0 auto !important;
 }
+/* Slight fade + green glow as each slide appears */
+@keyframes mc-ipp-slidein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes mc-ipp-logoglow {
+  0%   { opacity: 0; filter: drop-shadow(0 0 0 rgba(0, 193, 78, 0)); }
+  45%  { filter: drop-shadow(0 0 16px rgba(0, 193, 78, .55)); }
+  100% { opacity: 1; filter: drop-shadow(0 0 0 rgba(0, 193, 78, 0)); }
+}
+.mc-ipp-carousel .mc-quote-slide.is-active { animation: mc-ipp-slidein .5s ease; }
+.mc-ipp-carousel .mc-quote-slide.is-active .mc-ipp-quote-logo { animation: mc-ipp-logoglow 1.1s ease; }
 
 /* Marketplace (cream) — framed by left/right hairlines; two-column top with
    Spot image, then a divided 3-card row that links out to each integration. */
@@ -1780,17 +1796,19 @@ body:has(.mc-landing-nav) .fern-header-tabs {
 }
 .mc-ipp-mkt-right { flex: 0 1 40%; display: flex; justify-content: flex-end; }
 .mc-ipp-mkt-img { max-width: 320px; width: 100%; }
-.mc-ipp-cards { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid #819094; }
+/* No inner lines — only the two wide frame lines around the whole section */
+.mc-ipp-cards { display: grid; grid-template-columns: repeat(3, 1fr); padding: 8px 48px 8px; }
 .mc-ipp-card {
-  display: flex; flex-direction: column; padding: 40px 36px;
+  display: flex; flex-direction: column; padding: 8px 24px 8px 0;
   text-decoration: none !important;
 }
-.mc-ipp-card + .mc-ipp-card { border-left: 1px solid #819094; }
+.mc-ipp-card:not(:first-child) { padding-left: 32px; }
+.mc-ipp-card-logo { height: 48px; width: auto; max-width: 150px; object-fit: contain; object-position: left; margin: 0 0 18px 0 !important; }
+/* Category label sits below the logo, above the company name */
 .mc-ipp-card-cat {
   font-family: 'Graphik Web', Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 500;
-  letter-spacing: .06em; text-transform: uppercase; color: #007c89; margin: 0 0 22px 0 !important;
+  letter-spacing: .06em; text-transform: uppercase; color: #007c89; margin: 0 0 6px 0 !important;
 }
-.mc-ipp-card-logo { height: 46px; width: auto; max-width: 150px; object-fit: contain; object-position: left; margin: 0 0 20px 0 !important; }
 .mc-ipp-card-name {
   font-family: 'Graphik Web', Helvetica, Arial, sans-serif !important; font-size: 16px !important;
   font-weight: 500 !important; color: #001d28 !important; margin: 0 0 8px 0 !important;
@@ -1804,16 +1822,15 @@ body:has(.mc-landing-nav) .fern-header-tabs {
 /* Start building (charred) — two columns split by hairlines, two yellow links,
    no button, no image. */
 .mc-ipp-build { background: #001d28; padding: 88px 0; }
-.mc-ipp-build-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  border-left: 1px solid #3d535b; border-right: 1px solid #3d535b;
-}
-.mc-ipp-build-col { padding: 12px 48px; }
-.mc-ipp-build-col--divided { border-left: 1px solid #3d535b; }
-.mc-ipp-eyebrow--light { color: #007c89; }
+.mc-ipp-build-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: start; }
+.mc-ipp-build-col:first-child { padding-right: 56px; }
+/* Middle divider spans only the right column's content (shorter than the whole
+   section); the right text begins at the divider's top. */
+.mc-ipp-build-right { border-left: 1px solid #3d535b; padding-left: 56px; margin-top: 92px; }
+.mc-ipp-eyebrow--light { color: #efeeea; }
 .mc-ipp-build-title {
   font-family: 'Means Web', Georgia, serif !important; font-weight: 300 !important;
-  font-size: 44px !important; line-height: 1.04 !important; letter-spacing: -.02em !important;
+  font-size: 54px !important; line-height: 1.02 !important; letter-spacing: -.02em !important;
   color: #efeeea !important; margin: 0 0 18px 0 !important;
 }
 .mc-ipp-build-copy {
@@ -1835,8 +1852,8 @@ body:has(.mc-landing-nav) .fern-header-tabs {
   color: #efeeea; padding: 0 0 0 26px; margin: 0 0 12px 0 !important; position: relative;
 }
 .mc-ipp-reqs li::before {
-  content: ""; position: absolute; left: 0; top: 8px; width: 8px; height: 8px;
-  border-radius: 50%; background: #e7b75f;
+  content: ""; position: absolute; left: 0; top: 7px; width: 9px; height: 9px;
+  border-radius: 0; background: #00c14e;
 }
 
 /* Apply CTA (cream) */
@@ -1851,12 +1868,19 @@ body:has(.mc-landing-nav) .fern-header-tabs {
   color: #3d535b; margin: 0 0 28px 0 !important;
 }
 
+/* Remove heading anchor links across the whole page (parent card links stay clickable) */
+.mc-ipp :is(h1, h2, h3, h4, h5, h6) { cursor: default !important; pointer-events: none; }
+.mc-ipp :is(h1, h2, h3, h4, h5, h6) a { pointer-events: auto; }
+.mc-ipp a[href^="#"] { display: none !important; }
+
 @media (max-width: 900px) {
   .mc-ipp-hero-inner, .mc-ipp-mkt-top { flex-direction: column; align-items: flex-start; gap: 36px; }
   .mc-ipp-hero-right, .mc-ipp-mkt-right { justify-content: flex-start; }
   .mc-ipp-benefits-grid, .mc-ipp-cards, .mc-ipp-build-grid { grid-template-columns: 1fr; }
-  .mc-ipp-card + .mc-ipp-card { border-left: 0; border-top: 1px solid #819094; }
-  .mc-ipp-build-col--divided { border-left: 0; border-top: 1px solid #3d535b; }
+  .mc-ipp-benefit + .mc-ipp-benefit { border-left: 0; border-top: 1px solid rgba(255, 255, 255, .28); }
+  .mc-ipp-card:not(:first-child) { padding-left: 0; }
+  .mc-ipp-build-col:first-child { padding-right: 0; }
+  .mc-ipp-build-right { border-left: 0; padding-left: 0; margin-top: 40px; }
   .mc-ipp-hero-title { font-size: 44px !important; }
   .mc-ipp-mkt-title { font-size: 36px !important; }
 }
