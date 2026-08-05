@@ -46,6 +46,8 @@ tags:
     x-displayName: Search Campaigns
   - name: search-members
     x-displayName: Search Members
+  - name: sms-campaigns
+    x-displayName: SMS Campaigns
   - name: surveys
     x-displayName: Surveys
   - name: template-folders
