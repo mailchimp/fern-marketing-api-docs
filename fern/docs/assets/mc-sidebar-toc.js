@@ -44,9 +44,19 @@
     if (!sidebar) return;
     var active = sidebar.querySelector('.fern-sidebar-link[data-state="active"]');
     var toc = document.querySelector(".toc-root");
-    var links = toc
+    // Include only the larger (top-level, H2) headings in the page nav, the way
+    // Mailchimp's docs list section headers rather than every sub-heading.
+    // In Fern's TOC each item's <li> carries data-depth ("0" = H2, "1" = H3,
+    // "2" = H4). Keep depth 0; fall back to all links if a page has no H2 so
+    // the TOC is never empty.
+    var allLinks = toc
       ? Array.prototype.slice.call(toc.querySelectorAll('a[href*="#"]'))
       : [];
+    var links = allLinks.filter(function (a) {
+      var li = a.closest("li");
+      return li && li.getAttribute("data-depth") === "0";
+    });
+    if (!links.length) links = allLinks;
 
     // Hide Fern's right-hand TOC column (label + list + "scroll to top").
     // Use visibility:hidden (not display:none) so the column keeps reserving
