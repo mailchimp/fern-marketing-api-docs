@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/product-yml.schema.json
+
+tabs:
+  program:
+    display-name: Integration Partner Program
+    skip-slug: true
+
+navigation:
+  - tab: program
+    layout:
+      - page: Integration Partner Program
+        path: ../docs/pages/integration-partner-program.mdx
+        slug: ""

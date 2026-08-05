@@ -132,6 +132,10 @@ products:
     path: ./products/blog.yml
     slug: blog
     subtitle: Engineering stories and updates from the Mailchimp developer team.
+  - display-name: Integration Partner Program
+    path: ./products/integration-partner-program.yml
+    slug: integration-partner-program
+    subtitle: Grow your Mailchimp integration with exclusive partner benefits.
 
 footer: ./components/Footer.tsx
 
