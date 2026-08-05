@@ -122,6 +122,20 @@ servers:
     url: https://api.mailchimp.com
 
 paths:
+  # Real request/response examples so Fern can generate SDK snippets in the
+  # API reference (snippets are built from API-definition examples, not from
+  # ai-examples render-time enhancement). Seeded on representative endpoints.
+  /3.0/:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                account_id: 8d3a3db4d97663a9074efcc16
+                account_name: Freddie's Jokes
+                email: freddie@mailchimp.com
+                total_subscribers: 1200
   /3.0/account-exports:
     get:
       x-fern-pagination:
@@ -252,6 +266,30 @@ paths:
       x-fern-pagination:
         offset: $request.offset
         results: $response.lists
+    post:
+      requestBody:
+        content:
+          application/json:
+            example:
+              name: Freddie's Favorite Recipes
+              permission_reminder: You signed up for updates on our website.
+              email_type_option: true
+              contact:
+                company: Mailchimp
+                address1: 675 Ponce de Leon Ave NE
+                city: Atlanta
+                state: GA
+                zip: "30308"
+                country: US
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                id: 57afe96172
+                name: Freddie's Favorite Recipes
+                stats:
+                  member_count: 42
   /3.0/lists/{list_id}/abuse-reports:
     get:
       x-fern-pagination:
