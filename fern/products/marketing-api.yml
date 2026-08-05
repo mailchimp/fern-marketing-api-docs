@@ -87,7 +87,7 @@ navigation:
         snippets:
           typescript: "@mailchimp/mailchimp-marketing"
           python: mailchimp-marketing
-          go: github.com/fern-demo/mailchimp-go-sdk
+          go: https://github.com/fern-demo/mailchimp-go-sdk
           java: com.mailchimp:mailchimp-marketing
           csharp: Mailchimp.Marketing
           ruby: mailchimp-marketing

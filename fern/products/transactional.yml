@@ -90,7 +90,7 @@ navigation:
         snippets:
           typescript: "@mailchimp/mailchimp-transactional"
           python: mailchimp-transactional
-          go: github.com/fern-demo/mailchimp-transactional-go-sdk
+          go: https://github.com/fern-demo/mailchimp-transactional-go-sdk
           java: com.mailchimp:mailchimp-transactional
           csharp: Mailchimp.Transactional
           ruby: mailchimp-transactional
