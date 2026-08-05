@@ -123,3 +123,145 @@ groups:
         config:
           crateName: mailchimp_transactional
           clientClassName: MailchimpTransactionalClient
+
+  # ===========================================================================
+  # RELEASE GROUPS — publish to package registries (mode: release).
+  # Parallel to the pull-request groups above. Triggered via
+  # .github/workflows/publish-sdks.yml. OIDC where Fern supports it
+  # (npm/PyPI/NuGet); tokens for Maven/RubyGems/crates; git-tag for Go/Swift/PHP.
+  # ===========================================================================
+  typescript-sdk-release:
+    generators:
+      - name: fernapi/fern-typescript-sdk
+        version: 3.86.0
+        smart-casing: true
+        output:
+          location: npm
+          package-name: "@mailchimp/mailchimp-transactional"
+          token: OIDC
+        github:
+          repository: fern-demo/mailchimp-transactional-typescript-sdk
+          mode: release
+        config:
+          namespaceExport: MailchimpTransactional
+          allowCustomFetcher: true
+          skipResponseValidation: true
+          includeApiReference: true
+
+  python-sdk-release:
+    generators:
+      - name: fernapi/fern-python-sdk
+        version: 5.26.0
+        smart-casing: true
+        output:
+          location: pypi
+          package-name: mailchimp-transactional
+          token: OIDC
+        github:
+          repository: fern-demo/mailchimp-transactional-python-sdk
+          mode: release
+        config:
+          package_name: mailchimp_transactional
+          client_class_name: MailchimpTransactionalClient
+
+  go-sdk-release:
+    generators:
+      - name: fernapi/fern-go-sdk
+        version: 1.55.0
+        smart-casing: true
+        github:
+          repository: fern-demo/mailchimp-transactional-go-sdk
+          mode: release
+        config:
+          clientName: MailchimpTransactionalClient
+
+  java-sdk-release:
+    generators:
+      - name: fernapi/fern-java-sdk
+        version: 4.16.0
+        smart-casing: true
+        output:
+          location: maven
+          coordinate: com.mailchimp:mailchimp-transactional
+          username: ${MAVEN_USERNAME}
+          password: ${MAVEN_PASSWORD}
+          signature:
+            keyId: ${MAVEN_SIGNATURE_SECRET_KEY_ID}
+            password: ${MAVEN_SIGNATURE_PASSWORD}
+            secretKey: ${MAVEN_SIGNATURE_SECRET_KEY}
+        github:
+          repository: fern-demo/mailchimp-transactional-java-sdk
+          mode: release
+        config:
+          client-class-name: MailchimpTransactionalClient
+          package-prefix: com.mailchimp.transactional
+          publish-to: central
+
+  csharp-sdk-release:
+    generators:
+      - name: fernapi/fern-csharp-sdk
+        version: 2.80.0
+        smart-casing: true
+        output:
+          location: nuget
+          package-name: Mailchimp.Transactional
+          api-key: OIDC
+        github:
+          repository: fern-demo/mailchimp-transactional-csharp-sdk
+          mode: release
+        config:
+          namespace: Mailchimp.Transactional
+          client-class-name: MailchimpTransactionalClient
+
+  php-sdk-release:
+    generators:
+      - name: fernapi/fern-php-sdk
+        version: 2.17.0
+        smart-casing: true
+        github:
+          repository: fern-demo/mailchimp-transactional-php-sdk
+          mode: release
+        config:
+          clientName: MailchimpTransactionalClient
+          packageName: mailchimp/transactional-sdk
+
+  ruby-sdk-release:
+    generators:
+      - name: fernapi/fern-ruby-sdk
+        version: 1.21.0
+        smart-casing: true
+        output:
+          location: rubygems
+          package-name: mailchimp-transactional
+          api-key: ${RUBYGEMS_API_KEY}
+        github:
+          repository: fern-demo/mailchimp-transactional-ruby-sdk
+          mode: release
+
+  swift-sdk-release:
+    generators:
+      - name: fernapi/fern-swift-sdk
+        version: 0.36.0
+        smart-casing: true
+        github:
+          repository: fern-demo/mailchimp-transactional-swift-sdk
+          mode: release
+        config:
+          clientClassName: MailchimpTransactionalClient
+          moduleName: MailchimpTransactional
+
+  rust-sdk-release:
+    generators:
+      - name: fernapi/fern-rust-sdk
+        version: 0.44.0
+        smart-casing: true
+        output:
+          location: crates
+          package-name: mailchimp_transactional
+          token: ${CRATES_IO_API_KEY}
+        github:
+          repository: fern-demo/mailchimp-transactional-rust-sdk
+          mode: release
+        config:
+          crateName: mailchimp_transactional
+          clientClassName: MailchimpTransactionalClient

@@ -1,0 +1,83 @@
+name: publish-transactional-sdks
+
+# Publish the Mailchimp Transactional SDKs to their registries (mode: release).
+# Manual only. Same credential/OIDC requirements as publish-marketing-sdks.yml:
+#   OIDC for npm/PyPI/NuGet (+ NUGET_USER); tokens for Maven/RubyGems/crates;
+#   git-tag for Go/Swift/PHP (PHP also needs a Packagist webhook).
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (e.g. 1.0.0)"
+        required: true
+        type: string
+      group:
+        description: "Which SDK to publish"
+        type: choice
+        default: all
+        options:
+          - all
+          - typescript-sdk-release
+          - python-sdk-release
+          - go-sdk-release
+          - java-sdk-release
+          - csharp-sdk-release
+          - php-sdk-release
+          - ruby-sdk-release
+          - swift-sdk-release
+          - rust-sdk-release
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set.outputs.matrix }}
+    steps:
+      - id: set
+        run: |
+          if [ "${{ inputs.group }}" = "all" ]; then
+            echo 'matrix=["typescript-sdk-release","python-sdk-release","go-sdk-release","java-sdk-release","csharp-sdk-release","php-sdk-release","ruby-sdk-release","swift-sdk-release","rust-sdk-release"]' >> "$GITHUB_OUTPUT"
+          else
+            echo 'matrix=["${{ inputs.group }}"]' >> "$GITHUB_OUTPUT"
+          fi
+
+  publish:
+    needs: prepare
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write          # OIDC trusted publishing (npm / PyPI / NuGet)
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        group: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    env:
+      FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
+      NUGET_USER: ${{ secrets.NUGET_USER }}
+      MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+      MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+      MAVEN_SIGNATURE_SECRET_KEY_ID: ${{ secrets.MAVEN_SIGNATURE_SECRET_KEY_ID }}
+      MAVEN_SIGNATURE_PASSWORD: ${{ secrets.MAVEN_SIGNATURE_PASSWORD }}
+      MAVEN_SIGNATURE_SECRET_KEY: ${{ secrets.MAVEN_SIGNATURE_SECRET_KEY }}
+      RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+      CRATES_IO_API_KEY: ${{ secrets.CRATES_IO_API_KEY }}
+      # NPM_TOKEN / PYPI_TOKEN / NUGET_API_KEY — token fallbacks if OIDC disabled.
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - name: Install Fern CLI
+        uses: fern-api/setup-fern-cli@v1
+
+      - name: Publish ${{ matrix.group }}
+        run: fern generate --api mailchimp-transactional-openapi --group ${{ matrix.group }} --version ${{ inputs.version }} --retry-rate-limited --log-level debug
