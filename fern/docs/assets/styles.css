@@ -1695,9 +1695,11 @@ body:has(.mc-landing-nav) .fern-header-tabs {
 
 /* Changelog / Release Notes renders full-width with no left nav. When a tag
    filter navigates (?filter=...), Fern momentarily flashes the product sidebar
-   (titled "Changelog") before hiding it. Force-hide the sidebar whenever the
-   changelog feed is present so it never appears — the filter tags still work. */
-body:has(.fern-changelog-feed) .fern-sidebar-desktop {
+   (titled "Changelog") in and out, shifting the feed. Key the hide off the
+   persistent .fern-layout-changelog wrapper (it stays mounted through the
+   client-side filter navigation, unlike the feed) so the sidebar never renders
+   and the content never shifts. The filter tags still work. */
+body:has(.fern-layout-changelog) .fern-sidebar-desktop {
   display: none !important;
 }
 
