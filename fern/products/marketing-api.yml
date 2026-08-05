@@ -85,9 +85,7 @@ navigation:
         skip-slug: true
         paginated: true
         snippets:
-          typescript:
-            package: "@mailchimp/mailchimp-marketing"
-            version: "0.1.0"
+          typescript: "@mailchimp/mailchimp-marketing"
           python: mailchimp-marketing
           go: https://github.com/fern-demo/mailchimp-go-sdk
           java: com.mailchimp:mailchimp-marketing
