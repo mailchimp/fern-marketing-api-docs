@@ -112,7 +112,7 @@
   justify-content: center;
   width: 100%;
 }
-.mc-header {
+#fern-header {
   align-items: center;
   box-sizing: border-box;
   display: flex;
@@ -123,11 +123,14 @@
 }
 /* Fern 5.89 caps the header content at page-width (max-w-page / 88rem) and it
    ends up left-aligned inside our full-width custom header. Uncap it so the
-   header items span the full header width again. */
-.mc-header .width-before-scroll-bar,
-.mc-header .fern-header-content,
-.mc-header .fern-header-content [class*="max-w-page"],
-.mc-header .fern-header-content > * {
+   header items span the full header width again. Keyed off the native
+   #fern-header id (present in SSR) rather than the JS-added .mc-header class,
+   so it holds at FIRST PAINT — otherwise the whole header flashes to Fern's
+   default form on the page reload the changelog tag filters trigger. */
+#fern-header .width-before-scroll-bar,
+#fern-header .fern-header-content,
+#fern-header .fern-header-content [class*="max-w-page"],
+#fern-header .fern-header-content > * {
   width: 100% !important;
   max-width: 100% !important;
   min-width: 0 !important;
@@ -791,7 +794,7 @@ a[href*="buildwithfern.com"] {
    so nothing slides or jumps. Scroll up: everything fades back.
 ============================================= */
 header.fern-background-image { border-bottom: none !important; }
-.mc-header {
+#fern-header {
   border-bottom: none !important;
   /* solid colour, never the frosted-glass blur */
   backdrop-filter: none !important;
@@ -803,8 +806,8 @@ header.fern-background-image { border-bottom: none !important; }
 }
 /* Header present (not collapsed): a solid, opaque background bar. Light mode
    uses the same cream as the landing-page hero so they blend seamlessly. */
-.mc-header:not(.mc-header-collapsed) { background-color: #efeeea !important; }
-.dark .mc-header:not(.mc-header-collapsed) { background-color: #001d28 !important; }
+#fern-header:not(.mc-header-collapsed) { background-color: #efeeea !important; }
+.dark #fern-header:not(.mc-header-collapsed) { background-color: #001d28 !important; }
 
 /* Collapsed (scrolled down): fully transparent + click-through. */
 .mc-header.mc-header-collapsed {
