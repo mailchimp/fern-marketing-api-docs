@@ -4,10 +4,7 @@
  * own the full width. Matches /blog, /blog/x, and the /developer/blog variants.
  */
 (function () {
-  // NOTE: release-notes intentionally excluded — the changelog renders with its
-  // native Fern layout/sidebar (blog-routing it caused a layout shift on the
-  // tag-filter navigation).
-  var RE = /(^|\/)(blog|tools)(\/|$)/;
+  var RE = /(^|\/)(blog|tools|release-notes)(\/|$)/;
   // product landing pages live at the exact product root (…/marketing, not …/marketing/guides)
   var PROD_ROOT = /(^|\/)(marketing|transactional)$/;
   function apply() {
