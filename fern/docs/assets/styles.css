@@ -1693,15 +1693,10 @@ body:has(.mc-landing-nav) .fern-header-tabs {
   pointer-events: none !important;
 }
 
-/* Changelog / Release Notes renders full-width with no left nav. When a tag
-   filter navigates (?filter=...), Fern momentarily flashes the product sidebar
-   (titled "Changelog") in and out, shifting the feed. Key the hide off the
-   persistent .fern-layout-changelog wrapper (it stays mounted through the
-   client-side filter navigation, unlike the feed) so the sidebar never renders
-   and the content never shifts. The filter tags still work. */
-body:has(.fern-layout-changelog) .fern-sidebar-desktop {
-  display: none !important;
-}
+/* Release Notes / Changelog is intentionally left to Fern's native layout
+   (its own sidebar + nav, no custom width/aside overrides) — see mc-blog.js,
+   which no longer blog-routes it. The only changelog tweak is the header font
+   below. */
 
 /* ===========================================================================
    Integration Partner Program (custom landing page, linked from the homepage)
