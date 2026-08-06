@@ -1700,6 +1700,12 @@ body:has(.mc-landing-nav) .fern-header-tabs {
    .mc-blog-route (mc-blog.js blog-routes /release-notes; the .mc-blog-route rules
    above hide the sidebar/aside and let the feed own the width). Safe now that the
    tag filter updates client-side rather than reloading the page. */
+/* Keep the changelog's pagination ("Older posts / Next") — it lives in
+   .fern-footer-nav, which the blog-route rule above hides (blog posts have no
+   prev/next). Restore it on the changelog only. */
+body:has(.fern-layout-changelog) .fern-footer-nav {
+  display: flex !important;
+}
 
 /* ===========================================================================
    Integration Partner Program (custom landing page, linked from the homepage)
