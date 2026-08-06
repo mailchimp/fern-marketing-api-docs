@@ -1695,8 +1695,30 @@ body:has(.mc-landing-nav) .fern-header-tabs {
 
 /* Release Notes / Changelog is intentionally left to Fern's native layout
    (its own sidebar + nav, no custom width/aside overrides) — see mc-blog.js,
-   which no longer blog-routes it. The only changelog tweak is the header font
-   below. */
+   which no longer blog-routes it.
+
+   The one tweak: an uppercase Input Mono sidebar header matching the other
+   products' "MARKETING API" / "MAILCHIMP TRANSACTIONAL" labels. It's rendered
+   as a CSS ::before on the first nav group (present at first paint) instead of
+   the JS-injected .mc-sidebar-product-title used elsewhere — the tag filters
+   reload the page, and a JS-injected header flashes in afterward. CSS avoids
+   that flash. (mc-sidebar-product-title.js skips the changelog for this reason.) */
+body:has(.fern-layout-changelog) aside.fern-sidebar-desktop .fern-sidebar-group:first-of-type::before {
+  content: "Release Notes";
+  display: block;
+  font-family: "Input Mono Regular", ui-monospace, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mc-text-muted, #96A8AD);
+  padding: 0.25rem 0.75rem 0.9rem 26px;
+}
+/* Only the outermost group gets the header — suppress it on nested groups. */
+body:has(.fern-layout-changelog) aside.fern-sidebar-desktop .fern-sidebar-group .fern-sidebar-group:first-of-type::before {
+  content: none !important;
+  padding: 0 !important;
+}
 
 /* ===========================================================================
    Integration Partner Program (custom landing page, linked from the homepage)

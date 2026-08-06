@@ -15,6 +15,10 @@
   function apply() {
     var side = document.querySelector("aside.fern-sidebar-desktop");
     if (!side) return;
+    // The changelog/release-notes sidebar renders its header via CSS (::before
+    // on the first nav group) instead — a JS-injected title flashes in after
+    // the page reload triggered by the tag filters. Skip injection there.
+    if (document.querySelector(".fern-layout-changelog")) return;
     var name = productName();
     if (!name) return;
     // Insert just above the first nav group (inside the scroll area, below the
