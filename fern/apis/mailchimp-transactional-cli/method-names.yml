@@ -1,0 +1,94 @@
+# CLI-only method-name overrides (x-fern-sdk-method-name) for the Transactional CLI.
+# Layered on ../mailchimp-transactional-openapi/overrides.yml for the CLI
+# generator ONLY — the published Transactional SDK method names are untouched.
+#
+# Most Transactional operationIds are already clean `group/method` names whose
+# resource prefix matches the tag-derived command group, so Fern strips it and
+# the command reads well (e.g. `messages send`, `users info`, `webhooks add`).
+#
+# Four groups are the exception: their operationId resource prefix does NOT
+# match the tag-derived group name, so Fern can't strip it and the prefix leaks
+# into the command (e.g. `dedicated-ips ips-info`, `allowlist allowlists-add`,
+# `mailchimp-templates mctemplates-info`, `tracking-domains urls-add-tracking-domain`).
+# We rename just those methods so every command is `<group> <verb>`.
+
+paths:
+  # Allowlist  (tag "Allowlist" -> group `allowlist`; opId prefix `allowlists`)
+  /allowlists/add:
+    post:
+      x-fern-sdk-method-name: add
+  /allowlists/list:
+    post:
+      x-fern-sdk-method-name: list
+  /allowlists/delete:
+    post:
+      x-fern-sdk-method-name: delete
+
+  # Dedicated Ips  (tag "Dedicated Ips" -> group `dedicated-ips`; opId prefix `ips`)
+  /ips/list:
+    post:
+      x-fern-sdk-method-name: list
+  /ips/info:
+    post:
+      x-fern-sdk-method-name: info
+  /ips/provision:
+    post:
+      x-fern-sdk-method-name: provision
+  /ips/start-warmup:
+    post:
+      x-fern-sdk-method-name: start-warmup
+  /ips/cancel-warmup:
+    post:
+      x-fern-sdk-method-name: cancel-warmup
+  /ips/set-pool:
+    post:
+      x-fern-sdk-method-name: set-pool
+  /ips/delete:
+    post:
+      x-fern-sdk-method-name: delete
+  /ips/list-pools:
+    post:
+      x-fern-sdk-method-name: list-pools
+  /ips/pool-info:
+    post:
+      x-fern-sdk-method-name: pool-info
+  /ips/create-pool:
+    post:
+      x-fern-sdk-method-name: create-pool
+  /ips/delete-pool:
+    post:
+      x-fern-sdk-method-name: delete-pool
+  /ips/check-custom-dns:
+    post:
+      x-fern-sdk-method-name: check-custom-dns
+  /ips/set-custom-dns:
+    post:
+      x-fern-sdk-method-name: set-custom-dns
+
+  # Mailchimp Templates  (tag "Mailchimp Templates" -> group `mailchimp-templates`; opId prefix `mctemplates`)
+  /mctemplates/info:
+    post:
+      x-fern-sdk-method-name: info
+  /mctemplates/list:
+    post:
+      x-fern-sdk-method-name: list
+  /mctemplates/render:
+    post:
+      x-fern-sdk-method-name: render
+  /mctemplates/time-series:
+    post:
+      x-fern-sdk-method-name: time-series
+
+  # Tracking Domains  (tag "Tracking Domains" -> group `tracking-domains`; opId prefix `urls`)
+  /urls/tracking-domains:
+    post:
+      x-fern-sdk-method-name: list
+  /urls/add-tracking-domain:
+    post:
+      x-fern-sdk-method-name: add
+  /urls/check-tracking-domain:
+    post:
+      x-fern-sdk-method-name: check
+  /urls/delete-tracking-domain:
+    post:
+      x-fern-sdk-method-name: delete

@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://schema.buildwithfern.dev/generators-yml.json
+#
+# Isolated API definition for the Mailchimp Transactional (Mandrill) CLI.
+# Reuses the shared spec + overrides from ../mailchimp-transactional-openapi.
+#
+# Unlike the Marketing CLI (../mailchimp-cli) this needs no CLI server-override:
+# the Transactional API has a single fixed host (https://mandrillapp.com/api/1.4)
+# with no OpenAPI server variables, so the CLI generator copies a valid literal
+# root_url (FER-11475 doesn't bite).
+#
+# It does layer a small CLI-only method-names override: most operationIds are
+# already clean `group/method` names, but four groups (Allowlist, Dedicated Ips,
+# Mailchimp Templates, Tracking Domains) have a resource prefix that doesn't
+# match their tag-derived command group, so the prefix would leak into the
+# command name (e.g. `dedicated-ips ips-info`). method-names.yml renames just
+# those so every command is `<group> <verb>`. SDK method names are untouched.
+
+api:
+  specs:
+    - openapi: ../mailchimp-transactional-openapi/openapi.json
+      overrides:
+        - ../mailchimp-transactional-openapi/overrides.yml
+        - method-names.yml
+
+groups:
+  cli:
+    generators:
+      - name: fern-cli-generator
+        version: 0.30.3
+        ir-version: v67
+        smart-casing: true
+        config:
+          binaryName: mailchimp-transactional
+        github:
+          repository: fern-demo/mailchimp-transactional-cli
+          mode: pull-request
+
+  local-cli:
+    generators:
+      - name: fern-cli-generator
+        version: 0.30.3
+        ir-version: v67
+        smart-casing: true
+        config:
+          binaryName: mailchimp-transactional
+        output:
+          location: local-file-system
+          path: ../../../../mailchimp-transactional-cli
