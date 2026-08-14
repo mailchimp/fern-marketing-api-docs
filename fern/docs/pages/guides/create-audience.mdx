@@ -254,20 +254,16 @@ To add Prudence as a subscribed contact, do the following:
 
 <EndpointRequestSnippet endpoint="POST /3.0/lists/{list_id}/members" languages={["typescript"]}>
 ```typescript
-const listId = "YOUR_LIST_ID";
-const subscribingUser = {
-  firstName: "Prudence",
-  lastName: "McVankab",
-  email: "prudence.mcvankab@example.com"
-};
+{{snippet.imports}}
+import { {{snippet.clientName}} } from "@mailchimp/mailchimp-marketing";
+
+const client = new {{snippet.clientName}}({ apiKey: process.env.MAILCHIMP_API_KEY });
 
 async function run() {
   const response = await {{snippet.call}};
 
   console.log(
-    `Successfully added contact as an audience member. The contact's id is ${
-      response.id
-    }.`
+    `Successfully added contact as an audience member. The contact's id is ${response.id}.`
   );
 }
 
