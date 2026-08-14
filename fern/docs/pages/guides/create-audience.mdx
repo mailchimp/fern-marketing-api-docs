@@ -252,23 +252,139 @@ To add a contact to an audience, you must include the subscription status in you
 
 To add Prudence as a subscribed contact, do the following:
 
-<EndpointRequestSnippet endpoint="POST /3.0/lists/{list_id}/members" languages={["typescript"]}>
-```typescript
-import { {{snippet.clientName}} } from "@mailchimp/mailchimp-marketing";
+<Template endpoint="POST /3.0/lists/{list_id}/members" request={{
+  email_address: "prudence.mcvankab@example.com",
+  status: "subscribed",
+  merge_fields: { FNAME: "Prudence", LNAME: "McVankab" }
+}}>
+<CodeBlocks>
+```bash title="cURL"
+#!/bin/bash
+set -euo pipefail
 
-const client = new {{snippet.clientName}}({ apiKey: process.env.MAILCHIMP_API_KEY });
+
+list_id="YOUR_LIST_ID"
+user_email="prudence.mcvankab@example.com"
+user_fname="Prudence"
+user_lname="McVankab"
+
+curl -sS --request POST \
+  --url "https://$API_SERVER.api.mailchimp.com/3.0/lists/$list_id/members" \
+  --user "key:$API_KEY" \
+  --header 'content-type: application/json' \
+  --data @- \
+<<EOF | jq '.id'
+{
+  "email_address": "$user_email",
+  "status": "subscribed",
+  "merge_fields": {
+	"FNAME": "$user_fname",
+	"LNAME": "$user_lname"
+  }
+}
+EOF
+```
+
+```typescript title="Node"
+const listId = "YOUR_LIST_ID";
 
 async function run() {
   const response = await {{snippet.call}};
 
   console.log(
-    `Successfully added contact as an audience member. The contact's id is ${response.id}.`
+    `Successfully added contact as an audience member. The contact's id is ${
+      response.id
+    }.`
   );
 }
 
 run();
 ```
-</EndpointRequestSnippet>
+
+```php title="PHP"
+require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
+
+$mailchimp = new \MailchimpMarketing\ApiClient();
+
+$mailchimp->setConfig([
+    'apiKey' => 'YOUR_API_KEY',
+    'server' => 'YOUR_SERVER_PREFIX'
+]);
+
+$list_id = "YOUR_LIST_ID";
+
+try {
+    $response = $mailchimp->lists->addListMember($list_id, [
+        "email_address" => "prudence.mcvankab@example.com",
+        "status" => "subscribed",
+        "merge_fields" => [
+          "FNAME" => "Prudence",
+          "LNAME" => "McVankab"
+        ]
+    ]);
+    print_r($response);
+} catch (MailchimpMarketing\ApiException $e) {
+    echo $e->getMessage();
+}
+```
+
+```ruby title="Ruby"
+require "MailchimpMarketing"
+
+mailchimp = MailchimpMarketing::Client.new
+mailchimp.set_config({
+  :api_key => ENV["API_KEY"],
+  :server => ENV["API_SERVER"]
+})
+list_id = ENV["LIST_ID"]
+
+subscribing_user = {
+  first_name: "Prudence",
+  last_name: "McVankab",
+  email_address: "prudence.mcvankab@example.com"
+}
+
+response = mailchimp.lists.add_list_member list_id, {
+  email_address: subscribing_user[:email_address],
+  status: "subscribed",
+  merge_fields: {
+    FNAME: subscribing_user[:first_name],
+    LNAME: subscribing_user[:last_name]
+  },
+}
+
+puts "Successfully added contact as an audience member. The contact's id is #{response.id}."
+```
+
+```python title="Python"
+import mailchimp_marketing as MailchimpMarketing
+from mailchimp_marketing.api_client import ApiClientError
+
+mailchimp = MailchimpMarketing.Client()
+mailchimp.set_config({
+  "api_key": "YOUR_API_KEY",
+  "server": "YOUR_SERVER_PREFIX"
+})
+
+list_id = "YOUR_LIST_ID"
+
+member_info = {
+    "email_address": "prudence.mcvankab@example.com",
+    "status": "subscribed",
+    "merge_fields": {
+      "FNAME": "Prudence",
+      "LNAME": "McVankab"
+    }
+  }
+
+try:
+  response = mailchimp.lists.add_list_member(list_id, member_info)
+  print("response: {}".format(response))
+except ApiClientError as error:
+  print("An exception occurred: {}".format(error.text))
+```
+</CodeBlocks>
+</Template>
 
 The `id` returned in the response will be an MD5 hash of the contact’s lowercase email address. You can learn more about that [here](/marketing/docs/methods-parameters/#path-parameters).
 

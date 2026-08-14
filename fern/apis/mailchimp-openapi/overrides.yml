@@ -284,26 +284,6 @@ paths:
       x-fern-pagination:
         offset: $request.offset
         results: $response.members
-    post:
-      x-fern-examples:
-        - name: Add Prudence as a subscribed contact
-          path-parameters:
-            list_id: "YOUR_LIST_ID"
-          request:
-            email_address: "prudence.mcvankab@example.com"
-            status: "subscribed"
-            merge_fields:
-              FNAME: "Prudence"
-              LNAME: "McVankab"
-          response:
-            body:
-              id: "852aaa9532cb36adfb5e9fef7a4206a9"
-              email_address: "prudence.mcvankab@example.com"
-              status: "subscribed"
-              list_id: "YOUR_LIST_ID"
-              merge_fields:
-                FNAME: "Prudence"
-                LNAME: "McVankab"
   /3.0/lists/{list_id}/members/{subscriber_hash}/activity-feed:
     get:
       x-fern-pagination:
