@@ -252,13 +252,6 @@ To add a contact to an audience, you must include the subscription status in you
 
 To add Prudence as a subscribed contact, do the following:
 
-<Template endpoint="POST /3.0/lists/{list_id}/members" pathParameters={{
-  list_id: "YOUR_LIST_ID"
-}} request={{
-  email_address: "prudence.mcvankab@example.com",
-  status: "subscribed",
-  merge_fields: { FNAME: "Prudence", LNAME: "McVankab" }
-}}>
 <CodeBlocks>
 ```bash title="cURL"
 #!/bin/bash
@@ -287,15 +280,23 @@ curl -sS --request POST \
 EOF
 ```
 
-```typescript title="Node"
-import { {{snippet.clientName}} } from "@mailchimp/mailchimp-marketing";
-{{snippet.imports}}
-async function main() {
-  const client = new {{snippet.clientName}}({
-    token: "YOUR_TOKEN_HERE",
-  });
+```javascript title="Node"
+const listId = "YOUR_LIST_ID";
+const subscribingUser = {
+  firstName: "Prudence",
+  lastName: "McVankab",
+  email: "prudence.mcvankab@example.com"
+};
 
-  const response = await {{snippet.call}};
+async function run() {
+  const response = await mailchimp.lists.addListMember(listId, {
+    email_address: subscribingUser.email,
+    status: "subscribed",
+    merge_fields: {
+      FNAME: subscribingUser.firstName,
+      LNAME: subscribingUser.lastName
+    }
+  });
 
   console.log(
     `Successfully added contact as an audience member. The contact's id is ${
@@ -304,7 +305,7 @@ async function main() {
   );
 }
 
-main();
+run();
 ```
 
 ```php title="PHP"
@@ -390,7 +391,6 @@ except ApiClientError as error:
   print("An exception occurred: {}".format(error.text))
 ```
 </CodeBlocks>
-</Template>
 
 The `id` returned in the response will be an MD5 hash of the contact’s lowercase email address. You can learn more about that [here](/marketing/docs/methods-parameters/#path-parameters).
 
