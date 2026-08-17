@@ -48,7 +48,7 @@ groups:
   go-sdk:
     generators:
       - name: fernapi/fern-go-sdk
-        version: 1.55.0
+        version: 1.57.1
         smart-casing: true
         github:
           repository: fern-demo/mailchimp-transactional-go-sdk
@@ -179,7 +179,7 @@ groups:
   go-sdk-release:
     generators:
       - name: fernapi/fern-go-sdk
-        version: 1.55.0
+        version: 1.57.1
         smart-casing: true
         github:
           repository: fern-demo/mailchimp-transactional-go-sdk
