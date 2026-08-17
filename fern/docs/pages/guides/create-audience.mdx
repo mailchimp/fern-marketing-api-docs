@@ -252,7 +252,9 @@ To add a contact to an audience, you must include the subscription status in you
 
 To add Prudence as a subscribed contact, do the following:
 
-<Template endpoint="POST /3.0/lists/{list_id}/members" request={{
+<Template endpoint="POST /3.0/lists/{list_id}/members" pathParameters={{
+  list_id: "YOUR_LIST_ID"
+}} request={{
   email_address: "prudence.mcvankab@example.com",
   status: "subscribed",
   merge_fields: { FNAME: "Prudence", LNAME: "McVankab" }
