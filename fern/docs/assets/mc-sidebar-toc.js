@@ -94,8 +94,18 @@
       injected.push(na);
     });
 
-    var container = active.closest("li") || active;
-    container.parentNode.insertBefore(ul, container.nextSibling);
+    // Insert directly after the active LINK, not after its <li>. When the
+    // active item is a section with children (e.g. Audiences > Contacts /
+    // Merge fields / Segments), its <li> also contains the child
+    // .fern-sidebar-group, so inserting after the <li> would drop the page
+    // headings below the children instead of under their own page.
+    var li = active.closest("li");
+    if (li && li.querySelector(":scope > ul.fern-sidebar-group")) {
+      active.parentNode.insertBefore(ul, active.nextSibling);
+    } else {
+      var container = li || active;
+      container.parentNode.insertBefore(ul, container.nextSibling);
+    }
     document.body.classList.add("mc-toc-relocated");
     setupScrollSpy(injected);
   }

@@ -938,6 +938,44 @@ header.fern-background-image { border-bottom: none !important; }
 }
 
 /* ---------------------------------------------
+   Nested sidebar sections (e.g. Mailchimp core concepts > Audiences >
+   Contacts / Merge fields / Segments).
+
+   Fern gives every sidebar link `fern-sidebar-level-1` regardless of depth,
+   so a `section:` with `contents:` renders its children flush with the
+   parent and the hierarchy is invisible. Indent by DOM nesting instead:
+   a .fern-sidebar-group inside an <li> is a child group.
+--------------------------------------------- */
+/* Indent only a group that is a CHILD of a section link — i.e. its <li>
+   also contains a .fern-sidebar-link. A tab's top-level page list is also
+   wrapped in LI > ul.fern-sidebar-group but has no sibling link, and must
+   stay flush. */
+#fern-sidebar li:has(> .fern-sidebar-link) > ul.fern-sidebar-group {
+  position: relative;
+  margin-left: 11px;
+  padding-left: 11px;
+}
+
+/* Rail connecting the children to their parent. */
+#fern-sidebar li:has(> .fern-sidebar-link) > ul.fern-sidebar-group::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 2px;
+  bottom: 2px;
+  width: 1px;
+  background: var(--mc-sidebar-rail, rgba(0, 0, 0, 0.12));
+}
+.dark #fern-sidebar li:has(> .fern-sidebar-link) > ul.fern-sidebar-group::before {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* A parent section with children reads as a group header. */
+#fern-sidebar li:has(> .fern-sidebar-link):has(> ul.fern-sidebar-group) > .fern-sidebar-link {
+  font-weight: 500;
+}
+
+/* ---------------------------------------------
    Relocated page TOC (mc-sidebar-toc.js): the active page's headings
    nested under its left-nav item, Mailchimp-style, with an indent rail.
 --------------------------------------------- */

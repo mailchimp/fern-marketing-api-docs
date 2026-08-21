@@ -1,19 +1,48 @@
 ---
 title: E-Commerce
-description: Connect an external store to your Mailchimp account to enable e-commerce features.
+description: How stores, customers, products, carts, and orders relate to each other in Mailchimp.
 ---
 
 
 
 ## The basics
 
-The E-commerce endpoints allow you to connect an external store to your Mailchimp account. In turn, this allows you to access [Mailchimp’s e-commerce features](https://mailchimp.com/help/how-mailchimp-can-help-your-online-store/), including order notifications, abandoned cart automations, follow-ups, product recommendations, and more.
+Connecting an external store to your Mailchimp account gives Mailchimp a model of your commerce data: what you sell, who buys it, and what they have bought or left behind. That data is what drives [Mailchimp's e-commerce features](https://mailchimp.com/help/how-mailchimp-can-help-your-online-store/), including order notifications, abandoned cart automations, follow-ups, and product recommendations.
+
+## How the pieces fit together
+
+```
+Store                   one connected storefront, tied to one audience
+├── Customers           buyers, identified by email address
+├── Products            items for sale
+│   └── Variants        the specific purchasable versions of a product
+├── Carts               in-progress purchases
+│   └── Cart lines      product variants in a cart
+└── Orders              completed purchases
+    └── Order lines     product variants in an order
+```
+
+**Stores** are the top-level e-commerce entity. Customers, products, carts, and orders all exist inside the scope of a store, and nothing e-commerce exists outside one.
+
+Each store is tied to one Mailchimp audience, so the people who buy from your store are contacts in that audience. A single audience can support multiple stores, but a store's audience is fixed once set.
+
+**Customers** are the people who buy from a store. A customer is identified by email address, which is also how they map to a contact in the store's audience.
+
+**Products** are the items a store sells. A product is a parent entity that holds one or more **variants**, the specific purchasable versions of it: a size, a color, an edition. Prices, SKUs, and inventory live on the variant, not the product.
+
+**Carts** are in-progress purchases. A cart holds **cart lines**, each of which points at a product variant and a quantity. Carts are what abandoned cart automations run on; they don't become orders and they don't expire on their own.
+
+**Orders** are completed purchases, holding **order lines** in the same shape as cart lines. Orders are the record of revenue, and they're what product recommendations and purchase-based automations are built from.
+
+<Note>
+**Products come first**: a variant has to exist in a store before a cart line or order line can reference it. Adding products is the first step of any store sync, not a later one.
+</Note>
 
 ## Stores
 
-[Stores](/marketing/api/ecommerce/list-stores) is the top-level e-commerce endpoint. Carts, customers, orders, and products all exist inside of the scope of a store. Some Stores parameters are always required, while others are only required in certain cases—for example, the `domain` parameter is necessary to enable Connected Sites and Google Ads. 
+Some store fields are always required, while others are only required in certain cases. The `domain` field, for example, is necessary to enable Connected Sites and Google Ads.
 
-When [creating a new store](/marketing/api/ecommerce/create-store), the required store ID is client-defined. Each store must be tied to a Mailchimp audience (which uses the [Lists/Audiences endpoint](/marketing/api/lists/list)), but a single audience can support multiple stores. After a store is created and tied to an audience, it cannot be connected to a different audience.
+When [creating a new store](/marketing/api/ecommerce/create-store), the required store ID is client-defined; use whatever identifies that storefront in your own system. Each store must name the audience it belongs to by [`list_id`](/marketing/api/lists/list). After a store is created and tied to an audience, it cannot be connected to a different audience.
 
 <Note>
 **Note**: [Mailchimp Stores](https://mailchimp.com/features/online-store/) are automatically available in the Stores endpoints and their data is kept in sync in real time as transactions occur. All Mailchimp Stores and the data contained therein (e.g., products, orders, carts) should be considered read-only in the Marketing API; there is no need to create, update, or delete these records via the API.
@@ -21,36 +50,36 @@ When [creating a new store](/marketing/api/ecommerce/create-store), the required
 
 ## Customers
 
-Like the store ID, the customer ID is client-defined. If your e-commerce setup assigns customer IDs, you can add customers to Mailchimp without a new ID string. 
+Like the store ID, the customer ID is client-defined. If your e-commerce setup assigns customer IDs, you can add customers to Mailchimp without a new ID string.
 
-If a customer’s email address is not already associated with an audience, it will be added with the subscription status determined by the `opt_in_status` parameter. An `opt_in_status` of `true` will result in a `subscribed` audience member; `false` will set the status to `transactional`. Updating the customer’s `opt_in_status` from `false` to `true` will update the member’s subscription status to `subscribed`. However, updating the `opt_in_status` from `true` to `false` will not change the subscription status.
+Because a customer is also a contact in the store's audience, adding one has an effect on audience membership. If a customer's email address is not already associated with an audience, it will be added with the subscription status determined by the `opt_in_status` parameter. An `opt_in_status` of `true` will result in a `subscribed` audience member; `false` will set the status to `transactional`. Updating the customer's `opt_in_status` from `false` to `true` will update the member's subscription status to `subscribed`. However, updating the `opt_in_status` from `true` to `false` will not change the subscription status.
 
 <Note>
 **Note**: Customers who have opted out of your Mailchimp audience will be added as transactional members. Although the `opt_in_status` parameter is present, it will not overwrite the status of a pre-existing contact.
 </Note>
 
-Mailchimp also offers double opt-in, which includes an extra confirmation step to verify the customer’s email address. For double opt-in emails to be sent properly, the contact’s status must first be set to `transactional` and then to `pending`.
+Mailchimp also offers double opt-in, which includes an extra confirmation step to verify the customer's email address. For double opt-in emails to be sent properly, the contact's status must first be set to `transactional` and then to `pending`.
 
-You’ll need to make two requests:
+You'll need to make two requests:
 
 1. Add the customer as a transactional contact by making a POST request to the [Customers endpoint](/marketing/api/ecommerce/list-store-customers) with a value of `false` for the `opt_in_status` field. (Sending a value of `true` would add them as a subscriber and opt them into marketing emails.)
 2. Edit the contact by making a PATCH request to `lists/{list_id}/members/{subscriber_hash}` with a value of `pending` for the `status` field.
 
 ## Products
 
-A [product](/marketing/api/ecommerce/list-store-products) represents an item for sale in a store. Each product exists as its own parent entity that must contain one or more product variants, and a product must be added to a store before it can be added to a cart or an order. You must create products before you can create carts and orders.
+A product must exist in a store before it can be added to a cart or an order, and every product needs at least one variant. Create your products and variants before you create carts and orders.
 
 ### Product retargeting emails
 
-You can remind contacts about items they viewed in your store but did not purchase with product retargeting emails. 
+You can remind contacts about items they viewed in your store but did not purchase with product retargeting emails.
 
-First, you’ll need to [create a new store via the API](/marketing/api/ecommerce/create-store) or [connect a third-party store](https://mailchimp.com/help/connect-your-online-store-to-mailchimp/) to your Mailchimp account. Once your store is connected, embed JavaScript in your store pages that will relay information to Mailchimp about what products have been viewed. Most store platforms ask you to place this script in a header or footer element so it appears on every page on your store.
+First, you'll need to [create a new store via the API](/marketing/api/ecommerce/create-store) or [connect a third-party store](https://mailchimp.com/help/connect-your-online-store-to-mailchimp/) to your Mailchimp account. Once your store is connected, embed JavaScript in your store pages that will relay information to Mailchimp about what products have been viewed. Most store platforms ask you to place this script in a header or footer element so it appears on every page on your store.
 
 <Note>
 **Note**: Not all stores support product retargeting emails. You can check this via the [`/ecommerce/stores/{store_id}`](/marketing/api/ecommerce/get-store) endpoint under `automations.abandoned_browse.is_supported`.
 </Note>
 
-Depending on the requirements of your store platform, you may need to embed the JavaScript directly in your page or link to an external script hosted by Mailchimp. Both of these are accessible via the [`/ecommerce/stores/{store_id}`](/marketing/api/ecommerce/get-store) endpoint: `connected_site.site_script.fragment` contains the code, and `connected_site.site_script.url` contains the external script location. 
+Depending on the requirements of your store platform, you may need to embed the JavaScript directly in your page or link to an external script hosted by Mailchimp. Both of these are accessible via the [`/ecommerce/stores/{store_id}`](/marketing/api/ecommerce/get-store) endpoint: `connected_site.site_script.fragment` contains the code, and `connected_site.site_script.url` contains the external script location.
 
 You can verify that you have properly installed the script for your store by using the [`/connected-sites/{connected_site_id}/actions/verify-script-installation`](/marketing/api/connected-sites/create-action-verify-script-installation) endpoint, replacing `{connected_site_id}` with the unique `site_foreign_id` of your store. A successful verification will return an empty result, and an unsuccessful verification will return an error.
 
@@ -59,11 +88,11 @@ The product retargeting email workflow is configured as an automation, which you
 
 ## Carts
 
-The [Carts](/marketing/api/ecommerce/list-store-carts) endpoint lets you temporarily save a customer’s shopping cart prior to a successful purchase. Carts contain [cart lines](/marketing/api/ecommerce/list-store-cart-lines), which represent information about products that customers have added to their shopping carts.
+A cart is a customer's shopping cart saved before a successful purchase, and its [cart lines](/marketing/api/ecommerce/list-store-cart-lines) record which product variants the customer added.
 
 ### Abandoned cart emails
 
-You can [create an abandoned cart email](https://mailchimp.com/help/create-an-abandoned-cart-email/) for any cart with a valid customer `email_address` and `checkout_url`. The email will be populated with information from the product variants contained in the cart lines within the abandoned cart. After the time specified in the abandoned cart notification settings, the email will be sent. If you remove the cart with a DELETE request before the time elapses, the corresponding abandoned cart email will be canceled. Carts do not automatically expire and will remain on Mailchimp’s systems until deleted.
+You can [create an abandoned cart email](https://mailchimp.com/help/create-an-abandoned-cart-email/) for any cart with a valid customer `email_address` and `checkout_url`. The email will be populated with information from the product variants contained in the cart lines within the abandoned cart. After the time specified in the abandoned cart notification settings, the email will be sent. If you remove the cart with a DELETE request before the time elapses, the corresponding abandoned cart email will be canceled. Carts do not automatically expire and will remain on Mailchimp's systems until deleted.
 
 <Note>
 **Note**: Cart data cannot be converted directly into an order—carts only exist for the purpose of triggering abandoned cart automations. However, it is possible to read the contents of a cart, create an order with those contents, and then delete the cart.
@@ -71,7 +100,7 @@ You can [create an abandoned cart email](https://mailchimp.com/help/create-an-ab
 
 ## Orders
 
-The [Orders](/marketing/api/ecommerce/list-store-orders) endpoint represents successful transactions. When adding orders, the `processed_at_foreign` parameter is not required. However, if the orders are missing a date and timestamp, they will not show up on a contact’s Activity Feed in the application.
+An order is a successful transaction. When adding orders, the `processed_at_foreign` parameter is not required. However, if the orders are missing a date and timestamp, they will not show up on a contact's Activity Feed in the application.
 
 To support [tracking campaign revenue](https://mailchimp.com/help/view-revenue-from-email-campaigns/), orders must include `campaign_id`, `processed_at_foreign` time, and `financial_status`.
 
@@ -119,7 +148,7 @@ The `mc_cid` parameter is the Mailchimp ID for the campaign that generated the l
 Mailchimp's personalized [product recommendations feature](https://mailchimp.com/help/about-product-recommendations/) uses individual contact purchase data to prioritize and promote relevant items from a store. To enable product recommendations for the orders and products you add to Mailchimp, the following parameters are required:
 
 - [Products](/marketing/api/ecommerce/list-store-products) require a valid `image_url` so your customers can see images of recommended products.
-- [Product Variants](/marketing/api/ecommerce/list-store-product-variants) require the `inventory_quantity` parameter. Product variants will only be recommended if this value is greater than 0, so items that are not available for purchase will not be recommended.
+- [Product variants](/marketing/api/ecommerce/list-store-product-variants) require the `inventory_quantity` parameter. Product variants will only be recommended if this value is greater than 0, so items that are not available for purchase will not be recommended.
 - [Orders](/marketing/api/ecommerce/list-store-orders) require a `processed_at_foreign` timestamp. This ensures that product recommendations are based on up-to-date e-commerce activity.
 
 <Note>
