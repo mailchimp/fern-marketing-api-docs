@@ -1,0 +1,20 @@
+---
+title: Import and export contacts
+description: Import contacts into an existing audience and export them back out, including bulk operations.
+---
+
+<Note>
+**Draft**: This page is a placeholder created during the docs reorganization. Content is not yet written.
+</Note>
+
+## The basics
+
+Outline:
+
+- Add a single contact: `POST /3.0/lists/{list_id}/members`
+- **Upsert to avoid duplicates**: `PUT /3.0/lists/{list_id}/members/{subscriber_hash}` — the detail integrators most need
+- Bulk import at volume via `POST /3.0/batches`
+- Read contacts back: `GET /3.0/lists/{list_id}/members`
+- Bulk export: `POST /3.0/account-exports`, then `GET /3.0/account-exports/{export_id}`
+
+Assemble from [Account exports](/marketing/build/start-developing/account-exports), [Export API](/marketing/build/start-developing/export-api), and [Batch operations](/marketing/api-concepts/batch-operations). Replaces the deleted audience-creation guide: integrators build against audiences that already exist.

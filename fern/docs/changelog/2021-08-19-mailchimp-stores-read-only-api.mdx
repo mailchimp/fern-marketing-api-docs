@@ -3,6 +3,6 @@ title: Mailchimp Stores read-only in API
 tags: ["Marketing API"]
 ---
 
-API requests for write operations (create, update, delete) to [E-Commerce Stores](/marketing/docs/e-commerce/#stores) representing Mailchimp Stores will respond with a 4XX error status.
+API requests for write operations (create, update, delete) to [E-Commerce Stores](/marketing/concepts/e-commerce#stores) representing Mailchimp Stores will respond with a 4XX error status.
 
 Previously, writes to Mailchimp Stores via the API would succeed, at least temporarily. However, since this data is synced automatically from the Mailchimp Stores feature itself, any changes made via the API would eventually be overwritten by the data synchronization mechanism.

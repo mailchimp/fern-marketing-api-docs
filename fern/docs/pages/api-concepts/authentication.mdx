@@ -1,0 +1,44 @@
+---
+title: Authentication
+description: Authenticate requests to the Marketing API with an API key or an OAuth 2 access token.
+---
+
+## The basics
+
+You can authenticate requests using either your API key or an OAuth access token, depending on your use case. You should use an API key if you’re writing code that tightly couples _your_ application data to _your_ Mailchimp account data; if you ever need to access _someone else’s_ Mailchimp account data, you should use OAuth 2.
+
+For more information on the Mailchimp OAuth 2 flow, see [Access Data on Behalf of Other Users with OAuth 2](/marketing/api-concepts/oauth-2).
+
+If you’re integrating with the Marketing API using one of the [official client libraries](/tools), you won’t need to worry about the implementation details for authentication.
+
+## Authenticate with an API key or OAuth 2 token
+
+API keys and OAuth 2 tokens can be used to make authenticated requests the same way. We’ll refer to both as tokens.
+
+You can either use HTTP Basic Authentication or Bearer Authentication. 
+
+HTTP Basic Authentication:
+
+```bash
+curl --request GET \
+--url 'https://<dc>.api.mailchimp.com/3.0/' \
+--user 'anystring:TOKEN
+```
+
+Bearer Authentication:
+
+```bash
+--url 'https://<dc>.api.mailchimp.com/3.0/' \
+--header "Authorization: Bearer <TOKEN>"
+```
+
+## User API access
+
+API authentication is tied to the user that created the API key or authorized the OAuth2 app. If the user is removed from the account, that authentication token will be revoked.
+
+API access is also limited by the [user level (role)](https://mailchimp.com/help/manage-user-levels-in-your-account/) of the authorizing user. The role is not fixed, and can change over time. You can check the role for an API key using the [API Root endpoint](/marketing/api/root/list), and see the restrictions in [this chart](https://mailchimp.com/help/manage-user-levels-in-your-account/#Compare_user_level_permissions). Attempts to perform an API action that aren’t permitted for the role will return a [403 error](/marketing/api-concepts/errors/#error-glossary). When creating an API key or authorizing an app, we recommend using an admin user when possible. OAuth integrators may want to inform the user if the application won’t work at their user level.
+
+<Note>
+**Note**: You are responsible for the security of API tokens; we recommend that you store them in a secure location on your server. Because of the potential security risks associated with exposing an API token, Mailchimp does not support client-side implementation of our API using CORS requests.
+</Note>
+

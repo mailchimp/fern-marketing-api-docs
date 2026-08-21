@@ -1,19 +1,25 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/product-yml.schema.json
 
-# Header tabs (docs.yml layout.tabs-placement: header): Overview / Guides /
-# Documentation / API Reference render as a horizontal bar below the header.
-# Slugs live on the tab DEFINITIONS (not the `- tab:` nav items) so URLs stay
-# /marketing, /marketing/guides/*, /marketing/docs/*, /marketing/api/*.
+# Header tabs (docs.yml layout.tabs-placement: header). Slugs live on the tab
+# DEFINITIONS (not the `- tab:` nav items) so URLs stay /marketing,
+# /marketing/concepts/*, /marketing/api-concepts/*, /marketing/build/*,
+# /marketing/api/*.
+#
+# Reorganized 2026-08-21: replaces the previous Overview / Guides /
+# Documentation / API Reference tabs. See notes/proposed-ia.md.
 tabs:
   overview:
     display-name: Overview
     skip-slug: true
-  guides:
-    display-name: Guides
-    slug: guides
-  documentation:
-    display-name: Documentation
-    slug: docs
+  concepts:
+    display-name: Mailchimp core concepts
+    slug: concepts
+  api-concepts:
+    display-name: API core concepts
+    slug: api-concepts
+  building:
+    display-name: Building with Mailchimp
+    slug: build
   api:
     display-name: API Reference
     slug: api
@@ -24,60 +30,131 @@ navigation:
       - page: Overview
         path: ../docs/pages/marketing/landing.mdx
         slug: ""
-  - tab: guides
+
+  # Domain concepts for a developer new to Mailchimp. No API mechanics.
+  - tab: concepts
     layout:
-      - page: Marketing API Quick Start
-        path: ../docs/pages/welcome.mdx
-        slug: quick-start
-      - page: Create Your First Audience
-        path: ../docs/pages/guides/create-audience.mdx
-      - page: Organize Contacts with Tags
-        path: ../docs/pages/guides/organize-contacts-with-tags.mdx
-      - page: Access Data on Behalf of Other Users with OAuth 2
-        path: ../docs/pages/guides/access-user-data-oauth-2.mdx
-        slug: access-user-data-oauth-2
-      - page: Run Async Requests with the Batch Endpoint
-        path: ../docs/pages/guides/run-async-requests-batch-endpoint.mdx
-        slug: run-async-requests-batch-endpoint
-      - page: Track Outside Activity with Events
-        path: ../docs/pages/guides/track-outside-activity-events.mdx
-        slug: track-outside-activity-events
-      - page: Synchronize Audience Data with Webhooks
-        path: ../docs/pages/guides/sync-audience-data-webhooks.mdx
-        slug: sync-audience-data-webhooks
-      - page: Manage Contacts and Events with the Mobile SDK
-        path: ../docs/pages/guides/mobile-sdk.mdx
-        slug: mobile-sdk
-      - page: Create a Webhook for Customer Journey Builder or Campaign Manager
-        path: ../docs/pages/guides/create-webhook-customer-journey.mdx
-        slug: create-webhook-customer-journey-builder-campaign-manager
-  - tab: documentation
+      - page: How Mailchimp works
+        path: ../docs/pages/concepts/how-mailchimp-works.mdx
+        slug: how-mailchimp-works
+      - page: Audiences and contacts
+        path: ../docs/pages/concepts/audiences-and-contacts.mdx
+        slug: audiences-and-contacts
+      - page: Merge fields
+        path: ../docs/pages/concepts/merge-fields.mdx
+        slug: merge-fields
+      - page: Tags and segments
+        path: ../docs/pages/concepts/tags-and-segments.mdx
+        slug: tags-and-segments
+      - page: E-commerce
+        path: ../docs/pages/concepts/e-commerce.mdx
+        slug: e-commerce
+
+  # Mechanics of the interface. Holds deep mechanism guides — for these
+  # topics the mechanism IS the concept.
+  - tab: api-concepts
     layout:
-      - page: Fundamentals
-        path: ../docs/pages/documentation/fundamentals.mdx
-      - page: Methods and Parameters
-        path: ../docs/pages/documentation/methods-parameters.mdx
-        slug: methods-parameters
+      - page: API structure
+        path: ../docs/pages/api-concepts/api-structure.mdx
+        slug: api-structure
+      - page: Authentication
+        path: ../docs/pages/api-concepts/authentication.mdx
+        slug: authentication
+      - page: OAuth 2
+        path: ../docs/pages/api-concepts/oauth-2.mdx
+        slug: oauth-2
+      - page: Methods and parameters
+        path: ../docs/pages/api-concepts/methods-and-parameters.mdx
+        slug: methods-and-parameters
+      - page: Rate limits and timeouts
+        path: ../docs/pages/api-concepts/rate-limits-and-timeouts.mdx
+        slug: rate-limits-and-timeouts
       - page: Errors
-        path: ../docs/pages/documentation/errors.mdx
-      - page: E-Commerce
-        path: ../docs/pages/documentation/e-commerce.mdx
-      - page: Integrations
-        path: ../docs/pages/documentation/integrations.mdx
-      - page: Merge Fields
-        path: ../docs/pages/documentation/merge-fields.mdx
-      - page: Mobile SDK
-        path: ../docs/pages/documentation/mobile-sdk.mdx
-      - page: Exports
-        path: ../docs/pages/documentation/export-api.mdx
-        slug: export-api
-      - page: Alternative Schemas
-        path: ../docs/pages/documentation/alternative-schemas.mdx
-      - page: Audiences (BETA)
-        path: ../docs/pages/documentation/audiences.mdx
-        slug: audiences-introduction
-      - page: Account Exports
-        path: ../docs/pages/documentation/account-exports.mdx
+        path: ../docs/pages/api-concepts/errors.mdx
+        slug: errors
+      - page: Webhooks
+        path: ../docs/pages/api-concepts/webhooks.mdx
+        slug: webhooks
+      - page: Batch operations
+        path: ../docs/pages/api-concepts/batch-operations.mdx
+        slug: batch-operations
+      - page: Alternative schemas
+        path: ../docs/pages/api-concepts/alternative-schemas.mdx
+        slug: alternative-schemas
+      - page: Audiences endpoints (beta)
+        path: ../docs/pages/api-concepts/audiences-endpoints-beta.mdx
+        slug: audiences-endpoints-beta
+        availability: beta
+
+  - tab: building
+    layout:
+      - section: Get started
+        contents:
+          - page: Create an account
+            path: ../docs/pages/building/get-started/create-an-account.mdx
+            slug: create-an-account
+          - page: Generate your API key
+            path: ../docs/pages/building/get-started/generate-your-api-key.mdx
+            slug: generate-your-api-key
+
+      # Complete, end-to-end tutorials of real, specific use cases.
+      - section: Quickstarts
+        contents:
+          - page: Import and export contacts
+            path: ../docs/pages/building/quickstarts/import-and-export-contacts.mdx
+            slug: import-and-export-contacts
+          - page: Organize contacts with tags
+            path: ../docs/pages/building/quickstarts/organize-contacts-with-tags.mdx
+            slug: organize-contacts-with-tags
+
+      - section: Start developing
+        contents:
+          - page: Set up your development environment
+            path: ../docs/pages/building/start-developing/set-up-your-development-environment.mdx
+            slug: set-up-your-development-environment
+          - page: Client libraries and SDKs
+            path: ../docs/pages/tools/landing.mdx
+            slug: client-libraries-and-sdks
+          - page: Send your first API request
+            path: ../docs/pages/building/start-developing/send-your-first-api-request.mdx
+            slug: send-your-first-api-request
+          - page: CLI
+            path: ../docs/pages/building/start-developing/cli.mdx
+            slug: cli
+          - page: Build an integration
+            path: ../docs/pages/building/start-developing/build-an-integration.mdx
+            slug: build-an-integration
+          - page: Mobile SDK
+            path: ../docs/pages/building/start-developing/mobile-sdk.mdx
+            slug: mobile-sdk
+          - page: Go-live checklist
+            path: ../docs/pages/building/start-developing/go-live-checklist.mdx
+            slug: go-live-checklist
+          - page: Release phases
+            path: ../docs/pages/building/start-developing/release-phases.mdx
+            slug: release-phases
+          - page: Export API (v1.0)
+            path: ../docs/pages/building/start-developing/export-api.mdx
+            slug: export-api
+          - page: Account exports
+            path: ../docs/pages/building/start-developing/account-exports.mdx
+            slug: account-exports
+
+      - section: Build with AI tools
+        contents:
+          - page: Overview
+            path: ../docs/pages/building/ai-tools/overview.mdx
+            slug: ai-tools
+          - page: MCP server
+            path: ../docs/pages/building/ai-tools/mcp-server.mdx
+            slug: mcp-server
+          - page: Agent skills
+            path: ../docs/pages/building/ai-tools/agent-skills.mdx
+            slug: agent-skills
+          - page: llms.txt
+            path: ../docs/pages/building/ai-tools/llms-txt.mdx
+            slug: llms-txt
+
   - tab: api
     layout:
       - api: API Reference

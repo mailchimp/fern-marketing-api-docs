@@ -1,0 +1,24 @@
+---
+title: Rate limits and timeouts
+description: Connection limits, throttling, and the 120-second timeout on Marketing API calls.
+---
+
+## The basics
+
+To improve the experience for all our users, we impose some limits on API requests. These limits prevent a single user from making too many expensive calls at once. Exceeding the limits can result in your API access being disabled, so be cognizant of the quantity and complexity of your requests. Currently there are no options to raise the limit on a per-customer basis.
+
+## Throttling
+
+The Marketing API has a limit of 10 simultaneous connections. You’ll receive a [429 error](/marketing/api-concepts/errors/#error-glossary) if you reach the limit. At exceptionally high volumes, you may receive an HTTP 429 or 403 without a JSON body.
+
+We recommend that you cache frequently accessed values that do not change often in your application’s data store. This will prevent your application from bumping up against the throttling limitations and will likely provide faster access to that data.
+
+## Stream timeouts
+
+The Marketing API has a 120-second timeout on API calls. You may see this type of timeout after you’ve made a network socket connection and are already sending and receiving data.
+
+Response times are dependent on the complexity of your request and the general load across Mailchimp. Some endpoints in the Marketing API return values that are large and slow to calculate. Once you know what data you need, use the [pagination and partial response capabilities](/marketing/api-concepts/methods-and-parameters/#query-string-parameters) to request only what is essential to you. 
+
+<Note>
+**Note**: If you’re regularly seeing issues with timeouts and are unable to optimize your requests using pagination, you might consider [sending long-running requests to the Batch endpoint](/marketing/api-concepts/batch-operations).
+</Note>

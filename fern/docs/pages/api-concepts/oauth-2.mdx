@@ -1,0 +1,481 @@
+---
+title: Access Data on Behalf of Other Users with OAuth 2
+description: Integrate your product with your users\u2019 Mailchimp accounts by authenticating via OAuth.
+---
+
+
+
+## At a glance
+
+OAuth 2 authentication provides developers with a secure way to access Mailchimp Marketing API data _on behalf of_ other Mailchimp users. Most commonly, OAuth 2 authentication is useful for setting up integrations between third-party applications and Mailchimp. Popular integrations include Zapier, Slack, and Shopify—you can see a full list [here](https://mailchimp.com/integrations/). 
+
+You might use OAuth 2 authentication to set up integrations that help you:
+
+- Sync your application data with Mailchimp so Mailchimp can send marketing and transactional email
+- Keep your audiences up-to-date and synced with your CRM, where you maintain a list of contacts
+
+In this guide, we’ll walk through how to set up OAuth 2 to authenticate users of your app, then demonstrate how to make a call to the Marketing API using an OAuth 2 access token. We'll also show you how to rotate a client secret.
+
+## What you’ll need
+
+- A Mailchimp account
+- [Your API key and server prefix](/marketing/build/start-developing/send-your-first-api-request/#generate-your-api-key)
+- The Redirect URI for your application. This is the URL that Mailchimp Marketing servers will redirect users to after they have consented to giving your application access to their Mailchimp Marketing data.
+
+## When not to use OAuth 2
+
+Before doing the work of setting up authentication with OAuth 2, it’s worth understanding when you _don’t_ need to use OAuth 2, and should use your API key instead. 
+
+Simply put: Use your API key if you’re writing code that tightly couples _your_ application’s data to _your_ Mailchimp account’s data. If you ever need to access _someone else’s_ Mailchimp account’s data, you should be using OAuth 2.
+
+<Note>
+**Note**: We strongly discourage asking your users to copy and paste their API key into your application or integration. Not only is it less secure than using OAuth 2, it’s also prone to errors.
+</Note>
+
+Even if you’re intending to use OAuth later, you may still want to use your API key to start writing code against the Mailchimp Marketing API more quickly; using the API key doesn’t require a server to handle the OAuth 2 flow, so you can start writing application code first, then switch to OAuth 2 further along in your development.
+
+## OAuth 2 workflow overview
+
+Even if you’ve used OAuth 2 in the past, workflows can differ slightly, so here’s a quick overview of Mailchimp’s OAuth 2 workflow (which conforms to the [Authorization Code flow](https://auth0.com/docs/flows/concepts/auth-code)):
+
+When a user indicates that they allow you to authenticate with Mailchimp on their behalf, your application will direct them to Mailchimp’s OAuth page, where they will login to Mailchimp and authorize your application.
+
+Mailchimp will then redirect the user back to your server with a query string parameter named `code`; you’ll send that code in a request from your server to Mailchimp, to exchange it for an access token. 
+
+Finally, using the access token, you’ll make a call to the OAuth Metadata endpoint, which will give you the server prefix for this user. You will want to persist both the access token and the server prefix in your application so you can use them for all subsequent requests to the Marketing API on the user’s behalf.
+
+<Note>
+**Note**: Mailchimp Marketing access tokens do not expire, so you don’t need to use a `refresh_token`. The access token will remain valid unless the user revokes your application’s permission to access their account.
+</Note>
+
+## Register your application
+
+To get the credentials you need in order to set up your OAuth 2 workflow, you’ll first need to register your application with Mailchimp:
+
+1. Navigate to the [**Registered Apps page**](https://us1.admin.mailchimp.com/account/oauth2/) in your Mailchimp account
+2. Click [**Register An App**](https://us19.admin.mailchimp.com/account/oauth2/client/)****
+3. Fill out the **Register An App** form
+4. Click **Create**
+
+After successfully registering your application, you’ll see the `client_id` and `client_secret` at the bottom of the page, which you’ll need to implement the OAuth 2 workflow on your server.
+
+<Note>
+This is the only time you’ll be able to see `client_secret`, so you’ll need to copy it and store it securely.
+</Note>
+
+## Implement the OAuth 2 workflow on your server
+
+Since it’s hard to walk through the OAuth 2 workflow via description alone, let’s instead take a look at some sample server code. We’ll handle each step of the OAuth process: 1) user authentication 2) exchanging the code for the access token and 3) making your first authenticated request on behalf of the user.
+
+<CodeBlocks>
+```javascript title="Node"
+const express = require("express");
+const querystring = require("querystring");
+const bodyParser = require("body-parser");
+const fetch = require("node-fetch");
+const { URLSearchParams } = require("url");
+const mailchimp = require("@mailchimp/mailchimp_marketing");
+
+// Basic express app setup
+const app = express();
+app.use(bodyParser.json());
+app.use(
+  bodyParser.urlencoded({
+    extended: true
+  })
+);
+
+// You should always store your client id and secret in environment variables for security — the exception: sample code.
+const MAILCHIMP_CLIENT_ID = "YOUR_CLIENT_ID";
+const MAILCHIMP_CLIENT_SECRET =
+  "YOUR_CLIENT_SECRET";
+const BASE_URL = "http://127.0.0.1:3000";
+const OAUTH_CALLBACK = `${BASE_URL}/oauth/mailchimp/callback`;
+
+// 1. Navigate to http://127.0.0.1:3000 and click Login
+app.get("/", function(req, res) {
+  res.send(
+    '<p>Welcome to the sample Mailchimp OAuth app! Click <a href="/auth/mailchimp">here</a> to log in</p>'
+  );
+});
+
+// 2. The login link above will direct the user here, which will redirect
+// to Mailchimp's OAuth login page.
+app.get("/auth/mailchimp", (req, res) => {
+  res.redirect(
+    `https://login.mailchimp.com/oauth2/authorize?${querystring.stringify({
+      response_type: "code",
+      client_id: MAILCHIMP_CLIENT_ID,
+      redirect_uri: OAUTH_CALLBACK
+    })}`
+  );
+});
+
+// 3. Once // 3. Once the user authorizes your app, Mailchimp will redirect the user to
+// this endpoint, along with a code you can use to exchange for the user's
+// access token.
+app.get("/oauth/mailchimp/callback", async (req, res) => {
+  const {
+    query: { code }
+  } = req;
+
+  // Here we're exchanging the temporary code for the user's access token.
+  const tokenResponse = await fetch(
+    "https://login.mailchimp.com/oauth2/token",
+    {
+      method: "POST",
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        client_id: MAILCHIMP_CLIENT_ID,
+        client_secret: MAILCHIMP_CLIENT_SECRET,
+        redirect_uri: OAUTH_CALLBACK,
+        code
+      })
+    }
+  );
+
+  const { access_token } = await tokenResponse.json();
+  console.log(access_token);
+
+  // Now we're using the access token to get information about the user.
+  // Specifically, we want to get the user's server prefix, which we'll use to
+  // make calls to the API on their behalf.  This prefix will change from user
+  // to user.
+  const metadataResponse = await fetch(
+    "https://login.mailchimp.com/oauth2/metadata",
+    {
+      headers: {
+        Authorization: `OAuth ${access_token}`
+      }
+    }
+  );
+
+  const { dc } = await metadataResponse.json();
+  console.log(dc);
+
+  // Below, we're using the access token and server prefix to make an
+  // authenticated request on behalf of the user who just granted OAuth access.
+  // You wouldn't keep this in your production code, but it's here to
+  // demonstrate how the call is made.
+
+  mailchimp.setConfig({
+    accessToken: access_token,
+    server: dc
+  });
+
+  const response = await mailchimp.ping.get();
+  console.log(response);
+
+  res.send(`
+    <p>This user's access token is ${access_token} and their server prefix is ${dc}.</p>
+
+    <p>When pinging the Mailchimp Marketing API's ping endpoint, the server responded:<p>
+
+    <code>${response}</code>
+  `);
+
+  // In reality, you'd want to store the access token and server prefix
+  // somewhere in your application.
+  // fakeDB.getCurrentUser();
+  // fakeDB.storeMailchimpCredsForUser(user, {
+  //   dc,
+  //   access_token
+  // });
+});
+
+app.listen(3000, "127.0.0.1", function() {
+  console.log(
+    "Server running on port 3000; visit http://127.0.0.1:3000"
+  );
+});
+```
+
+```php title="PHP"
+<?php
+require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
+// You should always store your client id and secret in environment variables for security.
+$mailchimp_client_id = getenv('MAILCHIMP_CLIENT_ID');
+$mailchimp_client_secret = getenv('MAILCHIMP_CLIENT_SECRET');
+$base_url = getenv('BASE_URL');
+$oauth_callback = "$base_url/oauth/mailchimp/callback";
+// 1. Navigate to http://127.0.0.1:3000 and click Login
+if (empty($_GET)) {
+  echo '<p>Welcome to the sample Mailchimp OAuth app! Click <a href="?login">here</a> to log in</p>';
+}
+// 2. The login link above will direct the user here, which will redirect
+// to Mailchimp's OAuth login page.
+if (isset($_GET['login'])) {
+  header('Location: https://login.mailchimp.com/oauth2/authorize?'.http_build_query([
+    'response_type' => 'code',
+    'client_id' => $mailchimp_client_id,
+    'redirect_uri' => $oauth_callback,
+  ]));
+  exit();
+}
+// 3. Once the user authorizes your app, Mailchimp will redirect the user to
+// this endpoint, along with a code you can use to exchange for the user's
+// access token.
+if (isset($_GET['code'])) {
+  $url = 'https://login.mailchimp.com/oauth2/token';
+  $context = stream_context_create([
+    'http' => [
+      'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+      'method' => 'POST',
+      'content' => http_build_query([
+        'grant_type' => "authorization_code",
+        'client_id' => $mailchimp_client_id,
+        'client_secret' => $mailchimp_client_secret,
+        'redirect_uri' => $oauth_callback,
+        'code' => $_GET['code'],
+      ]),
+    ],
+  ]);
+  $result = file_get_contents($url, false, $context);
+  $decoded = json_decode($result);
+  $access_token = $decoded->access_token;
+  // Now we're using the access token to get information about the user.
+  // Specifically, we want to get the user's server prefix, which we'll use to
+  // make calls to the API on their behalf.  This prefix will change from user
+  // to user.
+  $url = 'https://login.mailchimp.com/oauth2/metadata';
+  $context = stream_context_create([
+    'http' => [
+      'header' => "Authorization: OAuth $access_token",
+    ],
+  ]);
+  $result = file_get_contents($url, false, $context);
+  $decoded = json_decode($result);
+  $dc = $decoded->dc;
+  // Below, we're using the access token and server prefix to make an
+  // authenticated request on behalf of the user who just granted OAuth access.
+  // You wouldn't keep this in your production code, but it's here to
+  // demonstrate how the call is made.
+  $mailchimp = new MailchimpMarketing\ApiClient();
+  $mailchimp->setConfig([
+    'accessToken' => $access_token,
+    'server' => $dc,
+  ]);
+  try {
+    $response = $mailchimp->ping->get();
+    echo "<p>This user\'s access token is $access_token and their server prefix is $dc.</p>";
+    echo "<p>When pinging the Mailchimp Marketing API\'s ping endpoint, the server responded:<p>";
+    echo "<code>" . json_encode($response) . "</code>";
+  } catch (exception $e) {
+    var_dump($e);
+  }
+  // In reality, you'd want to store the access token and server prefix
+  // somewhere in your application.
+  // fakeDB.getCurrentUser();
+  // fakeDB.storeMailchimpCredsForUser(user, {
+  //   dc,
+  //   access_token
+  // });
+}
+```
+
+```ruby title="Ruby"
+require 'MailchimpMarketing'
+require 'sinatra'
+require 'net/http'
+
+MAILCHIMP_CLIENT_ID = ENV['MAILCHIMP_CLIENT_ID']
+MAILCHIMP_CLIENT_SECRET = ENV['MAILCHIMP_CLIENT_SECRET']
+BASE_URL = "http://127.0.0.1:3000"
+OAUTH_CALLBACK = "#{BASE_URL}/oauth/mailchimp/callback"
+
+mailchimp = MailchimpMarketing::Client.new()
+
+# Basic Sinatra setup
+configure do
+  set :port, 3000
+end
+
+# 1. Navigate to http://127.0.0.1:3000 and click Login
+get '/' do
+  "<p>Welcome to the sample Mailchimp OAuth app! Click <a href='/auth/mailchimp'>here</a> to log in</p>"
+end
+
+# 2. The login link above will direct the user here, which will redirect
+#    to Mailchimp's OAuth login page
+get '/auth/mailchimp' do
+  query_params = "response_type=code&client_id=#{MAILCHIMP_CLIENT_ID}&redirect_uri=#{OAUTH_CALLBACK}"
+  redirect to("https://login.mailchimp.com/oauth2/authorize?#{query_params}")
+end
+
+# 3. Once the user authorizes your app, Mailchimp will redirect the user to
+#    this endpoint, along with a code you can use to exchange for the user's
+#    access token.
+get '/oauth/mailchimp/callback' do
+  code = params['code']
+  body = "grant_type=authorization_code&client_id=#{MAILCHIMP_CLIENT_ID}&client_secret=#{MAILCHIMP_CLIENT_SECRET}&redirect_uri=#{OAUTH_CALLBACK}&code=#{code}"
+  uri = URI("https://login.mailchimp.com/oauth2/token")
+  response = JSON.parse(Net::HTTP.post(uri, body).body)
+  access_token = response['access_token']
+
+  metadata_uri = URI("https://login.mailchimp.com/oauth2/metadata")
+  metadata_response = JSON.parse(
+    Net::HTTP.post(
+      metadata_uri,
+      nil,
+      {'Authorization' => "OAuth #{access_token}"}
+    ).body
+  )
+  dc = metadata_response['dc']
+
+  mailchimp.set_config({
+    :access_token => access_token,
+    :server => dc
+  })
+
+  mailchimp_res = mailchimp.ping.get
+
+  """
+    <p>This user's access token is #{access_token} and their server prefix is #{dc}.</p>
+
+    <p>When pinging the Mailchimp Marketing API's ping endpoint, the server responded:<p>
+
+    <code>#{mailchimp_res}</code>
+  """
+
+  # In reality, you'd want to store the access token and server prefix
+  # somewhere in your application.
+  # user = fake_db.get_current_user
+  # fake_db.store_mailchimp_creds_for_user(user, { access_token: access_token });
+end
+```
+
+```python title="Python"
+#!/usr/bin/env python
+
+from urllib.parse import urlencode
+from operator import itemgetter
+
+import json
+import requests
+from flask import Flask, redirect, request
+import mailchimp_marketing as MailchimpMarketing
+
+BASE_URL = "http://127.0.0.1:5000"
+OAUTH_CALLBACK = "{}/oauth/mailchimp/callback".format(BASE_URL)
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return "<p>Welcome to the sample Mailchimp OAuth app! Click <a href='/auth/mailchimp'>here</a> to log in</p>"
+
+# 2. The login link above will direct the user here, which will redirect
+# to Mailchimp's OAuth login page.
+@app.route('/auth/mailchimp', methods=['GET'])
+def auth():
+    # You should always store your client id and secret in environment variables for security — the exception: sample code.
+    MAILCHIMP_CLIENT_ID = "YOUR_CLIENT_ID"
+    oauth_base = "https://login.mailchimp.com/oauth2/authorize?"
+    return redirect("{}{}".format(oauth_base,
+        urlencode({
+            "response_type": "code",
+            "client_id": MAILCHIMP_CLIENT_ID,
+            "redirect_uri": OAUTH_CALLBACK
+        })))
+
+# 3. Once the user authorizes your app, Mailchimp will redirect the user to
+# this endpoint, along with a code you can use to exchange for the user's
+# access token.
+@app.route('/oauth/mailchimp/callback', methods=['GET'])
+def authCallback():
+    # You should always store your client id and secret in environment variables for security — the exception: sample code.
+    MAILCHIMP_CLIENT_ID = "YOUR_CLIENT_ID"
+    MAILCHIMP_CLIENT_SECRET = "YOUR_CLIENT_SECRET"
+
+    code = request.args['code']
+    app.logger.info('requesting token using %s code' % code)
+    # Here we're exchanging the temporary code for the user's access token.
+    tokenResponse = requests.post("https://login.mailchimp.com/oauth2/token",
+              data={
+                  'grant_type': 'authorization_code',
+                  'client_id': MAILCHIMP_CLIENT_ID,
+                  'client_secret': MAILCHIMP_CLIENT_SECRET,
+                  'redirect_uri': OAUTH_CALLBACK,
+                  'code': code
+              })
+    app.logger.info('status_code: %s' % tokenResponse.status_code)
+    app.logger.info('response: %s' % tokenResponse.json())
+    access_token = itemgetter('access_token')(tokenResponse.json())
+
+    # Now we're using the access token to get information about the user.
+    # Specifically, we want to get the user's server prefix, which we'll use to
+    # make calls to the API on their behalf.  This prefix will change from user
+    # to user.
+
+    metadataResponse = requests.get(
+        'https://login.mailchimp.com/oauth2/metadata',
+        headers={'Authorization': "OAuth {}".format(access_token)})
+
+    dc = itemgetter('dc')(metadataResponse.json())
+    app.logger.info('dc: %s' % dc)
+
+    # Below, we're using the access token and server prefix to make an
+    # authenticated request on behalf of the user who just granted OAuth access.
+    # You wouldn't keep this in your production code, but it's here to
+    # demonstrate how the call is made.
+
+    mailchimp = MailchimpMarketing.Client()
+    mailchimp.set_config({
+      "access_token": access_token,
+      "server": dc
+    })
+
+    response = mailchimp.ping.get()
+    app.logger.info('Ping response: %s' % json.dumps(response))
+
+    return """<p>This user's access token is {} and their server prefix is {}.</p>
+          <p>When pinging the Mailchimp Marketing API's ping endpoint, the server responded:<p>
+           <code>{}</code>
+          """.format(access_token, dc, code)
+    # In reality, you'd want to store the access token and server prefix
+    # somewhere in your application.
+    # fakeDB.getCurrentUser()
+    # fakeDB.storeMailchimpCredsForUser(user, {
+    #      "dc":dc,
+    #      access_token
+    # })
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')
+```
+</CodeBlocks>
+
+This code will handle the entire OAuth workflow, resulting in (but not persisting) an access token you can use to make a request on behalf of the authenticating user. In this case, we’re making a trivial request to the [Ping endpoint](/marketing/api/ping/list), but doing so confirms that the token is working as expected.
+
+<Note>
+**Note**: All requests to the Mailchimp OAuth 2 endpoints are made over HTTPS. For security, we strongly recommend—but do not enforce—using HTTPS for your `redirect_uri`.
+</Note>
+
+Read through the code above if you want to understand every detail of the workflow, but briefly, here’s what's happening on your server:
+
+- To begin the process, you’ll redirect your user to this URL: `https://login.mailchimp.com/oauth2/authorize?response_type=code&client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI`
+- When the user approves your application, they’ll be sent back to your application with a query string parameter named code you can use to request your access token via a POST request to this URL: `https://login.mailchimp.com/oauth2/token`
+
+Finally, to retrieve the server prefix, you’ll send a GET request to the Metadata endpoint with an Authorization header set to OAuth USERS_OAUTH_TOKEN: `https://login.mailchimp.com/oauth2/metadata`
+
+## Rotate client secret
+
+Once you’ve implemented an OAuth 2 flow for your app, you might need to update the security. 
+
+To rotate your client secret: 
+
+1. Navigate to the [**Registered Apps page**](https://us21.admin.mailchimp.com/account/oauth2/) in your Mailchimp account.
+2. Click **Edit** for the registered app you need to update.
+3. In the **Client secret** field, click **Rotate**.
+4. On the pop-up modal, type **ROTATE** and click **Rotate Client Secret**.
+
+You’ll see a modal with `client_id` and the updated `client_secret`, which you’ll use to update your app.
+
+<Note>
+This is the only time you’ll be able to see the updated `client_secret`, so you’ll need to copy it and store it securely.
+</Note>
+
+## More resources
+
+- [Marketing Fundamentals](/marketing/api-concepts/api-structure)
+- [Create Your First Audience](/marketing/build/quickstarts/import-and-export-contacts)

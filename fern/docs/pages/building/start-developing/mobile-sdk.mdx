@@ -1,0 +1,323 @@
+---
+title: Mobile SDK
+description: Include the Mobile SDK in an Android or iOS app to add your user data to Mailchimp.
+---
+
+
+
+## The basics
+
+You can use the Mobile SDK to do things like:
+
+- Add contacts to an audience when they sign in to your mobile app
+- Update contacts based on changes in your app
+- Log events such as launching your app, viewing an item, or leaving a rating
+
+
+The Mailchimp Mobile SDK implements a mobile-oriented subset of Mailchimp’s Marketing API, giving iOS and Android developers an easier path to integrating with core functionality most relevant to mobile devices. 
+
+This documentation covers how to install and initialize the SDK for both platforms, as well as its major features for working with contacts and events. To walk through using the Mobile SDK with an example customer, see the [Manage Contacts and Events with the Mobile SDK](/marketing/build/start-developing/mobile-sdk) guide.
+
+### Write-only feature set
+
+The Mobile SDK allows for creating contacts and updating their data—including tags, merge fields, and GDPR permissions. It can also log events based on in-app behavior of mobile users.
+
+For security purposes, the Mobile SDK is write-only. For additional security, calls to create or update contacts fail silently—otherwise bad actors could try to determine who is or is not in your list from error messages alone.
+
+To retrieve contact data that you have created with the Mobile SDK, use the [Lists/Audiences endpoints](/marketing/api/lists/list) in the Mailchimp Marketing API or the [**All contacts**](https://us1.admin.mailchimp.com/lists/members) page for your audience in the Mailchimp application.
+
+### Mobile SDK keys
+
+While the Marketing API has one key for each API user, the Mobile SDK has different keys for each of your audiences. To obtain the key for a particular audience:
+
+1. Go to the[ API Keys](https://us1.admin.mailchimp.com/account/api/) section of your Mailchimp account and scroll down to **Your Mobile SDK Client keys**.
+2. Click **Create New Key**.
+3. Select an audience and then label your key with a descriptive name.
+4. Read and accept the Intuit Developer Terms of Service.
+5. Click **Create Key**. Copy your key and store it in a secure location. You won’t be able to see or copy the full key on the Account page once it’s been generated.
+
+Even though the Mobile SDK key does not provide access to the [Mailchimp Marketing API](/marketing/api), you should still consider your key private and keep it safe.
+
+## Installing for iOS
+
+To add the Mobile SDK to your iOS app, you’ll need:
+
+- [Xcode](https://developer.apple.com/xcode/) version 11 or above
+- Deployment target of iOS 12.0 or above
+- [Ruby 2.4](https://www.ruby-lang.org/en/downloads/) or above (for [fastlane](https://fastlane.tools/))
+
+### Cocoapods installation
+
+If you use the [Cocoapods](https://cocoapods.org/) dependency manager, simply add the following line to your project’s Podfile:
+
+`pod 'MailchimpSDK'`
+
+### Manual installation
+
+To install the Mailchimp Mobile SDK manually:
+
+1. Clone the [Mailchimp SDK iOS GitHub repository.](https://github.com/mailchimp/Mailchimp-SDK-iOS)
+2. Run `bundle exec fastlane create_binary_framework` to build the Swift binary framework for iOS and the iOS Simulator.
+3. In Xcode, click on the Project Navigator, select your app’s target, go to the **General** tab, scroll down to Frameworks, Libraries, and Embedded Content.
+4. Drag `Mailchimp.xcframework` from your clone of the SDK repository into this section, or click the **+** button and select it in the Open dialog.
+
+## Installing for Android
+
+To add the Mobile SDK to your Android app, you’ll need [Android API Level 21 (5.0)](https://developer.android.com/studio/releases/platforms) or above.
+
+To install:
+
+1. Add [https://jitpack.io](https://jitpack.io/) to your list of maven repositories if it’s not already present.
+2. Add the[ Mailchimp Mobile SDK](https://github.com/mailchimp/Mailchimp-SDK-Android) to your list of dependencies.
+
+```
+repositories { 
+// any other repositories
+maven { url 'https://jitpack.io' }
+}
+dependencies { 
+implementation 'com.github.mailchimp:Mailchimp-SDK-Android:1.0.0'
+}
+```
+
+## Set up the SDK for your audience
+
+While the Marketing API has one key for each API user, the Mobile SDK has different keys for each of your audiences. You can retrieve the Mobile SDK key for any of your audiences in the [Your API Keys](https://us1.admin.mailchimp.com/account/api/) section of your Mailchimp account.
+
+When you [initialize the Mobile SDK](/marketing/build/start-developing/mobile-sdk/#initializing-the-mobile-sdk) in your code, the Mobile SDK key is the only required piece of information, but there are also two optional parameters: debug mode and auto-tagging. In this guide, we’ll leave debug mode off and keep auto-tagging enabled, which will give us the standard logging behavior and add device information to our new contacts. 
+
+Since these are both default settings, we don’t have to include them in our initialization code:
+
+<CodeBlocks>
+``` title="Kotlin"
+val sdkKey = "YOUR_SDK_KEY"
+val configuration = MailchimpSdkConfiguration.Builder(context, sdkKey)
+.build()
+```
+
+``` title="Swift"
+try? Mailchimp.initialize(token: YOUR_SDK_KEY)
+```
+</CodeBlocks>
+
+## Initializing the Mobile SDK
+
+We recommend that you initialize the SDK when your app starts. The initialization process configures three fields: 
+
+- **SDK Key** (Required): The SDK key gives you access to your audience.
+- **Debug Mode** (Optional): Debug Mode enables additional debug-only functionality like extra logging. This mode is off by default.
+- **Auto-Tagging** (Optional): If enabled, all created or updated contacts will be automatically tagged with their platform (iOS or Android) and device type (Phone or Tablet). This feature is on by default.
+
+<CodeBlocks>
+``` title="Kotlin"
+val sdkKey = "YOUR_API_KEY"
+val isDebugBuild = BuildConfig.DEBUG 
+val configuration = MailchimpSdkConfiguration.Builder(context, sdkKey)
+	.isDebugModeEnabled(isDebugBuild) 
+	.isAutoTaggingEnabled(true) 
+	.build() 
+val mailchimpSdk = Mailchimp.initialize(configuration) // creates a new shared instance that can be accessed by calling Mailchimp.sharedInstance()
+```
+
+``` title="Swift"
+try? Mailchimp.initialize(token: "YOUR_SDK_KEY", autoTagContacts: true, debugMode: false)
+```
+</CodeBlocks>
+
+## Work with contacts
+
+The Mobile SDK provides several methods for creating and updating contact data, including email address, names, merge fields, and GDPR permissions. When working with contacts, the email address is the unique identifier for each contact in an audience and it is required for every interaction with the SDK.
+
+### Add a contact
+
+To add a contact to your Mailchimp audience, specify the contact’s email address and any additional information, such as tags or merge fields. If you attempt to create a contact that already exists, the contact’s information will be updated with the newly specified values.
+
+<CodeBlocks>
+``` title="Kotlin"
+val newContact = Contact.Builder("example@email.com")
+       .setMergeField("FNAME", "Example")
+       .setMergeField("LNAME", "User")
+       .setContactStatus(ContactStatus.SUBSCRIBED)
+       .addTag("Power User")
+       .build()
+val sdk = Mailchimp.sharedInstance()
+sdk.createOrUpdateContact(newContact)
+```
+
+``` title="Swift"
+var contact: Contact = Contact(emailAddress: "example@email.com")
+let mergeFields = ["FNAME": MergeFieldValue.string("Example"),
+                   "LNAME": MergeFieldValue.string("User")]
+contact.status = .subscribed
+contact.mergeFields = mergeFields
+contact.tags = [Contact.Tag(name: "mobile-signup", status: .active)]
+Mailchimp.createOrUpdate(contact: contact) { result in
+    switch result {
+    case .success:
+        print("Successfully added or updated contact")
+    case .failure(let error):
+        print("Error: \(error.localizedDescription)")
+    }
+}
+```
+</CodeBlocks>
+
+### Update a contact
+
+You can update multiple fields on a contact, using the same method as for adding contacts. In addition to updating a whole contact, Mailchimp provides a number of methods to update a single contact field. These are executed as separate network requests. 
+
+Single-field update methods include:
+
+| Method | Description |
+| --- | --- |
+| `addTag()` | Adds a tag to the given user. |
+| `addTags()` | Adds multiple tags to the given user. |
+| `removeTag()` | Removes a tag from the given user. |
+| `removeTags()` | Removes multiple tags from the given user. |
+| `setMergeField()` | Sets or updates a merge field for a given user. |
+
+### Merge fields and addresses
+
+Merge fields are a set of key–value pairs that can be customized for each audience. Common examples of merge fields are first name, last name, phone number, and address.
+
+<Note>
+**Note**: While merge fields can be marked as required on the audience settings, those requirements will not be enforced when using the Mobile SDK.
+</Note>
+
+Merge field keys are an all-caps string and do not include vertical bar characters (e.g., `FNAME`, not `|FNAME|`). Merge field values are strings, except for address values. 
+
+Addresses have internal structure with three required fields (Address Line One, City, and Zip) and three optional fields (Address Line Two, State, and Country).
+
+<CodeBlocks>
+``` title="Kotlin"
+val address = Address.Builder("123 Chimp St.", “Atlanta”, "30308")
+         .setAddressLineTwo("Suite 456")
+         .setState("GA")
+         .setCountry(Country.USA)
+         .build()
+```
+
+``` title="Swift"
+let address = Address(addressLineOne: "123 Chimp St.",
+                      addressLineTwo: "Suite 456",
+                      city: "Atlanta",
+                      state: "GA",
+                      zipCode: "30308",
+                      country: CountryCode.USA)
+```
+</CodeBlocks>
+
+### GDPR permissions
+
+GDPR-compliant audiences require each user to consent to receiving email, direct mail, and customized online advertising. These permissions are represented as a combination of an audience-specific key and a boolean value, with `true` indicating consent. 
+
+<CodeBlocks>
+``` title="Kotlin"
+val emailPermissionKey = "YOUR_AUDIENCE_EMAIL_KEY"
+val mailPermissionKey = "YOUR_AUDIENCE_MAIL_KEY"
+val advertisingPermissionKey = "YOUR_AUDIENCE_ADVERTISING_KEY"
+val newContact = Contact.Builder("example@email.com")
+	   .setMarketingPermission(emailPermissionKey, true)
+	   .setMarketingPermission(mailPermissionKey, true)
+	   .setMarketingPermission(advertisingPermissionKey, true)
+	   .build()
+val sdk = Mailchimp.sharedInstance()
+sdk.createOrUpdateContact(newContact)
+```
+
+``` title="Swift"
+let emailPermission = Contact.MarketingPermission(marketingPermissionId: "YOUR_AUDIENCE_EMAIL_KEY", enabled: true)
+let mailPermission = Contact.MarketingPermission(marketingPermissionId: "YOUR_AUDIENCE_MAIL_KEY", enabled: true)
+let advertisingPermission = Contact.MarketingPermission(marketingPermissionId: "YOUR_AUDIENCE_ADVERTISING_KEY", enabled: true)
+contact.marketingPermissions = [emailPermission, mailPermission, advertisingPermission]
+```
+</CodeBlocks>
+
+### Contact schema
+
+The following fields are available on all contacts. Only the email field is required by default. Depending on your configuration, certain merge fields may also be required.
+
+| Field | Description |
+| --- | --- |
+| Email address | This string is the unique identifier for each contact in an audience. |
+| Tags | Each tag is a string, and multiple tags can be added to or removed from a contact at once.  If a tag has not been previously used, it will be created. |
+| Merge Fields | This set of key–value pairs can be customized for each audience.  Keys are all-caps strings and do not include vertical bar characters (e.g. `FNAME`, not `\|FNAME\|`). Values are strings, except for addresses. |
+| Contact Status | This method indicates which type of communications the contact will receive: either Subscribed (general marketing campaigns) or Transactional (only transactional emails). Can only be set when the contact is created (attempts to set it later are ignored). Transactional is set by default if Subscribed is not specified. |
+| GDPR Permissions | These key–value pairs represent a contact’s consent to email, direct mail, and customized online advertising as part of a certain audience. Keys are strings. Values are booleans, with `true` indicating consent. |
+
+## Work with events
+
+To associate an event with a contact, specify the contact’s email address, event name, and optionally any properties of the event.
+
+<CodeBlocks>
+``` title="Kotlin"
+val mailchimpSdk = Mailchimp.sharedInstance()
+val eventProperties = mapOf("item_id" to "12894309543")
+mailchimpSdk.addContactEvent("example@email.com", "User Browsed Item", eventProperties)
+```
+
+``` title="Swift"
+let event: Event = try! Event(emailAddress: "example@email.com", name: "signup", properties: ["source": "iOS"])
+MailchimpSDK.trackEventWithAttributes(event: event) { result in
+    switch result {
+    case .success:
+        print("Successfully tracked an event")
+    case .failure(let error):
+        print("Error: \(error.localizedDescription)")
+    }
+}
+```
+</CodeBlocks>
+
+<Note>
+**Note**: On Android, event requests will execute immediately and will not be reattempted if they fail. See [Android-only features](/marketing/build/start-developing/mobile-sdk/#android-only-features) for more on using WorkManager to retry Android requests.
+</Note>
+
+### Event schema
+
+The following fields are available on events. The email field associates the event with the corresponding contact.
+
+| Field | Description |
+| --- | --- |
+| **Email address** | This string is the unique identifier for each contact in an audience. |
+| **Name** | Event names are strings with a maximum length of 30 characters. |
+| **Properties** | These key–value pairs can be associated with any event.  Keys are strings containing only alphabetical characters and underscores `[A-z_]`. Values are strings. |
+
+## Android-only features
+
+The Mailchimp Mobile SDK uses[ Google’s WorkManager](https://developer.android.com/reference/androidx/work/WorkManager) to manage retry logic and job execution order. This means that all operations are guaranteed to execute regardless of network status and app restart. The order of execution is also maintained so multiple calls execute in the correct order.
+
+For most cases, a “fire and forget” approach is sufficient. If needed, you can poll the status of jobs. 
+
+The `getStatusById()` method returns the current status of a job:
+
+```
+val uuid = sdk.addTag("example@user.com", "ExampleTag") 
+val status = sdk.getStatusById(uuid) 
+//... 
+if (status == WorkStatus.FINISHED) { 
+	Log.i("Mailchimp SDK", "Tag Was Added")
+}
+```
+
+The `getStatusByIdLiveData()` method returns [LiveData](https://developer.android.com/topic/libraries/architecture/livedata) that can be used to monitor the state of a job:
+
+```
+val uuid = sdk.addTag("example@user.com", "ExampleTag") 
+val statusLiveData = sdk.getStatusByIdLiveData(uuid) statusLiveData.observe( 
+this 
+	Observer { 
+		Toast.makeText(this, "Current Job Status: $it", 	Toast.LENGTH_SHORT).show() 
+	}
+)
+```
+
+## iOS-only features
+
+The iOS version of the Mobile SDK is designed to be used in Swift projects. The best way to interact with an Objective-C project is to create a Swift wrapper object that can initialize the SDK and create a contact for you.
+
+Apple requires developers to answer questions about their apps’ privacy when submitting to App Store Connect. The following information may help you answer these questions:
+
+- The Mailchimp Mobile SDK does not track your users.
+- Mailchimp does not provide information about your app’s users to data brokers.
+- The Mailchimp Mobile SDK does not combine user data from your app with information from other apps in order to place targeted advertisements.

@@ -1,0 +1,223 @@
+---
+title: Account Exports
+description: Request your account\u2019s aggregate and granular reporting data for sent campaigns.
+---
+
+
+
+## The basics
+
+You can download your Mailchimp account’s data with a single request, via either the Mailchimp app or the [Marketing API](/marketing/build/start-developing/send-your-first-api-request). The exported data—which will be provided as a .zip file—can include audiences, campaign content, template content, gallery assets, contact events, and both aggregate and granular reporting data for sent campaigns. 
+
+After an export is requested, it will build in the background for anywhere from a few minutes to (in rare cases) a few days. The eventual .zip can then be downloaded for up to 90 days.
+
+In this doc we’ll explain how to make a request via the [Account Exports endpoint](/marketing/api/account-exports/create), including the options for choosing which data should be included. We’ll also run through the limitations of the export functionality, and the error messages you may encounter if something goes wrong.
+
+If you’d prefer to export via the Mailchimp app, follow the steps detailed [here](https://mailchimp.com/help/export-back-up-data/). (Note that only [account Managers, Admins, or Owners](https://mailchimp.com/help/manage-user-levels-in-your-account/) can export via the app.
+
+While this doc also covers the legacy Export API, this API will only be supported until June 1, 2023. After that date, users will need to switch to the new Account Exports endpoint. This endpoint is better supported and offers superior performance, such as the ability to check on the status of exports during generation.
+
+## Generate a new export
+
+When requesting a new export via the Account Exports endpoint, you’ll need:
+
+- Your [API key and server prefix](/marketing/build/start-developing/send-your-first-api-request/#generate-your-api-key)
+- The [category of data](/marketing/build/start-developing/account-exports/#api-parameters) (the stage) you want included in the export
+
+Requests to the Account Exports endpoint should be structured like so:
+
+<CodeBlocks>
+```bash title="cURL"
+curl -X POST \
+  https://${dc}.api.mailchimp.com/3.0/account-exports \
+  --user "anystring:${apikey}"' \
+  -d '{"include_stages":["audiences", "gallery_files"]}'
+```
+
+```javascript title="Node"
+const client = require("mailchimp-marketing");
+
+client.setConfig({
+  apiKey: "YOUR_API_KEY",
+  server: "YOUR_SERVER_PREFIX",
+});
+
+const run = async () => {
+  const response = await client.accountExports.createAccountExport({
+    include_stages: '["audiences", "gallery_files"]',
+  });
+  console.log(response);
+};
+
+run();
+```
+
+```php title="PHP"
+<?php
+require_once '/path/to/MailchimpMarketing/vendor/autoload.php';
+
+$client = new MailchimpMarketing\ApiClient();
+$client->setConfig([
+    'apiKey' => 'YOUR_API_KEY',
+    'server' => 'YOUR_SERVER_PREFIX',
+]);
+
+$response = $client->accountExports->createAccountExport([
+    "include_stages" => "[\"audiences\", \"gallery_files\"]",
+]);
+print_r($response);
+```
+
+```ruby title="Ruby"
+require 'MailchimpMarketing'
+
+begin
+  client = MailchimpMarketing::Client.new
+  client.set_config({ api_key: 'YOUR_API_KEY', server: 'YOUR_SERVER_PREFIX' })
+
+  response =
+    client.accountExports.create_account_export(
+      { 'include_stages' => "[\"audiences\", \"gallery_files\"]" }
+    )
+  p response
+rescue MailchimpMarketing::ApiError => e
+  puts "Error: #{e}"
+end
+```
+
+```python title="Python"
+import mailchimp_marketing as MailchimpMarketing
+from mailchimp_marketing.api_client import ApiClientError
+
+try:
+  client = MailchimpMarketing.Client()
+  client.set_config({
+    "api_key": "YOUR_API_KEY",
+    "server": "YOUR_SERVER_PREFIX"
+  })
+
+  response = client.accountExports.create_account_export({"include_stages": "[\"audiences\", \"gallery_files\"]"})
+  print(response)
+except ApiClientError as error:
+  print("Error: {}".format(error.text))
+```
+</CodeBlocks>
+
+This example would generate an export containing all of a user’s contact data, as well as any image and content assets in their gallery.
+
+## API parameters
+
+The `include_stages` parameter tells the API which categories of information you’d like in your final download. Each request must include at least one stage, but you can request as many as you’d like. 
+
+These stages are:
+
+| Stage | Description |
+| --- | --- |
+| `audiences` | A folder with separate files for cleaned, subscribed, transactional (non-subscribed), and unsubscribed contacts. |
+| `campaigns` | A CSV of all regular email campaigns located on the **Campaigns** page. This includes a `campaigns_content` folder with HTML and TXT files. |
+| `events` | A CSV of custom events passed into Mailchimp via the API. Includes timestamps, the event name, and the email address of the contact who created the event. |
+| `gallery_files` | A folder with all image and content assets stored in the **My Files** section of the content studio in your account. If you have a lot of assets stored in Mailchimp, this file will be large. |
+| `reports` | Different reporting data, split into three folders:  An `aggregate_activity` folder with overall data like opens, clicks, and unsubscribes. A `geo_data` folder with geolocation data for sent email campaigns.A `granular_activity` folder with open and click data for individual contacts. |
+| `templates` | A folder with HTML files of all your email templates. |
+
+### Time-limiting an export
+
+If you’d like to limit your export to a specific date and time window, include the optional `since_timestamp` parameter. Passing an [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) timestamp will limit the exported data to content generated after that specific time and date.
+
+Say you wanted to pull all of an account’s contact data and content assets that were added after April 4, 2000, at midnight UTC. Your code might look like: 
+
+<CodeBlocks>
+```bash title="cURL"
+curl -X POST \
+  https://${dc}.api.mailchimp.com/3.0/account-exports \
+  --user "anystring:${apikey}"' \
+  -d '{"include_stages":["audiences", "gallery_files"], "since_timestamp": 2000-04-04T00:00:01+00:00}'
+```
+
+```javascript title="Node"
+const client = require("mailchimp-marketing");
+
+client.setConfig({
+  apiKey: "YOUR_API_KEY",
+  server: "YOUR_SERVER_PREFIX",
+});
+
+const run = async () => {
+  const response = await client.accountExports.createAccountExport({
+    include_stages: '["audiences", "gallery_files"]',
+    since_timestamp:  '2000-04-04T00:00:01+00:00',
+  });
+  console.log(response);
+};
+
+run();
+```
+
+```php title="PHP"
+<?php
+require_once '/path/to/MailchimpMarketing/vendor/autoload.php';
+
+$client = new MailchimpMarketing\ApiClient();
+$client->setConfig([
+    'apiKey' => 'YOUR_API_KEY',
+    'server' => 'YOUR_SERVER_PREFIX',
+]);
+
+$response = $client->accountExports->createAccountExport([
+    "include_stages" => "[\"audiences\", \"gallery_files\"]",
+    "since_timestamp" =>  "2000-04-04T00:00:01+00:00"
+]);
+print_r($response);
+```
+
+```ruby title="Ruby"
+require 'MailchimpMarketing'
+
+begin
+  client = MailchimpMarketing::Client.new
+  client.set_config({ api_key: 'YOUR_API_KEY', server: 'YOUR_SERVER_PREFIX' })
+
+  response =
+    client.accountExports.create_account_export(
+      { 'include_stages' => "[\"audiences\", \"gallery_files\"]",
+        'since_timestamp' =>  "2000-04-04T00:00:01+00:00"
+      }
+    )
+  p response
+rescue MailchimpMarketing::ApiError => e
+  puts "Error: #{e}"
+end
+```
+
+```python title="Python"
+import mailchimp_marketing as MailchimpMarketing
+from mailchimp_marketing.api_client import ApiClientError
+
+try:
+  client = MailchimpMarketing.Client()
+  client.set_config({
+    "api_key": "YOUR_API_KEY",
+    "server": "YOUR_SERVER_PREFIX"
+  })
+
+  response = client.accountExports.create_account_export({"include_stages": "[\"audiences\", \"gallery_files\"]", "since_timestamp":  "2000-04-04T00:00:01+00:00"})
+  print(response)
+except ApiClientError as error:
+  print("Error: {}".format(error.text))
+```
+</CodeBlocks>
+
+## Downloading the data
+
+To see and download all previous exports that have completed within the last 90 days, make a GET request to the [Account Exports endpoint](/marketing/api/account-exports/get). This will allow you to iterate through and download any previously completed exports using the `download_url` property in each item of the response. Each `download_url` links out to a file hosted by Google, our storage provider. 
+
+Each file URL is signed, and only accessible through the given URL. Please keep this URL as private as your API key: it provides direct and unauthorized user access to your account's data without any kind of user verification.
+
+## Limits on exports
+
+The same export limits apply for both the Mailchimp app and the API: you can only generate one export at a time, and only one export can be generated per 24-hour period.
+
+Via the API, when these limits come into play you’ll get a `400` exception status code, accompanied by one of the following error messages: 
+
+- **Account Export in Progress**: Another export is already in progress. Wait until it’s done before trying to begin another one.
+- **Too Many Account Exports**: The last export attempt was less than 24 hours ago. Each export’s `finished` field will be timestamped at completion, and 24 hours after that point another export may be requested.

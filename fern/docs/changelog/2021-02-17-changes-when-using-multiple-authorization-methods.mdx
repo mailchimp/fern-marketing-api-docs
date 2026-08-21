@@ -5,12 +5,12 @@ tags: ["Marketing API"]
 
 We made a small change to authorization that will affect a handful of users.
 
-The Marketing API supports authorization using an Authorization header, [using either a Bearer Token or Basic Auth](/marketing/guides/quick-start/#make-your-first-api-call), but we also have legacy support for authorizing GET requests by including the API key in the query parameters. For cases where both an Authorization header and an API key query parameter were sent for a GET request, we defaulted to using the query parameter value.
+The Marketing API supports authorization using an Authorization header, [using either a Bearer Token or Basic Auth](/marketing/build/start-developing/send-your-first-api-request), but we also have legacy support for authorizing GET requests by including the API key in the query parameters. For cases where both an Authorization header and an API key query parameter were sent for a GET request, we defaulted to using the query parameter value.
 
 We switched the default, so that if both methods are used, we use the value in the Authorization header. For the small number of requests that use both methods with conflicting values, we’ll return an HTTP 401 with the message: 
 
 > The API key included in the query parameters is not consistent with the Authorization header. Please provide authorization using a single method.
 
-If you’re affected by this change, we recommend removing the `?apikey=` query parameter from your requests, and sending only an Authorization header following the [example in our Quick Start guide](/marketing/guides/quick-start/#make-your-first-api-call).
+If you’re affected by this change, we recommend removing the `?apikey=` query parameter from your requests, and sending only an Authorization header following the [example in our Quick Start guide](/marketing/build/start-developing/send-your-first-api-request).
 
 The Authorization header is our preferred method for authorizing API requests. It simplifies our systems if we can assume that any time the Authorization header is present, it’s the authorization method we’ll be using.

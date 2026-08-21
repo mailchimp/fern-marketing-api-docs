@@ -1,0 +1,16 @@
+---
+title: How Mailchimp works
+description: The Mailchimp domain model for developers—audiences, contacts, tags, segments, campaigns, and reports.
+---
+
+## The basics
+
+
+Whether you’re managing your own campaigns, providing Mailchimp services to your customers or clients, or writing a mobile app, the Mailchimp Marketing API has features to manage and sync your contact data.
+
+Audiences are at the core of sending campaigns with Mailchimp. You can use the Marketing API to [set up an audience](/marketing/build/quickstarts/import-and-export-contacts) and add contacts to that audience; you can then organize those contacts with [tags](/marketing/build/quickstarts/organize-contacts-with-tags) or segment them by activity with [events](/marketing/api/lists/list-member-events).
+
+The Marketing API can also be a source of data for your application. [Webhooks](/marketing/api-concepts/webhooks) collect and transmit information about your audience to you in near real time. And if you’re selling products on an external store, you can integrate your audience behavior using Mailchimp’s  [E-commerce features](/marketing/concepts/e-commerce).
+
+You can also use the Marketing API to  handle data in different ways for different purposes. If you are syncing a large amount of data with Mailchimp, you can use [batches](/marketing/api-concepts/batch-operations) to avoid hitting the API request limits. For building integrations that let other users access data from their own Mailchimp accounts, you should [authenticate with OAuth 2](/marketing/api-concepts/oauth-2). And if you’re developing an app for iOS or Android, the [Mobile SDK](/marketing/build/start-developing/mobile-sdk) provides an easy way to work with a mobile-focused subset of the Marketing API’s functionality.
+

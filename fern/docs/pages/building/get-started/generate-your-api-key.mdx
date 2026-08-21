@@ -1,0 +1,20 @@
+---
+title: Generate your API key
+description: Generate and securely store an API key to authenticate requests to the Marketing API.
+---
+
+## Generate your API key
+
+The simplest way to authenticate a request to the Marketing API is using [an API key](https://mailchimp.com/help/about-api-keys/). 
+
+Here’s how you can generate one for yourself: 
+
+1. Navigate to the [API Keys section](https://us1.admin.mailchimp.com/account/api/) of your Mailchimp account.
+2. Click **Create New Key** and give it a descriptive name that will remind you which application it’s used for. Copy the generated key immediately and store it in a secure location. You won’t be able to see or copy the key once you finish generating it.
+
+<Note>
+**Note**: It’s important to remember that your Mailchimp API key provides full account access, so you should keep it secure, as you would with a password. Because of the potential security risks associated with exposing account API keys, Mailchimp does not support client-side calls to the Marketing API using CORS requests, nor should API keys be used in mobile apps.
+</Note>
+
+If you’re creating integrations that require access to Mailchimp on behalf of other Mailchimp users, you’ll want to [set up authentication via Oauth 2](/marketing/api-concepts/oauth-2) instead. 
+

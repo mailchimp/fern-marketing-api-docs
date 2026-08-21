@@ -1,0 +1,248 @@
+---
+title: Merge Fields
+description: Save and retrieve custom contact data to personalize campaigns.
+---
+
+
+
+## The basics
+
+Merge fields let you save custom information about contacts, which can then be used to personalize campaigns. Each merge field has a corresponding merge tag, a string of text like `*|FNAME|*`. When you send a campaign, Mailchimp replaces merge tags with the values stored in the corresponding merge fields for each recipient.
+
+The data flow in your particular use case will determine how you’ll work with merge fields. You can also use merge fields to segment your audience: when you [add a segment](/marketing/api/lists/create-segment), you can [configure its conditions](/marketing/api-concepts/alternative-schemas/#segment-condition-schemas) based on the value stored in a merge field.
+
+In this document we’ll describe how to set up merge fields, as well as how to store and retrieve contact information in merge fields using the API.
+
+<Note>
+**Note**: You may also find merge fields referred to by the newer term “audience fields”, especially within the Mailchimp app. All of the merge field endpoints are under the path `/lists/{list_id}/merge-fields`.
+</Note>
+
+## Structure
+
+Each merge field has a type—such as `address`, `date`, `number`, or `text`—which defines how its content will be validated and formatted. For the full list of types and information on how their data is validated, see the table in the [Add merge data to contacts](/marketing/concepts/merge-fields/#add-merge-data-to-contacts) section.
+
+Merge fields with the tags `*|FNAME|*`, `*|LNAME|*`, `*|ADDRESS|*`, and `*|PHONE|*` are present by default when an audience is created. These default fields are editable, so you should not assume that every audience you encounter will be using these tags. 
+
+Merge fields that are marked as public appear on the corresponding [audience signup form](https://mailchimp.com/help/manage-audience-signup-form-fields/). This allows contacts to provide their own data when signing up for a campaign. 
+
+## Create a merge field
+
+Typically, you’ll create merge fields when you first start working with an audience and need to make it match the structure of an external data source. For example, say you’re syncing contact data from a CRM to Mailchimp; if the CRM has a “Company” field and your audience does not, you would need to create a merge field to store that information.  
+
+When you [create a new field](/marketing/api/lists/create-merge-field), you must specify its name and type; additionally, there are several optional parameters. Setting `public` to `true` means the merge field will appear on the audience’s signup form. The `display_order` and `help_text` parameters let you further customize the field’s appearance on the form. 
+
+Make sure to be careful when changing these properties, as they will change what is included on the signup form.
+
+<Note>
+**Note**: In addition to creating fields, you can update or delete them via the API. You should exercise caution when changing fields that you didn’t create, since other integrations may depend on them. Always clearly notify users if you are going to delete any of their data.
+</Note>
+
+## Add merge data to contacts
+
+Once your audience is configured with the fields you need, you can add data to those fields in the `merge_field` dictionary when [adding a contact](/marketing/api/lists/create-member).
+
+For example:
+
+<CodeBlocks>
+```bash title="cURL"
+#!/bin/bash
+set -euo pipefail
+
+list_id="YOUR_LIST_ID"
+user_email="Elinore.Grady9@gmail.com"
+user_fname="Elinore"
+user_lname="Grady"
+user_birthday="01/22"
+
+curl -sS --request POST \
+  --url "https://$API_SERVER.api.mailchimp.com/3.0/lists/$list_id/members?skip_merge_validation=false" \
+  --user "key:$API_KEY" \
+  --header 'content-type: application/json' \
+  --data @- \
+<<EOF | jq '.id'
+{
+  "email_address": "$user_email",
+  "status": "pending",
+  "merge_fields": {
+	"FNAME": "$user_fname",
+	"LNAME": "$user_lname",
+	"BIRTHDAY": "$user_birthday",
+	"ADDRESS": {
+           "addr1": "123 Freddie Ave",
+           "city": "Atlanta",
+           "state": "GA",
+           "zip": "12345",
+
+     }
+  }
+}
+EOF
+```
+
+```javascript title="Node"
+const run = async () => {
+    const response = await client.lists.addListMember("list_id",
+        {
+            email_address: "Elinore.Grady9@gmail.com",
+            status: "pending",
+            merge_fields: {
+                FNAME: "Elinore",
+                LNAME: "Grady",
+                BIRTHDAY: "01/22",
+                ADDRESS: {
+                    addr1: "123 Freddie Ave",
+                    city: "Atlanta",
+                    state: "GA",
+                    zip: "12345",
+                },
+            },
+        },
+        {
+            skipMergeValidation: false
+        }
+    );
+};
+
+
+run();
+```
+
+```php title="PHP"
+require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
+
+$mailchimp = new \MailchimpMarketing\ApiClient();
+
+$mailchimp->set_config([
+    'apiKey' => 'YOUR_API_KEY',
+    'server' => 'YOUR_SERVER_PREFIX'
+]);
+
+$list_id = "YOUR_LIST_ID";
+
+try {
+    $response = $mailchimp->lists->addListMember($list_id, [
+        "email_address" => "Elinore.Grady9@gmail.com",
+        "status" => "pending",
+        "merge_fields" => [
+          "FNAME" => "Elinore",
+          "LNAME" => "Grady",
+          "BIRTHDAY" => "01/22",
+	     "ADDRESS" => [
+              "addr1" => "123 Freddie Ave",
+              "city" => "Atlanta",
+              "state" => "GA",
+              "zip" => "12345"
+            ]
+
+        ]
+    ], ["skip_merge_validation" => false]);
+    print_r($response);
+} catch (MailchimpMarketing\ApiException $e) {
+    echo $e->getMessage();
+}
+```
+
+```ruby title="Ruby"
+require "MailchimpMarketing"
+
+mailchimp = MailchimpMarketing::Client.new
+mailchimp.set_config({
+  :api_key => ENV["API_KEY"],
+  :server => ENV["API_SERVER"]
+})
+list_id = ENV["LIST_ID"]
+
+subscriber = {
+    email_address: "Elinore.Grady9@gmail.com",
+    status: "pending",
+    merge_fields: {
+      FNAME: "Elinore",
+      LNAME: "Grady",
+      BIRTHDAY: "01/22",
+      ADDRESS: {
+          addr1: "123 Freddie Ave",
+          city: "Atlanta",
+          state: "GA",
+          zip: "12345",
+      },
+
+    },
+  }
+
+response = mailchimp.lists.add_list_member list_id, subscriber, {skip_merge_validation:false}
+
+puts "Successfully added contact as an audience member. The contact's id is #{response.id}."
+```
+
+```python title="Python"
+import mailchimp_marketing as MailchimpMarketing
+from mailchimp_marketing.api_client import ApiClientError
+
+mailchimp = MailchimpMarketing.Client()
+mailchimp.set_config({
+  "api_key": "YOUR_API_KEY",
+  "server": "YOUR_SERVER_PREFIX"
+})
+
+list_id = "YOUR_LIST_ID"
+
+member_info = {
+    "email_address": "Elinore.Grady9@gmail.com",
+    "status": "pending",
+    "merge_fields": {
+      "FNAME": "Elinore",
+      "LNAME": "Grady",
+      "BIRTHDAY": "01/22",
+      "ADDRESS": {
+           "addr1": "123 Freddie Ave",
+           "city": "Atlanta",
+           "state": "GA",
+           "zip": "12345",
+
+     }
+    }
+  }
+
+kwargs = {"skip_merge_validation":False}
+
+try:
+  response = mailchimp.lists.add_list_member(list_id, member_info, **kwargs)
+  print("response: {}".format(response))
+except ApiClientError as error:
+  print("An exception occurred: {}".format(error.text))
+```
+</CodeBlocks>
+
+The `merge_field` dictionary uses the field name as the key, and accepts either a string, number, or object as the value, depending on the merge field’s type:
+
+| Type | Description |
+| --- | --- |
+| `text` | a string, truncated to 255 bytes |
+| `number` | any number |
+| `radio` | a string that matches one of the configured radio button options for the field |
+| `dropdown` | a string that matches one of the configured drop-down options for the field |
+| `date` | a string in one of the following formats:  `YYYY-MM-DD``YYYY/MM/DD``DD-MM-YYY`Y`MM/DD/YYYY` |
+| `birthday` | a string in the format `MM/DD` |
+| `address` | a JSON object with the required keys `addr1`, `city`, `state`, and `zip`, and the optional keys `addr2` and `country`. Values for these fields must be strings. |
+| `zip` | a string representing a 5-digit ZIP code |
+| `phone` | a string representing a phone number |
+| `url` | a string, subject to URL validation |
+| `imageurl` | a string representing an image asset; the URL must be valid and reachable |
+
+By default, any merge fields that have `required` set to `true` must be included when adding a contact. For example, if you omit a required field named `RADIO`, you’ll get an error response like this:
+
+```json
+{
+	"title":"Invalid Resource",
+	"status":400,
+	"detail":"Your merge fields were invalid.",
+	"errors":[
+		{
+			"field":"RADIO",
+			"message":"Please enter a value"
+		}
+	]
+}
+```
+
+You can bypass the requirement by passing the query parameter `?skip_merge_validation=true` when making a POST, PUT, or PATCH call for a contact. When a user marks certain merge fields as required, it is a signal that they would prefer you to supply that information. Depending on your use case, it may be better to override their preference and add the incomplete contact data anyway.
