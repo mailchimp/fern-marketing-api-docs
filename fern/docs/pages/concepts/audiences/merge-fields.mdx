@@ -1,11 +1,15 @@
 ---
-title: Merge Fields
+title: Merge fields
 description: Save and retrieve custom contact data to personalize campaigns.
 ---
 
 
 
 ## The basics
+
+Merge fields are defined on the audience; their values live on each contact.
+Adding a merge field to an audience creates the field but doesn't populate it,
+and you can't set a value on a contact for a field the audience doesn't define.
 
 Merge fields let you save custom information about contacts, which can then be used to personalize campaigns. Each merge field has a corresponding merge tag, a string of text like `*|FNAME|*`. When you send a campaign, Mailchimp replaces merge tags with the values stored in the corresponding merge fields for each recipient.
 
@@ -19,7 +23,7 @@ In this document we’ll describe how to set up merge fields, as well as how to 
 
 ## Structure
 
-Each merge field has a type—such as `address`, `date`, `number`, or `text`—which defines how its content will be validated and formatted. For the full list of types and information on how their data is validated, see the table in the [Add merge data to contacts](/marketing/concepts/merge-fields/#add-merge-data-to-contacts) section.
+Each merge field has a type—such as `address`, `date`, `number`, or `text`—which defines how its content will be validated and formatted. For the full list of types and information on how their data is validated, see the table in the [Add merge data to contacts](/marketing/concepts/audiences/merge-fields/#add-merge-data-to-contacts) section.
 
 Merge fields with the tags `*|FNAME|*`, `*|LNAME|*`, `*|ADDRESS|*`, and `*|PHONE|*` are present by default when an audience is created. These default fields are editable, so you should not assume that every audience you encounter will be using these tags. 
 

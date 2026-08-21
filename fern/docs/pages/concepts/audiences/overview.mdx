@@ -1,0 +1,56 @@
+---
+title: Audiences
+description: How audiences, contacts, tags, merge fields, and segments relate to each other in Mailchimp.
+---
+
+## The basics
+
+An audience is a list of contacts. Almost everything you do with the Marketing
+API happens inside one: contacts belong to an audience, and so do the merge
+fields that describe them and the segments that group them.
+
+Most integrations work against an audience that already exists. You'll need its
+`list_id`, which you can find with `GET /3.0/lists`.
+
+## How the pieces fit together
+
+```
+Audience
+├── Contacts            people, identified by email address
+│   ├── Tags            labels you apply to individual contacts
+│   └── Merge field values
+├── Merge fields        the field definitions for this audience
+└── Segments            saved queries that select contacts
+```
+
+**Contacts** are the people in an audience. Each one is identified by their
+email address, and in the API by the MD5 hash of that address in lowercase —
+the `subscriber_hash` you'll see throughout the endpoints.
+
+**Tags** are labels you attach to individual contacts. They're yours to define:
+map them from your CRM, or use them to record behavior that matters to you.
+Tags live on the contact, not on the audience.
+
+**Merge fields** are the custom data fields an audience can store about its
+contacts — first name, birthday, favorite product. The *definitions* belong to
+the audience; the *values* belong to each contact. That split is the part
+people trip over: adding a merge field to an audience doesn't populate it, and
+setting a value on a contact requires the field to exist first.
+
+**Segments** are saved queries that select a subset of contacts, using
+conditions like signup date, campaign engagement, or which tags a contact
+carries. A segment doesn't contain contacts or tags; it selects contacts, and
+the set changes as your data does.
+
+<Note>
+**Tags versus segments**: a tag is something you *put on* a contact. A segment
+is a question you *ask about* contacts. Tags are one of the things a segment
+can filter on, which is why they're easy to confuse.
+</Note>
+
+## Where to go next
+
+- [Contacts](/marketing/concepts/audiences/contacts) — the contact model, subscription status, and tags
+- [Merge fields](/marketing/concepts/audiences/merge-fields) — defining and populating custom fields
+- [Segments](/marketing/concepts/audiences/segments) — building queries over your contacts
+- [Import and export contacts](/marketing/build/quickstarts/import-and-export-contacts) — a walkthrough against an existing audience

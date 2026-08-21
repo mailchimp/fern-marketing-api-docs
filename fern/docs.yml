@@ -280,7 +280,7 @@ redirects:
   - source: /marketing/docs/audiences-introduction
     destination: /marketing/api-concepts/audiences-endpoints-beta
   - source: /marketing/docs/merge-fields
-    destination: /marketing/concepts/merge-fields
+    destination: /marketing/concepts/audiences/merge-fields
   - source: /marketing/docs/e-commerce
     destination: /marketing/concepts/e-commerce
   - source: /marketing/docs/integrations
@@ -306,6 +306,14 @@ redirects:
   - source: /marketing/guides/mobile-sdk
     destination: /marketing/build/start-developing/mobile-sdk
 
+  # Concepts nested under Audiences to mirror the data model.
+  - source: /marketing/concepts/merge-fields
+    destination: /marketing/concepts/audiences/merge-fields
+  - source: /marketing/concepts/tags-and-segments
+    destination: /marketing/concepts/audiences/contacts
+  - source: /marketing/concepts/audiences-and-contacts
+    destination: /marketing/concepts/audiences
+  # docs/merge-fields now lands in the nested location.
   # Deleted pages. create-audience -> the import/export quickstart that
   # replaces it (integrators build against existing audiences).
   - source: /marketing/guides/create-audience

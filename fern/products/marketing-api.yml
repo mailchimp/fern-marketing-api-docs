@@ -37,15 +37,22 @@ navigation:
       - page: How Mailchimp works
         path: ../docs/pages/concepts/how-mailchimp-works.mdx
         slug: how-mailchimp-works
-      - page: Audiences and contacts
-        path: ../docs/pages/concepts/audiences-and-contacts.mdx
-        slug: audiences-and-contacts
-      - page: Merge fields
-        path: ../docs/pages/concepts/merge-fields.mdx
-        slug: merge-fields
-      - page: Tags and segments
-        path: ../docs/pages/concepts/tags-and-segments.mdx
-        slug: tags-and-segments
+      # Nested to mirror the data model: contacts, merge fields, and
+      # segments all belong to an audience. Tags live on contacts, so they
+      # are a section of the contacts page rather than a page of their own.
+      - section: Audiences
+        path: ../docs/pages/concepts/audiences/overview.mdx
+        slug: audiences
+        contents:
+          - page: Contacts
+            path: ../docs/pages/concepts/audiences/contacts.mdx
+            slug: contacts
+          - page: Merge fields
+            path: ../docs/pages/concepts/audiences/merge-fields.mdx
+            slug: merge-fields
+          - page: Segments
+            path: ../docs/pages/concepts/audiences/segments.mdx
+            slug: segments
       - page: E-commerce
         path: ../docs/pages/concepts/e-commerce.mdx
         slug: e-commerce

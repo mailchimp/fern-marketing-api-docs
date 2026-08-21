@@ -1,0 +1,60 @@
+---
+title: Contacts
+description: The contact model, subscription status across channels, and how tags organize contacts.
+---
+
+<Note>
+**Draft**: This page was assembled during the docs reorganization. The tags
+section is complete; the contact model and subscription status sections need
+expansion.
+</Note>
+
+## The basics
+
+A contact is a person in an audience, identified by their email address. In the
+API, contacts are addressed by `subscriber_hash` — the MD5 hash of the
+lowercase email address — so `GET /3.0/lists/{list_id}/members/{subscriber_hash}`
+retrieves one contact from one audience.
+
+The same person in two audiences is two contacts. Audiences don't share contact
+records.
+
+## Contact status and channel subscription
+
+Outline — expand:
+
+- Contact-level `status` (`active`, `archived`) describes the contact overall.
+- Channel-level subscription status describes whether they can be reached on a
+  specific channel (email, SMS), and is computed rather than set directly.
+- Inputs to that computation: the audience's opt-in configuration (single or
+  double opt-in), the marketing consent you supply, and deliverability.
+- Consent values and the full mapping table live in
+  [Audiences endpoints (beta)](/marketing/api-concepts/audiences-endpoints-beta)
+  while that work is in beta.
+
+## Tags
+
+[Tags](https://mailchimp.com/help/getting-started-tags/) are labels that help
+organize your contacts. You define what they mean: bring your own targeting and
+organization strategy into Mailchimp rather than adopting one.
+
+You could use tags to:
+
+- Structure campaigns for specific audiences, tagging contacts with terms like "Holiday Send" or "Influencer"
+- Directly map tags from your CRM onto tags in your Mailchimp audience
+- Translate behaviors—for example, a contact who's spent $1,000 in your store—into tags that can be used in future campaigns
+
+Tags attach to individual contacts, at
+`/3.0/lists/{list_id}/members/{subscriber_hash}/tags`. There is no
+audience-level tag resource; to find which contacts carry a tag, search with
+`GET /3.0/lists/{list_id}/tag-search` or build a
+[segment](/marketing/concepts/audiences/segments) that filters on it.
+
+For a walkthrough of tagging contacts with the API, see
+[Organize contacts with tags](/marketing/build/quickstarts/organize-contacts-with-tags).
+
+## Merge field values
+
+Each contact carries values for the merge fields its audience defines. The
+field has to exist on the audience before you can set a value on a contact —
+see [Merge fields](/marketing/concepts/audiences/merge-fields).

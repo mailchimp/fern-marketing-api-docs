@@ -1,0 +1,30 @@
+---
+title: Segments
+description: Saved queries that select contacts from an audience by their attributes, activity, or tags.
+---
+
+<Note>
+**Draft**: This page is a placeholder created during the docs reorganization.
+Content is not yet written.
+</Note>
+
+## The basics
+
+A segment is a saved query over the contacts in an audience. It doesn't hold
+contacts — it selects them, and the selection changes as your contact data
+changes.
+
+Outline:
+
+- Segments live on the audience: `/3.0/lists/{list_id}/segments`
+- Segment conditions: signup date, campaign engagement, merge field values,
+  e-commerce activity, and tags
+- Static segments versus conditional segments
+- Reading the contacts a segment currently matches:
+  `GET /3.0/lists/{list_id}/segments/{segment_id}/members`
+- The condition schema is documented in
+  [Alternative schemas](/marketing/api-concepts/alternative-schemas)
+
+**Tags versus segments**: a tag is something you put on a contact; a segment is
+a question you ask about contacts. Tags are one of the conditions a segment can
+filter on. See [Contacts](/marketing/concepts/audiences/contacts#tags).
