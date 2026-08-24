@@ -38,21 +38,21 @@ You’ll need to make two requests:
 
 ## Products
 
-A [product](/marketing/api) represents an item for sale in a store. Each product exists as its own parent entity that must contain one or more product variants, and a product must be added to a store before it can be added to a cart or an order. You must create products before you can create carts and orders.
+A [product](/marketing/api/ecommerce/list-store-products) represents an item for sale in a store. Each product exists as its own parent entity that must contain one or more product variants, and a product must be added to a store before it can be added to a cart or an order. You must create products before you can create carts and orders.
 
 ### Product retargeting emails
 
 You can remind contacts about items they viewed in your store but did not purchase with product retargeting emails. 
 
-First, you’ll need to [create a new store via the API](/marketing/api) or [connect a third-party store](https://mailchimp.com/help/connect-your-online-store-to-mailchimp/) to your Mailchimp account. Once your store is connected, embed JavaScript in your store pages that will relay information to Mailchimp about what products have been viewed. Most store platforms ask you to place this script in a header or footer element so it appears on every page on your store.
+First, you’ll need to [create a new store via the API](/marketing/api/ecommerce/create-store) or [connect a third-party store](https://mailchimp.com/help/connect-your-online-store-to-mailchimp/) to your Mailchimp account. Once your store is connected, embed JavaScript in your store pages that will relay information to Mailchimp about what products have been viewed. Most store platforms ask you to place this script in a header or footer element so it appears on every page on your store.
 
 <Note>
-**Note**: Not all stores support product retargeting emails. You can check this via the [`/ecommerce/stores/{store_id}`](/marketing/api) endpoint under `automations.abandoned_browse.is_supported`.
+**Note**: Not all stores support product retargeting emails. You can check this via the [`/ecommerce/stores/{store_id}`](/marketing/api/ecommerce/get-store) endpoint under `automations.abandoned_browse.is_supported`.
 </Note>
 
-Depending on the requirements of your store platform, you may need to embed the JavaScript directly in your page or link to an external script hosted by Mailchimp. Both of these are accessible via the [`/ecommerce/stores/{store_id}`](/marketing/api) endpoint: `connected_site.site_script.fragment` contains the code, and `connected_site.site_script.url` contains the external script location. 
+Depending on the requirements of your store platform, you may need to embed the JavaScript directly in your page or link to an external script hosted by Mailchimp. Both of these are accessible via the [`/ecommerce/stores/{store_id}`](/marketing/api/ecommerce/get-store) endpoint: `connected_site.site_script.fragment` contains the code, and `connected_site.site_script.url` contains the external script location. 
 
-You can verify that you have properly installed the script for your store by using the [`/connected-sites/{connected_site_id}/actions/verify-script-installation`](/marketing/api) endpoint, replacing `{connected_site_id}` with the unique `site_foreign_id` of your store. A successful verification will return an empty result, and an unsuccessful verification will return an error.
+You can verify that you have properly installed the script for your store by using the [`/connected-sites/{connected_site_id}/actions/verify-script-installation`](/marketing/api/connected-sites/create-action-verify-script-installation) endpoint, replacing `{connected_site_id}` with the unique `site_foreign_id` of your store. A successful verification will return an empty result, and an unsuccessful verification will return an error.
 
 
 The product retargeting email workflow is configured as an automation, which you can [modify](https://mailchimp.com/help/create-a-product-retargeting-email/#Review_your_settings) alongside the [design of your retargeting email](https://mailchimp.com/help/create-a-product-retargeting-email/#Design_email), in the Mailchimp app.

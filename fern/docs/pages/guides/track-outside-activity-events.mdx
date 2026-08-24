@@ -178,7 +178,7 @@ print(response.status_code)
 </CodeBlocks>
 
 <Note>
-**Note**: The options payload includes an optional `occured_at` property (see more in [the API reference](/marketing/api)). You can set this to the date and time the event occurred in ISO 8601 format; if omitted, it will default to the current time. 
+**Note**: The options payload includes an optional `occured_at` property (see more in [the API reference](/marketing/api/lists/create-member-event)). You can set this to the date and time the event occurred in ISO 8601 format; if omitted, it will default to the current time. 
 
 The optional `is_syncing` property allows you to specify whether or not an event should trigger an automation (if one is configured for this event). Setting `is_syncing` to `true` will not trigger automations. You might use `is_syncing` alongside `occured_at` to backfill events that you don’t want to act on. Since we want to trigger an automation and the default `is_syncing` value is false, we’ll omit it entirely.
 </Note>
@@ -282,7 +282,7 @@ print(f'We have created {total_items} events for this user.')
 ```
 </CodeBlocks>
 
-By default, the API will return the most recent 10 events. You can specify event count, offset, and [other options if needed](/marketing/api).
+By default, the API will return the most recent 10 events. You can specify event count, offset, and [other options if needed](/marketing/api/lists/list-member-events).
 
 ## Trigger automations with events
 
@@ -338,5 +338,5 @@ Preview the segment, hit save, and you’re good to go.
 ## More resources
 
 - [Create Your First Audience](/marketing/guides/create-your-first-audience)
-- [Events API reference](/marketing/api)
+- [Events API reference](/marketing/api/lists/list-member-events)
 - [Marketing Fundamentals](/marketing/docs/fundamentals)

@@ -20,7 +20,7 @@ Once you’ve created your templates, you can personalize messages with recipien
 
 You can write your template HTML directly in the [**Templates**](https://mandrillapp.com/templates) section of the Mailchimp Transactional app, but it’s more likely that you’ll write it elsewhere and paste or import it into your account. There are a few ways to do so:
 
-1. Add your custom code to a template via the [Transactional API](/transactional/api)
+1. Add your custom code to a template via the [Transactional API](/transactional/api/templates/add)
 2. In [**Templates**](https://mandrillapp.com/templates), paste your custom code into the editor
 3. Send a template from your main Mailchimp account to your Transactional account
 
@@ -35,7 +35,7 @@ To ensure your templates display as expected when sent, you’ll want to [inline
 Templates have several default options, including a subject line, sender, HTML content, and text content. None of these fields are required when creating or changing a template, but if you’re planning to use the [`messages/send-template`](/transactional/api/messages/send-template) endpoint, be sure to have either HTML or text content specified, since it will form the body of your email.
 
 <Note>
-**Note**: In addition to [`messages/send-template`](/transactional/api) or specifying a template through SMTP headers, you can also apply templates using the [rules engine](/transactional/docs/rules-engine) or when A/B split testing.
+**Note**: In addition to [`messages/send-template`](/transactional/api/messages/send-template) or specifying a template through SMTP headers, you can also apply templates using the [rules engine](/transactional/docs/rules-engine) or when A/B split testing.
 </Note>
 
 ### Mailchimp templates
@@ -86,7 +86,7 @@ If you're sending via SMTP, custom SMTP headers are limited in length, so there�
 
 ### Provide merge data through the API
 
-You can provide merge data via the sending API calls ([`messages/send`](/transactional/api) or [`messages/send-template`](/transactional/api)) or template-rendering call ([`templates/render`](/transactional/api)), giving default values for merge tags by using the `global_merge_vars` parameter. These will be used in case a recipient-specific value isn’t defined.
+You can provide merge data via the sending API calls ([`messages/send`](/transactional/api/messages/send) or [`messages/send-template`](/transactional/api/messages/send-template)) or template-rendering call ([`templates/render`](/transactional/api/templates/render)), giving default values for merge tags by using the `global_merge_vars` parameter. These will be used in case a recipient-specific value isn’t defined.
 
 Use the `merge_var` parameter to store recipient-specific values if you’re sending to more than one recipient at a time. For `global_merge_vars` and `merge_vars`, provide the name of the merge tag and the value to be used as key–value pairs:
 
@@ -692,7 +692,7 @@ Mailchimp Transactional provides an [easy-to-use merge tag](/transactional/docs/
 
 In addition to using merge tags to personalize your message content, you can also use merge tags to customize email headers. Merge tags are currently only supported in the `From` name and subject headers, as well as the body of an email. Merge tags can't be included in custom `X-` headers or the `List-Unsubscribe` header.
 
-For example, to include an order ID in a subject line, first add the merge tag in the value for the `subject` parameter in your [API request](/transactional/api):
+For example, to include an order ID in a subject line, first add the merge tag in the value for the `subject` parameter in your [API request](/transactional/api/messages/send):
 
 ```json
 "subject": "Your order: *|ORDERID|* has been received",
@@ -770,7 +770,7 @@ Because the Mailchimp template language is designed to support editable regions 
 
 Like other dynamic content, you can inject content for `mc:edit` regions via the API or SMTP. 
 
-With the [`messages/send`](/transactional/api) endpoint in the Transactional API, use the `template_content` parameter to distinguish any regions to be replaced and the content to be injected into the template’s HTML. Your call to the API could look something like this:
+With the [`messages/send`](/transactional/api/messages/send) endpoint in the Transactional API, use the `template_content` parameter to distinguish any regions to be replaced and the content to be injected into the template’s HTML. Your call to the API could look something like this:
 
 ```json
    "template_content": [

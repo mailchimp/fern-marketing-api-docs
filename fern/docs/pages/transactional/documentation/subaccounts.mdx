@@ -28,7 +28,7 @@ In the app: 
 
 Via the API, use the [Subaccounts](/transactional/api/subaccounts/add) endpoint. (For sample code, see [the subaccounts guide](/transactional/guides/manage-different-users-subaccounts).)   
 
-Once your subaccount is up and running, you can use the `subaccount` parameter of the [`/messages/send`](/transactional/api) endpoint, or you can use the [`X-MC-Subaccount`](/transactional/docs/smtp-integration/#x-mc-subaccount) header if you’re sending via SMTP.
+Once your subaccount is up and running, you can use the `subaccount` parameter of the [`/messages/send`](/transactional/api/messages/send) endpoint, or you can use the [`X-MC-Subaccount`](/transactional/docs/smtp-integration/#x-mc-subaccount) header if you’re sending via SMTP.
 
 <Note>
 **Note**: Make sure you enter the subaccount name correctly. If you try to send an email via the API from a subaccount that doesn’t exist, it will fail with an error. However, if you try to send from a nonexistent subaccount via SMTP, the email will be accepted by the SMTP server but will ultimately fail to send.
@@ -44,7 +44,7 @@ If you’d rather get a lower-level overview—where you can also change account
 
 ![Subaccounts screenshot](https://images.ctfassets.net/cxsachrr7h0p/2UY00dt3qn8Zrrft6XYwfd/4ac23a11f510cf599c24581d85ad0c52/subaccounts.png)
 
-If you need programmatic access to account activity, you can use the [`subaccounts/info`](/transactional/api) endpoint in the Transactional API. For sample code, see the [Manage Different Users with Subaccounts](/transactional/guides/manage-different-users-subaccounts) guide.
+If you need programmatic access to account activity, you can use the [`subaccounts/info`](/transactional/api/subaccounts/info) endpoint in the Transactional API. For sample code, see the [Manage Different Users with Subaccounts](/transactional/guides/manage-different-users-subaccounts) guide.
 
 ## Custom hourly quotas
 
@@ -72,7 +72,7 @@ If a message sent from a subaccount bounces, or if the recipient unsubscribes or
 
 To view the Rejection Denylist for a specific subaccount, navigate to [**Rejection Lists**](https://mandrillapp.com/settings/rejections) and select the subaccount ID from the **View Denylist For Subaccount** drop-down menu.
 
-You can also retrieve the Rejection Denylist for a subaccount via the [Transactional API](/transactional/api).
+You can also retrieve the Rejection Denylist for a subaccount via the [Transactional API](/transactional/api/rejects/list).
 
 ## Pause and resume sending
 
@@ -86,4 +86,4 @@ To walk through the code for pausing and resuming, see the [subaccounts guide](/
 
 Deleting a subaccount is permanent, and Mailchimp cannot recover a subaccount after it is deleted. This will not remove email activity associated with the subaccount, but you can no longer search activity by the subaccount name.
 
-To delete a subaccount via the app, navigate to the [**Subaccounts**](https://mandrillapp.com/subaccounts) page and click the **Delete** button next to the subaccount you want to remove. With the API, you can use the [`subaccounts/delete`](/transactional/api) endpoint.
+To delete a subaccount via the app, navigate to the [**Subaccounts**](https://mandrillapp.com/subaccounts) page and click the **Delete** button next to the subaccount you want to remove. With the API, you can use the [`subaccounts/delete`](/transactional/api/subaccounts/delete) endpoint.

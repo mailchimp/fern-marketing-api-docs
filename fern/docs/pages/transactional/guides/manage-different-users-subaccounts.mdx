@@ -148,7 +148,7 @@ You can also get started directly in the Mailchimp Transactional app: see the do
 
 ## Send email from a subaccount
 
-Now that our new subaccount is up and running, we’re ready to start sending email on behalf of Acme Widgets. You can either use the subaccount option in the API (see the relevant endpoint [here](/transactional/api)) or you can use the [`X-MC-Subaccount`](/transactional/docs/smtp-integration/#x-mc-subaccount) header if you’re sending via SMTP. Again, we’ll focus on the API.
+Now that our new subaccount is up and running, we’re ready to start sending email on behalf of Acme Widgets. You can either use the subaccount option in the API (see the relevant endpoint [here](/transactional/api/messages/send)) or you can use the [`X-MC-Subaccount`](/transactional/docs/smtp-integration/#x-mc-subaccount) header if you’re sending via SMTP. Again, we’ll focus on the API.
 
 Since we’ve [already been sending messages](/transactional/guides/send-first-email) with Mailchimp Transactional, updating our code to send from a subaccount is simple—just add a `subaccount` key along with your request:
 

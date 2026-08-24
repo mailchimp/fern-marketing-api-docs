@@ -53,7 +53,7 @@ There are a few places to view or retrieve information about your reputation and
 
 1. The [**Dashboard**](https://mandrillapp.com/) in your Mailchimp Transactional account
 2. The [**Account Details**](https://mandrillapp.com/account/index) page
-3. Via the Transactional API with the [`users/info`](/transactional/api) endpoint
+3. Via the Transactional API with the [`users/info`](/transactional/api/users/info) endpoint
 
 ## Spam complaints
 
@@ -220,7 +220,7 @@ To add a single email address, select **Manually Add Addresses**; to add multipl
 
 If you need to add the emails to a subaccount's Rejection Denylist, choose the subaccount ID from the **Add To This Subaccount’s Denylist** drop-down menu.
 
-You can also add email addresses to the Rejection Denylist via the [Transactional API](/transactional/api). 
+You can also add email addresses to the Rejection Denylist via the [Transactional API](/transactional/api/rejects/add). 
 
 <Note>
 **Note**: You cannot add an entire domain to the Rejection Blacklist, but you can use [rules](/transactional/docs/rules-engine) to automatically reject emails sent to a certain domain.
@@ -230,7 +230,7 @@ You can also add email addresses to the Rejection Denylist via the [Transactiona
 
 Mistakes happen, and recipients can erroneously register a spam complaint or unsubscribe, landing them on the Rejection Denylist. If a recipient’s address doesn’t belong there, you can manually remove them from the Rejection Denylist for a small reputation hit. Be sure to only remove a single address at a time, rather than bulk removal. 
 
-To remove an address, navigate to the **Rejection Denylist**, search for the email address you’d like to remove, and click the **remove** link. You can also use the [`rejects/delete`](/transactional/api) endpoint in the Transactional API.
+To remove an address, navigate to the **Rejection Denylist**, search for the email address you’d like to remove, and click the **remove** link. You can also use the [`rejects/delete`](/transactional/api/rejects/delete) endpoint in the Transactional API.
 
 ### Rejection Allowlist
 
@@ -242,13 +242,13 @@ While an address is on the Rejection Allowlist, bounces, unsubscribes, and spam 
 **Note**: If you add an email to the Rejection Allowlist that is currently on the Rejection Denylist, the denylist entry will be removed automatically.
 </Note>
 
-Email addresses can be added to or removed from the Rejection Allowlist directly in Mailchimp Transactional or via the Transactional API. In the app, navigate to [**Rejection Allowlist**](https://mandrillapp.com/settings/allowlist)** **and click** Add Allowlist Entry**. With the Transactional API, use the [`allowlists/add`](/transactional/api) endpoint. 
+Email addresses can be added to or removed from the Rejection Allowlist directly in Mailchimp Transactional or via the Transactional API. In the app, navigate to [**Rejection Allowlist**](https://mandrillapp.com/settings/allowlist)** **and click** Add Allowlist Entry**. With the Transactional API, use the [`allowlists/add`](/transactional/api/allowlist/allowlists-add) endpoint. 
 
 ### Exporting a Rejection Denylist or Allowlist
 
 You can export both the Rejection Denylist and Allowlist from an account (or subaccount) directly in Mailchimp Transactional or via the Transactional API. 
 
-To export the Rejection Denylist, navigate to the [Rejection Denylist](https://mandrillapp.com/settings/rejections) page and click on **Export Full Denylist**, or use the [`exports/rejects`](/transactional/api) endpoint. To export the Rejection Allowlist, navigate to the [Rejection Allowlist](https://mandrillapp.com/settings/allowlist) page and click on **Export Allowlist**, or use the [`exports/allowlist`](/transactional/api) endpoint.
+To export the Rejection Denylist, navigate to the [Rejection Denylist](https://mandrillapp.com/settings/rejections) page and click on **Export Full Denylist**, or use the [`exports/rejects`](/transactional/api/exports/rejects) endpoint. To export the Rejection Allowlist, navigate to the [Rejection Allowlist](https://mandrillapp.com/settings/allowlist) page and click on **Export Allowlist**, or use the [`exports/allowlist`](/transactional/api/exports/allowlist) endpoint.
 
 With either list, your export will be queued, and an email will be sent to the [contact email address](https://mandrillapp.com/account/contact) for the account when the export is ready for download. You can also view it on the [**Exports**](https://mandrillapp.com/settings/exports) page. Export download links expire after seven days, though the export will appear in the list for an additional seven days for record-keeping purposes.
 

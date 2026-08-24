@@ -34,7 +34,7 @@ Using the Batch endpoint, we’ll walk through making the batch request, checkin
 
 ## Make a batch operations request
 
-We’re ready to turn our 1,000 names and email addresses into 1,000 Mailchimp contacts. Rather than make 1,000 separate API calls, we’ll use the Batch endpoint to add 1,000 contacts in a single call. With that single call, the Batch endpoint will call other endpoints on our behalf—here, we’ll be implementing the[ Members endpoint](/marketing/api) at scale.
+We’re ready to turn our 1,000 names and email addresses into 1,000 Mailchimp contacts. Rather than make 1,000 separate API calls, we’ll use the Batch endpoint to add 1,000 contacts in a single call. With that single call, the Batch endpoint will call other endpoints on our behalf—here, we’ll be implementing the[ Members endpoint](/marketing/api/lists/create-member) at scale.
 
 When you POST to the Batch endpoint, it expects a JSON object with a single key: `operations`, which is an array of objects that describe the API calls you want to make. To add a single member to our audience, that `operations` object will look like this:
 
@@ -387,7 +387,7 @@ Other useful information included in the payload:
 | `response_body_url` | The URL where you can download the gzipped archive of the results of all the operations. |
 
 <Note>
-**Note**: You can retrieve a list of all requested batch operations from the last seven days with the [List batches endpoint](/marketing/api).
+**Note**: You can retrieve a list of all requested batch operations from the last seven days with the [List batches endpoint](/marketing/api/batches/list).
 </Note>
 
 ## Get the results of a batch operation
@@ -485,7 +485,7 @@ for result in results:
 </CodeBlocks>
 
 <Note>
-**Note**: The results of your batch operation are available to download for seven days after you make the request. For security reasons, however, any `response_body_url` is only valid for ten minutes after it’s generated. You can always generate a new `response_body_url` by making another [Batch status call](/marketing/api).
+**Note**: The results of your batch operation are available to download for seven days after you make the request. For security reasons, however, any `response_body_url` is only valid for ten minutes after it’s generated. You can always generate a new `response_body_url` by making another [Batch status call](/marketing/api/batches/get).
 </Note>
 
 ## Batch webhooks
@@ -502,7 +502,7 @@ First, we need to specify the URL that Mailchimp should send a POST request to; 
 **Note**: On creation, Mailchimp’s servers will validate your webhook URL by making a GET request to the provided address to ensure that it is valid, so the webhook URL should be able to handle both GET and POST requests.
 </Note>
 
-To create a batch webhook, use the [Batch Webhooks endpoint](/marketing/api): 
+To create a batch webhook, use the [Batch Webhooks endpoint](/marketing/api/batch-webhooks/create):
 
 <CodeBlocks>
 ```bash title="cURL"
@@ -590,7 +590,7 @@ Now that we’ve created the batch webhook, Mailchimp will send information abou
 We’ll need to decode the query string to access specific values we may want. Most often, the `response_body_url` will be the parameter we’re interested in, since it’s what we can use to download the gzipped results of our operation. 
 
 <Note>
-**Note**: This is the same `response_body_url` described in the [Check the status of a batch operation](/marketing/guides/run-async-requests-batch-endpoint/#check-the-status-of-a-batch-operation) section above. You can use it to download the gzipped tar archive as normal, but keep in mind that the same 10-minute expiration period applies. After 10 minutes, you can generate another `response_body_url` by making a call to the [Batch status endpoint.](/marketing/api)
+**Note**: This is the same `response_body_url` described in the [Check the status of a batch operation](/marketing/guides/run-async-requests-batch-endpoint/#check-the-status-of-a-batch-operation) section above. You can use it to download the gzipped tar archive as normal, but keep in mind that the same 10-minute expiration period applies. After 10 minutes, you can generate another `response_body_url` by making a call to the [Batch status endpoint.](/marketing/api/batches/get)
 </Note>
 
 Accessing that value might look like this:
@@ -882,5 +882,5 @@ Rack::Handler::WEBrick.run app, Port: 3000
 ## More resources
 
 - [Synchronize Audience Data with Webhooks](/marketing/guides/sync-audience-data-webhooks)
-- [Batch API Reference](/marketing/api)
+- [Batch API Reference](/marketing/api/batches/list)
 - [Marketing Fundamentals](/marketing/docs/fundamentals)

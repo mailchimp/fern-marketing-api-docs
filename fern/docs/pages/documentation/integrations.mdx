@@ -27,7 +27,7 @@ If you haven’t set up OAuth with Mailchimp before, we’d recommend following 
 
 When a user installs your integration, you may want to sync existing contacts on your platform with Mailchimp. Some good options for this are:
 
-- Using the [Batch Subscribe or Unsubscribe endpoint](/marketing/api)
+- Using the [Batch Subscribe or Unsubscribe endpoint](/marketing/api/lists/batch-subscribe-or-unsubscribe)
 - Asynchronously using the [Batch endpoint](/marketing/guides/run-async-requests-batch-endpoint)
 
 If you need to keep your platform’s audience synchronized with changes made on Mailchimp, see the [Synchronize Audience Data with Webhooks](/marketing/guides/sync-audience-data-webhooks) guide.
@@ -46,7 +46,7 @@ For example, let’s say we’re creating an integration between Mailchimp and a
 
 To get started, our user will select the integration via their Mailchimp account, and they’ll install it in their photo editor. They’ll then be prompted to [OAuth with the application](/marketing/guides/access-user-data-oauth-2). 
 
-When the user clicks a photo to upload in the photo editor, the application will encode the image and POST the encoded data to Mailchimp’s [File Manager endpoint](/marketing/api). When the user wants to send photos from Mailchimp back to the photo editor, the integration will pull photos from Mailchimp by performing [GET to the File Manager endpoint](/marketing/api).
+When the user clicks a photo to upload in the photo editor, the application will encode the image and POST the encoded data to Mailchimp’s [File Manager endpoint](/marketing/api/file-manager/create-file). When the user wants to send photos from Mailchimp back to the photo editor, the integration will pull photos from Mailchimp by performing [GET to the File Manager endpoint](/marketing/api/file-manager/list-files).
 
 ### Surfacing errors
 
@@ -73,19 +73,19 @@ To qualify for the Integration Partner Program, your integration: 
 
 These features include: 
 
-- Adding rich segmentation data including [Tags](/marketing/api), [Custom Events](/marketing/api), and [Merge Fields](/marketing/api)
-- Creating [Audience Segments](/marketing/api)
-- Creating [Automations](/marketing/api)
-- Creating [Connected Sites](/marketing/api)
-- Creating [Email Templates](/marketing/api)
-- Creating [Landing Pages](/marketing/api)
-- Embedding [Signup Forms](/marketing/api)
+- Adding rich segmentation data including [Tags](/marketing/api/lists/create-member-tag), [Custom Events](/marketing/api/lists/create-member-event), and [Merge Fields](/marketing/api/lists/create-merge-field)
+- Creating [Audience Segments](/marketing/api/lists/create-segment)
+- Creating [Automations](/marketing/api/automations/create)
+- Creating [Connected Sites](/marketing/api/connected-sites/create)
+- Creating [Email Templates](/marketing/api/templates/create)
+- Creating [Landing Pages](/marketing/api/landing-pages/create)
+- Embedding [Signup Forms](/marketing/api/lists/create-signup-form)
 - Sending emails via [Mailchimp Transactional](/transactional)
-- Syncing all available [e-commerce data](/marketing/docs/e-commerce) including [Products](/marketing/api), [Orders](/marketing/api), [Customers](/marketing/api), [Promo Codes](/marketing/api), and [Carts](/marketing/api)
-- Syncing [Contacts](/marketing/api) with [appropriate subscription statuses](/marketing/api), respecting GDPR fields
-- Syncing [Conversations](/marketing/api) from Mailchimp
-- Syncing [Images to Content Studio](/marketing/api)
-- Syncing [Reports](/marketing/api) from Mailchimp
+- Syncing all available [e-commerce data](/marketing/docs/e-commerce) including [Products](/marketing/api/ecommerce/list-store-products), [Orders](/marketing/api/ecommerce/list-store-orders), [Customers](/marketing/api/ecommerce/list-store-customers), [Promo Codes](/marketing/api/ecommerce/list-store-promo-rule-promo-codes), and [Carts](/marketing/api/ecommerce/list-store-carts)
+- Syncing [Contacts](/marketing/api/lists/list-members) with [appropriate subscription statuses](/marketing/api/lists/upsert-member), respecting GDPR fields
+- Syncing [Conversations](/marketing/api/conversations/list) from Mailchimp
+- Syncing [Images to Content Studio](/marketing/api/file-manager/create-file)
+- Syncing [Reports](/marketing/api/reports/list) from Mailchimp
 
 ### Partner requirements
 
