@@ -9,4 +9,5 @@ navigation:
   - tab: posts
     layout:
       - changelog: ../docs/blog
+        title: Blog
         slug: ""
