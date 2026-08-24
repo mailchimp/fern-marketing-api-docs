@@ -3,6 +3,6 @@ title: Minor improvement to parameter handling in the Events endpoint
 tags: ["Marketing API"]
 ---
 
-Previously, null-valued entries in the `properties` object passed to the [Events endpoint](https://mailchimp.com/developer/api/marketing/list-member-events) would cause a server error, returning a 500 to the client. With this change, we treat null property values as empty strings.
+Previously, null-valued entries in the `properties` object passed to the [Events endpoint](/marketing/api/lists/list-member-events) would cause a server error, returning a 500 to the client. With this change, we treat null property values as empty strings.
 
 This change gives clients a little more flexibility with how they format the `properties` parameter, and it cleans up our server logs.

@@ -32,7 +32,7 @@ To ensure your templates display as expected when sent, you’ll want to [inline
 
 ### Template fields
 
-Templates have several default options, including a subject line, sender, HTML content, and text content. None of these fields are required when creating or changing a template, but if you’re planning to use the [`messages/send-template`](https://mailchimp.com/developer/api/transactional/messages/send-using-message-template/) endpoint, be sure to have either HTML or text content specified, since it will form the body of your email.
+Templates have several default options, including a subject line, sender, HTML content, and text content. None of these fields are required when creating or changing a template, but if you’re planning to use the [`messages/send-template`](/transactional/api/messages/send-template) endpoint, be sure to have either HTML or text content specified, since it will form the body of your email.
 
 <Note>
 **Note**: In addition to [`messages/send-template`](/transactional/api) or specifying a template through SMTP headers, you can also apply templates using the [rules engine](/transactional/docs/rules-engine) or when A/B split testing.
@@ -72,7 +72,7 @@ Merge tags let you personalize templated messages with recipients’ names, addr
 
 There are two main ways to add dynamic content via merge tags: Handlebars or the Mailchimp merge language. You may already be familiar with the [Mailchimp merge language](https://mailchimp.com/help/getting-started-with-merge-tags/) from creating and editing Mailchimp templates. We also offer a custom implementation of [Handlebars](https://handlebarsjs.com/), which is open source and offers greater flexibility. 
 
-To set your merge language, navigate to [**Sending Defaults**](https://mandrillapp.com/settings/sending-options) and select Mailchimp or Handlebars from the **Merge Language** drop-down menu. You can also change the merge language on a per-message basis using the Transactional API or with an SMTP header. With the API, set the `merge_language` parameter in [`messages/send`](https://mailchimp.com/developer/api/transactional/messages/send-new-message/) or [`messages/send-template`](https://mailchimp.com/developer/api/transactional/messages/send-using-message-template/) request. With SMTP, set the [`X-MC-MergeLanguage`](/transactional/docs/smtp-integration/#x-mc-mergelanguage) header to the language of your choice. 
+To set your merge language, navigate to [**Sending Defaults**](https://mandrillapp.com/settings/sending-options) and select Mailchimp or Handlebars from the **Merge Language** drop-down menu. You can also change the merge language on a per-message basis using the Transactional API or with an SMTP header. With the API, set the `merge_language` parameter in [`messages/send`](/transactional/api/messages/send) or [`messages/send-template`](/transactional/api/messages/send-template) request. With SMTP, set the [`X-MC-MergeLanguage`](/transactional/docs/smtp-integration/#x-mc-mergelanguage) header to the language of your choice.
 
 <Note>
 **Note**: If you export a template from your main Mailchimp account and Handlebars is set as your default merge language in Mailchimp Transactional, we’ll convert Mailchimp merge tags to Handlebars for you automatically.

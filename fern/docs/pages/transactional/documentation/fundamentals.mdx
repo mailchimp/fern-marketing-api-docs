@@ -68,7 +68,7 @@ Whether you’re sending via the API or SMTP, you’ll need to generate an API k
 While you’re reviewing the API reference for an overview of endpoints and parameters, it’s also a good idea to familiarize yourself with some of the basics of the API itself, outlined below. 
 
 <Note>
-**Note**: These API conventions are less relevant if you choose to use one of our client libraries; for more information, check out the [Tools](https://mailchimp.com/developer/tools/) page.
+**Note**: These API conventions are less relevant if you choose to use one of our client libraries; for more information, check out the [Tools](/tools) page.
 </Note>
 
 ### Root API endpoint
@@ -116,14 +116,14 @@ You may run into some errors when using the Transactional API. The errors are li
 
 | Error Code Responses | Possible Causes | Solutions |
 | --- | --- | --- |
-| 401 Invalid API Key | Pasted API key wrong in the call, accidentally deleted API key from account, invalid JSON | Double check if the API key exists in the account and is correctly copied over, otherwise [create a new API key](https://mailchimp.com/developer/transactional/guides/quick-start/#generate-your-api-key). Check if your JSON is formatted properly |
+| 401 Invalid API Key | Pasted API key wrong in the call, accidentally deleted API key from account, invalid JSON | Double check if the API key exists in the account and is correctly copied over, otherwise [create a new API key](/transactional/guides/quick-start#generate-your-api-key). Check if your JSON is formatted properly |
 | 401 IP does not have permission to use this key | API keys can be limited by IP address, and the IP address does not have permission | Go to the [Settings](https://mandrillapp.com/settings) page in Transactional and edit the key to allow the IP address to make requests |
 | 401 This key does not have permission to call method name | API keys can be limited to call any given endpoint, and the endpoint called is not allowed | Go to the [Settings](https://mandrillapp.com/settings) page and edit the key to allow the endpoint(s) |
 | 404 No Such Template | The template ID passed in your API request does not exist or is incorrect | Recheck the template ID for the template you would like to use for the send |
 | 404 Invalid Message ID | The message ID is incorrect, no message ID was passed in the request, or the message has been recently sent and the ID is not available yet | Double check the message ID you are using, or wait a little longer before trying the API request |
 | 404 No message exists with the id | The message ID is incorrect, or the message has been recently sent and the ID is not available yet | Double check the message ID you are using, or wait a little longer before trying the API request |
-| 404 No subaccount exists with the id | The subaccount ID does not exist or is incorrect | Double check the subaccount ID you are using, or [create a new subaccount](https://mailchimp.com/developer/transactional/docs/subaccounts/#create-a-subaccount) |
-| 405 Method not allowed | You did not use the POST method in your API request. For example, you used DELETE, ADD, etc. | All endpoints should be called as POST method, as described [here](https://mailchimp.com/developer/transactional/docs/fundamentals/#restful-deviations) |
+| 404 No subaccount exists with the id | The subaccount ID does not exist or is incorrect | Double check the subaccount ID you are using, or [create a new subaccount](/transactional/docs/subaccounts#create-a-subaccount) |
+| 405 Method not allowed | You did not use the POST method in your API request. For example, you used DELETE, ADD, etc. | All endpoints should be called as POST method, as described [here](/transactional/docs/fundamentals#restful-deviations) |
 
 ## Account features
 

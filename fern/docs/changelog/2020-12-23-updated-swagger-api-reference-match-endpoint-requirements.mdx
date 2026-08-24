@@ -5,15 +5,15 @@ tags: ["Marketing API"]
 
 The following verbs and endpoints:
 
-- ``[`POST /lists/{list_id}/preview-segment`](https://mailchimp.com/developer/api/marketing/list-preview-segment/preview-segment/)[``](https://mailchimp.com/developer/api/marketing/list-member-notes/add-member-note/)[``](https://mailchimp.com/developer/api/marketing/list-member-notes/add-member-note/)
-- [`POST /lists/{list_id}/members/{subscriber_hash}/notes`](https://mailchimp.com/developer/api/marketing/list-member-notes/add-member-note/)[``](https://mailchimp.com/developer/api/marketing/list-member-notes/update-note/)[``](https://mailchimp.com/developer/api/marketing/list-member-notes/update-note/)
-- [`PATCH /lists/{list_id}/members/{subscriber_hash}/notes/{note_id}`](https://mailchimp.com/developer/api/marketing/list-member-notes/update-note/)[``](https://mailchimp.com/developer/api/marketing/interests/update-interest-in-category/)[``](https://mailchimp.com/developer/api/marketing/interests/update-interest-in-category/)
-- [`PATCH /lists/{list_id}/interest-categories/{interest_category_id}/interests/{interest_id}`](https://mailchimp.com/developer/api/marketing/interests/update-interest-in-category/)[``](https://mailchimp.com/developer/api/marketing/list-member-tags/add-or-remove-member-tags/)[``](https://mailchimp.com/developer/api/marketing/list-member-tags/add-or-remove-member-tags/)
-- [`POST /lists/{list_id}/members/{subscriber_hash}/tags`](https://mailchimp.com/developer/api/marketing/list-member-tags/add-or-remove-member-tags/)``
+- ``[`POST /lists/{list_id}/preview-segment`](https://mailchimp.com/developer/api/marketing/list-preview-segment/preview-segment/)[``](/marketing/api/lists/create-member-note)[``](/marketing/api/lists/create-member-note)
+- [`POST /lists/{list_id}/members/{subscriber_hash}/notes`](/marketing/api/lists/create-member-note)[``](/marketing/api/lists/update-member-note)[``](/marketing/api/lists/update-member-note)
+- [`PATCH /lists/{list_id}/members/{subscriber_hash}/notes/{note_id}`](/marketing/api/lists/update-member-note)[``](/marketing/api/lists/update-interest-category-interest)[``](/marketing/api/lists/update-interest-category-interest)
+- [`PATCH /lists/{list_id}/interest-categories/{interest_category_id}/interests/{interest_id}`](/marketing/api/lists/update-interest-category-interest)[``](/marketing/api/lists/create-member-tag)[``](/marketing/api/lists/create-member-tag)
+- [`POST /lists/{list_id}/members/{subscriber_hash}/tags`](/marketing/api/lists/create-member-tag)``
 
 Had a body parameter that wasn’t marked as required in our Swagger file, but was required for the API endpoint to work. These parameters are now marked as required.
 
-This changed the method signature for the following methods in [our SDKs](https://mailchimp.com/developer/tools):
+This changed the method signature for the following methods in [our SDKs](/tools):
 
 - `createListMemberNote / create_list_member_note`
 - `updateListMemberNote / update_list_member_note`

@@ -11,9 +11,9 @@ The E-commerce endpoints allow you to connect an external store to your Mailchim
 
 ## Stores
 
-[Stores](https://mailchimp.com/developer/api/marketing/ecommerce-stores/) is the top-level e-commerce endpoint. Carts, customers, orders, and products all exist inside of the scope of a store. Some Stores parameters are always required, while others are only required in certain cases—for example, the `domain` parameter is necessary to enable Connected Sites and Google Ads. 
+[Stores](/marketing/api/ecommerce/list-stores) is the top-level e-commerce endpoint. Carts, customers, orders, and products all exist inside of the scope of a store. Some Stores parameters are always required, while others are only required in certain cases—for example, the `domain` parameter is necessary to enable Connected Sites and Google Ads. 
 
-When [creating a new store](https://mailchimp.com/developer/api/marketing/ecommerce-stores/add-store/), the required store ID is client-defined. Each store must be tied to a Mailchimp audience (which uses the [Lists/Audiences endpoint](https://mailchimp.com/developer/api/marketing/lists/)), but a single audience can support multiple stores. After a store is created and tied to an audience, it cannot be connected to a different audience.
+When [creating a new store](/marketing/api/ecommerce/create-store), the required store ID is client-defined. Each store must be tied to a Mailchimp audience (which uses the [Lists/Audiences endpoint](/marketing/api/lists/list)), but a single audience can support multiple stores. After a store is created and tied to an audience, it cannot be connected to a different audience.
 
 <Note>
 **Note**: [Mailchimp Stores](https://mailchimp.com/features/online-store/) are automatically available in the Stores endpoints and their data is kept in sync in real time as transactions occur. All Mailchimp Stores and the data contained therein (e.g., products, orders, carts) should be considered read-only in the Marketing API; there is no need to create, update, or delete these records via the API.
@@ -33,7 +33,7 @@ Mailchimp also offers double opt-in, which includes an extra confirmation step t
 
 You’ll need to make two requests:
 
-1. Add the customer as a transactional contact by making a POST request to the [Customers endpoint](https://mailchimp.com/developer/api/marketing/ecommerce-customers/) with a value of `false` for the `opt_in_status` field. (Sending a value of `true` would add them as a subscriber and opt them into marketing emails.)
+1. Add the customer as a transactional contact by making a POST request to the [Customers endpoint](/marketing/api/ecommerce/list-store-customers) with a value of `false` for the `opt_in_status` field. (Sending a value of `true` would add them as a subscriber and opt them into marketing emails.)
 2. Edit the contact by making a PATCH request to `lists/{list_id}/members/{subscriber_hash}` with a value of `pending` for the `status` field.
 
 ## Products
@@ -59,7 +59,7 @@ The product retargeting email workflow is configured as an automation, which you
 
 ## Carts
 
-The [Carts](https://mailchimp.com/developer/api/marketing/ecommerce-carts/) endpoint lets you temporarily save a customer’s shopping cart prior to a successful purchase. Carts contain [cart lines](https://mailchimp.com/developer/api/marketing/ecommerce-cart-lines/), which represent information about products that customers have added to their shopping carts.
+The [Carts](/marketing/api/ecommerce/list-store-carts) endpoint lets you temporarily save a customer’s shopping cart prior to a successful purchase. Carts contain [cart lines](/marketing/api/ecommerce/list-store-cart-lines), which represent information about products that customers have added to their shopping carts.
 
 ### Abandoned cart emails
 
@@ -71,7 +71,7 @@ You can [create an abandoned cart email](https://mailchimp.com/help/create-an-ab
 
 ## Orders
 
-The [Orders](https://mailchimp.com/developer/api/marketing/ecommerce-orders/) endpoint represents successful transactions. When adding orders, the `processed_at_foreign` parameter is not required. However, if the orders are missing a date and timestamp, they will not show up on a contact’s Activity Feed in the application.
+The [Orders](/marketing/api/ecommerce/list-store-orders) endpoint represents successful transactions. When adding orders, the `processed_at_foreign` parameter is not required. However, if the orders are missing a date and timestamp, they will not show up on a contact’s Activity Feed in the application.
 
 To support [tracking campaign revenue](https://mailchimp.com/help/view-revenue-from-email-campaigns/), orders must include `campaign_id`, `processed_at_foreign` time, and `financial_status`.
 
@@ -81,7 +81,7 @@ To support [tracking campaign revenue](https://mailchimp.com/help/view-revenue-f
 
 ## Order notifications
 
-[Order notifications](https://mailchimp.com/help/create-order-notifications/) are triggered by a change in a contact’s order status. After designing and enabling order notifications in your Mailchimp account, you can trigger those emails by [adding](https://mailchimp.com/developer/api/marketing/ecommerce-orders/add-order/) or [updating](https://mailchimp.com/developer/api/marketing/ecommerce-orders/update-order/) an e-commerce order with `financial_status` or `fulfillment_status` values.
+[Order notifications](https://mailchimp.com/help/create-order-notifications/) are triggered by a change in a contact’s order status. After designing and enabling order notifications in your Mailchimp account, you can trigger those emails by [adding](/marketing/api/ecommerce/create-store-order) or [updating](/marketing/api/ecommerce/update-store-order) an e-commerce order with `financial_status` or `fulfillment_status` values.
 
 An order’s `financial_status` can be `paid`, `pending`, `refunded`, or `cancelled`. Changing the status will trigger the following notifications:
 
@@ -104,7 +104,7 @@ When you send a campaign with e-commerce tracking enabled, any links in that cam
 
 The `mc_eid` parameter is a unique Mailchimp ID that identifies the recipient’s email address, which you can use to associate orders with a contact.
 
-To find a contact’s email address, make an API call to the [Members](https://mailchimp.com/developer/api/marketing/list-members/) endpoint with the `mc_eid` as the value for the `unique_email_id` parameter. For example, if your subscriber’s link contains the tracking parameter `mc_eid=18d3c1adfe`, you can find that customer’s email address by making a GET request to `/lists/{list_id}/members?unique_email_id=18d3c1adfe`.
+To find a contact’s email address, make an API call to the [Members](/marketing/api/lists/list-members) endpoint with the `mc_eid` as the value for the `unique_email_id` parameter. For example, if your subscriber’s link contains the tracking parameter `mc_eid=18d3c1adfe`, you can find that customer’s email address by making a GET request to `/lists/{list_id}/members?unique_email_id=18d3c1adfe`.
 
 <Note>
 **Note**: The `mc_eid` value is distinct from the MD5 hash of the lowercase email address, which is used by some other Marketing API endpoints.
@@ -112,15 +112,15 @@ To find a contact’s email address, make an API call to the [Members](https://m
 
 ### Campaign ID tracking parameter
 
-The `mc_cid` parameter is the Mailchimp ID for the campaign that generated the link. You can [add e-commerce orders](https://mailchimp.com/developer/api/marketing/ecommerce-orders/add-order/) with the `mc_cid` as the value for the `campaign_id` parameter to indicate that the order resulted from a specific campaign.
+The `mc_cid` parameter is the Mailchimp ID for the campaign that generated the link. You can [add e-commerce orders](/marketing/api/ecommerce/create-store-order) with the `mc_cid` as the value for the `campaign_id` parameter to indicate that the order resulted from a specific campaign.
 
 ## Product recommendations
 
 Mailchimp's personalized [product recommendations feature](https://mailchimp.com/help/about-product-recommendations/) uses individual contact purchase data to prioritize and promote relevant items from a store. To enable product recommendations for the orders and products you add to Mailchimp, the following parameters are required:
 
-- [Products](https://mailchimp.com/developer/api/marketing/ecommerce-products/) require a valid `image_url` so your customers can see images of recommended products.
-- [Product Variants](https://mailchimp.com/developer/api/marketing/ecommerce-product-variants/) require the `inventory_quantity` parameter. Product variants will only be recommended if this value is greater than 0, so items that are not available for purchase will not be recommended.
-- [Orders](https://mailchimp.com/developer/api/marketing/ecommerce-orders/) require a `processed_at_foreign` timestamp. This ensures that product recommendations are based on up-to-date e-commerce activity.
+- [Products](/marketing/api/ecommerce/list-store-products) require a valid `image_url` so your customers can see images of recommended products.
+- [Product Variants](/marketing/api/ecommerce/list-store-product-variants) require the `inventory_quantity` parameter. Product variants will only be recommended if this value is greater than 0, so items that are not available for purchase will not be recommended.
+- [Orders](/marketing/api/ecommerce/list-store-orders) require a `processed_at_foreign` timestamp. This ensures that product recommendations are based on up-to-date e-commerce activity.
 
 <Note>
 **Note**: You can also track any purchases that result from a product recommendation. When a customer clicks on a recommended product, that link will include an `mc_tc` parameter in the URL. To track revenue resulting from product recommendations, use the value of `mc_tc` for the `tracking_code` parameter when adding an order.
@@ -138,4 +138,4 @@ When you create or update a store in Mailchimp with the `is_syncing` parameter s
 - Category follow-ups
 - Best customers
 
-While in this state, you can add, edit, or backfill e-commerce information without triggering messages from these campaigns. To resume these campaigns, [update the store](https://mailchimp.com/developer/api/marketing/ecommerce-stores/update-store/) and set `is_syncing` to `false`.
+While in this state, you can add, edit, or backfill e-commerce information without triggering messages from these campaigns. To resume these campaigns, [update the store](/marketing/api/ecommerce/update-store) and set `is_syncing` to `false`.

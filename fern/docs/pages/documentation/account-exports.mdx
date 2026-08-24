@@ -209,7 +209,7 @@ except ApiClientError as error:
 
 ## Downloading the data
 
-To see and download all previous exports that have completed within the last 90 days, make a GET request to the [Account Exports endpoint](https://mailchimp.com/developer/marketing/api/account-exports/get-account-export-info/). This will allow you to iterate through and download any previously completed exports using the `download_url` property in each item of the response. Each `download_url` links out to a file hosted by Google, our storage provider. 
+To see and download all previous exports that have completed within the last 90 days, make a GET request to the [Account Exports endpoint](/marketing/api/account-exports/get). This will allow you to iterate through and download any previously completed exports using the `download_url` property in each item of the response. Each `download_url` links out to a file hosted by Google, our storage provider. 
 
 Each file URL is signed, and only accessible through the given URL. Please keep this URL as private as your API key: it provides direct and unauthorized user access to your account's data without any kind of user verification.
 

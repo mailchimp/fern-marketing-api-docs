@@ -54,9 +54,9 @@ Mailchimp Transactional SMS provides tools to help you send informational/transa
 
 ## Sending messages
 
-To start, you’ll need to navigate to the [**Settings**](https://mandrillapp.com//settings) page and set up an API key.  Find out more about setting up an API key at [Transactional API Quick Start](https://mailchimp.com/developer/transactional/guides/quick-start/#generate-your-api-key).
+To start, you’ll need to navigate to the [**Settings**](https://mandrillapp.com//settings) page and set up an API key.  Find out more about setting up an API key at [Transactional API Quick Start](/transactional/guides/quick-start#generate-your-api-key).
 
-All API URLs listed in this documentation for SMS messages are referring to  the Mailchimp Transactional API, v1.1 and the [send-sms endpoint](https://mailchimp.com/developer/transactional/api/messages/send-sms-message/).
+All API URLs listed in this documentation for SMS messages are referring to  the Mailchimp Transactional API, v1.1 and the [send-sms endpoint](/transactional/api/messages/send-sms).
 
 ## Unsubscribes
 
@@ -76,15 +76,15 @@ _Tags_ are great for labeling broad categories of messages, like welcome SMS mes
 
 _Metadata_ is generally better for managing more user-specific information, like a user ID from your system. Metadata information is returned in webhooks and is searchable in Outbound Activity, so you can tie certain information back to data in your own system.
 
-To assign tags or metadata to an SMS send, use the `tag` and `metadata` parameter of the [send-sms endpoint](https://mailchimp.com/developer/transactional/api/messages/send-sms-message/).
+To assign tags or metadata to an SMS send, use the `tag` and `metadata` parameter of the [send-sms endpoint](/transactional/api/messages/send-sms).
 
 You can filter both tags and metadata via the **View Stats By** drop-down menu on your **Dashboard**, or by using the `/messages/search` and `/messages/search-time-series` endpoints. We keep tag-based stats indefinitely; you can view them for the lifetime of the account. You can only view metadata stats in Outbound Activity for sends made in the last 30 days.
 
 ## Subaccounts
 
-To find out more about subaccounts, including how to create one, see [**Subaccounts**](https://mailchimp.com/developer/transactional/docs/subaccounts/#create-a-subaccount).
+To find out more about subaccounts, including how to create one, see [**Subaccounts**](/transactional/docs/subaccounts#create-a-subaccount).
 
-To assign a subaccount to an SMS send, use the `subaccount` parameter of the [send-sms endpoint](https://mailchimp.com/developer/transactional/api/messages/send-sms-message/).
+To assign a subaccount to an SMS send, use the `subaccount` parameter of the [send-sms endpoint](/transactional/api/messages/send-sms).
 
 ## Reporting and analytics
 
@@ -94,11 +94,11 @@ Reporting features like tags, custom metadata, and subaccounts work with SMS sen
 
 ## Webhooks
 
-Webhooks allow your application to receive information about SMS events as they occur and respond in a way that you define, similar to how [webhooks can be used for email events](https://mailchimp.com/developer/transactional/docs/webhooks/).
+Webhooks allow your application to receive information about SMS events as they occur and respond in a way that you define, similar to how [webhooks can be used for email events](/transactional/docs/webhooks).
 
 **Add a new webhook**
 
-To set up a webhook, follow the steps located [here](https://mailchimp.com/developer/transactional/docs/webhooks/#add-a-new-webhook), but choose the events under the SMS section that you would like the webhook to listen for.
+To set up a webhook, follow the steps located [here](/transactional/docs/webhooks#add-a-new-webhook), but choose the events under the SMS section that you would like the webhook to listen for.
 
 The following events are available for SMS sends:
 
@@ -116,7 +116,7 @@ The following events are available for SMS sends:
 
 Every Mailchimp Transactional webhook uses the same general data format, regardless of the event type. The webhook request is a standard HTTP POST request with a single parameter: ‘mandrill_events’.
 
-For SMS events, the response will still follow a similar format as described [here](https://mailchimp.com/developer/transactional/docs/webhooks/#detailed-webhook-format-responses), with some differences. There will be a “channel” parameter that will help differentiate between a SMS message and an email message.
+For SMS events, the response will still follow a similar format as described [here](/transactional/docs/webhooks#detailed-webhook-format-responses), with some differences. There will be a “channel” parameter that will help differentiate between a SMS message and an email message.
 
 ## Reputation
 

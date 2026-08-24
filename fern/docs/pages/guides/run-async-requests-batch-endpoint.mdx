@@ -668,7 +668,7 @@ Just keep in mind that that payload will not be delivered as JSON, but as a URI-
 
 When you enable HMAC signing on a batch webhook, Mailchimp includes a signature in every completion notification so your endpoint can confirm the delivery is authentic.
 
-The signing scheme is identical to audience webhooks — see [Verifying webhook signatures](https://mailchimp.com/developer/marketing/guides/sync-audience-data-webhooks/#verifying-webhook-signatures) for the full background. The examples below are adapted for the batch webhook context.
+The signing scheme is identical to audience webhooks — see [Verifying webhook signatures](/marketing/guides/sync-audience-data-webhooks#verifying-webhook-signatures) for the full background. The examples below are adapted for the batch webhook context.
 
 <Note>
 **Note:** Batch webhook payloads arrive as URL-encoded form data (e.g. `type=batch_operation_completed&data%5Bid%5D=...`). Always verify the signature against the **raw, unmodified request body bytes** — do not URL-decode or parse the payload before verification, as that will change the bytes and break the signature check.

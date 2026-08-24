@@ -26,7 +26,7 @@ In the app: 
 3. Choose a unique identifier for the subaccount, like a unique ID from your own application or database. You cannot change the identifier once the subaccount has been created.
 4. Click **Create Subaccount**
 
-Via the API, use the [Subaccounts](https://mailchimp.com/developer/api/transactional/subaccounts/add-subaccount/) endpoint. (For sample code, see [the subaccounts guide](/transactional/guides/manage-different-users-subaccounts).)   
+Via the API, use the [Subaccounts](/transactional/api/subaccounts/add) endpoint. (For sample code, see [the subaccounts guide](/transactional/guides/manage-different-users-subaccounts).)   
 
 Once your subaccount is up and running, you can use the `subaccount` parameter of the [`/messages/send`](/transactional/api) endpoint, or you can use the [`X-MC-Subaccount`](/transactional/docs/smtp-integration/#x-mc-subaccount) header if you’re sending via SMTP.
 

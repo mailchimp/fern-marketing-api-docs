@@ -24,7 +24,7 @@ Some endpoints act on resources outside of a traditional REST approach. To pause
 If your firewall rules do not support HTTP methods like PATCH or DELETE, use the `X-HTTP-Method-Override` header. Make your call using the POST method and pass the unsupported method as the value of `X-HTTP-Method-Override`. The override will not work with any method other than POST; if you use the override header with GET, PATCH, PUT, or DELETE, you will receive an error.
 
 <Note>
-**Note**: You won’t need to worry too much about these implementation details if you’re using the [official client libraries](https://mailchimp.com/developer/tools/).
+**Note**: You won’t need to worry too much about these implementation details if you’re using the [official client libraries](/tools).
 </Note>
 
 ### Request body parameters

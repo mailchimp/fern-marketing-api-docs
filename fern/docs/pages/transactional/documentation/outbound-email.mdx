@@ -17,7 +17,7 @@ You can also create highly customized 1-to-1 transactional messages that are tri
 
 ### Sending messages
 
-To send an email using the Transactional API, use the [`/messages/send`](https://mailchimp.com/developer/api/transactional/messages/send-new-message/) or [`/messages/send-template`](https://mailchimp.com/developer/api/transactional/messages/send-using-message-template/) endpoints. You’ll have to set up and authenticate a domain first—specifically, with DKIM records, which are required. 
+To send an email using the Transactional API, use the [`/messages/send`](/transactional/api/messages/send) or [`/messages/send-template`](/transactional/api/messages/send-template) endpoints. You’ll have to set up and authenticate a domain first—specifically, with DKIM records, which are required. 
 
 For full information on authentication setup, see the [Authentication and Delivery](/transactional/docs/authentication-delivery) docs; to walk through the process with code samples, see the [Send Your First Transactional Email](/transactional/guides/send-first-email) guide. 
 
@@ -71,7 +71,7 @@ To schedule a message, use the [`send_at`](/transactional/api) parameter (API) o
 **Note**: If you’re sending with SMTP and don’t have direct access to the message ID, you can also use the [`messages/list-scheduled`](/transactional/api) endpoint to look up scheduled messages for a specific recipient.
 </Note>
 
-``[`messages/reschedule`](https://mailchimp.com/developer/api/transactional/messages/reschedule-email/) lets you change when a scheduled message will be delivered, and [`messages/cancel-schedule`](https://mailchimp.com/developer/api/transactional/messages/cancel-scheduled-email/) deletes a scheduled message—which will also prevent that message from counting towards your monthly send total.
+``[`messages/reschedule`](/transactional/api/messages/reschedule) lets you change when a scheduled message will be delivered, and [`messages/cancel-schedule`](/transactional/api/messages/cancel-scheduled) deletes a scheduled message—which will also prevent that message from counting towards your monthly send total.
 
 ## Resending messages
 
