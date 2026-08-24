@@ -395,7 +395,7 @@ except ApiClientError as error:
 The `id` returned in the response will be an MD5 hash of the contact’s lowercase email address. You can learn more about that [here](/marketing/docs/methods-parameters/#path-parameters).
 
 <Note>
-**Note**: If you’re not sure whether or not a contact has already been added to an audience, you should use the [Add or update list member](https://mailchimp.com/developer/api/marketing/list-members/add-or-update-list-member) endpoint. This will create the contact if it doesn’t already exist, or update a contact’s information if it does.
+**Note**: If you’re not sure whether or not a contact has already been added to an audience, you should use the [Add or update list member](/marketing/api/lists/upsert-member) endpoint. This will create the contact if it doesn’t already exist, or update a contact’s information if it does.
 </Note>
 
 ## Check a contact’s subscription status
@@ -649,4 +649,4 @@ except ApiClientError as error:
 
 - [Marketing Fundamentals](/marketing/docs/fundamentals)
 - [Organize Contacts with Tags](/marketing/guides/organize-contacts-with-tags)
-- [Audiences/Lists API Reference](/marketing/api)
+- [Audiences/Lists API Reference](/marketing/api/lists/list)

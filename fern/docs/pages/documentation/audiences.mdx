@@ -24,13 +24,13 @@ Your use of the Audiences Endpoints (BETA) is considered part of your use of Ma
 
 Until now, Mailchimp’s API has been centered around email-only contacts, which meant that contact-level and email channel-specific properties were combined without hierarchical differentiation.
 
-For example, when [adding a member to a list](https://mailchimp.com/developer/marketing/api/list-members/add-member-to-list/), the `email_type` and `status` fields apply to the email channel, while fields like `merge_fields` belong to the contact itself.
+For example, when [adding a member to a list](/marketing/api/lists/create-member), the `email_type` and `status` fields apply to the email channel, while fields like `merge_fields` belong to the contact itself.
 
 With the new Audiences endpoints, we now provide a clear distinction between the contact model and the individual channel models (`email_channel `and `sms_channel`).
 
 ### Contact status vs. channel-level subscription status
 
-The [List Members endpoint](https://mailchimp.com/developer/marketing/api/list-members/) has historically aligned the definition of `status` with a contact’s email subscription status.
+The [List Members endpoint](/marketing/api/lists/list-members) has historically aligned the definition of `status` with a contact’s email subscription status.
 
 With this release, we introduce a separation:
 
@@ -89,4 +89,4 @@ Consent values are defined in the following table.
 | Consented (SMS) | The contact has interacted with you, but has not confirmed their consent to receiving marketing communications. Further verification of consent might be required depending on the audience’s list opt-in configurations (single opt-in vs. double opt-in). **Not supported for single opt-in.** |
 | Confirmed (Email and SMS) | The contact has confirmed their consent and verification of consent. This status means that the contact needs no further verification of their consent decision. Use this status when importing contacts to Mailchimp whom you’ve acquired consent and verification for from a previous/different system. This status means the contact will not go through double opt-in flow when importing into the system. |
 
-Consent statuses can be set via the `create` and `update` endpoints and will internally be mapped to a subscription status similar to the List Members endpoints. The one exception is the `cleaned` status, which is not supported through this mapping. If you need to set a contact’s email subscription status to `cleaned`, please use the [List Members endpoints](https://mailchimp.com/developer/marketing/api/list-members/).
+Consent statuses can be set via the `create` and `update` endpoints and will internally be mapped to a subscription status similar to the List Members endpoints. The one exception is the `cleaned` status, which is not supported through this mapping. If you need to set a contact’s email subscription status to `cleaned`, please use the [List Members endpoints](/marketing/api/lists/list-members).

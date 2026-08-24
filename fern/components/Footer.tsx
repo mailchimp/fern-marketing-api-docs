@@ -9,17 +9,17 @@ export default function Footer() {
               <div className="mc-footer-link-section">
                 <label>Products</label>
                 <ul>
-                  <li><a href="https://mailchimp.com/developer/marketing/">Mailchimp Marketing API</a></li>
-                  <li><a href="https://mailchimp.com/developer/transactional/">Mailchimp Transactional</a></li>
+                  <li><a href="/marketing">Mailchimp Marketing API</a></li>
+                  <li><a href="/transactional">Mailchimp Transactional</a></li>
                 </ul>
               </div>
               <div className="mc-footer-link-section">
                 <label>Resources</label>
                 <ul>
-                  <li><a href="https://mailchimp.com/developer/tools/">Tools</a></li>
-                  <li><a href="https://mailchimp.com/developer/release-notes/">Release Notes</a></li>
+                  <li><a href="/tools">Tools</a></li>
+                  <li><a href="/release-notes">Release Notes</a></li>
                   <li><a href="https://status.mailchimp.com/" target="_blank" rel="noopener noreferrer">API Status</a></li>
-                  <li><a href="https://mailchimp.com/developer/integration-partner-program/" target="_blank" rel="noopener noreferrer">Partnerships</a></li>
+                  <li><a href="/integration-partner-program">Partnerships</a></li>
                   <li><a href="https://mailchimp.com/sales/" target="_blank" rel="noopener noreferrer">Contact Us</a></li>
                 </ul>
               </div>

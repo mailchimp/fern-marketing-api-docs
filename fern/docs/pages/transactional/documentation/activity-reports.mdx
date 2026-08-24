@@ -21,7 +21,7 @@ Navigate to [**Activity**](https://mandrillapp.com/activity) in your Mailchimp T
 
 ### Data storage
 
-Overall statistics—including total deliveries, bounces and rejections, unique opens and clicks, and total opens and clicks—are stored indefinitely. You can view these overall stats on the [**Dashboard**](https://mandrillapp.com/), or using the [senders](/transactional/api), [tags](/transactional/api), and [templates](/transactional/api) API calls.
+Overall statistics—including total deliveries, bounces and rejections, unique opens and clicks, and total opens and clicks—are stored indefinitely. You can view these overall stats on the [**Dashboard**](https://mandrillapp.com/), or using the [senders](/transactional/api/senders/list), [tags](/transactional/api/tags/list), and [templates](/transactional/api/templates/list) API calls.
 
 While bounces are also stored indefinitely, data about bounced messages is only kept for 90 days. This information is available on the [**Activity**](https://mandrillapp.com/activity) page, and includes details about the bounced message’s subject line, sender, recipient address, total opens and clicks, and metadata.
 
@@ -33,7 +33,7 @@ Open and click tracking are the most foundational ways to track engagement with 
 
 Mailchimp Transactional tracks opens by adding a 1-pixel square graphic at the bottom of HTML emails. When a recipient downloads images in your message (which happens by default with most email clients) this is recorded as an open. 
 
-You can turn open tracking on or off via the [**Sending Defaults**](https://mandrillapp.com/settings/sending-options) page. To override these global settings on a per-message basis, use the [`track_opens`](/transactional/api) parameter (API) or the [`X-MC-Track`](/transactional/docs/smtp-integration/#x-mc-track) header (SMTP). 
+You can turn open tracking on or off via the [**Sending Defaults**](https://mandrillapp.com/settings/sending-options) page. To override these global settings on a per-message basis, use the [`track_opens`](/transactional/api/messages/send) parameter (API) or the [`X-MC-Track`](/transactional/docs/smtp-integration/#x-mc-track) header (SMTP). 
 
 <Note>
 **Note**: It’s impossible to embed the tracking image in text-only emails, but if you enable click tracking, Mailchimp can also record an open when a recipient clicks on a Mailchimp Transactional–tracked link. Recipient clicks are the only way to track opens for text emails.
@@ -41,7 +41,7 @@ You can turn open tracking on or off via the [**Sending Defaults**](https://mand
 
 ### Click tracking
 
-Click tracking is enabled by default for both HTML and text emails. You can adjust this for one or both types of messages in your [**Sending Defaults**](https://mandrillapp.com/settings/sending-options), or you can override those global settings on a per-message basis with the [`track_clicks`](/transactional/api) parameter (API) or the [`X-MC-Track`](/transactional/docs/smtp-integration/#x-mc-track) header (SMTP).
+Click tracking is enabled by default for both HTML and text emails. You can adjust this for one or both types of messages in your [**Sending Defaults**](https://mandrillapp.com/settings/sending-options), or you can override those global settings on a per-message basis with the [`track_clicks`](/transactional/api/messages/send) parameter (API) or the [`X-MC-Track`](/transactional/docs/smtp-integration/#x-mc-track) header (SMTP).
 
 Click tracking is not available in demo accounts. You'll need a paid account to use this feature.
 
@@ -84,7 +84,7 @@ Then, add the subdomain to Mailchimp Transactional: 
 **Note**: Each DNS provider or host may handle the adding or editing of records differently, so your host’s technical support or documentation is the best resource for any limitations or formatting specific to that provider. Some DNS providers take longer than others to publish and push the record. If you’re adding a completely new record, those often validate within several minutes, while changing records can take longer.
 </Note>
 
-Once the domain is set up in your account, you can enable it as your custom tracking domain in [**Sending Defaults**](https://mandrillapp.com/settings/sending-options). If you want to override those global settings on a per-message basis, use the [`tracking_domain`](/transactional/api) parameter (API) or [`X-MC-TrackingDomain`](/transactional/docs/smtp-integration/#x-mc-trackingdomain) header (SMTP).
+Once the domain is set up in your account, you can enable it as your custom tracking domain in [**Sending Defaults**](https://mandrillapp.com/settings/sending-options). If you want to override those global settings on a per-message basis, use the [`tracking_domain`](/transactional/api/messages/send) parameter (API) or [`X-MC-TrackingDomain`](/transactional/docs/smtp-integration/#x-mc-trackingdomain) header (SMTP).
 
 A tracking domain can only be added to one Mailchimp Transactional account; adding the same domain to a different account will result in an error.
 
@@ -104,7 +104,7 @@ With [SMTP integration](/transactional/docs/smtp-integration), use custom header
 - `X-MC-GoogleAnalytics`: a comma-separated list of the domains to have Google Analytics tracking added
 - `X-MC-GoogleAnalyticsCampaign`: the value Mailchimp Transactional will set for the `utm_campaign` variable
 
-With the API, use the [`messages/send`](/transactional/api) or [`messages/send-template`](/transactional/api) endpoint and  set the following within the message parameter:
+With the API, use the [`messages/send`](/transactional/api/messages/send) or [`messages/send-template`](/transactional/api/messages/send-template) endpoint and  set the following within the message parameter:
 
 - `google_analytics_domains`: an array of strings of the domains to have Google Analytics tracking added
 - `google_analytics_campaign`: the value Mailchimp Transactional will set for the `utm_campaign` variable
@@ -128,7 +128,7 @@ Your `X-MC-GoogleAnalytics` header would look like:
 
 ## Search Outbound Activity
 
-Mailchimp Transactional automatically indexes a number of fields that you can use to search your sending and find relevant trends. Search is available in the app or [via the API](/transactional/api).
+Mailchimp Transactional automatically indexes a number of fields that you can use to search your sending and find relevant trends. Search is available in the app or [via the API](/transactional/api/messages/search).
 
 ### Query syntax
 
@@ -223,7 +223,7 @@ To search by tag, navigate to [**Outbound Activity**](https://mandrillapp.com/ac
 
 Like tags, Mailchimp Transactional automatically displays indexed metadata fields on the **Outbound Activity** page. When adding a custom field, you can configure the field with a unique template to control how the metadata renders.
 
-You can search your indexed metadata fields in **Outbound Activity** or via the API’s [`messages/search`](/transactional/api) call. To search for an indexed field, prefix the metadata field name with u_ in your search query:
+You can search your indexed metadata fields in **Outbound Activity** or via the API’s [`messages/search`](/transactional/api/messages/search) call. To search for an indexed field, prefix the metadata field name with u_ in your search query:
 
 `full_email:test@example.com AND u_order_id:1398274`
 
@@ -267,7 +267,7 @@ Once you start the test, you can view the results within the **Split Tests** pag
 
 ## Export activity
 
-You can export activity for your account via the [Outbound Activity](https://mandrillapp.com/activity) page or using the Transactional API [`exports/activity`](/transactional/api) call.
+You can export activity for your account via the [Outbound Activity](https://mandrillapp.com/activity) page or using the Transactional API [`exports/activity`](/transactional/api/exports/activity) call.
 
 In the app, navigate to [**Outbound**](https://mandrillapp.com/activity) and under the** Activity tab, **select any filters—date range, tag, sender, or delivery status—and click **Export Results**.
 

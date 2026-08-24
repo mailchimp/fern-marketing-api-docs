@@ -3,7 +3,7 @@ title: Message search rate limit now enforced
 tags: ["Transactional"]
 ---
 
-We’re now enforcing the message search rate limit described in the [Search messages by date](https://mailchimp.com/developer/transactional/api/messages/search-messages-by-date/) endpoint. If you exceed the limit of 20 searches per minute, we’ll now return a 429 Too Many Requests response code. You can retry your request 60 seconds after you sent the first of the original 20 requests.
+We’re now enforcing the message search rate limit described in the [Search messages by date](/transactional/api/messages/search) endpoint. If you exceed the limit of 20 searches per minute, we’ll now return a 429 Too Many Requests response code. You can retry your request 60 seconds after you sent the first of the original 20 requests.
 
 You may want to monitor your responses for an increase in 429 codes so that you can change your request system to submit no more than 20 searches per minute if necessary.
 

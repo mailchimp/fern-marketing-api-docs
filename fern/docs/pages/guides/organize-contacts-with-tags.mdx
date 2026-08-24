@@ -764,7 +764,7 @@ except ApiClientError as error:
 ```
 </CodeBlocks>
 
-The data for our tag includes a `name` (“Influencer”) and the `static_segment` array. If we only wanted to create a tag but add no contacts to it, we could have passed an empty array. For more details, see the [Add segment](/marketing/api) endpoint.
+The data for our tag includes a `name` (“Influencer”) and the `static_segment` array. If we only wanted to create a tag but add no contacts to it, we could have passed an empty array. For more details, see the [Add segment](/marketing/api/lists/create-segment) endpoint.
 
 <Note>
 **Note**: You may have noticed that the API call above references `segments`, but this guide is about tags. This is an implementation detail within the API that can be confusing. Previously tags were referred to as “static segments;” now they are referred to as tags. When you create a tag using the structure above, you’ll see the results as tags and not segments when you view your lists in your Mailchimp account.
@@ -773,5 +773,5 @@ The data for our tag includes a `name` (“Influencer”) and the `static_segmen
 ## More resources
 
 - [Create Your First Audience](/marketing/guides/create-your-first-audience)
-- [Segment API Reference](/marketing/api)
-- [Tags API Reference](/marketing/api)
+- [Segment API Reference](/marketing/api/lists/list-segments)
+- [Tags API Reference](/marketing/api/lists/list-member-tags)

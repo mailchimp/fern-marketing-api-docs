@@ -3,6 +3,6 @@ title: Fixed behavior for customers added via E-commerce endpoints
 tags: ["Marketing API"]
 ---
 
-We fixed a mistake in how the e-commerce API handled customers who did not opt-in to receiving marketing emails (e.g., when [adding an order](https://mailchimp.com/developer/api/marketing/ecommerce-orders/add-order/) via the API).
+We fixed a mistake in how the e-commerce API handled customers who did not opt-in to receiving marketing emails (e.g., when [adding an order](/marketing/api/ecommerce/create-store-order) via the API).
 
 When we added a customer via some e-commerce API calls, we would first incorrectly add them as a “subscribed” contact (even though they had not opted in) and then immediately mark them as a “transactional” contact. The act of first marking them as “subscribed” caused us to incorrectly give these contacts an opt-in timestamp and also trigger them into any signup-related activities such as classic automations or customer journeys.

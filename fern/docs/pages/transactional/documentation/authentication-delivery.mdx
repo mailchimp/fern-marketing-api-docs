@@ -32,7 +32,7 @@ In the app: 
 1. Navigate to **Settings** and choose [**Domains**](https://mandrillapp.com/settings/sending-domains)
 2. Type a new domain in the domain input and click **Add**
 
-You can also add a sender domain via the [Transactional API](/transactional/api).
+You can also add a sender domain via the [Transactional API](/transactional/api/senders/add-domain).
 
 ### Configure your DNS
 
@@ -64,7 +64,7 @@ To verify a domain, click on **View details** beneath that domain. You will see 
 
 > `mandrill_verify.Yfe0JuqvZBiYIUXmTwQNiA`
 
-Add this to your domain’s TXT records, and then click **Test DNS Settings** to check if the record is available. Just like with DKIM, your domain’s TTL may require several minutes’ wait for the record to appear. Using the [/senders/add-domain](/transactional/api) endpoint, we will return a `verify_txt_key` which can be appended to `mandrill_verify. `in the same way.
+Add this to your domain’s TXT records, and then click **Test DNS Settings** to check if the record is available. Just like with DKIM, your domain’s TTL may require several minutes’ wait for the record to appear. Using the [/senders/add-domain](/transactional/api/senders/add-domain) endpoint, we will return a `verify_txt_key` which can be appended to `mandrill_verify. `in the same way.
 
 Alternatively, you can use email to verify your domain. You should ensure that your server is set up to accept inbound email (there are many ways to do this, but check out [Set Up Inbound Email Processing](/transactional/guides/set-up-inbound-email-processing) for more guidance). Verifying your email is as simple as entering a valid email address where you can receive email, then clicking a verification link that Mailchimp sends to that address.
 
@@ -78,7 +78,7 @@ In the email, you’ll receive a verification link that looks like this:
 
 Click the link, and your domain should now be verified.
 
-You can also verify a domain with the Transactional API using the [`/senders/verify-domain`](/transactional/api) endpoint.
+You can also verify a domain with the Transactional API using the [`/senders/verify-domain`](/transactional/api/senders/verify-domain) endpoint.
 
 ### DMARC
 
@@ -110,7 +110,7 @@ To see the full SMTP response, click the message status link:
 
 We’ll show you the originating IP address, the IP address for the mail host that accepted the email, and the size of the sent message.
 
-You can also view responses via the [Transactional API](/transactional/api) and webhooks in the `smtp_events` array.
+You can also view responses via the [Transactional API](/transactional/api/messages/info) and webhooks in the `smtp_events` array.
 
 SMTP replies vary based on the server or ISP that issues them, though there are some general guidelines. Each response will include (at the very least) a three-digit code. The first digit typically indicates whether the server was able to accept the message or not:
 
@@ -190,7 +190,7 @@ To add a dedicated IP address, navigate to [**Add Ons**](https://mandrillapp.com
 
 You'll be prompted to accept any charges for your account after the dedicated IP is provisioned. Mailchimp will manually approve your request (usually in about 24–48 hours) and once it has been, all mail will begin sending over the new IP. You’ll receive a notification email to your primary contact address when the IP is ready for use. If for some reason your request isn’t approved, Mailchimp will respond with an email asking you for more information.
 
-You can also add dedicated IPs with the [Transactional API](/transactional/api).
+You can also add dedicated IPs with the [Transactional API](/transactional/api/dedicated-ips/ips-provision).
 
 ### Warm up an IP address
 
@@ -200,7 +200,7 @@ There are three ways to warm up a dedicated IP address: 
 
 1. When you first add a dedicated IP for your account, check the **Start Warming Up IP** **Immediately** box.
 2. On the [**Add Ons**](https://mandrillapp.com/account/billing/add-ons) page, locate a dedicated IP address and choose **Warm up IP** from the drop-down menu.
-3. Using the [`ips/start-warmup`](/transactional/api) endpoint in the Transactional API.
+3. Using the [`ips/start-warmup`](/transactional/api/dedicated-ips/ips-start-warmup) endpoint in the Transactional API.
 
 If you regularly send more than 5,000 emails per day at least three days per week, it’s a good idea to warm up an IP, but if you're sending at lower volumes, you generally won’t need to.
 
@@ -214,13 +214,13 @@ You can switch an existing dedicated IP into warm-up mode at any time. This is u
 
 ### Remove a dedicated IP
 
-To remove a dedicated IP address, navigate to the [**Add Ons**](https://mandrillapp.com/account/billing/add-ons)** **page, locate the dedicated IP address you’d like to remove, and choose **Delete this IP** from the Actions menu. You can also remove a dedicated IP with the [Transactional API](/transactional/api). 
+To remove a dedicated IP address, navigate to the [**Add Ons**](https://mandrillapp.com/account/billing/add-ons)** **page, locate the dedicated IP address you’d like to remove, and choose **Delete this IP** from the Actions menu. You can also remove a dedicated IP with the [Transactional API](/transactional/api/dedicated-ips/ips-delete). 
 
 Deleting a dedicated IP address will remove it from your account right away, and this cannot be undone. The monthly fee is not prorated for the billing cycle in which a dedicated IP is removed.
 
 ### Reverse DNS
 
-Setting up reverse DNS lets you connect a dedicated IP address to a custom domain name. You can manage this in the app, or with the [Transactional API](/transactional/api).
+Setting up reverse DNS lets you connect a dedicated IP address to a custom domain name. You can manage this in the app, or with the [Transactional API](/transactional/api/dedicated-ips/ips-set-custom-dns).
 
 Before getting started, you must set up an A record pointing your subdomain to your dedicated IP address. You must use a subdomain (like mail.example.com) and not a root domain (like example.com).
 
@@ -240,8 +240,8 @@ You can also edit or remove a reverse DNS entry under the respective IP address 
 
 When you have more than one dedicated IP address, you can create different pools to manage those IPs. As you send larger volumes of email, it can be helpful to use different IPs for different types of mail. For example, you could send password reset emails from one dedicated IP and order confirmations over another.
 
-By default, Mailchimp Transactional creates a main pool for you, but you can create and manage pools within your account or with the [Transactional API](/transactional/api).
+By default, Mailchimp Transactional creates a main pool for you, but you can create and manage pools within your account or with the [Transactional API](/transactional/api/dedicated-ips/ips-create-pool).
 
 To create a new dedicated pool, navigate to the [**Add Ons**](https://mandrillapp.com/account/billing/add-ons) page and under **Dedicated IPs**, click **Create New Pool**. To move a dedicated IP address to a different pool, select the IP you want to move and under the **Actions** drop-down menu, choose the pool.
 
-Once you’ve set up your pool, you can select it to apply globally in [**Sending Defaults**](https://mandrillapp.com/settings/sending-options). To change your dedicated pool on a per-message basis, `use `[`ip_pool`](/transactional/api) (API) or the [`X-MC-IPPool`](/transactional/docs/smtp-integration/#x-mc-ippool) header (SMTP).
+Once you’ve set up your pool, you can select it to apply globally in [**Sending Defaults**](https://mandrillapp.com/settings/sending-options). To change your dedicated pool on a per-message basis, `use `[`ip_pool`](/transactional/api/messages/send) (API) or the [`X-MC-IPPool`](/transactional/docs/smtp-integration/#x-mc-ippool) header (SMTP).

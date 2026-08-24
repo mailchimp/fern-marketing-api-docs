@@ -17,7 +17,7 @@ You can also create highly customized 1-to-1 transactional messages that are tri
 
 ### Sending messages
 
-To send an email using the Transactional API, use the [`/messages/send`](https://mailchimp.com/developer/api/transactional/messages/send-new-message/) or [`/messages/send-template`](https://mailchimp.com/developer/api/transactional/messages/send-using-message-template/) endpoints. You’ll have to set up and authenticate a domain first—specifically, with DKIM records, which are required. 
+To send an email using the Transactional API, use the [`/messages/send`](/transactional/api/messages/send) or [`/messages/send-template`](/transactional/api/messages/send-template) endpoints. You’ll have to set up and authenticate a domain first—specifically, with DKIM records, which are required. 
 
 For full information on authentication setup, see the [Authentication and Delivery](/transactional/docs/authentication-delivery) docs; to walk through the process with code samples, see the [Send Your First Transactional Email](/transactional/guides/send-first-email) guide. 
 
@@ -49,7 +49,7 @@ We queue these messages to process asynchronously, and will send them as soon as
 
 If you have a campaign or a large batch of emails queued in the backlog, Mailchimp Transactional reserves an extra 5% of your hourly quota so more critical emails, such as password resets or order confirmations, can send without delay.
 
-To flag important messages and give them priority in the queue, use the [`important`](/transactional/api) parameter in your API calls or the [`X-MC-Important`](/transactional/docs/smtp-integration/#x-mc-important) header if you’re sending via SMTP, with the value set to `true`.
+To flag important messages and give them priority in the queue, use the [`important`](/transactional/api/messages/send) parameter in your API calls or the [`X-MC-Important`](/transactional/docs/smtp-integration/#x-mc-important) header if you’re sending via SMTP, with the value set to `true`.
 
 ## Multiple recipients
 
@@ -57,7 +57,7 @@ Via SMTP, you can send to up to 1,000 recipients at a time. If you’re sending 
 
 Via the API, there’s no recipient limitation, but the JSON provided per API call must be less than 10MB. We strongly recommend smaller recipient batches for easier troubleshooting.
 
-To control whether recipients can see each others’ information in the `To` header of your messages, navigate to the [**Sending Defaults**](https://mandrillapp.com/settings/sending-options) page and select or unselect **Expose The List Of Recipients When Sending To Multiple Addresses**. You can override these global settings on a per-message basis with the [`preserve_recipients`](/transactional/api) parameter in your API calls, or with the [`X-MC-PreserveRecipients`](/transactional/docs/smtp-integration/#x-mc-preserverecipients) SMTP header.
+To control whether recipients can see each others’ information in the `To` header of your messages, navigate to the [**Sending Defaults**](https://mandrillapp.com/settings/sending-options) page and select or unselect **Expose The List Of Recipients When Sending To Multiple Addresses**. You can override these global settings on a per-message basis with the [`preserve_recipients`](/transactional/api/messages/send) parameter in your API calls, or with the [`X-MC-PreserveRecipients`](/transactional/docs/smtp-integration/#x-mc-preserverecipients) SMTP header.
 
 ## Scheduling messages
 
@@ -65,13 +65,13 @@ Mailchimp Transactional lets you specify when a message should be sent; messages
 
 You can schedule a message up to one year from the date that you're scheduling the message. 
 
-To schedule a message, use the [`send_at`](/transactional/api) parameter (API) or the [`X-MC-SendAt`](/transactional/docs/smtp-integration/#x-mc-sendat) header (SMTP). Both the API and SMTP accept a UTC timestamp in YYYY-MM-DD HH:MM:SS format. The message ID returned by the send call can be used to cancel or reschedule the message.
+To schedule a message, use the [`send_at`](/transactional/api/messages/send) parameter (API) or the [`X-MC-SendAt`](/transactional/docs/smtp-integration/#x-mc-sendat) header (SMTP). Both the API and SMTP accept a UTC timestamp in YYYY-MM-DD HH:MM:SS format. The message ID returned by the send call can be used to cancel or reschedule the message.
 
 <Note>
-**Note**: If you’re sending with SMTP and don’t have direct access to the message ID, you can also use the [`messages/list-scheduled`](/transactional/api) endpoint to look up scheduled messages for a specific recipient.
+**Note**: If you’re sending with SMTP and don’t have direct access to the message ID, you can also use the [`messages/list-scheduled`](/transactional/api/messages/list-scheduled) endpoint to look up scheduled messages for a specific recipient.
 </Note>
 
-``[`messages/reschedule`](https://mailchimp.com/developer/api/transactional/messages/reschedule-email/) lets you change when a scheduled message will be delivered, and [`messages/cancel-schedule`](https://mailchimp.com/developer/api/transactional/messages/cancel-scheduled-email/) deletes a scheduled message—which will also prevent that message from counting towards your monthly send total.
+``[`messages/reschedule`](/transactional/api/messages/reschedule) lets you change when a scheduled message will be delivered, and [`messages/cancel-schedule`](/transactional/api/messages/cancel-scheduled) deletes a scheduled message—which will also prevent that message from counting towards your monthly send total.
 
 ## Resending messages
 
@@ -87,13 +87,13 @@ Mailchimp Transactional will show you how many times an email has been resent un
 
 Some email clients won’t display HTML emails, or your recipients may have disabled HTML emails in their mail settings, so it’s good practice to include a fallback plain-text version of your message. Conversely, [open tracking](/transactional/docs/activity-reports/#open-tracking) is only available with HTML emails, so if you’re sending plain text but want to track opens, you’ll want to generate an HTML version as well.
 
-You can generate both HTML and plain-text versions of your emails by checking the respective boxes in [**Sending Defaults**](https://mandrillapp.com/settings/sending-options). To add either on a per-message basis, you can use the [`auto_text`](/transactional/api) and [`auto_html`](/transactional/api) parameters (API), or the [`X-MC-AutoText`](/transactional/docs/smtp-integration/#x-mc-autotext) and [`X-MC-AutoHTML`](/transactional/docs/smtp-integration/#x-mc-autohtml) headers (SMTP). 
+You can generate both HTML and plain-text versions of your emails by checking the respective boxes in [**Sending Defaults**](https://mandrillapp.com/settings/sending-options). To add either on a per-message basis, you can use the [`auto_text`](/transactional/api/messages/send) and [`auto_html`](/transactional/api/messages/send) parameters (API), or the [`X-MC-AutoText`](/transactional/docs/smtp-integration/#x-mc-autotext) and [`X-MC-AutoHTML`](/transactional/docs/smtp-integration/#x-mc-autohtml) headers (SMTP). 
 
 ## Inline CSS
 
 Some email clients support only a subset of valid HTML, so in most cases CSS should be handled using inline styles. Rather than inlining your CSS manually before sending your HTML to Mailchimp Transactional, we provide a sending option to inline CSS automatically at the time of send (as long as your message is 256KB or smaller). 
 
-To enable automatic inlining, select **Inline CSS Styles In HTML Emails** on the [**Sending Defaults**](https://mandrillapp.com/settings/sending-options) page. You can also enable it on a per-message basis using the [`inline_css`](/transactional/api) option (API) or [`X-MC-InlineCSS`](/transactional/docs/smtp-integration/#x-mc-inlinecss) header (SMTP), or set it conditionally using the [rules engine](/transactional/docs/rules-engine).
+To enable automatic inlining, select **Inline CSS Styles In HTML Emails** on the [**Sending Defaults**](https://mandrillapp.com/settings/sending-options) page. You can also enable it on a per-message basis using the [`inline_css`](/transactional/api/messages/send) option (API) or [`X-MC-InlineCSS`](/transactional/docs/smtp-integration/#x-mc-inlinecss) header (SMTP), or set it conditionally using the [rules engine](/transactional/docs/rules-engine).
 
 CSS inlining can be an intensive process and since Transactional Email is designed to get your emails out as quickly as possible, the additional processing time to inline CSS can affect delivery speeds. If you have a larger template or HTML document, it’s best to inline your styles manually or by using a separate CSS inlining tool as a part of your sending process.
 

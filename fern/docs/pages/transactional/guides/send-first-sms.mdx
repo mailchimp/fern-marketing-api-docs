@@ -25,13 +25,13 @@ You can [submit an SMS marketing application](https://mailchimp.com/help/set-up-
 
 ## Setup your API key
 
-To find out how to create an API key and make your first API call, see the [Transactional API Quick Start guide](https://mailchimp.com/developer/transactional/guides/quick-start/).
+To find out how to create an API key and make your first API call, see the [Transactional API Quick Start guide](/transactional/guides/quick-start).
 
 ## Send your first SMS
 
 With everything set up, we can start sending SMS messages.
 
-Using the [send-sms API endpoint](https://mailchimp.com/developer/transactional/api/messages/send-sms-message/), the minimum **required** fields to make an SMS send are:
+Using the [send-sms API endpoint](/transactional/api/messages/send-sms), the minimum **required** fields to make an SMS send are:
 
 - `key` (string field): valid Mailchimp Transactional API key
 - `message` (object field): body of the message that must include the following parameters: `to` (string field): valid phone # of recipient. Required format: E.164 `from` (string field): valid phone # of approved SMS program. Required format: alphanumeric. Must be one of three: 1) E.164 phone number, 2) short code, 3) alphanumeric sender string in EU`text` (string field): SMS content to be sent`consent` (string field): consent type for the message. Possible values: "`onetime`", "`recurring`", or "`recurring-no-confirm`"
@@ -47,4 +47,4 @@ curl -X POST https://mandrillapp.com/api/1.1/messages/send-sms \
 ```
 
 
-For more information about this endpoint and accepted parameters, review the [API reference documentation](https://mailchimp.com/developer/transactional/api/messages/send-sms-message/).
+For more information about this endpoint and accepted parameters, review the [API reference documentation](/transactional/api/messages/send-sms).

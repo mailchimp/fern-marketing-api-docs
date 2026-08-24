@@ -15,7 +15,7 @@ Tags are great for broad categories of messages like welcome or forgot-password 
 
 Metadata is generally better for managing more user-specific information, like a user ID from your system. Metadata information is returned in webhooks and is searchable in [**Outbound Activity**](https://mandrillapp.com/activity), so you can tie certain information back to data in your own system.
 
-You can filter both tags and metadata via the **View Stats By **drop-down menu on your [**Dashboard**](https://mandrillapp.com/), or by using the [`/messages/search`](/transactional/api) and [`/messages/search-time-series`](/transactional/api) API calls. Tag-based stats are kept indefinitely and are viewable for the lifetime of the account; metadata stats in **Outbound Activity** are only viewable for 30 days. 
+You can filter both tags and metadata via the **View Stats By **drop-down menu on your [**Dashboard**](https://mandrillapp.com/), or by using the [`/messages/search`](/transactional/api/messages/search) and [`/messages/search-time-series`](/transactional/api/messages/search-time-series) API calls. Tag-based stats are kept indefinitely and are viewable for the lifetime of the account; metadata stats in **Outbound Activity** are only viewable for 30 days.
 
 ## Tags
 
@@ -23,7 +23,7 @@ Tags help you search activity, compare stats, and more. They are generated one o
 
 ### Add tags
 
-When you send an email, you can add tags to your [API call](/transactional/api). For example, to add `order-confirmation` and `order-shipped` to your list of tags, add the array:
+When you send an email, you can add tags to your [API call](/transactional/api/messages/send). For example, to add `order-confirmation` and `order-shipped` to your list of tags, add the array:
 
 ```json
 "tags": [
@@ -42,7 +42,7 @@ Once you’ve created them, these tags will show up in the [**Tags**](https://ma
 
 ### Delete tags
 
-You can delete a tag manually in the [**Tags**](https://mandrillapp.com/tags) section of the app; alternatively, you can use the [`tags/delete`](/transactional/api) endpoint in the Transactional API. 
+You can delete a tag manually in the [**Tags**](https://mandrillapp.com/tags) section of the app; alternatively, you can use the [`tags/delete`](/transactional/api/tags/delete) endpoint in the Transactional API. 
 
 Deleting a tag cannot be undone, and doing so will also delete all aggregate stats collected for the tag. If new emails are sent with a deleted tag, that tag will be recreated—you’ll need to make sure you’ve stopped sending with the tag before deleting it.
 
@@ -74,7 +74,7 @@ With SMTP, include the [`X-MC-Metadata`](/transactional/docs/smtp-integration/#x
 X-MC-Metadata: { "user_id": "45828", "location_id": "111" }
 ```
 
-Via the API, include metadata as part of the message parameter with the [`messages/send`](/transactional/api) or [`messages/send-template`](/transactional/api) endpoints. For example, a payload with metadata included might look like this:
+Via the API, include metadata as part of the message parameter with the [`messages/send`](/transactional/api/messages/send) or [`messages/send-template`](/transactional/api/messages/send-template) endpoints. For example, a payload with metadata included might look like this:
 
 ```json
 {

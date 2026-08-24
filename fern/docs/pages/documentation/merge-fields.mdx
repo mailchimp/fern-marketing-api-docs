@@ -9,7 +9,7 @@ description: Save and retrieve custom contact data to personalize campaigns.
 
 Merge fields let you save custom information about contacts, which can then be used to personalize campaigns. Each merge field has a corresponding merge tag, a string of text like `*|FNAME|*`. When you send a campaign, Mailchimp replaces merge tags with the values stored in the corresponding merge fields for each recipient.
 
-The data flow in your particular use case will determine how you’ll work with merge fields. You can also use merge fields to segment your audience: when you [add a segment](/marketing/api), you can [configure its conditions](/marketing/docs/alternative-schemas/#segment-condition-schemas) based on the value stored in a merge field.
+The data flow in your particular use case will determine how you’ll work with merge fields. You can also use merge fields to segment your audience: when you [add a segment](/marketing/api/lists/create-segment), you can [configure its conditions](/marketing/docs/alternative-schemas/#segment-condition-schemas) based on the value stored in a merge field.
 
 In this document we’ll describe how to set up merge fields, as well as how to store and retrieve contact information in merge fields using the API.
 
@@ -29,7 +29,7 @@ Merge fields that are marked as public appear on the corresponding [audience sig
 
 Typically, you’ll create merge fields when you first start working with an audience and need to make it match the structure of an external data source. For example, say you’re syncing contact data from a CRM to Mailchimp; if the CRM has a “Company” field and your audience does not, you would need to create a merge field to store that information.  
 
-When you [create a new field](/marketing/api), you must specify its name and type; additionally, there are several optional parameters. Setting `public` to `true` means the merge field will appear on the audience’s signup form. The `display_order` and `help_text` parameters let you further customize the field’s appearance on the form. 
+When you [create a new field](/marketing/api/lists/create-merge-field), you must specify its name and type; additionally, there are several optional parameters. Setting `public` to `true` means the merge field will appear on the audience’s signup form. The `display_order` and `help_text` parameters let you further customize the field’s appearance on the form. 
 
 Make sure to be careful when changing these properties, as they will change what is included on the signup form.
 
@@ -39,7 +39,7 @@ Make sure to be careful when changing these properties, as they will change what
 
 ## Add merge data to contacts
 
-Once your audience is configured with the fields you need, you can add data to those fields in the `merge_field` dictionary when [adding a contact](/marketing/api).
+Once your audience is configured with the fields you need, you can add data to those fields in the `merge_field` dictionary when [adding a contact](/marketing/api/lists/create-member).
 
 For example:
 

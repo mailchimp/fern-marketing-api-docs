@@ -24,7 +24,7 @@ Some endpoints act on resources outside of a traditional REST approach. To pause
 If your firewall rules do not support HTTP methods like PATCH or DELETE, use the `X-HTTP-Method-Override` header. Make your call using the POST method and pass the unsupported method as the value of `X-HTTP-Method-Override`. The override will not work with any method other than POST; if you use the override header with GET, PATCH, PUT, or DELETE, you will receive an error.
 
 <Note>
-**Note**: You won’t need to worry too much about these implementation details if you’re using the [official client libraries](https://mailchimp.com/developer/tools/).
+**Note**: You won’t need to worry too much about these implementation details if you’re using the [official client libraries](/tools).
 </Note>
 
 ### Request body parameters
@@ -44,7 +44,7 @@ Resources can be nested several levels deep in a path, such as `https://<dc>.api
 `https://us6.api.mailchimp.com/3.0/lists/57afe96172/members/62eeb292278cc15f5817cb78f7790b08/notes`
 
 <Note>
-**Note**: We refer to some endpoints by name and others by URI. For example, you can find a collection of reports at the [Reports endpoint](/marketing/api), or individual reports at the [/reports/{campaign_id} endpoint](/marketing/api).
+**Note**: We refer to some endpoints by name and others by URI. For example, you can find a collection of reports at the [Reports endpoint](/marketing/api/reports/list), or individual reports at the [/reports/{campaign_id} endpoint](/marketing/api/reports/get).
 </Note>
 
 When making a call for information about a particular contact, the Marketing API uses the MD5 hash of the lowercase version of the contact’s email address. We use the MD5 hash because it makes it less likely to leak email addresses—these hashes can’t be translated back to an email address, so if your APIs calls were leaked in some manner, your users’ email addresses remain unexposed. 
@@ -83,7 +83,7 @@ For example, the following URL uses the `fields` query string parameter to only 
 
 `https://usX.api.mailchimp.com/3.0/lists?fields=lists.name,lists.id `
 
-However, if you wanted to return just the name of a specific audience, you would do so with the [`/lists/{list_id} endpoint`](/marketing/api) and the audience name field should be referred to as `name`, like this:
+However, if you wanted to return just the name of a specific audience, you would do so with the [`/lists/{list_id} endpoint`](/marketing/api/lists/get) and the audience name field should be referred to as `name`, like this:
 
 `https://usX.api.mailchimp.com/3.0/lists/{list_id}?fields=name `
 

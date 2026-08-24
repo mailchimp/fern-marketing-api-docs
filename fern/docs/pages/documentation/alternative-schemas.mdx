@@ -23,7 +23,7 @@ For some endpoints, specifying a particular schema affects not only the type of 
 
 ## Activity schemas
 
-The [Member Activity Feed endpoint](/marketing/api) can return a range of activity types. Although the `x-discriminator` for these activity schemas is `activity_type`, the relevant request parameter is `activity_filters`, which accepts an array of `x-values` instead of a single string. If you pass `activity_filters`, activity matching one of the provided types will be returned; if you omit it, any type of activity that matches your query will be returned.
+The [Member Activity Feed endpoint](/marketing/api/lists/list-member-activity-feed) can return a range of activity types. Although the `x-discriminator` for these activity schemas is `activity_type`, the relevant request parameter is `activity_filters`, which accepts an array of `x-values` instead of a single string. If you pass `activity_filters`, activity matching one of the provided types will be returned; if you omit it, any type of activity that matches your query will be returned.
 
 **Email Opens** — Activity feed item representing opening an email.
 
@@ -200,7 +200,7 @@ The [Member Activity Feed endpoint](/marketing/api) can return a range of activi
 
 ## Segment condition schemas
 
-A variety of endpoints accept or return segment condition data, from the [Segments endpoints](/marketing/api) themselves to others like automation, list, and campaign endpoints. Because there are many ways to define a segment, there are many alternative schemas for segment conditions. 
+A variety of endpoints accept or return segment condition data, from the [Segments endpoints](/marketing/api/lists/list-segments) themselves to others like automation, list, and campaign endpoints. Because there are many ways to define a segment, there are many alternative schemas for segment conditions. 
 
 The `x-discriminator` for segment conditions is `condition_type`. The request parameter `conditions` accepts an array of objects that indicate the desired segment condition (`field`), operator, value, and optional extra information. Multiple segment conditions can be combined like so:
 

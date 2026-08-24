@@ -7,7 +7,7 @@ description: Respond to email events\u2014like message opens and link clicks\u20
 
 ## At a glance
 
-Webhooks allow your application to receive information about email events as they occur, and respond in a way that you define. You can [configure and test webhooks](/transactional/docs/webhooks/#test-and-debug-webhooks) via the [**Webhooks**](https://mandrillapp.com/settings/webhooks) page in your Mailchimp Transactional app, or you can do so via [the API](/transactional/api). 
+Webhooks allow your application to receive information about email events as they occur, and respond in a way that you define. You can [configure and test webhooks](/transactional/docs/webhooks/#test-and-debug-webhooks) via the [**Webhooks**](https://mandrillapp.com/settings/webhooks) page in your Mailchimp Transactional app, or you can do so via [the API](/transactional/api/webhooks/add). 
 
 You could use webhooks to: 
 
@@ -27,7 +27,7 @@ In this guide, we’ll set up a webhook that will trigger when a particular link
 
 ## Create a new webhook
 
-First, let’s set up our webhook, which will be triggered when subscribers click a link in one of our plant emails. There are two ways to do this: using the Mailchimp Transactional app or [through the API](/transactional/api). In this guide, we’ll walk through setting it up using the app. 
+First, let’s set up our webhook, which will be triggered when subscribers click a link in one of our plant emails. There are two ways to do this: using the Mailchimp Transactional app or [through the API](/transactional/api/webhooks/add). In this guide, we’ll walk through setting it up using the app. 
 
 To set up a webhook: 
 
@@ -299,7 +299,7 @@ Finally, since our app exposes sensitive data—you know what plant-selling is l
 
 First, we need to get our webhook authentication key. When you create a webhook via the Mailchimp Transactional app, a signing key is automatically generated. You’ll need this key to generate a signature in your code, and compare that to the signature that Mailchimp sent.
 
-If you’re using the [`webhooks/add`](/transactional/api) method, the key will be returned in the response. You can also view and reset the key from the [**Webhooks**](https://mandrillapp.com/settings/webhooks)** **page in your account. To retrieve a webhook key via the Transactional API, use [`webhooks/info`](/transactional/api) or [`webhooks/list`](/transactional/api).
+If you’re using the [`webhooks/add`](/transactional/api/webhooks/add) method, the key will be returned in the response. You can also view and reset the key from the [**Webhooks**](https://mandrillapp.com/settings/webhooks)** **page in your account. To retrieve a webhook key via the Transactional API, use [`webhooks/info`](/transactional/api/webhooks/info) or [`webhooks/list`](/transactional/api/webhooks/list).
 
 Next, we need to generate a signature. Mailchimp signs each webhook request using the following process:
 
