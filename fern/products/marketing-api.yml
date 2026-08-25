@@ -64,12 +64,19 @@ navigation:
       - page: API structure
         path: ../docs/pages/api-concepts/api-structure.mdx
         slug: api-structure
-      - page: Authentication
+      # Section, not a flat page: OAuth 2 is a kind of authentication, and
+      # the parent owns the "which credential?" decision once. The OAuth
+      # implementation walkthrough lives in Building -> Start developing.
+      - section: Authentication
         path: ../docs/pages/api-concepts/authentication.mdx
         slug: authentication
-      - page: OAuth 2
-        path: ../docs/pages/api-concepts/oauth-2.mdx
-        slug: oauth-2
+        contents:
+          - page: API keys
+            path: ../docs/pages/api-concepts/authentication/api-keys.mdx
+            slug: api-keys
+          - page: OAuth 2
+            path: ../docs/pages/api-concepts/authentication/oauth-2.mdx
+            slug: oauth-2
       - page: Methods and parameters
         path: ../docs/pages/api-concepts/methods-and-parameters.mdx
         slug: methods-and-parameters
@@ -116,11 +123,11 @@ navigation:
 
       - section: Start developing
         contents:
-          - page: Set up your development environment
-            path: ../docs/pages/building/start-developing/set-up-your-development-environment.mdx
-            slug: set-up-your-development-environment
+          # Marketing-scoped SDK page. Deliberately NOT the shared
+          # tools/landing.mdx, which is the cross-API Tools product and
+          # includes Transactional libraries that are out of scope here.
           - page: Client libraries and SDKs
-            path: ../docs/pages/tools/landing.mdx
+            path: ../docs/pages/building/start-developing/client-libraries-and-sdks.mdx
             slug: client-libraries-and-sdks
           - page: Send your first API request
             path: ../docs/pages/building/start-developing/send-your-first-api-request.mdx
@@ -128,24 +135,29 @@ navigation:
           - page: CLI
             path: ../docs/pages/building/start-developing/cli.mdx
             slug: cli
-          - page: Build an integration
-            path: ../docs/pages/building/start-developing/build-an-integration.mdx
-            slug: build-an-integration
+          - page: Set up an OAuth app
+            path: ../docs/pages/building/start-developing/set-up-an-oauth-app.mdx
+            slug: set-up-an-oauth-app
+          # Hidden from the sidebar (stakeholder, 2026-08-21): the Mobile SDK
+          # is a platform-specific client, not a step on the onboarding path,
+          # and it is already surfaced by Client libraries and SDKs, whose
+          # iOS/Android cards now link here. Page stays live for search and
+          # inbound links.
           - page: Mobile SDK
             path: ../docs/pages/building/start-developing/mobile-sdk.mdx
             slug: mobile-sdk
+            hidden: true
           - page: Go-live checklist
             path: ../docs/pages/building/start-developing/go-live-checklist.mdx
             slug: go-live-checklist
-          - page: Release phases
-            path: ../docs/pages/building/start-developing/release-phases.mdx
-            slug: release-phases
-          - page: Export API (v1.0)
-            path: ../docs/pages/building/start-developing/export-api.mdx
-            slug: export-api
+          # Account exports is a live v3.0 endpoint (POST /3.0/account-exports).
+          # Hidden from the sidebar because it is a reference/task page rather
+          # than an onboarding step, not because it is legacy. The retired
+          # Export API v1.0 that used to sit beside it was deleted 2026-08-24.
           - page: Account exports
             path: ../docs/pages/building/start-developing/account-exports.mdx
             slug: account-exports
+            hidden: true
 
       - section: Build with AI tools
         contents:

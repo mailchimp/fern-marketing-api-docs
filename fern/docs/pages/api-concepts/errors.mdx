@@ -33,7 +33,7 @@ Set-Cookie: _AVESTA_ENVIRONMENT=prod; path=/
 
 ```json
 {
-    "type": "https://mailchimp.com/developer/marketing/api-concepts/errors/",
+    "type": "/marketing/api-concepts/errors",
     "title": "Method Not Allowed",
     "status": 405,
     "detail": "The requested method and resource are not compatible. See the Allow header for this resource's available methods.",
@@ -58,7 +58,7 @@ To test error handling, you can trigger errors yourself by sending an `X-Trigger
 | Error | Description |
 | --- | --- |
 | 400 | There are several different error titles returned for 400 errors, which will return an explanation in the “detail” field. Some of the most notable include:  **Bad Request  **This is the generic error type for not being able to process the request, and will generally contain an explanation in the message. **Invalid Resource **The submitted POST body failed our input validation. This error may include an additional “errors” property, with a list of the validation issues. **Invalid Action: The action requested was not valid for this resource. **Returned when you try to access an action on a resource that doesn’t support that action. **JSON Parse Exception** The JSON sent in the request body is not valid JSON. |
-| 401 | **API Key Invalid **The API key is either invalid or disabled; there will be more information in the “detail”. For help authenticating with the Marketing API, see the [Quick Start](/marketing/build/start-developing/send-your-first-api-request#generate-your-api-key) guide. |
+| 401 | **API Key Invalid **The API key is either invalid or disabled; there will be more information in the “detail”. For help authenticating with the Marketing API, see the [Quick Start](/marketing/build/get-started/generate-your-api-key) guide. |
 | 403 | **Forbidden **Either the user who created the API key no longer has access to the account, or their [user level](https://mailchimp.com/help/manage-user-levels-in-your-account/) doesn’t allow access to the endpoint; there will be more information in the “detail”. For user levels, the role of the API key is returned from the [Root endpoint](/marketing/api/root/list). Note that a user’s level can change, changing the access of the API key as well. **User Disabled: This account has been deactivated. **The Mailchimp account is deactivated. Contact [support](https://mailchimp.com/help/mailchimp-support-options/) if you need more help. **Authorization Failure: User does not have access to the requested operation **Your account’s pricing plan may not permit access to a feature; upgrading the account’s plan may fix these errors. |
 | 404 | **Resource Not Found: The requested resource could not be found. **Either no object exists with the ID provided in the path, or the path is incorrect. |
 | 405 | **Method Not Allowed **This error is usually due to the endpoint not supporting the request’s HTTP method; find out which methods are allowed for each resource in the [API Reference](/marketing/api). It also might be returned due to restrictions on the action because of the state of the resource—for example, campaigns that are currently sending cannot be deleted. The restriction will be provided in the “detail”. |

@@ -3,6 +3,37 @@ title: Send your first API request
 description: Make your first call to the Marketing API and verify your credentials with the Ping endpoint.
 ---
 
+## Install a client library
+
+You can call the Marketing API with whatever you normally use to make HTTP
+requests, but a [client library](/marketing/build/start-developing/client-libraries-and-sdks)
+handles authentication and response parsing for you. Install the one for your
+language:
+
+<CodeBlocks>
+```bash title="cURL"
+# No client installation necessary; just using curl
+```
+
+```javascript title="Node"
+yarn add @mailchimp/mailchimp_marketing
+# OR
+npm install @mailchimp/mailchimp_marketing
+```
+
+```php title="PHP"
+composer require mailchimp/marketing
+```
+
+```ruby title="Ruby"
+gem install MailchimpMarketing
+```
+
+```python title="Python"
+pip install mailchimp-marketing
+```
+</CodeBlocks>
+
 ## Make your first API call
 
 To test that you have everything set up correctly, we’ll make a simple request to the Ping endpoint. Hitting this endpoint acts as a health check on the Mailchimp API service; it won’t affect your account in any way. 
@@ -90,4 +121,4 @@ If everything was set up correctly and the request to `ping` was a success, the 
 
 Now that you’re successfully making authenticated requests to the API with your API key and client library of choice, you’re ready to dive into the Mailchimp Marketing API. 
 
-The first thing you may want to do is learn how to [create your first audience](/marketing/build/quickstarts/import-and-export-contacts) and add new contacts to that audience using the API. You may also want to familiarize yourself with the [Marketing API docs](/marketing/api-concepts/api-structure), which outline some of the common conventions you’ll run into across the API, or browse the extensive [API Reference documentation](/marketing/api).
+The first thing you may want to do is learn how to [import and export contacts](/marketing/build/quickstarts/import-and-export-contacts) between your application and a Mailchimp audience. You may also want to familiarize yourself with the [Marketing API docs](/marketing/api-concepts/api-structure), which outline some of the common conventions you’ll run into across the API, or browse the extensive [API Reference documentation](/marketing/api).

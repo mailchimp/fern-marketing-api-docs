@@ -1,0 +1,37 @@
+---
+title: API keys
+description: How Mailchimp API keys behave, and where they can and cannot be used.
+---
+
+An [API key](https://mailchimp.com/help/about-api-keys/) authenticates requests
+against the account it was created in. It's the right credential when your
+application works with your own Mailchimp data. To create one, see
+[Generate your API key](/marketing/build/get-started/generate-your-api-key).
+
+## What a key grants
+
+A key carries full access to the account it belongs to. There is no way to
+issue a read-only key or restrict one to particular endpoints, so treat a key
+the way you'd treat a password.
+
+Keys don't expire. A key stays valid until you delete it, or until the user who
+created it is removed from the account; see
+[User access and revocation](/marketing/api-concepts/authentication#user-access-and-revocation).
+
+Your data center prefix is appended to the key itself, after a hyphen. If your
+key is `0123456789abcdef0123456789abcde-us6`, your data center is `us6`.
+
+## Where keys can't be used
+
+Because a key grants full account access, two environments are ruled out:
+
+- **Browsers.** Mailchimp does not support client-side calls to the Marketing
+  API using CORS requests. A key in front-end code is readable by anyone who
+  loads the page.
+- **Mobile apps.** A key shipped inside a distributed binary can be extracted
+  from it. For iOS and Android, use the
+  [Mobile SDK](/marketing/build/start-developing/mobile-sdk), which is built
+  against a mobile-focused subset of the API.
+
+Both cases have the same shape: the credential ends up somewhere you don't
+control. Keep keys on a server you own.

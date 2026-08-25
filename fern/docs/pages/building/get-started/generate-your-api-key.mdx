@@ -1,20 +1,26 @@
 ---
 title: Generate your API key
-description: Generate and securely store an API key to authenticate requests to the Marketing API.
+description: Create an API key in your Mailchimp account and store it securely.
 ---
 
-## Generate your API key
-
-The simplest way to authenticate a request to the Marketing API is using [an API key](https://mailchimp.com/help/about-api-keys/). 
-
-Here’s how you can generate one for yourself: 
+An API key authenticates requests against your own Mailchimp account. Here's how
+to create one:
 
 1. Navigate to the [API Keys section](https://us1.admin.mailchimp.com/account/api/) of your Mailchimp account.
-2. Click **Create New Key** and give it a descriptive name that will remind you which application it’s used for. Copy the generated key immediately and store it in a secure location. You won’t be able to see or copy the key once you finish generating it.
+2. Click **Create New Key** and give it a descriptive name that tells you which application it's used for.
+3. Copy the generated key immediately and store it in a secure location. You won't be able to see or copy the key once you finish generating it.
+
+Your server prefix is the first part of the URL you see when logged in; if it's
+`https://us19.admin.mailchimp.com/`, your prefix is `us19`. It's also appended
+to the key itself after a hyphen. You'll need both values to make a request.
 
 <Note>
-**Note**: It’s important to remember that your Mailchimp API key provides full account access, so you should keep it secure, as you would with a password. Because of the potential security risks associated with exposing account API keys, Mailchimp does not support client-side calls to the Marketing API using CORS requests, nor should API keys be used in mobile apps.
+**Note**: An API key grants full access to your account. Keep it as secure as
+you would a password, and don't use one in a browser or a mobile app; see
+[API keys](/marketing/api-concepts/authentication/api-keys) for why.
 </Note>
 
-If you’re creating integrations that require access to Mailchimp on behalf of other Mailchimp users, you’ll want to [set up authentication via Oauth 2](/marketing/api-concepts/oauth-2) instead. 
+## Next steps
 
+- [Send your first API request](/marketing/build/start-developing/send-your-first-api-request)
+- [Set up an OAuth app](/marketing/build/start-developing/set-up-an-oauth-app), if your application needs to access other users' accounts

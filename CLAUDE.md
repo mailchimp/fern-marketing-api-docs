@@ -90,6 +90,31 @@ Current work is **Marketing API only**. Transactional, Release Notes, and Blog
 are out of scope — do not restructure them. Transactional is a separate
 product; do not treat its pages as templates or precedent for Marketing.
 
+## Links
+
+**Self-references use root-relative paths, never a hostname.** Write
+`/marketing/api-concepts/errors`, not
+`https://mailchimp.com/developer/marketing/api-concepts/errors`.
+
+Two reasons, the second being the one that bites:
+
+1. The site will live at different hostnames over time (preview builds, staging,
+   the eventual production domain). Absolute links pin content to one host.
+2. **`fern docs broken-links` cannot validate a link that has a hostname** — it
+   treats it as external and skips it. In Aug 2026 a sweep found 64 absolute
+   self-links, **23 of whose paths were already dead**, all passing checks
+   clean. Relative links get policed; absolute ones do not.
+
+Absolute URLs are correct for genuinely external destinations: `mailchimp.com`
+marketing pages, help center articles, GitHub, and the CDN-hosted
+`mailchimp.com/developer/static/...` images (no local asset exists for those).
+
+**API reference deep links** use `/{product}/api/{tag}/{action}`, e.g.
+`/marketing/api/lists/create-member-event`. Do NOT derive these from the
+OpenAPI `operationId` — the slug differs and you will get a 404. Read the real
+URL off the rendered reference index (`/marketing/api`, `/transactional/api`)
+and verify it returns 200 before committing it.
+
 ## Gotchas
 
 - `fern/products/*.yml` carry slugs on the tab **definitions** (not the

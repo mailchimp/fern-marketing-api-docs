@@ -15,14 +15,17 @@ Connecting an external store to your Mailchimp account gives Mailchimp a model o
 Store                   one connected storefront, tied to one audience
 ├── Customers           buyers, identified by email address
 ├── Products            items for sale
-│   └── Variants        the specific purchasable versions of a product
+│   ├── Variants        the specific purchasable versions of a product
+│   └── Images          product imagery
 ├── Carts               in-progress purchases
 │   └── Cart lines      product variants in a cart
-└── Orders              completed purchases
-    └── Order lines     product variants in an order
+├── Orders              completed purchases
+│   └── Order lines     product variants in an order
+└── Promo rules         discounts a store offers
+    └── Promo codes     the codes customers enter to claim a rule
 ```
 
-**Stores** are the top-level e-commerce entity. Customers, products, carts, and orders all exist inside the scope of a store, and nothing e-commerce exists outside one.
+**Stores** are the top-level e-commerce entity. Customers, products, carts, orders, and promo rules all exist inside the scope of a store, and nothing e-commerce exists outside one.
 
 Each store is tied to one Mailchimp audience, so the people who buy from your store are contacts in that audience. A single audience can support multiple stores, but a store's audience is fixed once set.
 
@@ -33,6 +36,8 @@ Each store is tied to one Mailchimp audience, so the people who buy from your st
 **Carts** are in-progress purchases. A cart holds **cart lines**, each of which points at a product variant and a quantity. Carts are what abandoned cart automations run on; they don't become orders and they don't expire on their own.
 
 **Orders** are completed purchases, holding **order lines** in the same shape as cart lines. Orders are the record of revenue, and they're what product recommendations and purchase-based automations are built from.
+
+**Promo rules** are the discounts a store offers, and each one holds the **promo codes** customers enter to claim it.
 
 <Note>
 **Products come first**: a variant has to exist in a store before a cart line or order line can reference it. Adding products is the first step of any store sync, not a later one.

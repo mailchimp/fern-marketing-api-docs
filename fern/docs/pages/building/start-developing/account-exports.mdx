@@ -15,13 +15,11 @@ In this doc we’ll explain how to make a request via the [Account Exports endpo
 
 If you’d prefer to export via the Mailchimp app, follow the steps detailed [here](https://mailchimp.com/help/export-back-up-data/). (Note that only [account Managers, Admins, or Owners](https://mailchimp.com/help/manage-user-levels-in-your-account/) can export via the app.
 
-While this doc also covers the legacy Export API, this API will only be supported until June 1, 2023. After that date, users will need to switch to the new Account Exports endpoint. This endpoint is better supported and offers superior performance, such as the ability to check on the status of exports during generation.
-
 ## Generate a new export
 
 When requesting a new export via the Account Exports endpoint, you’ll need:
 
-- Your [API key and server prefix](/marketing/build/start-developing/send-your-first-api-request/#generate-your-api-key)
+- Your [API key and server prefix](/marketing/build/get-started/generate-your-api-key)
 - The [category of data](/marketing/build/start-developing/account-exports/#api-parameters) (the stage) you want included in the export
 
 Requests to the Account Exports endpoint should be structured like so:

@@ -1,16 +1,95 @@
 ---
 title: How Mailchimp works
-description: The Mailchimp domain model for developers—audiences, contacts, tags, segments, campaigns, and reports.
+description: What Mailchimp does for the businesses that use it, and what people use the Marketing API to do.
 ---
 
-## The basics
+## What Mailchimp is for
 
+Mailchimp is how a business stays in touch with the people who care about it. A
+coffee roaster, a nonprofit, a software company: each one keeps a list of
+customers, donors, or subscribers, and uses Mailchimp to send that list email
+and SMS. Newsletters, product launches, order updates, a discount aimed at
+people who haven't bought anything since spring.
 
-Whether you’re managing your own campaigns, providing Mailchimp services to your customers or clients, or writing a mobile app, the Mailchimp Marketing API has features to manage and sync your contact data.
+The Marketing API is how you do that from code instead of from the Mailchimp
+app. You might be automating your own marketing, running Mailchimp for clients,
+or connecting a product your company sells to the Mailchimp accounts its users
+already have.
 
-Audiences are at the core of sending campaigns with Mailchimp. You can use the Marketing API to [set up an audience](/marketing/build/quickstarts/import-and-export-contacts) and add contacts to that audience; you can then organize those contacts with [tags](/marketing/build/quickstarts/organize-contacts-with-tags) or segment them by activity with [events](/marketing/api/lists/list-member-events).
+## What people do with Mailchimp
 
-The Marketing API can also be a source of data for your application. [Webhooks](/marketing/api-concepts/webhooks) collect and transmit information about your audience to you in near real time. And if you’re selling products on an external store, you can integrate your audience behavior using Mailchimp’s  [E-commerce features](/marketing/concepts/e-commerce).
+**Collect people.** Contacts arrive from signup forms, a storefront, an import,
+or an API call. They live in an
+[audience](/marketing/concepts/audiences), which is Mailchimp's word for a
+list of contacts.
 
-You can also use the Marketing API to  handle data in different ways for different purposes. If you are syncing a large amount of data with Mailchimp, you can use [batches](/marketing/api-concepts/batch-operations) to avoid hitting the API request limits. For building integrations that let other users access data from their own Mailchimp accounts, you should [authenticate with OAuth 2](/marketing/api-concepts/oauth-2). And if you’re developing an app for iOS or Android, the [Mobile SDK](/marketing/build/start-developing/mobile-sdk) provides an easy way to work with a mobile-focused subset of the Marketing API’s functionality.
+**Organize them.** Sending to the whole audience works, and lots of people do
+it. The results are usually better when the message matches who's receiving it,
+which is what tags and segments are for. Contacts get labeled with
+[tags](/marketing/concepts/audiences/contacts), and
+[segments](/marketing/concepts/audiences/segments) pick out groups like everyone
+who opened the last three emails or bought a specific product.
 
+**Send something.** Mailchimp sends in two ways, and what separates them is
+what decides that a message goes out.
+
+- **Campaigns** are sent by a person. A campaign is one message to a chosen set
+  of contacts, sent once or scheduled for later: a monthly newsletter, a Black
+  Friday announcement.
+- **Automations** are messages triggered by events. A welcome email when
+  someone joins, a reminder when a shopper leaves items in a cart, a follow-up
+  a week after a purchase. You set the trigger once, and Mailchimp sends every
+  time it matches.
+
+Automations are often the reason to reach for the API at all, because their
+triggers depend on data you send in.
+
+**See what happened.** Reports record opens, clicks, unsubscribes, and revenue
+per campaign. Engagement is also something you can segment on, so who opened
+the last message can decide who gets the next one.
+
+Mailchimp integrates deeply with e-commerce data. Connecting a store adds a
+second model alongside the audience: [stores, products, carts, and
+orders](/marketing/concepts/e-commerce). Purchases and abandoned carts become
+the events that trigger automations, orders let reports attribute revenue to
+the campaign that earned it, and what someone bought shapes the product
+recommendations inside the messages they get next.
+
+## What the API is for
+
+Most work with the Marketing API is some mix of four jobs.
+
+**Sending data in.** Contacts, purchases, and activity from another system land
+in an audience so that segments and automations have something to work with.
+
+**Getting data back.** Campaign and engagement results come out of Mailchimp
+and into a database, a dashboard, or a spreadsheet, where they can sit
+alongside the rest of what you know about the same people.
+[Webhooks](/marketing/api-concepts/webhooks) push changes to you as they
+happen; reporting endpoints let you ask.
+
+**Sending messages.** Campaigns can be built, filled with content, and sent
+from code, so a message can be assembled out of live data and go out the moment
+that data says it should. Automations are set up in Mailchimp and triggered by
+events you report through the API.
+
+**Automating the work around all of it.** Imports on a schedule, contacts
+tagged by rules, a weekly campaign that builds itself from last week's numbers.
+Work that used to need someone at a keyboard runs on its own, and keeps working
+the same way whether the audience is 500 people or 500,000.
+
+## What the Marketing API does not cover
+
+The Marketing API covers campaigns and automations sent to an audience. It has
+no endpoints for per-user application email like password resets, receipts, or
+shipping confirmations. Those come from
+[Mailchimp Transactional](/transactional), a separate product with its own API
+and its own docs. If the message is triggered by one person doing one thing and
+goes only to them, that's Transactional, not Marketing.
+
+## Where to go next
+
+- [Audiences](/marketing/concepts/audiences) explains contacts, tags, merge fields, and segments, and how they nest.
+- [API structure](/marketing/api-concepts/api-structure) covers the root URL, data centers, and the conventions every endpoint follows.
+- [Import and export contacts](/marketing/build/quickstarts/import-and-export-contacts) is a working sync against an existing audience.
+- [Send your first API request](/marketing/build/start-developing/send-your-first-api-request) gets you authenticated and calling in a few minutes.

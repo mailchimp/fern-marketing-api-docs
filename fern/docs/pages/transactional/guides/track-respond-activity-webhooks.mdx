@@ -133,7 +133,7 @@ app.post("/", (req, res) => {
     } = event.msg;
     if (url === TARGET_LINK_URL) {
       // send follow-up message here using the Mailchimp Transactional API
-      // for more details, see https://mailchimp.com/developer/guides/send-your-first-transactional-email
+      // for more details, see /transactional/guides/send-first-email
       console.log("Send follow up email with this payload:", generateMessage(email));
     } else {
       // lets us test the webhook using the Mailchimp Transactional UI (see next section)
@@ -170,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo "url: $url";
     if ($url === TARGET_LINK_URL) {
       // send follow-up message here using the Mailchimp Transactional API
-      // for more details, see https://mailchimp.com/developer/guides/send-your-first-transactional-email
+      // for more details, see /transactional/guides/send-first-email
       echo 'Send follow up email with this payload:' . generateMessage($email);
     } else {
       // lets us test the webhook using the Mailchimp Transactional UI (see next section)
@@ -224,7 +224,7 @@ post '/' do
 
     if click && click['url'] == TARGET_LINK_URL
       # send follow-up message here using the Mailchimp Transactional API
-      # for more details, see https://mailchimp.com/developer/guides/send-your-first-transactional-email
+      # for more details, see /transactional/guides/send-first-email
 
       puts """
 Send follow up email with this payload:  #{generate_message(email)}
@@ -252,7 +252,7 @@ def index():
     email = msg['email']
     if click == TARGET_LINK_URL :
       # send follow-up message here using the Mailchimp Transactional API
-      # for more details, see https://mailchimp.com/developer/guides/send-your-first-transactional-email
+      # for more details, see /transactional/guides/send-first-email
       print("Send follow up email with this payload:")
       generateMessage(email)
     else :

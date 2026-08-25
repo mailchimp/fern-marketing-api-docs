@@ -1256,6 +1256,24 @@ header.fern-background-image { border-bottom: none !important; }
   gap: 20px;
   max-width: 1060px;
 }
+/* The grid previously relied on the NEXT element supplying top margin
+   (.mc-tools-subheading has margin-top: 40px). Pages that follow a grid with
+   .mc-tools-heading instead had the heading collide with the last card row,
+   so own the bottom spacing here. */
+.mc-tools-grid:not(:last-child) {
+  margin-bottom: 40px;
+}
+/* Consecutive grids (mobile cards followed by a repo line, etc.) stay tighter
+   than a grid that is followed by a new section heading. */
+.mc-tools-grid + .mc-tools-intro {
+  margin-top: 20px;
+}
+/* .mc-tools-heading is authored for a standalone hero page with no top margin.
+   When it opens a new section further down a page, it needs breathing room
+   above it. :not(:first-child) keeps the hero case unchanged. */
+.mc-tools-heading:not(:first-child) {
+  margin-top: 56px !important;
+}
 .mc-tools-card {
   display: flex;
   align-items: center;
@@ -1287,6 +1305,48 @@ header.fern-background-image { border-bottom: none !important; }
   font-size: 17px;
   font-weight: 400;
 }
+/* Embedded variant: the mc-tools-* blocks were built for the full-bleed
+   standalone /tools page — a dark teal band (.mc-tools-libraries) with cream
+   text on top, inside a 1188px container. Embedded in a product page's content
+   column, the container overflows and the band fights the page, so this variant
+   drops the band and goes fluid.
+   IMPORTANT: dropping the dark band means the inherited cream heading/body
+   colors would be cream-on-cream and invisible, so they must be re-stated
+   against the page background here. */
+.mc-tools-page--embedded .mc-container-outer {
+  max-width: 100%;
+  /* Keep the page's own horizontal rhythm; only the 1188px cap is dropped. */
+  padding: 0 24px;
+}
+.mc-tools-page--embedded .mc-tools-libraries {
+  background-color: transparent;
+  padding: 0;
+}
+.mc-tools-page--embedded .mc-tools-grid {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  max-width: 100%;
+}
+/* Text colors follow the page, not the (now absent) dark band. */
+.mc-tools-page--embedded .mc-tools-heading,
+.mc-tools-page--embedded .mc-tools-subheading {
+  color: var(--grayscale-a12, #001d28) !important;
+}
+.mc-tools-page--embedded .mc-tools-intro {
+  color: var(--grayscale-a11, #2a2a2a) !important;
+  font-size: 16px !important;
+  max-width: 68ch;
+  /* Inherited 64px reads as a gap when the paragraph introduces the grid
+     directly below it. */
+  margin-bottom: 24px !important;
+}
+/* Headings in-content should not be hero-sized. */
+.mc-tools-page--embedded .mc-tools-heading {
+  font-size: 24px !important;
+}
+.mc-tools-page--embedded .mc-tools-heading:not(:first-child) {
+  margin-top: 40px !important;
+}
+
 .mc-tools-intg-section {
   background-color: #efeeea;
   padding: 80px 0 96px;

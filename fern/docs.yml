@@ -283,20 +283,23 @@ redirects:
     destination: /marketing/concepts/audiences/merge-fields
   - source: /marketing/docs/e-commerce
     destination: /marketing/concepts/e-commerce
+  # build-an-integration.mdx deleted 2026-08-24 (it was a table of contents
+  # pointing at pages that cover each topic properly). Old URL now lands on
+  # the OAuth app walkthrough, the closest live equivalent.
   - source: /marketing/docs/integrations
-    destination: /marketing/build/start-developing/build-an-integration
+    destination: /marketing/build/start-developing/set-up-an-oauth-app
   - source: /marketing/docs/mobile-sdk
     destination: /marketing/build/start-developing/mobile-sdk
-  - source: /marketing/docs/export-api
-    destination: /marketing/build/start-developing/export-api
   - source: /marketing/docs/account-exports
     destination: /marketing/build/start-developing/account-exports
 
   # Guides tab dissolved. Mechanism guides moved to API core concepts.
   - source: /marketing/guides/quick-start
     destination: /marketing/build/start-developing/send-your-first-api-request
+  # v6 auth reorg: the old guide WAS the implementation walkthrough, so it
+  # retargets to the task page, not the concept page.
   - source: /marketing/guides/access-user-data-oauth-2
-    destination: /marketing/api-concepts/oauth-2
+    destination: /marketing/build/start-developing/set-up-an-oauth-app
   - source: /marketing/guides/sync-audience-data-webhooks
     destination: /marketing/api-concepts/webhooks
   - source: /marketing/guides/run-async-requests-batch-endpoint
@@ -327,6 +330,11 @@ redirects:
   # UI-configured feature, not API content; no successor page.
   - source: /marketing/guides/create-webhook-customer-journey-builder-campaign-manager
     destination: /marketing
+
+  # Authentication reorganization, 2026-08-21 (v6). Authentication became a
+  # section; OAuth 2 split into concept + task.
+  - source: /marketing/api-concepts/oauth-2
+    destination: /marketing/api-concepts/authentication/oauth-2
 
 footer: ./components/Footer.tsx
 
