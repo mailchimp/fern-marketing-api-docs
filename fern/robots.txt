@@ -1,0 +1,7 @@
+# Alpha preview: block all crawling and AI training until public launch.
+# At cutover, remove the `agents.robots-txt` key from docs.yml (or replace the
+# rules below with `Allow: /` plus a `Sitemap:` line) and redeploy.
+Content-Signal: ai-train=no, search=no, ai-input=no
+
+User-Agent: *
+Disallow: /
