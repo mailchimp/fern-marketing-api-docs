@@ -578,6 +578,16 @@
 .mc-site-footer {
   background-color: #001D28;
 }
+/* With a custom footer, Fern shortens the sticky desktop sidebar by the footer's
+   visible height so it always ends above the footer. Our footer is ~560px tall,
+   so at the bottom of the scroll the nav collapses to a sliver (or nothing on
+   short viewports). Keep it at full height instead and let sticky release at the
+   end of the content column, so the nav scrolls up above the footer with the
+   rest of the page. */
+#fern-sidebar[data-viewport='desktop'][data-state='sticky'] {
+  height: calc(100dvh - var(--header-height));
+  margin-bottom: 0;
+}
 .mc-footer-inner {
   column-gap: 20px;
   display: grid;
