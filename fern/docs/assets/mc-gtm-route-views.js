@@ -11,7 +11,7 @@
  *
  * Titles on API reference pages land after the route commits, so each push
  * waits for the <title> to change (or for a short timeout) rather than reading
- * document.title synchronously.
+ * document.title synchronously
  */
 (function () {
   var TITLE_WAIT_MS = 1500;
