@@ -18,7 +18,7 @@
    Font files are loaded via the `typography` block in docs.yml
    (headingsFont: Means Web, bodyFont: Graphik Web, codeFont: Input Mono
    Regular). Fern hosts docs/assets/fonts/*.woff2 and injects the
-   matching @font-face, so no @font-face is declared here.
+   matching @font-face, so no @font-face is declared here
 ============================================= */
 
 /* =============================================
