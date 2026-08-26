@@ -2,7 +2,9 @@
 
 instances:
   - url: mailchimp.docs.buildwithfern.com
-    custom-domain: mailchimp.ferndocs.com
+    custom-domain:
+      - mailchimp.ferndocs.com
+      - preview.developer.mailchimp.com
     edit-this-page:
       github:
         owner: fern-support
@@ -22,6 +24,9 @@ metadata:
   twitter:description: >-
     Find all the Mailchimp API documentation and tools developers need to send
     marketing and transactional emails.
+
+agents:
+  robots-txt: ./robots.txt
 
 ai-search:
   location:
