@@ -218,6 +218,10 @@ colors:
 css: docs/assets/styles.css
 
 js:
+  - path: docs/assets/mc-onetrust-consent.js
+    strategy: beforeInteractive
+  - path: docs/assets/mc-gtm.js
+    strategy: beforeInteractive
   - path: docs/assets/mc-sidebar-toc.js
     strategy: afterInteractive
   - path: docs/assets/mc-blog.js
@@ -227,6 +231,8 @@ js:
   - path: docs/assets/mc-header.js
     strategy: afterInteractive
   - path: docs/assets/mc-sidebar-product-title.js
+    strategy: afterInteractive
+  - path: docs/assets/mc-gtm-route-views.js
     strategy: afterInteractive
 
 navbar-links:
