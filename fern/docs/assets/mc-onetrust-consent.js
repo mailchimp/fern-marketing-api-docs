@@ -19,11 +19,36 @@
 (function () {
   var DOMAIN_SCRIPT = "41e15231-4a82-4457-b3aa-67f11aea3ee2";
 
-  // TODO(mailchimp): paste ONETRUST_OPTOUT_COUNTRIES + ONETRUST_OPTOUT_STATES
-  // from app/lib/Plums/OneTrustHelper.php in the monolith, concatenated
-  // (~250 country and US-state codes). While this is empty, every region gets
-  // the opt-in (denied) defaults below.
-  var OPTOUT_REGIONS = [];
+  // ONETRUST_OPTOUT_COUNTRIES + ONETRUST_OPTOUT_STATES from
+  // app/lib/Plums/OneTrustHelper.php in the monolith, verbatim (271 codes).
+  // Regions absent from this list keep the all-denied defaults below.
+  var OPTOUT_REGIONS = [
+    "AD", "AE", "AG", "AI", "AL", "AM", "AO", "AQ", "AR", "AS", "AU", "AW",
+    "AX", "AZ", "BA", "BB", "BD", "BF", "BH", "BI", "BJ", "BL", "BM", "BN",
+    "BO", "BQ", "BS", "BT", "BV", "BW", "BY", "BZ", "CA", "CC", "CD", "CF",
+    "CG", "CI", "CK", "CL", "CM", "CN", "CO", "CR", "CU", "CV", "CW", "CX",
+    "CY", "CZ", "DJ", "DM", "DO", "DZ", "EC", "EE", "EG", "EH", "ER", "ET",
+    "FJ", "FK", "FM", "FO", "GA", "GD", "GE", "GF", "GG", "GH", "GI", "GL",
+    "GM", "GN", "GP", "GQ", "GS", "GT", "GU", "GW", "GY", "HK", "HM", "HN",
+    "HR", "HT", "Hans", "Hant", "ID", "IL", "IM", "IN", "IO", "IQ", "IR",
+    "JE", "JM", "JO", "KE", "KG", "KH", "KI", "KM", "KN", "KP", "KR", "KW",
+    "KY", "KZ", "LA", "LB", "LC", "LK", "LR", "LS", "LY", "MA", "MC", "MD",
+    "ME", "MF", "MG", "MH", "MK", "ML", "MM", "MN", "MO", "MP", "MQ", "MR",
+    "MS", "MU", "MV", "MW", "MX", "MY", "MZ", "NA", "NC", "NE", "NF", "NI",
+    "NP", "NR", "NU", "NZ", "OM", "PA", "PE", "PF", "PG", "PH", "PK", "PM",
+    "PN", "PR", "PS", "PW", "PY", "QA", "RE", "RS", "RU", "RW", "SA", "SB",
+    "SC", "SD", "SG", "SH", "SJ", "SL", "SM", "SN", "SO", "SR", "SS", "ST",
+    "SV", "SX", "SY", "SZ", "TC", "TD", "TF", "TG", "TH", "TJ", "TK", "TL",
+    "TM", "TN", "TO", "TR", "TT", "TV", "TW", "TZ", "UA", "UG", "UM", "UZ",
+    "VA", "VC", "VE", "VG", "VI", "VN", "VU", "WF", "WS", "YE", "YT", "ZA",
+    "ZM", "ZW", "US-AK", "US-AL", "US-AR", "US-AS", "US-AZ", "US-CO", "US-CT",
+    "US-DC", "US-DE", "US-GA", "US-GU", "US-HI", "US-IA", "US-ID", "US-IL",
+    "US-IN", "US-KS", "US-KY", "US-LA", "US-MA", "US-MD", "US-ME", "US-MI",
+    "US-MN", "US-MO", "US-MP", "US-MS", "US-MT", "US-NC", "US-ND", "US-NE",
+    "US-NH", "US-NJ", "US-NM", "US-NY", "US-OH", "US-OK", "US-OR", "US-PA",
+    "US-PR", "US-RI", "US-SC", "US-SD", "US-TN", "US-TX", "US-UM", "US-UT",
+    "US-VA", "US-VI", "US-VT", "US-WA", "US-WI", "US-WV", "US-WY"
+  ];
 
   function head() {
     return document.head || document.getElementsByTagName("head")[0];

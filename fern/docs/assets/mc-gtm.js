@@ -6,13 +6,22 @@
  * or the container would load twice (and it can only load from
  * googletagmanager.com with an explicit container ID).
  *
- * /metrics/ exists only on mailchimp.com, so this 404s on the alpha domain and
- * resolves once the portal is served from mailchimp.com/developer. Must run
- * after mc-onetrust-consent.js.
+ * /metrics/ is served by the Mailchimp gateway on production hosts only. On
+ * alpha, deploy previews, and local, the loader is intentionally skipped.
+ * Must run after mc-onetrust-consent.js.
  */
 (function (w, d, s, l, i) {
   w[l] = w[l] || [];
   w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+
+  // /metrics/ is served by the Mailchimp gateway and only exists on these
+  // hosts. Everywhere else (alpha, deploy previews, local) the request would
+  // 404 and log a console error, so the container is not loaded there.
+  var PRODUCTION_HOSTS = ["mailchimp.com", "www.mailchimp.com", "developer.mailchimp.com"];
+  if (PRODUCTION_HOSTS.indexOf(w.location.hostname) === -1) {
+    return;
+  }
+
   var f = d.getElementsByTagName(s)[0],
     j = d.createElement(s),
     dl = l != "dataLayer" ? "&l=" + l : "";
