@@ -7,6 +7,11 @@ tabs:
   overview:
     display-name: Overview
     skip-slug: true
+    # Hidden for the same reason as the Marketing API's Overview tab: its page
+    # is the product landing at /transactional, so the sidebar entry sent
+    # readers out of the docs. The tab definition (and its slug) stay so the
+    # URL keeps resolving and re-showing it is a one-line change.
+    hidden: true
   guides:
     display-name: Guides
     slug: guides
