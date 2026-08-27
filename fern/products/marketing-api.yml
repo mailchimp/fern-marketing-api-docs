@@ -28,6 +28,12 @@ tabs:
     display-name: API Reference
     slug: api
 
+# Every `section:` below sets `collapsible: true` + `collapsed-by-default: true`.
+# A section with neither key renders as a permanently expanded heading, while
+# API reference tag groups are always collapsible and closed until you are
+# inside them — that mismatch is what made the left nav look half-open,
+# half-closed. With these keys every group starts closed except the ancestors
+# of the current page, which Fern always expands and which is not overridable.
 navigation:
   - tab: overview
     layout:
@@ -47,6 +53,8 @@ navigation:
       - section: Audiences
         path: ../docs/pages/concepts/audiences/overview.mdx
         slug: audiences
+        collapsible: true
+        collapsed-by-default: true
         contents:
           - page: Contacts
             path: ../docs/pages/concepts/audiences/contacts.mdx
@@ -74,6 +82,8 @@ navigation:
       - section: Authentication
         path: ../docs/pages/api-concepts/authentication.mdx
         slug: authentication
+        collapsible: true
+        collapsed-by-default: true
         contents:
           - page: API keys
             path: ../docs/pages/api-concepts/authentication/api-keys.mdx
@@ -107,6 +117,8 @@ navigation:
   - tab: building
     layout:
       - section: Get started
+        collapsible: true
+        collapsed-by-default: true
         contents:
           - page: Create an account
             path: ../docs/pages/building/get-started/create-an-account.mdx
@@ -117,6 +129,8 @@ navigation:
 
       # Complete, end-to-end tutorials of real, specific use cases.
       - section: Quickstarts
+        collapsible: true
+        collapsed-by-default: true
         contents:
           - page: Import and export contacts
             path: ../docs/pages/building/quickstarts/import-and-export-contacts.mdx
@@ -126,6 +140,8 @@ navigation:
             slug: organize-contacts-with-tags
 
       - section: Start developing
+        collapsible: true
+        collapsed-by-default: true
         contents:
           # Marketing-scoped SDK page. Deliberately NOT the shared
           # tools/landing.mdx, which is the cross-API Tools product and
@@ -164,6 +180,8 @@ navigation:
             hidden: true
 
       - section: Build with AI tools
+        collapsible: true
+        collapsed-by-default: true
         contents:
           - page: Overview
             path: ../docs/pages/building/ai-tools/overview.mdx

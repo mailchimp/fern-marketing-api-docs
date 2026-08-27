@@ -930,10 +930,10 @@ header.fern-background-image { border-bottom: none !important; }
   color: var(--mc-yellow) !important;
 }
 
-/* Active page: neutral text color + bold weight (marker carries the emphasis) */
-#fern-sidebar .fern-sidebar-link[data-state="active"] {
-  font-weight: 500 !important;
-}
+/* Active page: neutral text color only. The weight is deliberately left to
+   Fern, which emphasises the active title with a half-pixel text stroke; an
+   extra `font-weight: 500 !important` here stacked on top of that and made
+   selected items read heavier at some levels than others. */
 #fern-sidebar .fern-sidebar-link[data-state="active"],
 #fern-sidebar .fern-sidebar-link[data-state="active"] * {
   color: inherit !important;
