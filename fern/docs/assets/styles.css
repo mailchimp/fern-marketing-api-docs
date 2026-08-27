@@ -942,6 +942,19 @@ header.fern-background-image { border-bottom: none !important; }
 /* Active page: no marker box here — the magenta box lives on the active
    sub-item (scroll-spy); the active page is indicated by a magenta underline. */
 
+/* Top-level group headers, uniform weight and color across every tab.
+   Fern styles a doc section's header with `!text-body font-semibold` but
+   passes no class for an API reference tag group, so the guide tabs rendered
+   their groups bold and dark while the API Reference tab rendered Lists,
+   Campaigns, Reports and friends in the lighter link treatment. Both render
+   as a <button> (a group toggle) rather than an <a> (a page), so one rule
+   covers them without touching top-level pages. Values match Tailwind's
+   `text-body` / `font-semibold` so the two paths land on the same pixels. */
+#fern-sidebar button.fern-sidebar-link.fern-sidebar-level-1 {
+  color: var(--color-body);
+  font-weight: 600;
+}
+
 /* Active header tab: magenta underline (Mailchimp uses #FF3EBF, not the teal accent) */
 .fern-header-tabs a[data-state="active"]::after {
   background: #ff3ebf !important;
