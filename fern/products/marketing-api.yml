@@ -11,6 +11,10 @@ tabs:
   overview:
     display-name: Overview
     skip-slug: true
+    # Hidden from the tab bar and sidebar: the landing page is a full-bleed
+    # marketing page, so linking to it from in-docs nav reads as leaving the
+    # docs. `/marketing` stays reachable (footer, external links).
+    hidden: true
   concepts:
     display-name: Mailchimp core concepts
     slug: concepts
