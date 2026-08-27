@@ -942,17 +942,24 @@ header.fern-background-image { border-bottom: none !important; }
 /* Active page: no marker box here — the magenta box lives on the active
    sub-item (scroll-spy); the active page is indicated by a magenta underline. */
 
-/* Top-level group headers, uniform weight and color across every tab.
-   Fern styles a doc section's header with `!text-body font-semibold` but
-   passes no class for an API reference tag group, so the guide tabs rendered
-   their groups bold and dark while the API Reference tab rendered Lists,
-   Campaigns, Reports and friends in the lighter link treatment. Both render
-   as a <button> (a group toggle) rather than an <a> (a page), so one rule
-   covers them without touching top-level pages. Values match Tailwind's
-   `text-body` / `font-semibold` so the two paths land on the same pixels. */
-#fern-sidebar button.fern-sidebar-link.fern-sidebar-level-1 {
-  color: var(--color-body);
-  font-weight: 600;
+/* One weight for every top-level sidebar row.
+
+   Fern bolds a top-level `section:` (`!text-body font-semibold`) but not a
+   top-level `page:`, and not an API reference tag group either. So the mix
+   varied per tab: API core concepts bolded only Authentication (its single
+   section) among nine sibling pages, Building bolded all four of its
+   sections, and API Reference bolded nothing. Levelling down rather than up —
+   bolding every row would make the reference sidebar solid semibold and leave
+   the active page nothing to stand out against. Group-ness is still legible
+   from the chevron, and the active row keeps Fern's accent + text-stroke.
+   `!important` is required: Fern's `!text-body` is itself important. */
+#fern-sidebar .fern-sidebar-link.fern-sidebar-level-1 {
+  font-weight: 400 !important;
+}
+
+#fern-sidebar
+  .fern-sidebar-link.fern-sidebar-level-1:not([data-state="active"]) {
+  color: var(--grayscale-a12) !important;
 }
 
 /* Active header tab: magenta underline (Mailchimp uses #FF3EBF, not the teal accent) */
