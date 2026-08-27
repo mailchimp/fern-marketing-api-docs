@@ -242,9 +242,6 @@ navbar-links:
   - type: minimal
     text: Release Notes
     url: /release-notes
-  - type: minimal
-    text: Blog
-    url: /blog
   - type: filled
     text: Sign Up
     url: https://login.mailchimp.com/signup/

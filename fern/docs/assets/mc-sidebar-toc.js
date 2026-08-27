@@ -99,8 +99,15 @@
     // Merge fields / Segments), its <li> also contains the child
     // .fern-sidebar-group, so inserting after the <li> would drop the page
     // headings below the children instead of under their own page.
+    // A collapsible section wraps its link and child group in a <div>, so the
+    // child group can be one level deeper than the <li>.
     var li = active.closest("li");
-    if (li && li.querySelector(":scope > ul.fern-sidebar-group")) {
+    if (
+      li &&
+      li.querySelector(
+        ":scope > ul.fern-sidebar-group, :scope > div > ul.fern-sidebar-group"
+      )
+    ) {
       active.parentNode.insertBefore(ul, active.nextSibling);
     } else {
       var container = li || active;

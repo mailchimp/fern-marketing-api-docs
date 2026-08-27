@@ -930,10 +930,10 @@ header.fern-background-image { border-bottom: none !important; }
   color: var(--mc-yellow) !important;
 }
 
-/* Active page: neutral text color + bold weight (marker carries the emphasis) */
-#fern-sidebar .fern-sidebar-link[data-state="active"] {
-  font-weight: 500 !important;
-}
+/* Active page: neutral text color only. The weight is deliberately left to
+   Fern, which emphasises the active title with a half-pixel text stroke; an
+   extra `font-weight: 500 !important` here stacked on top of that and made
+   selected items read heavier at some levels than others. */
 #fern-sidebar .fern-sidebar-link[data-state="active"],
 #fern-sidebar .fern-sidebar-link[data-state="active"] * {
   color: inherit !important;
@@ -941,6 +941,26 @@ header.fern-background-image { border-bottom: none !important; }
 
 /* Active page: no marker box here — the magenta box lives on the active
    sub-item (scroll-spy); the active page is indicated by a magenta underline. */
+
+/* One weight for every top-level sidebar row.
+
+   Fern bolds a top-level `section:` (`!text-body font-semibold`) but not a
+   top-level `page:`, and not an API reference tag group either. So the mix
+   varied per tab: API core concepts bolded only Authentication (its single
+   section) among nine sibling pages, Building bolded all four of its
+   sections, and API Reference bolded nothing. Levelling down rather than up —
+   bolding every row would make the reference sidebar solid semibold and leave
+   the active page nothing to stand out against. Group-ness is still legible
+   from the chevron, and the active row keeps Fern's accent + text-stroke.
+   `!important` is required: Fern's `!text-body` is itself important. */
+#fern-sidebar .fern-sidebar-link.fern-sidebar-level-1 {
+  font-weight: 400 !important;
+}
+
+#fern-sidebar
+  .fern-sidebar-link.fern-sidebar-level-1:not([data-state="active"]) {
+  color: var(--grayscale-a12) !important;
+}
 
 /* Active header tab: magenta underline (Mailchimp uses #FF3EBF, not the teal accent) */
 .fern-header-tabs a[data-state="active"]::after {
@@ -951,39 +971,15 @@ header.fern-background-image { border-bottom: none !important; }
    Nested sidebar sections (e.g. Mailchimp core concepts > Audiences >
    Contacts / Merge fields / Segments).
 
-   Fern gives every sidebar link `fern-sidebar-level-1` regardless of depth,
-   so a `section:` with `contents:` renders its children flush with the
-   parent and the hierarchy is invisible. Indent by DOM nesting instead:
-   a .fern-sidebar-group inside an <li> is a child group.
+   These used to be hand-indented here with a margin and a 1px ::before rail,
+   because a `section:` with no collapse config renders its children flush
+   with the parent (every link is `fern-sidebar-level-1`) and the hierarchy is
+   invisible. Now that every section sets `collapsible: true`, Fern renders
+   the child group as a real collapsible: `fern-sidebar-group-level-2` with
+   its own indent and left border, and marks the parent link `font-semibold`.
+   Re-adding the custom indent/rail on top of that would double both, so the
+   rules are gone — see fern/products/marketing-api.yml.
 --------------------------------------------- */
-/* Indent only a group that is a CHILD of a section link — i.e. its <li>
-   also contains a .fern-sidebar-link. A tab's top-level page list is also
-   wrapped in LI > ul.fern-sidebar-group but has no sibling link, and must
-   stay flush. */
-#fern-sidebar li:has(> .fern-sidebar-link) > ul.fern-sidebar-group {
-  position: relative;
-  margin-left: 11px;
-  padding-left: 11px;
-}
-
-/* Rail connecting the children to their parent. */
-#fern-sidebar li:has(> .fern-sidebar-link) > ul.fern-sidebar-group::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 2px;
-  bottom: 2px;
-  width: 1px;
-  background: var(--mc-sidebar-rail, rgba(0, 0, 0, 0.12));
-}
-.dark #fern-sidebar li:has(> .fern-sidebar-link) > ul.fern-sidebar-group::before {
-  background: rgba(255, 255, 255, 0.16);
-}
-
-/* A parent section with children reads as a group header. */
-#fern-sidebar li:has(> .fern-sidebar-link):has(> ul.fern-sidebar-group) > .fern-sidebar-link {
-  font-weight: 500;
-}
 
 /* ---------------------------------------------
    Relocated page TOC (mc-sidebar-toc.js): the active page's headings
