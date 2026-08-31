@@ -283,10 +283,31 @@ components:
               - "null"
 
     # 4. messages/info omits `diag` entirely when there is no delivery
-    #    diagnostic yet. It is declared required and non-nullable, so the
-    #    MessagesEmailInfo / MessagesSmsInfo union can match neither arm and the
-    #    Ruby SDK silently returns an untyped Hash instead of the typed model.
-    #    Make it optional (absent) and nullable (explicitly null).
+    #    diagnostic yet. On MessagesEmailInfo it is declared `["string","null"]`
+    #    but *required*, and Fern's Ruby union matcher rejects a member whose
+    #    required field is absent without consulting `nullable` — so neither the
+    #    MessagesEmailInfo nor the MessagesSmsInfo arm matches and the SDK
+    #    silently returns an untyped Hash instead of the documented model.
+    #    Marking it optional lets the arm resolve. (The generator-side gap —
+    #    `nullable` being ignored in that presence check — is a separate bug,
+    #    still worth filing; this just stops the spec from tripping it.)
+    #
+    #    allOf branches merge element-wise, so the first three entries are
+    #    placeholders and only allOf[3]'s `required` list is restated.
+    MessagesEmailInfo:
+      allOf:
+        - {}
+        - {}
+        - {}
+        - required:
+            - smtp_events
+            - subaccount
+            - resends
+            - reject
+
+    # The nested SMTP-event `diag` is a plain required string. Not directly
+    # evidenced in the test pass, but it is the same shape of gap (a diagnostic
+    # that only exists once something has gone wrong), so relax it too.
     MessagesSmtpEvent:
       required:
         - ts
