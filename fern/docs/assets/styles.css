@@ -1657,6 +1657,42 @@ header.fern-background-image { border-bottom: none !important; }
   .mc-subnav { overflow-x: auto; }
 }
 
+/* --- Phone-width refinements (<=767px) -----------------------------------
+   The >=1024px block above stacks the two-column use-case rows, but three
+   inner containers keep their desktop side padding and the heading is bumped
+   UP to 40px. Measured on a 390px viewport that left the text column at
+   216px - 55% of the screen - with "audiences" (180px) filling 83% of the
+   line box, so it broke mid-word on anything narrower. Hence "Integrat/e",
+   "Automat/e/marketin/g", "audience/s".
+
+   Width budget before:  390 - 48 (.mc-container-outer) - 112 (.mc-use-cases-list)
+                             - 12 (.mc-use-case-item) = 216px
+   After:                390 - 48 = 342px
+
+   .mc-container-outer already supplies the 24px page gutter, so the nested
+   containers do not need their own horizontal padding at phone widths. */
+@media (max-width: 767px) {
+  .mc-container-inner,
+  .mc-use-cases-list,
+  .mc-bottom-inner {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  /* Fern's list styling indents each row; the marker is already hidden. */
+  .mc-use-case-item {
+    padding-left: 0 !important;
+  }
+  /* Scale with the viewport instead of the fixed 40px set at <=1023px.
+     At 320px this lands on 26px, at 390px ~29px, capped at 34px. Worst
+     longest-word-to-box ratio across both landing pages drops from 0.85
+     to 0.55 at 320px, so no heading can break mid-word. */
+  .mc-use-case-header p,
+  .mc-hero-h2,
+  .mc-bottom-heading {
+    font-size: clamp(26px, 7.4vw, 34px) !important;
+  }
+}
+
 /* =============================================
    DOCS PARITY WITH mailchimp.com/developer
    (bigger headings, sidebar product title, guides banner, landing sub-nav)
