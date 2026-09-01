@@ -5521,7 +5521,7 @@
         "title": "Automation Workflow Email",
         "type": "object"
       },
-      "Campaign2": {
+      "Campaigns": {
         "description": "A summary of an individual campaign's settings and content.",
         "properties": {
           "_links": {
@@ -6751,7 +6751,7 @@
         "title": "E-commerce Store",
         "type": "object"
       },
-      "ListMembers2": {
+      "ListsPost": {
         "description": "Individuals who are currently or have been previously subscribed to this list, including members who have bounced or unsubscribed.",
         "properties": {
           "_links": {
@@ -7528,7 +7528,7 @@
         "title": "E-commerce Cart Line Item",
         "type": "object"
       },
-      "RegularSchema": {
+      "FacebookAd": {
         "properties": {
           "canceled_at": {
             "description": "The date and time the outreach was canceled in ISO 8601 format.",
@@ -7783,7 +7783,7 @@
           }
         },
         "type": "object",
-        "title": "RegularSchema"
+        "title": "FacebookAd"
       },
       "ListWebhooks": {
         "description": "Webhook configured for the given list.",
@@ -9794,7 +9794,7 @@
         "title": "Connected Site",
         "type": "object"
       },
-      "ECommerceProduct2": {
+      "EcommerceStoresOrdersPost": {
         "description": "Information about a specific product.",
         "properties": {
           "description": {
@@ -10175,7 +10175,7 @@
         "title": "Interest",
         "type": "object"
       },
-      "ListMembers3": {
+      "ListsSegmentsMembers": {
         "description": "Individuals who are currently or have been previously subscribed to this list, including members who have bounced or unsubscribed.",
         "properties": {
           "_links": {
@@ -11145,10 +11145,10 @@
         "title": "Campaign Content",
         "type": "object"
       },
-      "SharedSchema38": {
+      "FacebookAds": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/RegularSchema"
+            "$ref": "#/components/schemas/FacebookAd"
           },
           {
             "properties": {
@@ -11507,12 +11507,12 @@
           }
         ],
         "type": "object",
-        "title": "SharedSchema38"
+        "title": "FacebookAds"
       },
-      "SharedSchema39": {
+      "ReportingFacebookAd": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/RegularSchema"
+            "$ref": "#/components/schemas/FacebookAd"
           },
           {
             "properties": {
@@ -11915,7 +11915,7 @@
             "type": "object"
           }
         ],
-        "title": "SharedSchema39"
+        "title": "ReportingFacebookAd"
       },
       "SignupForm": {
         "description": "List signup form.",
@@ -12169,7 +12169,7 @@
         "title": "Signup Form",
         "type": "object"
       },
-      "ECommerceCustomer2": {
+      "EcommerceStoresCartsPatch": {
         "description": "Information about a specific customer. Orders for existing customers should include only the `id` parameter in the `customer` object body.",
         "properties": {
           "id": {
@@ -14032,7 +14032,7 @@
         "title": "Unsubscribes",
         "type": "object"
       },
-      "AbuseComplaint2": {
+      "ListsAbuseReports": {
         "description": "Details of abuse complaints for a specific list. An abuse complaint occurs when your recipient clicks to 'report spam' in their email program.",
         "properties": {
           "_links": {
@@ -15014,7 +15014,7 @@
           }
         }
       },
-      "ECommerceCustomer3": {
+      "EcommerceStoresCartsPost": {
         "description": "Information about a specific customer. For existing customers include only the `id` parameter in the `customer` object body.",
         "properties": {
           "address": {
@@ -22039,7 +22039,7 @@
                     "campaigns": {
                       "description": "An array of campaigns.",
                       "items": {
-                        "$ref": "#/components/schemas/Campaign2"
+                        "$ref": "#/components/schemas/Campaigns"
                       },
                       "title": "Campaigns",
                       "type": "array"
@@ -28702,7 +28702,7 @@
                     "type": "string"
                   },
                   "customer": {
-                    "$ref": "#/components/schemas/ECommerceCustomer3"
+                    "$ref": "#/components/schemas/EcommerceStoresCartsPost"
                   },
                   "id": {
                     "description": "A unique identifier for the cart.",
@@ -29188,7 +29188,7 @@
                     "type": "string"
                   },
                   "customer": {
-                    "$ref": "#/components/schemas/ECommerceCustomer2"
+                    "$ref": "#/components/schemas/EcommerceStoresCartsPatch"
                   },
                   "id": {
                     "description": "A unique identifier for the cart.",
@@ -30919,7 +30919,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ECommerceCustomer2"
+                "$ref": "#/components/schemas/EcommerceStoresCartsPatch"
               }
             }
           },
@@ -31583,7 +31583,7 @@
                     "type": "string"
                   },
                   "customer": {
-                    "$ref": "#/components/schemas/ECommerceCustomer3"
+                    "$ref": "#/components/schemas/EcommerceStoresCartsPost"
                   },
                   "discount_total": {
                     "anyOf": [
@@ -31656,7 +31656,7 @@
                           ]
                         },
                         "product": {
-                          "$ref": "#/components/schemas/ECommerceProduct2"
+                          "$ref": "#/components/schemas/EcommerceStoresOrdersPost"
                         },
                         "product_id": {
                           "description": "A unique identifier for the product associated with the order line item.",
@@ -32421,7 +32421,7 @@
                     "type": "string"
                   },
                   "customer": {
-                    "$ref": "#/components/schemas/ECommerceCustomer2"
+                    "$ref": "#/components/schemas/EcommerceStoresCartsPatch"
                   },
                   "discount_total": {
                     "anyOf": [
@@ -33134,7 +33134,7 @@
                     ]
                   },
                   "product": {
-                    "$ref": "#/components/schemas/ECommerceProduct2"
+                    "$ref": "#/components/schemas/EcommerceStoresOrdersPost"
                   },
                   "product_id": {
                     "description": "A unique identifier for the product associated with the order line item.",
@@ -33939,7 +33939,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ECommerceProduct2"
+                "$ref": "#/components/schemas/EcommerceStoresOrdersPost"
               }
             }
           },
@@ -39070,7 +39070,7 @@
                     },
                     "facebook_ads": {
                       "items": {
-                        "$ref": "#/components/schemas/SharedSchema38"
+                        "$ref": "#/components/schemas/FacebookAds"
                       },
                       "type": "array"
                     },
@@ -39211,7 +39211,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SharedSchema38"
+                  "$ref": "#/components/schemas/FacebookAds"
                 }
               }
             },
@@ -44195,7 +44195,7 @@
                     "new_members": {
                       "description": "An array of objects, each representing a new member that was added to the list.",
                       "items": {
-                        "$ref": "#/components/schemas/ListMembers2"
+                        "$ref": "#/components/schemas/ListsPost"
                       },
                       "title": "New members",
                       "type": "array"
@@ -44215,7 +44215,7 @@
                     "updated_members": {
                       "description": "An array of objects, each representing an existing list member whose subscription status was updated.",
                       "items": {
-                        "$ref": "#/components/schemas/ListMembers2"
+                        "$ref": "#/components/schemas/ListsPost"
                       },
                       "title": "Updated Members",
                       "type": "array"
@@ -44432,7 +44432,7 @@
                     "abuse_reports": {
                       "description": "An array of objects, each representing an abuse report resource.",
                       "items": {
-                        "$ref": "#/components/schemas/AbuseComplaint2"
+                        "$ref": "#/components/schemas/ListsAbuseReports"
                       },
                       "title": "Abuse Reports",
                       "type": "array"
@@ -44612,7 +44612,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AbuseComplaint2"
+                  "$ref": "#/components/schemas/ListsAbuseReports"
                 }
               }
             },
@@ -54465,7 +54465,7 @@
                     "members_added": {
                       "description": "An array of objects, each representing a new member that was added to the static segment.",
                       "items": {
-                        "$ref": "#/components/schemas/ListMembers2"
+                        "$ref": "#/components/schemas/ListsPost"
                       },
                       "title": "Members Added",
                       "type": "array"
@@ -54473,7 +54473,7 @@
                     "members_removed": {
                       "description": "An array of objects, each representing an existing list member that got deleted from the static segment.",
                       "items": {
-                        "$ref": "#/components/schemas/ListMembers2"
+                        "$ref": "#/components/schemas/ListsPost"
                       },
                       "title": "Members Removed",
                       "type": "array"
@@ -54746,7 +54746,7 @@
                     "members": {
                       "description": "An array of objects, each representing a specific list member.",
                       "items": {
-                        "$ref": "#/components/schemas/ListMembers3"
+                        "$ref": "#/components/schemas/ListsSegmentsMembers"
                       },
                       "title": "Members",
                       "type": "array"
@@ -54889,7 +54889,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListMembers3"
+                  "$ref": "#/components/schemas/ListsSegmentsMembers"
                 }
               }
             },
@@ -57704,7 +57704,7 @@
                     },
                     "facebook_ads": {
                       "items": {
-                        "$ref": "#/components/schemas/SharedSchema39"
+                        "$ref": "#/components/schemas/ReportingFacebookAd"
                       },
                       "type": "array"
                     },
@@ -57845,7 +57845,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SharedSchema39"
+                  "$ref": "#/components/schemas/ReportingFacebookAd"
                 }
               }
             },
@@ -65154,7 +65154,7 @@
                       "items": {
                         "properties": {
                           "campaign": {
-                            "$ref": "#/components/schemas/Campaign2"
+                            "$ref": "#/components/schemas/Campaigns"
                           },
                           "snippet": {
                             "title": "Matching snippet",

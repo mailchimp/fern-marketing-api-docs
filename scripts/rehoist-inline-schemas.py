@@ -53,14 +53,105 @@ def looks_like_schema(node):
     return isinstance(node, dict) and any(k in node for k in SCHEMA_MARKERS)
 
 
-def derive_name(node, fallback_index):
-    """Prefer the schema's own title; fall back to a stable generated name."""
+SINGULARIZE = (("ies", "y"), ("ses", "s"), ("s", ""))
+
+
+def name_from_path(path):
+    """Build a readable name from where the schema is used.
+
+    e.g. ["paths", "/3.0/facebook-ads", "get", ..., "facebook_ads", "items"]
+    -> FacebookAd
+    """
+    if not path:
+        return None
+    parts = [p for p in path if isinstance(p, str)]
+    # the property key immediately before "items" is the best hint
+    hint = None
+    for i, seg in enumerate(parts):
+        if seg == "items" and i > 0 and parts[i - 1] not in ("properties", "schema"):
+            hint = parts[i - 1]
+    endpoint = next((p for p in parts if p.startswith("/")), None)
+    segs = []
+    if endpoint:
+        segs = [x for x in endpoint.strip("/").split("/")
+                if not x.startswith("{") and x != "3.0"]
+    if hint is None:
+        hint = segs[-1] if segs else None
+    if not hint:
+        return None
+    # Prefix with the leading endpoint segments when they add information,
+    # so /3.0/reporting/facebook-ads does not collide with /3.0/facebook-ads.
+    norm = lambda x: re.sub(r"[^a-z0-9]", "", x.lower())
+    prefix = ""
+    if len(segs) > 1 and norm(segs[-1]) == norm(hint):
+        prefix = "".join(re.sub(r"[^0-9A-Za-z]+", " ", x).title().replace(" ", "")
+                         for x in segs[:-1])
+    for suf, rep in SINGULARIZE:
+        if hint.endswith(suf) and len(hint) > len(suf) + 1:
+            hint = hint[: -len(suf)] + rep
+            break
+    name = re.sub(r"[^0-9A-Za-z]+", " ", hint).title().replace(" ", "")
+    return (prefix + name) if name else None
+
+
+def qualified_name(path):
+    """Fully-qualified fallback used when the short name already exists.
+
+    Distinguishes e.g. the campaign object returned by /campaigns from the one
+    returned by /campaigns/{id}/actions/replicate, rather than emitting
+    Campaign / Campaign2.
+    """
+    if not path:
+        return None
+    parts = [p for p in path if isinstance(p, str)]
+    endpoint = next((p for p in parts if p.startswith("/")), None)
+    if not endpoint:
+        return None
+    segs = [x for x in endpoint.strip("/").split("/")
+            if not x.startswith("{") and x != "3.0"]
+    method = next((p for p in parts
+                   if p in ("get", "post", "put", "patch", "delete")), None)
+    words = list(segs)
+    if method and method != "get":
+        words.append(method)
+    name = "".join(re.sub(r"[^0-9A-Za-z]+", " ", w).title().replace(" ", "")
+                   for w in words)
+    return name or None
+
+
+def prune_orphans(spec):
+    """Drop components nothing references (superseded by a later, larger hoist)."""
+    schemas = ((spec.get("components") or {}).get("schemas") or {})
+    if not schemas:
+        return []
+    blob = json.dumps({k: v for k, v in spec.items() if k != "components"})
+    comp_blob = json.dumps(schemas)
+    dropped = []
+    changed = True
+    while changed:
+        changed = False
+        for name in list(schemas):
+            ref = f'"#/components/schemas/{name}"'
+            others = json.dumps({k: v for k, v in schemas.items() if k != name})
+            if ref not in blob and ref not in others:
+                del schemas[name]
+                dropped.append(name)
+                changed = True
+    return dropped
+
+
+def derive_name(node, fallback_index, path=None):
+    """Prefer the schema's own title; then the usage site; then a counter."""
     title = node.get("title")
     if isinstance(title, str) and title.strip():
         name = re.sub(r"[^0-9A-Za-z]+", " ", title).title().replace(" ", "")
         if name:
             return name
-    # Discriminator-ish hint: a const/enum on a condition_type-style property
+    # Usage site beats a bare discriminator value: a `type: "regular"` tag
+    # would otherwise yield the meaningless `RegularSchema`.
+    from_path = name_from_path(path)
+    if from_path:
+        return from_path
     props = node.get("properties") or {}
     for key in ("condition_type", "type", "kind"):
         spec = props.get(key)
@@ -217,7 +308,8 @@ def main():
         for idx, (_, (node, paths)) in enumerate(ranked):
             size = len(canonical(node)); rec = size * (len(paths) - 1)
             total += rec
-            print(f"{derive_name(node, idx):40} {len(paths):>7} {size:>12,} {rec:>12,}")
+            nm = derive_name(node, idx, paths[0] if paths else None)
+            print(f"{nm:40} {len(paths):>7} {size:>12,} {rec:>12,}")
         print("-" * 74)
         print(f"{'TOTAL (upper bound, overlapping)':40} {'':>7} {'':>12} {total:>12,}")
         print("\n(dry run - no changes written)")
@@ -236,7 +328,12 @@ def main():
             break
         _, (node, paths) = max(
             found.items(), key=lambda kv: len(canonical(kv[1][0])) * (len(kv[1][1]) - 1))
-        name = derive_name(node, hoisted_count)
+        first = paths[0] if paths else None
+        name = derive_name(node, hoisted_count, first)
+        if name in schemas or name in used:
+            alt = qualified_name(first)
+            if alt and alt not in schemas and alt not in used:
+                name = alt
         base, n = name, 2
         while name in schemas or name in used:
             name = f"{base}{n}"; n += 1
@@ -255,6 +352,10 @@ def main():
 
     print("-" * 74)
     print(f"{'TOTAL':40} {hoisted_count:>7} {'':>12} {saved:>12,}")
+
+    orphans = prune_orphans(spec)
+    if orphans:
+        print(f"pruned {len(orphans)} orphaned component(s): {', '.join(orphans)}")
 
     with open(args.spec, "w") as fh:
         json.dump(spec, fh, indent=2, ensure_ascii=False)
