@@ -115,6 +115,50 @@ OpenAPI `operationId` — the slug differs and you will get a 404. Read the real
 URL off the rendered reference index (`/marketing/api`, `/transactional/api`)
 and verify it returns 200 before committing it.
 
+## Re-vendoring the Marketing OpenAPI spec
+
+**Every time `fern/apis/mailchimp-openapi/openapi.json` is replaced with a new
+export, run this before anything else:**
+
+```bash
+python3 scripts/rehoist-inline-schemas.py fern/apis/mailchimp-openapi/openapi.json
+fern check
+```
+
+Mailchimp authors the spec with shared `$ref`s but their exporter dereferences
+everything, so the raw export inlines the same subschema dozens of times. This
+is not cosmetic — it breaks the docs build. `registerApiDefinition` returns
+HTTP 500 with an empty body and no publish, while `fern check` passes with 0
+errors and the IR builds fine locally. There is nothing in the error to tell
+you what is wrong, so if you skip this step you will lose an afternoon.
+
+They have been asked to fix it upstream and declined
+(see `../mailchimp-marketing-spec-issues.md`), so this is permanent.
+
+The script is idempotent — running it twice is a no-op — and it does three
+things:
+
+| | |
+|---|---|
+| Re-hoists byte-identical repeated subschemas into `components/schemas` with a `$ref` at each site | the fix that unblocks the build |
+| Drops `x-oneOf` where it exactly duplicates the sibling `anyOf` | the exporter emits the union twice; 21% of the raw file |
+| Repairs `parameters` emitted as an object keyed `"0","1",...` | a sparse array that cannot round-trip as JSON; crashes the converter with `m.parameters is not iterable` |
+
+On the Sept 2026 export: **10.4 MB → 2.9 MB on disk, IR 241 MB → 175 MB, 63
+shared schemas, 1,221 named types.**
+
+Do NOT try to do this in `overrides.yml`. Fern's override merge is a deep
+merge — it can add the shared component but cannot remove the inline copies
+(`anyOf: null` does not delete them), so you end up with both. Measured: type
+count 2,315 → 5,643 and the publish still failed. The `parameters` repair
+*can* be done in overrides; the dedupe cannot.
+
+Deliberately not automated: promoting `x-discriminator` to a standard
+`discriminator`. Only 1 of the 41 segment-condition branches marks
+`condition_type` required, and OpenAPI needs it required in every branch.
+That is a semantic change we cannot verify without a live account, and
+required-but-sometimes-absent fields are what broke the Transactional SDKs.
+
 ## Gotchas
 
 - `fern/products/*.yml` carry slugs on the tab **definitions** (not the
