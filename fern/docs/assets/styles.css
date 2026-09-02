@@ -112,22 +112,30 @@
   justify-content: center;
   width: 100%;
 }
+/* The bar itself is unconstrained so its background colour reaches both edges
+   of the viewport; the width cap lives on the content row below, which keeps
+   logo, search and nav from drifting apart on ultrawide screens. */
 #fern-header {
   align-items: center;
   box-sizing: border-box;
   display: flex;
-  justify-content: space-between;
-  max-width: 144rem;
+  justify-content: center;
   padding: 2.5em 3em;
   width: 100%;
 }
 /* Fern 5.89 caps the header content at page-width (max-w-page / 88rem) and it
-   ends up left-aligned inside our full-width custom header. Uncap it so the
-   header items span the full header width again. Keyed off the native
-   #fern-header id (present in SSR) rather than the JS-added .mc-header class,
-   so it holds at FIRST PAINT — otherwise the whole header flashes to Fern's
-   default form on the page reload the changelog tag filters trigger. */
-#fern-header .width-before-scroll-bar,
+   ends up left-aligned inside our full-width custom header. Re-cap it at our
+   own 144rem and centre it, so the row matches the rest of the page's measure
+   while the bar stays full-bleed. Keyed off the native #fern-header id
+   (present in SSR) rather than the JS-added .mc-header class, so it holds at
+   FIRST PAINT — otherwise the whole header flashes to Fern's default form on
+   the page reload the changelog tag filters trigger. */
+#fern-header .width-before-scroll-bar {
+  width: 100% !important;
+  max-width: 144rem !important;
+  min-width: 0 !important;
+  margin-inline: auto !important;
+}
 #fern-header .fern-header-content,
 #fern-header .fern-header-content [class*="max-w-page"],
 #fern-header .fern-header-content > * {
