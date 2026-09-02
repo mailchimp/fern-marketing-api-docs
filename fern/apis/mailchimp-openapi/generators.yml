@@ -29,7 +29,7 @@ groups:
           location: npm
           package-name: "@mailchimp/mailchimp-marketing"
         github:
-          repository: fern-demo/mailchimp-typescript-sdk
+          repository: mailchimp/mailchimp-marketing-typescript-sdk
           mode: pull-request
         config:
           namespaceExport: Mailchimp
@@ -46,7 +46,7 @@ groups:
           location: pypi
           package-name: mailchimp-marketing
         github:
-          repository: fern-demo/mailchimp-python-sdk
+          repository: mailchimp/mailchimp-marketing-python-sdk
           mode: pull-request
         config:
           package_name: mailchimp_marketing
@@ -58,7 +58,7 @@ groups:
         version: 1.57.1
         smart-casing: true
         github:
-          repository: fern-demo/mailchimp-go-sdk
+          repository: mailchimp/mailchimp-marketing-go-sdk
           mode: pull-request
         config:
           clientName: MailchimpClient
@@ -72,7 +72,7 @@ groups:
           location: maven
           coordinate: com.mailchimp:mailchimp-marketing
         github:
-          repository: fern-demo/mailchimp-java-sdk
+          repository: mailchimp/mailchimp-marketing-java-sdk
           mode: pull-request
         config:
           client-class-name: MailchimpClient
@@ -87,7 +87,7 @@ groups:
           location: nuget
           package-name: Mailchimp.Marketing
         github:
-          repository: fern-demo/mailchimp-csharp-sdk
+          repository: mailchimp/mailchimp-marketing-csharp-sdk
           mode: pull-request
         config:
           namespace: Mailchimp.Marketing
@@ -99,7 +99,7 @@ groups:
         version: 2.17.0
         smart-casing: true
         github:
-          repository: fern-demo/mailchimp-php-sdk
+          repository: mailchimp/mailchimp-marketing-php-sdk
           mode: pull-request
         config:
           clientName: MailchimpClient
@@ -114,7 +114,7 @@ groups:
           location: rubygems
           package-name: mailchimp-marketing
         github:
-          repository: fern-demo/mailchimp-ruby-sdk
+          repository: mailchimp/mailchimp-marketing-ruby-sdk
           mode: pull-request
         # NOTE: no moduleName override — setting it makes the generator name the
         # entry file after the module verbatim (lib/Mailchimp.rb) instead of
@@ -128,7 +128,7 @@ groups:
         version: 0.36.0
         smart-casing: true
         github:
-          repository: fern-demo/mailchimp-swift-sdk
+          repository: mailchimp/mailchimp-marketing-swift-sdk
           mode: pull-request
         config:
           clientClassName: MailchimpClient
@@ -140,7 +140,7 @@ groups:
         version: 0.44.0
         smart-casing: true
         github:
-          repository: fern-demo/mailchimp-rust-sdk
+          repository: mailchimp/mailchimp-marketing-rust-sdk
           mode: pull-request
         config:
           crateName: mailchimp_marketing
@@ -165,7 +165,7 @@ groups:
           package-name: "@mailchimp/mailchimp-marketing"
           token: OIDC
         github:
-          repository: fern-demo/mailchimp-typescript-sdk
+          repository: mailchimp/mailchimp-marketing-typescript-sdk
           mode: release
         config:
           namespaceExport: Mailchimp
@@ -183,7 +183,7 @@ groups:
           package-name: mailchimp-marketing
           token: OIDC
         github:
-          repository: fern-demo/mailchimp-python-sdk
+          repository: mailchimp/mailchimp-marketing-python-sdk
           mode: release
         config:
           package_name: mailchimp_marketing
@@ -215,7 +215,7 @@ groups:
             password: ${MAVEN_SIGNATURE_PASSWORD}
             secretKey: ${MAVEN_SIGNATURE_SECRET_KEY}
         github:
-          repository: fern-demo/mailchimp-java-sdk
+          repository: mailchimp/mailchimp-marketing-java-sdk
           mode: release
         config:
           client-class-name: MailchimpClient
@@ -232,7 +232,7 @@ groups:
           package-name: Mailchimp.Marketing
           api-key: OIDC
         github:
-          repository: fern-demo/mailchimp-csharp-sdk
+          repository: mailchimp/mailchimp-marketing-csharp-sdk
           mode: release
         config:
           namespace: Mailchimp.Marketing
@@ -244,7 +244,7 @@ groups:
         version: 2.17.0
         smart-casing: true
         github:
-          repository: fern-demo/mailchimp-php-sdk
+          repository: mailchimp/mailchimp-marketing-php-sdk
           mode: release
         config:
           clientName: MailchimpClient
@@ -260,7 +260,7 @@ groups:
           package-name: mailchimp-marketing
           api-key: ${RUBYGEMS_API_KEY}
         github:
-          repository: fern-demo/mailchimp-ruby-sdk
+          repository: mailchimp/mailchimp-marketing-ruby-sdk
           mode: release
 
   swift-sdk-release:
@@ -269,7 +269,7 @@ groups:
         version: 0.36.0
         smart-casing: true
         github:
-          repository: fern-demo/mailchimp-swift-sdk
+          repository: mailchimp/mailchimp-marketing-swift-sdk
           mode: release
         config:
           clientClassName: MailchimpClient
@@ -285,7 +285,7 @@ groups:
           package-name: mailchimp_marketing
           token: ${CRATES_IO_API_KEY}
         github:
-          repository: fern-demo/mailchimp-rust-sdk
+          repository: mailchimp/mailchimp-marketing-rust-sdk
           mode: release
         config:
           crateName: mailchimp_marketing
