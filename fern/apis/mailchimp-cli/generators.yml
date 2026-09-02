@@ -22,7 +22,7 @@ groups:
   cli:
     generators:
       - name: fern-cli-generator
-        version: 0.30.3
+        version: 0.38.11
         ir-version: v67
         smart-casing: true
         config:
@@ -34,7 +34,7 @@ groups:
   local-cli:
     generators:
       - name: fern-cli-generator
-        version: 0.30.3
+        version: 0.38.11
         ir-version: v67
         smart-casing: true
         config:
