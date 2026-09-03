@@ -1787,6 +1787,39 @@ header.fern-background-image { border-bottom: none !important; }
   }
 }
 
+/* --- Drop Fern's product-selector card from the mobile drawer ------------
+   Opening the hamburger put a large product card at the very top of the
+   drawer - `</>` icon, "Mailchimp Marketing API", the product description and
+   an up/down control - pushing the actual navigation below the fold. It is
+   redundant: the custom "Products" trigger sits in the header at every width
+   and opens the full mega-menu (.mc-switcher-panel, built in mc-header.js).
+
+   Worth recording how this is wired, because it is easy to misread. The card
+   is Fern's NATIVE selector, not our custom panel:
+
+     .fern-header-switchers > button.fern-product-selector
+       > .fern-selection-item > .fern-selection-item-{title,subtitle}
+
+   confirmed with elementFromPoint against the open drawer. There are two
+   .fern-product-selector instances in the DOM - one in the header, which is
+   already zero-sized at phone widths, and this one - so `querySelector`
+   returns the wrong (hidden) one and reports 0x0. Our .mc-switcher-panel is
+   a separate body-appended element that stays closed here (verified
+   `is-open` false), so it is not involved.
+
+   Hiding the container rather than just the button: .fern-header-switchers
+   holds only the product selector today, and collapsing it leaves no gap
+   above the nav. If Fern ever adds a version or language switcher there,
+   this rule needs narrowing to .fern-product-selector.
+
+   Verified: visible product selectors 1 -> 0, drawer nav unchanged, and the
+   drawer now opens straight onto Overview / core concepts / page tree. */
+@media (max-width: 767px) {
+  .fern-header-switchers {
+    display: none !important;
+  }
+}
+
 /* =============================================
    DOCS PARITY WITH mailchimp.com/developer
    (bigger headings, sidebar product title, guides banner, landing sub-nav)
