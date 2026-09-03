@@ -199,6 +199,89 @@ paths:
       x-fern-pagination:
         offset: $request.offset
         results: $response.customers
+  # The list endpoint was typed as a single ECommerceOrder rather than a
+  # collection, so there was no array for pagination to point at. Every
+  # sibling store-scoped collection (carts, products, customers) returns
+  # {_links, <plural>, store_id, total_items} - mirror that. `_links` is
+  # reused verbatim from the carts response so the shapes stay identical.
+  # `$ref: null` clears the incorrect single-item ref (Fern's override merge
+  # is a deep merge, so a key present upstream must be explicitly nulled).
+  /3.0/ecommerce/stores/{store_id}/orders:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.orders
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: null
+                type: object
+                description: A collection of orders in a store.
+                properties:
+                  store_id:
+                    description: The store id.
+                    title: Store ID
+                    type: string
+                  orders:
+                    type: array
+                    description: An array of objects, each representing an order in a store.
+                    items:
+                      $ref: '#/components/schemas/ECommerceOrder'
+                  total_items:
+                    description: The total number of items matching the query regardless of pagination.
+                    readOnly: true
+                    title: Item Count
+                    type: integer
+                  _links:
+                    description: A list of link types and descriptions for the API schema documents.
+                    items:
+                      description: This object represents a link from the resource where it is found to
+                        another resource or action that may be performed.
+                      properties:
+                        href:
+                          description: This property contains a fully-qualified URL that can be called
+                            to retrieve the linked resource or perform the linked action.
+                          readOnly: true
+                          title: Href
+                          type: string
+                        method:
+                          description: The HTTP method that should be used when accessing the URL defined
+                            in 'href'.
+                          enum:
+                          - GET
+                          - POST
+                          - PUT
+                          - PATCH
+                          - DELETE
+                          - OPTIONS
+                          - HEAD
+                          readOnly: true
+                          title: Method
+                          type: string
+                        rel:
+                          description: As with an HTML 'rel' attribute, this describes the type of link.
+                          readOnly: true
+                          title: Rel
+                          type: string
+                        schema:
+                          description: For HTTP methods that can receive bodies (POST and PUT), this is
+                            a URL representing the schema that the body should conform to.
+                          readOnly: true
+                          title: Schema
+                          type: string
+                        targetSchema:
+                          description: For GETs, this is a URL representing the schema that the response
+                            should conform to.
+                          readOnly: true
+                          title: Target Schema
+                          type: string
+                      title: Resource Link
+                      type: object
+                    readOnly: true
+                    title: Links
+                    type: array
   /3.0/ecommerce/stores/{store_id}/orders/{order_id}/lines:
     get:
       x-fern-pagination:
@@ -394,3 +477,8 @@ paths:
       x-fern-pagination:
         offset: $request.offset
         results: $response.templates
+  /3.0/sms-campaigns:
+    get:
+      x-fern-pagination:
+        offset: $request.offset
+        results: $response.sms_campaigns
