@@ -1765,6 +1765,28 @@ header.fern-background-image { border-bottom: none !important; }
   }
 }
 
+/* Below 375px the search button is narrower than its own "Search" label, and
+   the button has `overflow: hidden`, so the label was rendering clipped
+   mid-glyph - a stray "S" floating beside the magnifier.
+
+   The label is a bare text node on the button, not a wrappable element, so
+   there is nothing to `display: none`. Zeroing the font size is what works;
+   the magnifier is sized in rem (root-relative) so it is unaffected, verified
+   at 16px either side of the breakpoint.
+
+   Measured cutover: the label needs 87px of button, and the button is 74px at
+   360px viewport but 89px at 375px - hence 374px, not a round number. Above
+   it the label renders normally.
+
+   Scoped to the search wrapper on purpose: a looser
+   `button:has(> svg)` also matches the Products switcher, whose chevron is a
+   direct svg child, and silently blanked its label too. */
+@media (max-width: 374px) {
+  #fern-header .fern-header-content div[class*="max-w-[640px]"] button {
+    font-size: 0 !important;
+  }
+}
+
 /* =============================================
    DOCS PARITY WITH mailchimp.com/developer
    (bigger headings, sidebar product title, guides banner, landing sub-nav)
