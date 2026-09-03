@@ -1701,6 +1701,70 @@ header.fern-background-image { border-bottom: none !important; }
   }
 }
 
+/* --- Phone-width header (<=767px) ---------------------------------------
+   The body layout was fixed above, but the header still laid out at desktop
+   measure and pushed its right-hand controls off-screen. Measured at 390px:
+
+     390   viewport
+      -96  #fern-header padding: 2.5em 3em   (48px each side)
+      -32  .fern-header-content padding      (16px each side)
+     =262  the row that has to hold
+           logo+Products 202 | search 116 | Ask AI 83 | menu 36  = 437px
+
+   So Search, Ask AI and the hamburger all landed beyond the right edge -
+   the menu button sat at x=505 on a 390px screen. Nothing scrolled
+   horizontally, it was simply clipped, which is the half-cut hamburger in
+   the reported screenshots.
+
+   Three things are needed, in order of how much they buy:
+
+   1. Drop the desktop gutters. 128px of a 390px viewport is 33% of the
+      screen spent on padding sized for 1440px.
+   2. Let the search wrapper shrink. It is a flex item and flex items default
+      to `min-width: auto`, which refuses to go below content width - so it
+      held its full size and shoved its siblings out rather than collapsing
+      to the icon it is designed to collapse to.
+   3. Drop the "Ask AI" label (its icon is self-explanatory) and, below
+      430px, the button entirely. The logo container is `flex-shrink: 0`
+      with `min-width: fit-content` and holds logo + Products at 202px, so
+      it cannot yield; something has to. Ask AI is the right thing to lose -
+      search stays, and the product switcher has to stay because the mobile
+      drawer carries Overview/Tools/Release Notes/Sign Up but NOT the
+      Marketing/Transactional switcher, so hiding it would strand users on
+      one product.
+
+   Verified with a headless browser against the live site - header overflow
+   and control collisions both 0 at 320 / 375 / 390 / 431 / 768px, body
+   overflow 0, and at 768px these rules correctly do not apply. */
+@media (max-width: 767px) {
+  #fern-header {
+    padding: 0.875rem 1rem !important;
+  }
+  #fern-header .fern-header-content {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  /* min-width:auto is what stops this collapsing to the search icon */
+  #fern-header .fern-header-content > div > div > div[class*="max-w-[640px]"] {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+  }
+  #fern-header .fern-header-content .fern-button-text { display: none !important; }
+  /* the "/" shortcut hint is meaningless at phone width (Fern already hides
+     it on coarse pointers; this also covers narrow windows with a keyboard) */
+  #fern-header .fern-kbd { display: none !important; }
+}
+
+/* Below ~430px the logo + product switcher alone is 202px of non-shrinkable
+   width, so the Ask AI button has to go to keep search and the menu on
+   screen. Search reaches the same assistant from inside its dialog. */
+@media (max-width: 430px) {
+  #fern-header .fern-header-content > div > div { gap: 0.5rem !important; }
+  #fern-header .fern-header-content button[class*="h-9"]:has(svg):not(:has(.fern-kbd)) {
+    display: none !important;
+  }
+}
+
 /* =============================================
    DOCS PARITY WITH mailchimp.com/developer
    (bigger headings, sidebar product title, guides banner, landing sub-nav)
