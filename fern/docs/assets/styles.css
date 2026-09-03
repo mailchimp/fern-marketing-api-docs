@@ -1797,7 +1797,16 @@ header.fern-background-image { border-bottom: none !important; }
    Scoped to Fern content layouts so the custom `layout: custom` landing
    pages (which use their own .mc-hero-* classes) are untouched. */
 .fern-page-heading {
-  font-size: 3.15rem !important;   /* ~50px */
+  /* Scales down on narrow screens instead of overflowing. A flat 3.15rem
+     (50.4px) pushed the longest page title we ship, "Authentication", to
+     333px inside a 288px column at a 320px viewport - it broke out of the
+     content column AND gave the page a horizontal scrollbar
+     (scrollWidth 365 vs viewport 320).
+
+     clamp caps at the original 3.15rem, so it is reached at ~458px and every
+     tablet/desktop width renders exactly as before. The 2.25rem floor keeps
+     "Authentication" at 238px, inside the 288px column with room to spare. */
+  font-size: clamp(2.25rem, 11vw, 3.15rem) !important;   /* 36px .. ~50px */
   font-weight: 400 !important;      /* Means Light */
   line-height: 1.05 !important;
   letter-spacing: -0.01em;
