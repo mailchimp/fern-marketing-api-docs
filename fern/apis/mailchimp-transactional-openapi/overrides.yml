@@ -109,3 +109,214 @@ components:
                 format: uri
                 description: The webhook URL where this message was sent.
         - type: "null"
+
+    # --- Conformance fixes from the Mandrill real-account SDK test pass ---
+    # (2026-08-31 findings doc; every item below reproduced against a live
+    #  account in at least one language.)
+    #
+    # NOTE ON `format: null`: Fern's override merge is a deep merge, so a key
+    # present in the source spec cannot be dropped by omitting it here — it has
+    # to be explicitly nulled. Verified against `fern ir`: omitting `format`
+    # leaves the field as DATE_TIME; `format: null` correctly yields a string.
+
+    # 1. users/ping2 returns {"PING":"PONG!"}, but the source schema declares a
+    #    `const` object with no `type`, so the converter falls back to string —
+    #    every SDK types this as a bare string and fails to decode the real
+    #    response (`type UsersPing2Response = string` in the Go SDK today).
+    #    Clear the const and state the object shape explicitly.
+    UsersPing2Response:
+      description: Static JSON payload confirming the API is reachable.
+      const: null
+      type: object
+      required:
+        - PING
+      properties:
+        PING:
+          type: string
+          enum:
+            - PONG!
+          description: Always the literal string "PONG!".
+      example:
+        PING: PONG!
+
+    # 2. Datetime format. Mandrill emits `YYYY-MM-DD HH:MM:SS`, space-separated,
+    #    with optional fractional seconds and an empty string for "not yet set".
+    #    That is not RFC3339, so `format: date-time` makes Go/Rust fail to parse
+    #    real responses and makes Go/Rust/Python serialize `send_at` in a format
+    #    the API rejects with HTTP 500.
+    #
+    #    25 comparable fields in this spec are already annotated the correct way
+    #    (`type: string` + pattern) and none of them failed the test pass. These
+    #    20 are the stragglers still on `format: date-time`; this brings them in
+    #    line with the rest of the spec.
+    Sender:
+      properties:
+        created_at: &mandrill-datetime
+          type: string
+          format: null
+          pattern: "^$|^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}(\\.\\d+)?$"
+    SendersHourStat:
+      properties:
+        time: *mandrill-datetime
+    SendersSenderDomain:
+      properties:
+        created_at: *mandrill-datetime
+        last_tested_at: *mandrill-datetime
+        verified_at: *mandrill-datetime
+    VerificationDetail:
+      properties:
+        valid_after: *mandrill-datetime
+    TemplatesTemplateHistory:
+      properties:
+        time: *mandrill-datetime
+    MessagesSendRequest:
+      allOf:
+        - {}
+        - properties:
+            send_at: *mandrill-datetime
+    MessagesSendTemplateRequest:
+      allOf:
+        - {}
+        - properties:
+            send_at: *mandrill-datetime
+    MessagesSendRawRequest:
+      allOf:
+        - {}
+        - properties:
+            send_at: *mandrill-datetime
+    MessagesSendMcTemplateRequest:
+      allOf:
+        - {}
+        - properties:
+            send_at: *mandrill-datetime
+    MessagesRescheduleRequest:
+      allOf:
+        - {}
+        - properties:
+            send_at: *mandrill-datetime
+
+    # 3. Fields typed required/non-nullable that real responses omit or null out.
+    #    `draft_updated_at` was absent from 7 of 60+ real templates, so it is a
+    #    missing key (-> optional), not a null value (-> nullable). The `required`
+    #    arrays are restated in full because array merges are element-wise.
+    MctemplatesMcTemplate:
+      required:
+        - mc_template_id
+        - mc_template_name
+        - labels
+        - code
+        - subject
+        - from_email
+        - from_name
+        - text
+        - publish_code
+        - publish_text
+        - published_at
+        - created_at
+        - updated_at
+        - is_broken_template
+      properties:
+        published_at:
+          type:
+            - string
+            - "null"
+          format: null
+          pattern: "^$|^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}(\\.\\d+)?$"
+        created_at: *mandrill-datetime
+        updated_at: *mandrill-datetime
+        draft_updated_at: *mandrill-datetime
+    TemplatesTemplate:
+      required:
+        - slug
+        - name
+        - labels
+        - code
+        - subject
+        - from_email
+        - from_name
+        - text
+        - publish_name
+        - publish_code
+        - publish_subject
+        - publish_from_email
+        - publish_from_name
+        - publish_text
+        - published_at
+        - created_at
+        - updated_at
+        - is_broken_template
+      properties:
+        published_at:
+          type:
+            - string
+            - "null"
+          format: null
+          pattern: "^$|^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}(\\.\\d+)?$"
+        created_at: *mandrill-datetime
+        updated_at: *mandrill-datetime
+        draft_updated_at: *mandrill-datetime
+
+    # `valid_mx` is null until the domain's MX records have been checked.
+    InboundDomain:
+      properties:
+        valid_mx:
+          type:
+            - boolean
+            - "null"
+
+    # `expires_at` is null on permanent (non-expiring) denylist entries.
+    RejectsListResponse:
+      items:
+        properties:
+          expires_at:
+            type:
+              - string
+              - "null"
+
+    # `detail` is null on allowlist entries added without a comment.
+    AllowlistsListResponse:
+      items:
+        properties:
+          detail:
+            type:
+              - string
+              - "null"
+
+    # 4. messages/info omits `diag` entirely when there is no delivery
+    #    diagnostic yet. On MessagesEmailInfo it is declared `["string","null"]`
+    #    but *required*, and Fern's Ruby union matcher rejects a member whose
+    #    required field is absent without consulting `nullable` — so neither the
+    #    MessagesEmailInfo nor the MessagesSmsInfo arm matches and the SDK
+    #    silently returns an untyped Hash instead of the documented model.
+    #    Marking it optional lets the arm resolve. (The generator-side gap —
+    #    `nullable` being ignored in that presence check — is a separate bug,
+    #    still worth filing; this just stops the spec from tripping it.)
+    #
+    #    allOf branches merge element-wise, so the first three entries are
+    #    placeholders and only allOf[3]'s `required` list is restated.
+    MessagesEmailInfo:
+      allOf:
+        - {}
+        - {}
+        - {}
+        - required:
+            - smtp_events
+            - subaccount
+            - resends
+            - reject
+
+    # The nested SMTP-event `diag` is a plain required string. Not directly
+    # evidenced in the test pass, but it is the same shape of gap (a diagnostic
+    # that only exists once something has gone wrong), so relax it too.
+    MessagesSmtpEvent:
+      required:
+        - ts
+        - type
+        - source_ip
+        - destination_ip
+        - size
+      properties:
+        diag:
+          type:
+            - string
+            - "null"
