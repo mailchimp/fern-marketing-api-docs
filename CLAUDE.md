@@ -96,18 +96,43 @@ product; do not treat its pages as templates or precedent for Marketing.
 `/marketing/api-concepts/errors`, not
 `https://mailchimp.com/developer/marketing/api-concepts/errors`.
 
-Two reasons, the second being the one that bites:
-
-1. The site will live at different hostnames over time (preview builds, staging,
-   the eventual production domain). Absolute links pin content to one host.
-2. **`fern docs broken-links` cannot validate a link that has a hostname** — it
-   treats it as external and skips it. In Aug 2026 a sweep found 64 absolute
-   self-links, **23 of whose paths were already dead**, all passing checks
-   clean. Relative links get policed; absolute ones do not.
+The reason: the site will live at different hostnames over time (preview builds,
+staging, the eventual production domain). Absolute links pin content to one
+host, so a hostname in a self-link is wrong even when it currently resolves.
 
 Absolute URLs are correct for genuinely external destinations: `mailchimp.com`
 marketing pages, help center articles, GitHub, and the CDN-hosted
 `mailchimp.com/developer/static/...` images (no local asset exists for those).
+
+### What `fern docs broken-links` actually checks
+
+Re-tested Sept 2026 against this repo. An older note here claimed the checker
+skips any link with a hostname, citing an Aug 2026 sweep that found 64 absolute
+self-links (23 already dead) passing clean. **That is wrong** — do not rely on
+it:
+
+| Link | Result |
+|---|---|
+| `/marketing/dead-path` | caught |
+| `https://mailchimp.ferndocs.com/marketing/dead-path` | caught — hostname is stripped, path checked |
+| Anything inside a ``` fence | **skipped entirely** |
+
+So the checker resolves our own hostnames against the page tree rather than
+treating them as external. Link checking works unauthenticated; `FERN_TOKEN`
+gates the *redirect* check only. The likeliest explanation for the Aug 2026
+sweep is the fence rule below — links quoted in code samples are never
+validated, and a sweep counting them by grep would count links the checker
+never saw.
+
+Two consequences worth knowing:
+
+- **Raw served files fail the check.** `/marketing/openapi.json`,
+  `/llms.txt`, and any `page.md` are served by Fern but do not exist as nav
+  pages, so linking one is reported broken even though it returns 200 live.
+  Present those as literal URLs in a code fence, not as markdown links — which
+  is also the honest rendering, since a reader `curl`s them rather than clicking.
+- **A fence is not a hiding place.** Fenced links are skipped, so a wrong URL in
+  a code sample is never validated. Verify sample URLs by hand.
 
 **API reference deep links** use `/{product}/api/{tag}/{action}`, e.g.
 `/marketing/api/lists/create-member-event`. Do NOT derive these from the

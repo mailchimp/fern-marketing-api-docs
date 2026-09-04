@@ -177,13 +177,17 @@ navigation:
             slug: account-exports
             hidden: true
 
+      # Slug pinned to `ai-tools` rather than the title-derived
+      # `build-with-ai-tools`, which nested as /build/build-with-ai-tools and
+      # stuttered. It also matches the page directory, so config, filesystem,
+      # and URL agree. The overview is the section landing page (same pattern
+      # as Audiences and Authentication), so it has no page entry of its own.
       - section: Build with AI tools
+        path: ../docs/pages/building/ai-tools/overview.mdx
+        slug: ai-tools
         collapsible: true
         collapsed-by-default: true
         contents:
-          - page: Overview
-            path: ../docs/pages/building/ai-tools/overview.mdx
-            slug: ai-tools
           - page: MCP server
             path: ../docs/pages/building/ai-tools/mcp-server.mdx
             slug: mcp-server
