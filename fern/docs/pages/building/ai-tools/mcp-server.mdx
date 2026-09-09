@@ -4,11 +4,157 @@ description: Connect an AI agent to the Mailchimp Marketing API through the Mode
 ---
 
 <Note>
-**Draft**: This page is a placeholder created during the docs reorganization. Content is not yet written.
+**Pending implementation**: The Marketing API MCP server described here hasn't
+shipped yet. The tool categories, server URL, and access-scoping details below
+are provisional. Verify each against the real implementation, including exact
+tool names, before removing this note.
 </Note>
 
-## The basics
+## What MCP is
 
-Outline: what MCP is, what the Mailchimp MCP server exposes, prerequisites, setup, managing access, troubleshooting, example prompts.
+The [Model Context Protocol](https://modelcontextprotocol.io/) is an open
+standard for connecting an AI agent to external tools and data. An MCP server
+exposes a fixed set of callable tools; an MCP-compatible client, such as
+Claude Code, Claude Desktop, or Cursor, discovers those tools and lets an
+agent call them during a conversation. For the protocol details, see the
+[MCP specification](https://modelcontextprotocol.io/specification) or
+[Anthropic's MCP documentation](https://docs.claude.com/en/docs/agents-and-tools/mcp).
 
-Write from scratch — the Transactional MCP page is a separate product, not a template.
+Mailchimp's Marketing API MCP server wraps the same API documented in this
+[API reference](/marketing/api). Each tool calls one or more Marketing API
+endpoints, so anything an agent does through the server, it does through your
+existing credentials and account permissions.
+
+## What the MCP server exposes
+
+Tools are grouped by the Marketing API resource they wrap:
+
+| Category | Covers |
+|---|---|
+| Audiences and contacts | Lists, members, tags, segments |
+| Campaigns | Regular and A/B campaigns, content, sending |
+| Reports | Campaign and automation performance data |
+| Automations | Automation workflows and their emails |
+| E-commerce | Stores, orders, products, carts |
+| Templates | Saved and predefined templates |
+
+An agent can read and act on any of these depending on the credential you
+connect. It can't do anything your API key or OAuth token doesn't already
+permit.
+
+## Prerequisites
+
+- An [API key](/marketing/api-concepts/authentication/api-keys) or
+  [OAuth 2 access token](/marketing/api-concepts/authentication/oauth-2). See
+  [Authentication](/marketing/api-concepts/authentication) for how to choose
+  between them.
+- The data center prefix for your account, from the same place you'd find it
+  for a direct API call. See [API structure](/marketing/api-concepts/api-structure).
+
+## Setup
+
+Setup is the same shape across MCP-compatible clients: point the client at
+the server URL and attach your token as a bearer credential.
+
+**Claude Code**
+
+```bash
+claude mcp add --transport http mailchimp-marketing {mcp-server-url} \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+**Claude Desktop**
+
+Open Claude menu → Settings → Developer → Edit Config, then add the server
+under `mcpServers` in `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "mailchimp-marketing": {
+      "type": "http",
+      "url": "{mcp-server-url}",
+      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
+    }
+  }
+}
+```
+
+**Cursor**
+
+Add the same server block to `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "mailchimp-marketing": {
+      "type": "http",
+      "url": "{mcp-server-url}",
+      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
+    }
+  }
+}
+```
+
+**VS Code**
+
+Add the same server block to `.vscode/mcp.json` in your project:
+
+```json
+{
+  "servers": {
+    "mailchimp-marketing": {
+      "type": "http",
+      "url": "{mcp-server-url}",
+      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
+    }
+  }
+}
+```
+
+Restart the client after saving. Each one surfaces a connection indicator once
+the server responds.
+
+## Managing access
+
+The MCP server carries no permissions of its own; it acts as whatever token
+you attach to it. Everything about scoping and revocation that applies to a
+[direct API key or OAuth token](/marketing/api-concepts/authentication)
+applies here unchanged:
+
+- Restrict the key to the audiences or resources an agent needs, if your key
+  supports scoped permissions, rather than connecting an unrestricted key.
+- Revoke access by revoking the underlying key or token. The MCP connection
+  stops working immediately; there's no separate MCP-level session to close.
+- For multiple accounts, add one server connection per credential. A single
+  connection can't switch between data centers or accounts mid-conversation.
+
+## Troubleshooting
+
+- **Client shows no connection.** Confirm the server URL and that your token
+  is valid; an expired or revoked token fails the same way as a missing one.
+- **Tools connect but calls fail.** The token's role likely doesn't permit the
+  action. Check the role attached to your token with the
+  [API Root endpoint](/marketing/api/root/list) and compare it against
+  [Mailchimp's user-level permissions](https://mailchimp.com/help/manage-user-levels-in-your-account/#Compare_user_level_permissions).
+- **Calls succeed but return unexpected data.** Confirm the data center prefix
+  matches the account the token belongs to; a mismatched prefix returns a 404
+  rather than routing to the right server.
+
+## Example prompts
+
+> "List my audiences and tell me which one has grown the most in the last 30
+> days."
+
+> "Draft a campaign for the `Spring Sale` audience using our `Product Update`
+> template, but don't send it."
+
+> "Pull open and click rates for the last three campaigns I sent and compare
+> them."
+
+## Related
+
+- [Agent skills](/marketing/build/ai-tools/agent-skills) package workflows on
+  top of these tools for repeated tasks.
+- [Authentication](/marketing/api-concepts/authentication) covers API keys
+  and OAuth 2 in depth.
