@@ -1701,6 +1701,125 @@ header.fern-background-image { border-bottom: none !important; }
   }
 }
 
+/* --- Phone-width header (<=767px) ---------------------------------------
+   The body layout was fixed above, but the header still laid out at desktop
+   measure and pushed its right-hand controls off-screen. Measured at 390px:
+
+     390   viewport
+      -96  #fern-header padding: 2.5em 3em   (48px each side)
+      -32  .fern-header-content padding      (16px each side)
+     =262  the row that has to hold
+           logo+Products 202 | search 116 | Ask AI 83 | menu 36  = 437px
+
+   So Search, Ask AI and the hamburger all landed beyond the right edge -
+   the menu button sat at x=505 on a 390px screen. Nothing scrolled
+   horizontally, it was simply clipped, which is the half-cut hamburger in
+   the reported screenshots.
+
+   Three things are needed, in order of how much they buy:
+
+   1. Drop the desktop gutters. 128px of a 390px viewport is 33% of the
+      screen spent on padding sized for 1440px.
+   2. Let the search wrapper shrink. It is a flex item and flex items default
+      to `min-width: auto`, which refuses to go below content width - so it
+      held its full size and shoved its siblings out rather than collapsing
+      to the icon it is designed to collapse to.
+   3. Drop the "Ask AI" label (its icon is self-explanatory) and, below
+      430px, the button entirely. The logo container is `flex-shrink: 0`
+      with `min-width: fit-content` and holds logo + Products at 202px, so
+      it cannot yield; something has to. Ask AI is the right thing to lose -
+      search stays, and the product switcher has to stay because the mobile
+      drawer carries Overview/Tools/Release Notes/Sign Up but NOT the
+      Marketing/Transactional switcher, so hiding it would strand users on
+      one product.
+
+   Verified with a headless browser against the live site - header overflow
+   and control collisions both 0 at 320 / 375 / 390 / 431 / 768px, body
+   overflow 0, and at 768px these rules correctly do not apply. */
+@media (max-width: 767px) {
+  #fern-header {
+    padding: 0.875rem 1rem !important;
+  }
+  #fern-header .fern-header-content {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  /* min-width:auto is what stops this collapsing to the search icon */
+  #fern-header .fern-header-content > div > div > div[class*="max-w-[640px]"] {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+  }
+  #fern-header .fern-header-content .fern-button-text { display: none !important; }
+  /* the "/" shortcut hint is meaningless at phone width (Fern already hides
+     it on coarse pointers; this also covers narrow windows with a keyboard) */
+  #fern-header .fern-kbd { display: none !important; }
+}
+
+/* Below ~430px the logo + product switcher alone is 202px of non-shrinkable
+   width, so the Ask AI button has to go to keep search and the menu on
+   screen. Search reaches the same assistant from inside its dialog. */
+@media (max-width: 430px) {
+  #fern-header .fern-header-content > div > div { gap: 0.5rem !important; }
+  #fern-header .fern-header-content button[class*="h-9"]:has(svg):not(:has(.fern-kbd)) {
+    display: none !important;
+  }
+}
+
+/* Below 375px the search button is narrower than its own "Search" label, and
+   the button has `overflow: hidden`, so the label was rendering clipped
+   mid-glyph - a stray "S" floating beside the magnifier.
+
+   The label is a bare text node on the button, not a wrappable element, so
+   there is nothing to `display: none`. Zeroing the font size is what works;
+   the magnifier is sized in rem (root-relative) so it is unaffected, verified
+   at 16px either side of the breakpoint.
+
+   Measured cutover: the label needs 87px of button, and the button is 74px at
+   360px viewport but 89px at 375px - hence 374px, not a round number. Above
+   it the label renders normally.
+
+   Scoped to the search wrapper on purpose: a looser
+   `button:has(> svg)` also matches the Products switcher, whose chevron is a
+   direct svg child, and silently blanked its label too. */
+@media (max-width: 374px) {
+  #fern-header .fern-header-content div[class*="max-w-[640px]"] button {
+    font-size: 0 !important;
+  }
+}
+
+/* --- Drop Fern's product-selector card from the mobile drawer ------------
+   Opening the hamburger put a large product card at the very top of the
+   drawer - `</>` icon, "Mailchimp Marketing API", the product description and
+   an up/down control - pushing the actual navigation below the fold. It is
+   redundant: the custom "Products" trigger sits in the header at every width
+   and opens the full mega-menu (.mc-switcher-panel, built in mc-header.js).
+
+   Worth recording how this is wired, because it is easy to misread. The card
+   is Fern's NATIVE selector, not our custom panel:
+
+     .fern-header-switchers > button.fern-product-selector
+       > .fern-selection-item > .fern-selection-item-{title,subtitle}
+
+   confirmed with elementFromPoint against the open drawer. There are two
+   .fern-product-selector instances in the DOM - one in the header, which is
+   already zero-sized at phone widths, and this one - so `querySelector`
+   returns the wrong (hidden) one and reports 0x0. Our .mc-switcher-panel is
+   a separate body-appended element that stays closed here (verified
+   `is-open` false), so it is not involved.
+
+   Hiding the container rather than just the button: .fern-header-switchers
+   holds only the product selector today, and collapsing it leaves no gap
+   above the nav. If Fern ever adds a version or language switcher there,
+   this rule needs narrowing to .fern-product-selector.
+
+   Verified: visible product selectors 1 -> 0, drawer nav unchanged, and the
+   drawer now opens straight onto Overview / core concepts / page tree. */
+@media (max-width: 767px) {
+  .fern-header-switchers {
+    display: none !important;
+  }
+}
+
 /* =============================================
    DOCS PARITY WITH mailchimp.com/developer
    (bigger headings, sidebar product title, guides banner, landing sub-nav)
@@ -1711,7 +1830,16 @@ header.fern-background-image { border-bottom: none !important; }
    Scoped to Fern content layouts so the custom `layout: custom` landing
    pages (which use their own .mc-hero-* classes) are untouched. */
 .fern-page-heading {
-  font-size: 3.15rem !important;   /* ~50px */
+  /* Scales down on narrow screens instead of overflowing. A flat 3.15rem
+     (50.4px) pushed the longest page title we ship, "Authentication", to
+     333px inside a 288px column at a 320px viewport - it broke out of the
+     content column AND gave the page a horizontal scrollbar
+     (scrollWidth 365 vs viewport 320).
+
+     clamp caps at the original 3.15rem, so it is reached at ~458px and every
+     tablet/desktop width renders exactly as before. The 2.25rem floor keeps
+     "Authentication" at 238px, inside the 288px column with room to spare. */
+  font-size: clamp(2.25rem, 11vw, 3.15rem) !important;   /* 36px .. ~50px */
   font-weight: 400 !important;      /* Means Light */
   line-height: 1.05 !important;
   letter-spacing: -0.01em;

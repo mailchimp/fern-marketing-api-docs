@@ -3,10 +3,119 @@ title: llms.txt
 description: Machine-readable documentation index for LLMs and AI coding tools.
 ---
 
-<Note>
-**Draft**: This page is a placeholder created during the docs reorganization. Content is not yet written.
-</Note>
+## At a glance
 
-## The basics
+To write great integrations, agents need context. While an OpenAPI spec tells an agent which endpoints exist and what they accept, it doesn't explain much of the critical domain nuance, e.g., that tags are managed through `segments`, that audiences are called `lists`, or which calls to make in what order to sync a set of contacts. In other words, agents writing code that interacts with Mailchimp's API need access to our documentation for the same reasons a human developer does.
 
-Outline: what llms.txt is, where Mailchimp's lives, what it contains, how tools consume it.
+There are two ways to put this kind of documentation in front of an agent. It can fetch pages directly, or it can search them by asking questions to the [docs MCP server](/marketing/build/ai-tools/mcp-server). Agents commonly do both, searching to find the right page and then fetching it in full.
+
+This page covers the direct fetching part of this workflow, which rests on two features of this site:
+
+- Every page has a markdown version, addressed by appending `.md` to its URL.
+- An `llms.txt` file at every level of the docs indexes those markdown pages as a list of titled links.
+
+So the index is a table of contents and the `.md` pages are the content. Every link in `llms.txt` points to a markdown page, which means an agent can read the index, choose what it needs, and fetch those pages without ever parsing HTML. That matters because navigation chrome, cookie banners, and stray page markup cost tokens and confuse retrieval; a markdown page carries the prose and the code samples and nothing else.
+
+## Finding the right index
+
+Every section of our docs serves its own `llms.txt`, scoped to whatever sits beneath it. Append `/llms.txt` to any section URL to get an index of just that section:
+
+| URL | Indexes |
+|---|---|
+| `/llms.txt` | The whole site |
+| `/marketing/llms.txt` | The Marketing API: concepts, guides, and the full API reference |
+| `/marketing/api-concepts/llms.txt` | The API core concepts |
+| `/marketing/concepts/audiences/llms.txt` | The audiences pages |
+| `/marketing/build/ai-tools/llms.txt` | This section, including this page |
+
+Start with the Marketing API index for most work:
+
+```
+https://preview.developer.mailchimp.com/marketing/llms.txt
+```
+
+Narrow the scope when an agent only needs one area. Handing it `/marketing/concepts/audiences/llms.txt` while it works on contact syncing keeps campaigns, reports, and e-commerce out of its context entirely.
+
+A section's index also carries that section's own page content ahead of the list, so one fetch gives an agent both the overview and the links to everything under it. Fetch an index first, then fetch the pages you need from it; there is no single file containing the whole documentation set at once.
+
+## What's in the index
+
+`/marketing/llms.txt` opens with instruction lines addressed to the agent reading it, then lists the content in three sections: `## Docs`, `## API Docs`, and `## OpenAPI Specification`.
+
+```
+> For clean Markdown of any page, append .md to the page URL.
+
+# Mailchimp Marketing API
+
+## Docs
+
+- [Contacts](https://preview.developer.mailchimp.com/marketing/concepts/audiences/contacts.md): The contact model, subscription status across channels, and how tags organize contacts.
+
+## API Docs
+
+- API Reference > Root [List API root resources](https://preview.developer.mailchimp.com/marketing/api/root/list.md)
+
+## OpenAPI Specification
+
+- [OpenAPI JSON](https://preview.developer.mailchimp.com/marketing/openapi.json)
+```
+
+`## Docs` covers the guides and concept pages, each entry with a one-line summary of what the page explains. `## API Docs` covers the API reference, one entry per operation, grouped by the endpoint family it belongs to. Fetch an operation's page to get its full description along with its parameters and responses.
+
+A narrower index carries only the `## Docs` list for its own pages. The API reference and the spec links appear at the product level, so `/marketing/llms.txt` is the one to reach for when an agent needs endpoints.
+
+`## OpenAPI Specification` links the OpenAPI 3.1 document, served as `/marketing/openapi.json` and `/marketing/openapi.yaml`. Reach for the spec when you're generating a client or checking the whole API surface at once; for a handful of endpoints, the `.md` pages are smaller and easier for a model to read.
+
+## Reading a single page
+
+Append `.md` to any documentation URL to get that page as markdown. This page is its own example:
+
+```bash
+curl https://preview.developer.mailchimp.com/marketing/build/ai-tools/llms-txt.md
+```
+
+That returns everything you're reading now, as plain markdown. The section this page belongs to has an index of its own, listing this page alongside the other AI tools pages:
+
+```
+https://preview.developer.mailchimp.com/marketing/build/ai-tools/llms.txt
+```
+
+The suffix works for reference pages as well as prose pages, and it is the cheapest way to give a coding agent an exact endpoint's parameters and response shape without a browser or an HTML parser. An endpoint's `.md` page gives you the method and URL, the operation description, authentication, servers, and every parameter as a typed list with its constraints and default:
+
+```
+GET https://us1.api.mailchimp.com/3.0/account-exports
+
+### Query parameters
+
+- `count` (integer, optional, default: 10) — The number of records to return. Maximum value is 1000
+- `offset` (integer, optional, default: 0) — ...
+```
+
+Every markdown page opens with a few directive lines pointing the agent back to the index and reminding it that the `.md` suffix exists. An agent that fetches one page can find the rest of the documentation from that header alone.
+
+### Requesting one language
+
+Reference pages carry an SDK example in each supported language. Add `lang` to get just one:
+
+```bash
+curl 'https://preview.developer.mailchimp.com/marketing/api/account-exports/list.md?lang=python'
+```
+
+`lang` accepts `python`, `java`, `ruby`, `go`, `csharp`, `swift`, and `node` for the TypeScript sample. The JSON request and response examples stay either way; only the SDK samples are filtered. Use it when an agent is working in one language and the rest of the samples are wasted context.
+
+## Pointing a coding agent at the docs
+
+For a one-off question, fetching a URL is enough; most coding agents can retrieve a URL you paste into the conversation, and `.md` pages need no special handling.
+
+For ongoing work against the Marketing API, record the index location in whatever file your agent reads for project context, so it can find its own way to the right page instead of relying on training data:
+
+```markdown
+Mailchimp Marketing API docs: https://preview.developer.mailchimp.com/marketing/llms.txt
+Append `.md` to any docs URL for markdown.
+Add `?lang=python` to a reference page to get only the Python example.
+```
+
+Both suffix instructions are worth including. An agent that has the index but doesn't know about `.md` will fetch the rendered HTML page and spend much of its context window on layout, and one that doesn't know about `lang` will read SDK samples in languages you aren't writing.
+
+Grounding an agent this way is worth the setup because Mailchimp's API has naming that a model will otherwise get wrong from training data alone. The endpoint for tags is `segments`, contacts are addressed by the MD5 hash of a lowercased email address, and audiences are `lists` throughout the API. A model working from memory tends to invent the reasonable-sounding version of each of these.
+

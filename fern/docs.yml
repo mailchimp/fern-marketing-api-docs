@@ -344,6 +344,18 @@ redirects:
   - source: /marketing/api-concepts/oauth-2
     destination: /marketing/api-concepts/authentication/oauth-2
 
+  # AI tools section slug shortened from the title-derived
+  # `build-with-ai-tools` to `ai-tools`, 2026-09-04. The overview also moved
+  # from a child page to the section landing page.
+  - source: /marketing/build/build-with-ai-tools/ai-tools
+    destination: /marketing/build/ai-tools
+  - source: /marketing/build/build-with-ai-tools/mcp-server
+    destination: /marketing/build/ai-tools/mcp-server
+  - source: /marketing/build/build-with-ai-tools/agent-skills
+    destination: /marketing/build/ai-tools/agent-skills
+  - source: /marketing/build/build-with-ai-tools/llms-txt
+    destination: /marketing/build/ai-tools/llms-txt
+
 footer: ./components/Footer.tsx
 
 theme:

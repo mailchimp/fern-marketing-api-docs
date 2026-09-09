@@ -23,7 +23,7 @@ groups:
   typescript-sdk:
     generators:
       - name: fernapi/fern-typescript-sdk
-        version: 3.86.0
+        version: 3.88.3
         smart-casing: true
         output:
           location: npm
@@ -40,7 +40,7 @@ groups:
   python-sdk:
     generators:
       - name: fernapi/fern-python-sdk
-        version: 5.26.0
+        version: 5.29.3
         smart-casing: true
         output:
           location: pypi
@@ -55,7 +55,7 @@ groups:
   go-sdk:
     generators:
       - name: fernapi/fern-go-sdk
-        version: 1.57.1
+        version: 1.57.10
         smart-casing: true
         github:
           repository: mailchimp/mailchimp-marketing-go-sdk
@@ -66,7 +66,7 @@ groups:
   java-sdk:
     generators:
       - name: fernapi/fern-java-sdk
-        version: 4.16.0
+        version: 4.19.2
         smart-casing: true
         output:
           location: maven
@@ -81,7 +81,7 @@ groups:
   csharp-sdk:
     generators:
       - name: fernapi/fern-csharp-sdk
-        version: 2.80.0
+        version: 2.83.2
         smart-casing: true
         output:
           location: nuget
@@ -96,7 +96,7 @@ groups:
   php-sdk:
     generators:
       - name: fernapi/fern-php-sdk
-        version: 2.17.0
+        version: 2.20.4
         smart-casing: true
         github:
           repository: mailchimp/mailchimp-marketing-php-sdk
@@ -108,7 +108,7 @@ groups:
   ruby-sdk:
     generators:
       - name: fernapi/fern-ruby-sdk
-        version: 1.21.0
+        version: 1.24.0
         smart-casing: true
         output:
           location: rubygems
@@ -125,7 +125,7 @@ groups:
   swift-sdk:
     generators:
       - name: fernapi/fern-swift-sdk
-        version: 0.36.0
+        version: 0.36.1
         smart-casing: true
         github:
           repository: mailchimp/mailchimp-marketing-swift-sdk
@@ -137,7 +137,7 @@ groups:
   rust-sdk:
     generators:
       - name: fernapi/fern-rust-sdk
-        version: 0.44.0
+        version: 0.46.4
         smart-casing: true
         github:
           repository: mailchimp/mailchimp-marketing-rust-sdk
@@ -158,7 +158,7 @@ groups:
   typescript-sdk-release:
     generators:
       - name: fernapi/fern-typescript-sdk
-        version: 3.86.0
+        version: 3.88.3
         smart-casing: true
         output:
           location: npm
@@ -176,7 +176,7 @@ groups:
   python-sdk-release:
     generators:
       - name: fernapi/fern-python-sdk
-        version: 5.26.0
+        version: 5.29.3
         smart-casing: true
         output:
           location: pypi
@@ -192,7 +192,7 @@ groups:
   go-sdk-release:
     generators:
       - name: fernapi/fern-go-sdk
-        version: 1.57.1
+        version: 1.57.10
         smart-casing: true
         github:
           repository: fern-demo/mailchimp-go-sdk
@@ -203,7 +203,7 @@ groups:
   java-sdk-release:
     generators:
       - name: fernapi/fern-java-sdk
-        version: 4.16.0
+        version: 4.19.2
         smart-casing: true
         output:
           location: maven
@@ -225,7 +225,7 @@ groups:
   csharp-sdk-release:
     generators:
       - name: fernapi/fern-csharp-sdk
-        version: 2.80.0
+        version: 2.83.2
         smart-casing: true
         output:
           location: nuget
@@ -241,7 +241,7 @@ groups:
   php-sdk-release:
     generators:
       - name: fernapi/fern-php-sdk
-        version: 2.17.0
+        version: 2.20.4
         smart-casing: true
         github:
           repository: mailchimp/mailchimp-marketing-php-sdk
@@ -253,7 +253,7 @@ groups:
   ruby-sdk-release:
     generators:
       - name: fernapi/fern-ruby-sdk
-        version: 1.21.0
+        version: 1.24.0
         smart-casing: true
         output:
           location: rubygems
@@ -266,7 +266,7 @@ groups:
   swift-sdk-release:
     generators:
       - name: fernapi/fern-swift-sdk
-        version: 0.36.0
+        version: 0.36.1
         smart-casing: true
         github:
           repository: mailchimp/mailchimp-marketing-swift-sdk
@@ -278,7 +278,7 @@ groups:
   rust-sdk-release:
     generators:
       - name: fernapi/fern-rust-sdk
-        version: 0.44.0
+        version: 0.46.4
         smart-casing: true
         output:
           location: crates
