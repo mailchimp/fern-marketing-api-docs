@@ -35,14 +35,33 @@ One tool:
 
 `searchDocs` takes two parameters:
 
-```
-query    The search query to run against the docs. Required.
-topK     How many results to return. Default 8, maximum 20.
-```
+| Parameter | Description |
+|---|---|
+| `query` | The search query to run against the docs. Required. |
+| `topK` | How many results to return. Default 8, maximum 20. |
 
 The search is semantic, not keyword matching, so a natural-language question
 returns relevant passages even when it doesn't share exact wording with the
 docs.
+
+## Other ways agents can access these docs
+
+An agent doesn't need the MCP server to read this site. Every page has a
+Markdown version at its own URL with `.md` appended, and an `llms.txt` index
+lists those pages at every level of the docs, down to individual sections.
+This works the same way on authenticated documentation sites, not just
+public ones like this one.
+
+```bash
+curl https://preview.developer.mailchimp.com/marketing/build/ai-tools/mcp-server.md
+```
+
+Searching and fetching solve different problems: `searchDocs` finds the
+right page when an agent doesn't know where to look, and a direct `.md`
+fetch reads a page you've already identified without spending tokens on
+HTML. Agents commonly use both in the same session. See
+[llms.txt](/marketing/build/ai-tools/llms-txt) for the full index format and
+how to scope one to just the section an agent needs.
 
 ## Prerequisites
 
