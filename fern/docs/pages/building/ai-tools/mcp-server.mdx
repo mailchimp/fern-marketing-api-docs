@@ -19,10 +19,9 @@ of you copying passages into the conversation by hand.
 
 <Note>
 **This searches documentation, not your Mailchimp account.** The server
-answers questions about published docs content. It doesn't call the
-Marketing API and can't read or change data in your account, so no Mailchimp
-credential is required to use it. To let an agent act on your account, call
-the API directly or use [Agent skills](/marketing/build/ai-tools/agent-skills).
+answers questions using this site's published content, so it works without a
+Mailchimp credential. To let an agent act on your account, call the API
+directly or use [Agent skills](/marketing/build/ai-tools/agent-skills).
 </Note>
 
 ## What the MCP server exposes
@@ -31,26 +30,64 @@ One tool:
 
 | Tool | Does |
 |---|---|
-| `searchDocs` | Runs a semantic search over this site's published pages and returns the matching passages with their source URLs. |
+| `searchDocs` | Answers a question against this site's published pages, citing the source pages it drew from. |
 
 `searchDocs` takes two parameters:
 
 | Parameter | Description |
 |---|---|
 | `query` | The search query to run against the docs. Required. |
-| `topK` | How many results to return. Default 8, maximum 20. |
+| `topK` | How many source passages to draw the answer from. Default 8, maximum 20. |
 
 The search is semantic, not keyword matching, so a natural-language question
-returns relevant passages even when it doesn't share exact wording with the
+returns a relevant answer even when it doesn't share exact wording with the
 docs.
+
+## Calling searchDocs
+
+`searchDocs` returns one synthesized answer as prose, with numbered
+citations linking back to the pages it drew from. Calling it with:
+
+```json
+{ "query": "How does Mailchimp's Batch endpoint work?" }
+```
+
+returns a single text content block shaped like this (trimmed):
+
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Mailchimp's Batch endpoint lets you enqueue multiple API calls in a single request, running them in the background on Mailchimp's servers [^1]...\n\n[^1]: https://mailchimp.ferndocs.com/marketing/api-concepts/batch-operations"
+    }
+  ]
+}
+```
+
+Treat the response as an answer to read or relay. `topK` controls how many
+source passages feed that answer; the response keeps this same prose shape
+regardless of the value. The `[^N]` citations and the footnote list that
+follows them trace a claim back to the page it came from, whether for a
+follow-up `.md` fetch or for showing the reader where an answer came from.
+
+Two inputs are worth knowing about before you rely on them:
+
+- **An empty `query` string** (`""`) produces a normal, non-error result
+  containing the text `Search failed: {"error":"Invalid request: no text
+  content in messages"}`. Validate that a query has content on your side
+  before calling.
+- **A query unrelated to Mailchimp's docs** gets a plain-text reply in the
+  same shape as a normal answer, saying the tool can only help with
+  documentation questions.
 
 ## Other ways agents can access these docs
 
-An agent doesn't need the MCP server to read this site. Every page has a
-Markdown version at its own URL with `.md` appended, and an `llms.txt` index
-lists those pages at every level of the docs, down to individual sections.
-This works the same way on authenticated documentation sites, not just
-public ones like this one.
+An agent can also read this site directly. Every page has a Markdown
+version at its own URL with `.md` appended, and an `llms.txt` index lists
+those pages at every level of the docs, down to individual sections. This
+works the same way on authenticated documentation sites and public ones like
+this one.
 
 ```bash
 curl https://preview.developer.mailchimp.com/marketing/build/ai-tools/mcp-server.md
@@ -142,13 +179,21 @@ once the server responds.
 - **Client shows no connection, or the URL returns a 404.** The site owner
   can disable this server entirely. If that's happened here, there's no
   alternative endpoint; the feature is off, not broken.
+- **Client can't reach the server at all.** Confirm you're using the same
+  hostname you're browsing the docs on. A URL copied from an old preview
+  link stops resolving once that environment is retired.
+- **A call fails with `MCP error -32602`.** This is a JSON-RPC invalid-params
+  error, and it comes back as a normal HTTP 200 with `isError: true` on the
+  tool result, not as an HTTP error status. It means malformed input: a
+  missing `query`, a `topK` outside 1–20, a `topK` sent as anything other
+  than a number, or a tool name other than `searchDocs`. Validate arguments
+  against the schema before calling rather than relying on the server to
+  reject them cleanly, since not everything invalid is caught this way; see
+  the empty-query case above.
 - **`searchDocs` returns nothing relevant.** Rephrase as a direct question
   rather than a keyword fragment; the search ranks meaning over exact
   wording. If the topic genuinely isn't covered, check the
   [API reference](/marketing/api) directly.
-- **Client can't reach the server at all.** Confirm you're using the same
-  hostname you're browsing the docs on. A URL copied from an old preview
-  link stops resolving once that environment is retired.
 
 ## Example prompts
 
@@ -164,7 +209,6 @@ once the server responds.
 ## Related
 
 - [Agent skills](/marketing/build/ai-tools/agent-skills) package workflows
-  that call the Marketing API itself, which this server doesn't do.
+  that call the Marketing API itself.
 - [Authentication](/marketing/api-concepts/authentication) covers the API
-  key and OAuth 2 credentials you need to call the Marketing API directly,
-  separate from this documentation-search server.
+  key and OAuth 2 credentials for calling the Marketing API directly.
