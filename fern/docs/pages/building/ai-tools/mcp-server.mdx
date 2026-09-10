@@ -71,15 +71,26 @@ regardless of the value. The `[^N]` citations and the footnote list that
 follows them trace a claim back to the page it came from, whether for a
 follow-up `.md` fetch or for showing the reader where an answer came from.
 
-Two inputs are worth knowing about before you rely on them:
+An agent working through an MCP client turns a plain-language prompt into
+that `query` argument itself, so you write the prompt, not the JSON:
 
-- **An empty `query` string** (`""`) produces a normal, non-error result
-  containing the text `Search failed: {"error":"Invalid request: no text
-  content in messages"}`. Validate that a query has content on your side
-  before calling.
-- **A query unrelated to Mailchimp's docs** gets a plain-text reply in the
-  same shape as a normal answer, saying the tool can only help with
-  documentation questions.
+> "Search the docs for how Mailchimp scopes OAuth 2 tokens to a single
+> account."
+
+> "What does the Marketing API docs site say about pagination limits on the
+> Reports endpoints?"
+
+> "Find the docs page on batch operations and summarize the request size
+> limit."
+
+<Note>
+An empty `query` string (`""`) produces a normal, non-error result
+containing the text `Search failed: {"error":"Invalid request: no text
+content in messages"}`; validate that a query has content on your side
+before calling. A query unrelated to Mailchimp's docs gets a plain-text
+reply in the same shape as a normal answer, saying the tool can only help
+with documentation questions.
+</Note>
 
 ## Other ways agents can access these docs
 
@@ -194,17 +205,6 @@ once the server responds.
   rather than a keyword fragment; the search ranks meaning over exact
   wording. If the topic genuinely isn't covered, check the
   [API reference](/marketing/api) directly.
-
-## Example prompts
-
-> "Search the docs for how Mailchimp scopes OAuth 2 tokens to a single
-> account."
-
-> "What does the Marketing API docs site say about pagination limits on the
-> Reports endpoints?"
-
-> "Find the docs page on batch operations and summarize the request size
-> limit."
 
 ## Related
 
