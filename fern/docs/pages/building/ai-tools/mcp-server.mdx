@@ -1,14 +1,7 @@
 ---
 title: MCP server
-description: Connect an AI agent to the Mailchimp Marketing API through the Model Context Protocol.
+description: Query these docs from an AI agent through the Model Context Protocol.
 ---
-
-<Note>
-**Pending implementation**: The Marketing API MCP server described here hasn't
-shipped yet. The tool categories, server URL, and access-scoping details below
-are provisional. Verify each against the real implementation, including exact
-tool names, before removing this note.
-</Note>
 
 ## What MCP is
 
@@ -20,47 +13,73 @@ agent call them during a conversation. For the protocol details, see the
 [MCP specification](https://modelcontextprotocol.io/specification) or
 [Anthropic's MCP documentation](https://docs.claude.com/en/docs/agents-and-tools/mcp).
 
-Mailchimp's Marketing API MCP server wraps the same API documented in this
-[API reference](/marketing/api). Each tool calls one or more Marketing API
-endpoints, so anything an agent does through the server, it does through your
-existing credentials and account permissions.
+This documentation site is itself an MCP server. Connect an agent to it and
+the agent can search these docs directly from your editor or terminal instead
+of you copying passages into the conversation by hand.
+
+<Note>
+**This searches documentation, not your Mailchimp account.** The server
+answers questions about published docs content. It doesn't call the
+Marketing API and can't read or change data in your account, so no Mailchimp
+credential is required to use it. To let an agent act on your account, call
+the API directly or use [Agent skills](/marketing/build/ai-tools/agent-skills).
+</Note>
 
 ## What the MCP server exposes
 
-Tools are grouped by the Marketing API resource they wrap:
+One tool:
 
-| Category | Covers |
+| Tool | Does |
 |---|---|
-| Audiences and contacts | Lists, members, tags, segments |
-| Campaigns | Regular and A/B campaigns, content, sending |
-| Reports | Campaign and automation performance data |
-| Automations | Automation workflows and their emails |
-| E-commerce | Stores, orders, products, carts |
-| Templates | Saved and predefined templates |
+| `searchDocs` | Runs a semantic search over this site's published pages and returns the matching passages with their source URLs. |
 
-An agent can read and act on any of these depending on the credential you
-connect. It can't do anything your API key or OAuth token doesn't already
-permit.
+`searchDocs` takes two parameters:
+
+```
+query    The search query to run against the docs. Required.
+topK     How many results to return. Default 8, maximum 20.
+```
+
+The search is semantic, not keyword matching, so a natural-language question
+returns relevant passages even when it doesn't share exact wording with the
+docs.
 
 ## Prerequisites
 
-- An [API key](/marketing/api-concepts/authentication/api-keys) or
-  [OAuth 2 access token](/marketing/api-concepts/authentication/oauth-2). See
-  [Authentication](/marketing/api-concepts/authentication) for how to choose
-  between them.
-- The data center prefix for your account, from the same place you'd find it
-  for a direct API call. See [API structure](/marketing/api-concepts/api-structure).
+None. This site's documentation is public, so connecting to the server
+requires no API key, OAuth token, or account of any kind.
 
 ## Setup
 
-Setup is the same shape across MCP-compatible clients: point the client at
-the server URL and attach your token as a bearer credential.
+<Steps>
+<Step title="Get your server URL">
+The server lives at `/_mcp/server` on this site's domain. Request it to
+confirm the server is live and to get ready-to-use connection commands for
+your client:
 
+```bash
+curl https://mailchimp.ferndocs.com/_mcp/server
+```
+
+The response echoes back the exact commands below, scoped to whichever
+domain you requested. Use the hostname you're reading this page on. Fern
+docs sites can move between hostnames (preview and production, for example),
+so copy the URL fresh rather than reusing an old one.
+</Step>
+<Step title="Register the server with your client">
 **Claude Code**
 
 ```bash
-claude mcp add --transport http mailchimp-marketing {mcp-server-url} \
-  -H "Authorization: Bearer YOUR_API_KEY"
+claude mcp add --transport http fern_mcp_mailchimp-docs \
+  https://mailchimp.ferndocs.com/_mcp/server
+```
+
+**Cursor**
+
+Add the URL to your MCP server configuration:
+
+```
+https://mailchimp.ferndocs.com/_mcp/server
 ```
 
 **Claude Desktop**
@@ -71,26 +90,9 @@ under `mcpServers` in `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "mailchimp-marketing": {
+    "mailchimp-docs": {
       "type": "http",
-      "url": "{mcp-server-url}",
-      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
-    }
-  }
-}
-```
-
-**Cursor**
-
-Add the same server block to `~/.cursor/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "mailchimp-marketing": {
-      "type": "http",
-      "url": "{mcp-server-url}",
-      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
+      "url": "https://mailchimp.ferndocs.com/_mcp/server"
     }
   }
 }
@@ -98,63 +100,52 @@ Add the same server block to `~/.cursor/mcp.json`:
 
 **VS Code**
 
-Add the same server block to `.vscode/mcp.json` in your project:
+Add the same server to `.vscode/mcp.json` in your project:
 
 ```json
 {
   "servers": {
-    "mailchimp-marketing": {
+    "mailchimp-docs": {
       "type": "http",
-      "url": "{mcp-server-url}",
-      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
+      "url": "https://mailchimp.ferndocs.com/_mcp/server"
     }
   }
 }
 ```
 
-Restart the client after saving. Each one surfaces a connection indicator once
-the server responds.
-
-## Managing access
-
-The MCP server carries no permissions of its own; it acts as whatever token
-you attach to it. Everything about scoping and revocation that applies to a
-[direct API key or OAuth token](/marketing/api-concepts/authentication)
-applies here unchanged:
-
-- Restrict the key to the audiences or resources an agent needs, if your key
-  supports scoped permissions, rather than connecting an unrestricted key.
-- Revoke access by revoking the underlying key or token. The MCP connection
-  stops working immediately; there's no separate MCP-level session to close.
-- For multiple accounts, add one server connection per credential. A single
-  connection can't switch between data centers or accounts mid-conversation.
+Restart the client after saving. Each one surfaces a connection indicator
+once the server responds.
+</Step>
+</Steps>
 
 ## Troubleshooting
 
-- **Client shows no connection.** Confirm the server URL and that your token
-  is valid; an expired or revoked token fails the same way as a missing one.
-- **Tools connect but calls fail.** The token's role likely doesn't permit the
-  action. Check the role attached to your token with the
-  [API Root endpoint](/marketing/api/root/list) and compare it against
-  [Mailchimp's user-level permissions](https://mailchimp.com/help/manage-user-levels-in-your-account/#Compare_user_level_permissions).
-- **Calls succeed but return unexpected data.** Confirm the data center prefix
-  matches the account the token belongs to; a mismatched prefix returns a 404
-  rather than routing to the right server.
+- **Client shows no connection, or the URL returns a 404.** The site owner
+  can disable this server entirely. If that's happened here, there's no
+  alternative endpoint; the feature is off, not broken.
+- **`searchDocs` returns nothing relevant.** Rephrase as a direct question
+  rather than a keyword fragment; the search ranks meaning over exact
+  wording. If the topic genuinely isn't covered, check the
+  [API reference](/marketing/api) directly.
+- **Client can't reach the server at all.** Confirm you're using the same
+  hostname you're browsing the docs on. A URL copied from an old preview
+  link stops resolving once that environment is retired.
 
 ## Example prompts
 
-> "List my audiences and tell me which one has grown the most in the last 30
-> days."
+> "Search the docs for how Mailchimp scopes OAuth 2 tokens to a single
+> account."
 
-> "Draft a campaign for the `Spring Sale` audience using our `Product Update`
-> template, but don't send it."
+> "What does the Marketing API docs site say about pagination limits on the
+> Reports endpoints?"
 
-> "Pull open and click rates for the last three campaigns I sent and compare
-> them."
+> "Find the docs page on batch operations and summarize the request size
+> limit."
 
 ## Related
 
-- [Agent skills](/marketing/build/ai-tools/agent-skills) package workflows on
-  top of these tools for repeated tasks.
-- [Authentication](/marketing/api-concepts/authentication) covers API keys
-  and OAuth 2 in depth.
+- [Agent skills](/marketing/build/ai-tools/agent-skills) package workflows
+  that call the Marketing API itself, which this server doesn't do.
+- [Authentication](/marketing/api-concepts/authentication) covers the API
+  key and OAuth 2 credentials you need to call the Marketing API directly,
+  separate from this documentation-search server.
