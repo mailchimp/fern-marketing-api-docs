@@ -24,93 +24,6 @@ Mailchimp credential. To let an agent act on your account, call the API
 directly or use [Agent skills](/marketing/build/ai-tools/agent-skills).
 </Note>
 
-## What the MCP server exposes
-
-One tool:
-
-| Tool | Does |
-|---|---|
-| `searchDocs` | Answers a question against this site's published pages, citing the source pages it drew from. |
-
-`searchDocs` takes two parameters:
-
-| Parameter | Description |
-|---|---|
-| `query` | The search query to run against the docs. Required. |
-| `topK` | How many source passages to draw the answer from. Default 8, maximum 20. |
-
-The search is semantic, not keyword matching, so a natural-language question
-returns a relevant answer even when it doesn't share exact wording with the
-docs.
-
-## Calling searchDocs
-
-`searchDocs` returns one synthesized answer as prose, with numbered
-citations linking back to the pages it drew from. Calling it with:
-
-```json
-{ "query": "How does Mailchimp's Batch endpoint work?" }
-```
-
-returns a single text content block shaped like this (trimmed):
-
-```json
-{
-  "content": [
-    {
-      "type": "text",
-      "text": "Mailchimp's Batch endpoint lets you enqueue multiple API calls in a single request, running them in the background on Mailchimp's servers [^1]...\n\n[^1]: https://mailchimp.ferndocs.com/marketing/api-concepts/batch-operations"
-    }
-  ]
-}
-```
-
-Treat the response as an answer to read or relay. `topK` controls how many
-source passages feed that answer; the response keeps this same prose shape
-regardless of the value. The `[^N]` citations and the footnote list that
-follows them trace a claim back to the page it came from, whether for a
-follow-up `.md` fetch or for showing the reader where an answer came from.
-
-An agent working through an MCP client turns a plain-language prompt into
-that `query` argument itself, so you write the prompt, not the JSON:
-
-> "Search the docs for how Mailchimp scopes OAuth 2 tokens to a single
-> account."
-
-> "What does the Marketing API docs site say about pagination limits on the
-> Reports endpoints?"
-
-> "Find the docs page on batch operations and summarize the request size
-> limit."
-
-<Note>
-An empty `query` string (`""`) produces a normal, non-error result
-containing the text `Search failed: {"error":"Invalid request: no text
-content in messages"}`; validate that a query has content on your side
-before calling. A query unrelated to Mailchimp's docs gets a plain-text
-reply in the same shape as a normal answer, saying the tool can only help
-with documentation questions.
-</Note>
-
-## Other ways agents can access these docs
-
-An agent can also read this site directly. Every page has a Markdown
-version at its own URL with `.md` appended, and an `llms.txt` index lists
-those pages at every level of the docs, down to individual sections. This
-works the same way on authenticated documentation sites and public ones like
-this one.
-
-```bash
-curl https://preview.developer.mailchimp.com/marketing/build/ai-tools/mcp-server.md
-```
-
-Searching and fetching solve different problems: `searchDocs` finds the
-right page when an agent doesn't know where to look, and a direct `.md`
-fetch reads a page you've already identified without spending tokens on
-HTML. Agents commonly use both in the same session. See
-[llms.txt](/marketing/build/ai-tools/llms-txt) for the full index format and
-how to scope one to just the section an agent needs.
-
 ## Prerequisites
 
 None. This site's documentation is public, so connecting to the server
@@ -185,6 +98,57 @@ once the server responds.
 </Step>
 </Steps>
 
+## What it does
+
+The server exposes one tool, `searchDocs`, which answers a question against
+this site's published pages and returns a synthesized answer as prose,
+citing the source pages it drew from. Your MCP client discovers the tool's
+exact parameters on connection, so there's nothing to configure by hand.
+
+Ask it what you'd ask a person:
+
+> "Search the docs for how Mailchimp scopes OAuth 2 tokens to a single
+> account."
+
+> "What does the Marketing API docs site say about pagination limits on the
+> Reports endpoints?"
+
+> "Find the docs page on batch operations and summarize the request size
+> limit."
+
+<Note>
+An empty search query produces a normal, non-error result whose text reads
+as a failure (`Search failed: {"error":"Invalid request: no text content in
+messages"}`) rather than as a tool error. If an agent's query might resolve
+to an empty or whitespace-only string, validate that on your side before
+calling.
+</Note>
+
+<Note>
+A question unrelated to Mailchimp's docs isn't an error either. It gets a
+plain-text reply, in the same shape as a normal answer, saying the tool can
+only help with documentation questions.
+</Note>
+
+## Other ways agents can access these docs
+
+An agent can also read this site directly. Every page has a Markdown
+version at its own URL with `.md` appended, and an `llms.txt` index lists
+those pages at every level of the docs, down to individual sections. This
+works the same way on authenticated documentation sites and public ones like
+this one.
+
+```bash
+curl https://preview.developer.mailchimp.com/marketing/build/ai-tools/mcp-server.md
+```
+
+Searching and fetching solve different problems: the docs-search tool finds
+the right page when an agent doesn't know where to look, and a direct `.md`
+fetch reads a page you've already identified without spending tokens on
+HTML. Agents commonly use both in the same session. See
+[llms.txt](/marketing/build/ai-tools/llms-txt) for the full index format and
+how to scope one to just the section an agent needs.
+
 ## Troubleshooting
 
 - **Client shows no connection, or the URL returns a 404.** The site owner
@@ -196,12 +160,9 @@ once the server responds.
 - **A call fails with `MCP error -32602`.** This is a JSON-RPC invalid-params
   error, and it comes back as a normal HTTP 200 with `isError: true` on the
   tool result, not as an HTTP error status. It means malformed input: a
-  missing `query`, a `topK` outside 1–20, a `topK` sent as anything other
-  than a number, or a tool name other than `searchDocs`. Validate arguments
-  against the schema before calling rather than relying on the server to
-  reject them cleanly, since not everything invalid is caught this way; see
-  the empty-query case above.
-- **`searchDocs` returns nothing relevant.** Rephrase as a direct question
+  missing query, a result-count parameter out of range, or a tool name the
+  server doesn't recognize.
+- **The tool returns nothing relevant.** Rephrase as a direct question
   rather than a keyword fragment; the search ranks meaning over exact
   wording. If the topic genuinely isn't covered, check the
   [API reference](/marketing/api) directly.
