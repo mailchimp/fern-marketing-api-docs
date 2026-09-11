@@ -5,7 +5,9 @@ description: Import contacts into an existing audience and export them back out,
 
 ## At a glance
 
-This guide covers the contact operations you'll use in most integrations: adding a contact, updating one without creating a duplicate, importing a batch of them at once, reading them back, and exporting your audience data in bulk. We'll use the [Members endpoint](/marketing/api/lists/create-member) for individual contacts, the [Batch endpoint](/marketing/api-concepts/batch-operations) to scale that up, and [Account exports](/marketing/build/start-developing/account-exports) to pull data back out.
+This guide covers the contact operations you'll use in most integrations: adding a contact, upserting one whether or not it already exists, importing a batch of them at once, and reading them back. We'll use the [Members endpoint](/marketing/api/lists/create-member) to add and update contacts one at a time, and the [Batch endpoint](/marketing/api-concepts/batch-operations) to scale that up.
+
+This guide also covers [Account exports](/marketing/build/start-developing/account-exports), which exports your whole account at once—audiences, campaigns, templates, and reporting data together. It's the right tool for a full account snapshot, not for scaling contact reads on their own; accounts are limited to one export every 24 hours, so batched, paginated GET calls are the better fit when contacts are all you need.
 
 For the contact and audience data model this guide assumes, see [Contacts](/marketing/concepts/audiences/contacts).
 
@@ -56,9 +58,9 @@ run();
 
 `status` is required. `subscribed` opts the contact into email; use `transactional` for a contact you're only tracking, not marketing to. This call fails with a 400 if the email address is already in the audience, since it's a create, not an upsert; upserting is exactly what the next section covers.
 
-## Upsert to avoid duplicates
+## Upsert to avoid duplicate-contact errors
 
-Calling the endpoint above a second time for the same contact returns an error instead of updating them. In practice, you rarely know in advance whether a contact already exists, so upsert—update if present, create if not—is the call to reach for by default. PUT to the same contact's specific URL instead of POSTing to the collection:
+Calling the endpoint above a second time for the same contact doesn't create a second record; it fails outright, since the email address is already taken on that audience. In practice, you rarely know in advance whether a contact already exists, so reach for upsert by default: it updates the contact if they're already there, and creates them if they're not. PUT to the same contact's specific URL instead of POSTing to the collection:
 
 <CodeBlocks>
 ```bash title="cURL"
@@ -101,9 +103,11 @@ run();
 ```
 </CodeBlocks>
 
-This endpoint identifies the contact by `subscriber_hash`: the MD5 hash of their lowercased email address, not the address itself. The same hashing rule applies everywhere the API addresses a contact directly, including [tags](/marketing/build/quickstarts/organize-contacts-with-tags). Compute it client-side; there's no lookup endpoint that takes a plain email address and returns the hash.
+This endpoint identifies the contact by `subscriber_hash`: the MD5 hash of their lowercased email address, not the address itself. The same hashing rule applies everywhere the Members endpoint addresses a contact directly, including [tags](/marketing/build/quickstarts/organize-contacts-with-tags). Compute it client-side; there's no lookup endpoint that takes a plain email address and returns the hash.
 
-The body takes `status_if_new` instead of `status` for a reason: this call might create the contact or update them, and those two cases need different information. `status_if_new` sets the status only when this call is the one creating the contact, so it's the field to set on an import where you don't know who's already in the audience. If you're deliberately updating a contact you know already exists, set `status` instead; on an existing contact `status_if_new` is ignored.
+The newer, beta [Audiences endpoints](/marketing/api-concepts/audiences-endpoints-beta) identify a contact by `contact_id` instead of a hash. This guide uses the stable Members endpoint throughout, so every example below addresses contacts by `subscriber_hash`.
+
+The body takes `status_if_new` in addition to `status` for a reason: this call might create the contact or update them, and Mailchimp only requires `status_if_new` for the case where it's the one creating the contact. That makes it the field to set on an import where you don't know who's already in the audience. If you already know the contact exists and only need to update them, `status` covers that case.
 
 <Note>
 `email_address` is required on every PUT to this endpoint, even though the URL already identifies the contact by hash. The API needs it to backfill the record if the hash doesn't match anyone yet.
@@ -194,13 +198,17 @@ The response includes `total_items` and a `members` array, trimmed here to one e
 }
 ```
 
-`id` here is the same MD5 hash as `subscriber_hash`; it's how the API names the field on a member you've read back, rather than a separate identifier.
+`id` here is the same MD5 hash as `subscriber_hash`; it's how the API names the field on a contact you've read back, rather than a separate identifier.
 
 `count` defaults to 10 and maxes out at 1000; page through a larger audience with `offset`. Filter by `status`, or by `since_last_changed` to pull only what's changed since your last sync.
 
+The Batch endpoint isn't only for writes. If you need to look up a specific set of contacts, such as everyone from the import above, batch a GET operation per `subscriber_hash` the same way as the PUT calls in the previous section, rather than paging through the whole audience to find them.
+
 ## Bulk export
 
-To pull audience data back out in bulk rather than paging through the Members endpoint, use [Account exports](/marketing/build/start-developing/account-exports). Request one with the `audiences` stage:
+[Account exports](/marketing/build/start-developing/account-exports) exports your whole account at once—audiences, campaigns, templates, and reporting data together—not just contacts. It's the right choice for a full account snapshot; for contacts alone at scale, batch paginated GET calls instead, as in the previous section. Accounts are limited to one export every 24 hours, so Account exports isn't a fit for routine contact syncing.
+
+To request just the audience data instead of the whole account, use the `audiences` stage:
 
 ```bash title="cURL"
 dc="YOUR_DC"
