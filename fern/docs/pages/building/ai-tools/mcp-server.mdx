@@ -3,20 +3,6 @@ title: MCP server
 description: Query these docs from an AI agent through the Model Context Protocol.
 ---
 
-## What MCP is
-
-The [Model Context Protocol](https://modelcontextprotocol.io/) is an open
-standard for connecting an AI agent to external tools and data. An MCP server
-exposes a fixed set of callable tools; an MCP-compatible client, such as
-Claude Code, Claude Desktop, or Cursor, discovers those tools and lets an
-agent call them during a conversation. For the protocol details, see the
-[MCP specification](https://modelcontextprotocol.io/specification) or
-[Anthropic's MCP documentation](https://docs.claude.com/en/docs/agents-and-tools/mcp).
-
-This documentation site is itself an MCP server. Connect an agent to it and
-the agent can search these docs directly from your editor or terminal instead
-of you copying passages into the conversation by hand.
-
 <Note>
 **This searches documentation, not your Mailchimp account.** The server
 answers questions using this site's published content, so it works without a
@@ -24,29 +10,27 @@ Mailchimp credential. To let an agent act on your account, call the API
 directly or use [Agent skills](/marketing/build/ai-tools/agent-skills).
 </Note>
 
-## Prerequisites
+[Model Context Protocol](https://modelcontextprotocol.io/) (MCP) is an open
+standard that lets an AI agent discover and call an external server's tools
+during a conversation.
 
-None. This site's documentation is public, so connecting to the server
-requires no API key, OAuth token, or account of any kind.
+This documentation site is itself an MCP server. Connect an agent to it and
+the agent can search these docs directly from your editor or terminal instead
+of you copying passages into the conversation by hand.
 
-## Setup
+Ask it what you'd ask a person:
 
-<Steps>
-<Step title="Get your server URL">
-The server lives at `/_mcp/server` on this site's domain. Request it to
-confirm the server is live and to get ready-to-use connection commands for
-your client:
+> "Search the docs for how Mailchimp scopes OAuth 2 tokens to a single
+> account."
 
-```bash
-curl https://mailchimp.ferndocs.com/_mcp/server
-```
+> "What does the Marketing API docs site say about pagination limits on the
+> Reports endpoints?"
 
-The response echoes back the exact commands below, scoped to whichever
-domain you requested. Use the hostname you're reading this page on. Fern
-docs sites can move between hostnames (preview and production, for example),
-so copy the URL fresh rather than reusing an old one.
-</Step>
-<Step title="Register the server with your client">
+> "Find the docs page on batch operations and summarize the request size
+> limit."
+
+## Connect your agent
+
 **Claude Code**
 
 ```bash
@@ -95,40 +79,6 @@ Add the same server to `.vscode/mcp.json` in your project:
 
 Restart the client after saving. Each one surfaces a connection indicator
 once the server responds.
-</Step>
-</Steps>
-
-## What it does
-
-The server exposes one tool, `searchDocs`, which answers a question against
-this site's published pages and returns a synthesized answer as prose,
-citing the source pages it drew from. Your MCP client discovers the tool's
-exact parameters on connection, so there's nothing to configure by hand.
-
-Ask it what you'd ask a person:
-
-> "Search the docs for how Mailchimp scopes OAuth 2 tokens to a single
-> account."
-
-> "What does the Marketing API docs site say about pagination limits on the
-> Reports endpoints?"
-
-> "Find the docs page on batch operations and summarize the request size
-> limit."
-
-<Note>
-An empty search query produces a normal, non-error result whose text reads
-as a failure (`Search failed: {"error":"Invalid request: no text content in
-messages"}`) rather than as a tool error. If an agent's query might resolve
-to an empty or whitespace-only string, validate that on your side before
-calling.
-</Note>
-
-<Note>
-A question unrelated to Mailchimp's docs isn't an error either. It gets a
-plain-text reply, in the same shape as a normal answer, saying the tool can
-only help with documentation questions.
-</Note>
 
 ## Other ways agents can access these docs
 
@@ -148,24 +98,6 @@ fetch reads a page you've already identified without spending tokens on
 HTML. Agents commonly use both in the same session. See
 [llms.txt](/marketing/build/ai-tools/llms-txt) for the full index format and
 how to scope one to just the section an agent needs.
-
-## Troubleshooting
-
-- **Client shows no connection, or the URL returns a 404.** The site owner
-  can disable this server entirely. If that's happened here, there's no
-  alternative endpoint; the feature is off, not broken.
-- **Client can't reach the server at all.** Confirm you're using the same
-  hostname you're browsing the docs on. A URL copied from an old preview
-  link stops resolving once that environment is retired.
-- **A call fails with `MCP error -32602`.** This is a JSON-RPC invalid-params
-  error, and it comes back as a normal HTTP 200 with `isError: true` on the
-  tool result, not as an HTTP error status. It means malformed input: a
-  missing query, a result-count parameter out of range, or a tool name the
-  server doesn't recognize.
-- **The tool returns nothing relevant.** Rephrase as a direct question
-  rather than a keyword fragment; the search ranks meaning over exact
-  wording. If the topic genuinely isn't covered, check the
-  [API reference](/marketing/api) directly.
 
 ## Related
 
