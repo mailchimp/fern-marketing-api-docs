@@ -3,18 +3,232 @@ title: Import and export contacts
 description: Import contacts into an existing audience and export them back out, including bulk operations.
 ---
 
+## At a glance
+
+This guide covers the contact operations you'll use in most integrations: adding a contact, updating one without creating a duplicate, importing a batch of them at once, reading them back, and exporting your audience data in bulk. We'll use the [Members endpoint](/marketing/api/lists/create-member) for individual contacts, the [Batch endpoint](/marketing/api-concepts/batch-operations) to scale that up, and [Account exports](/marketing/build/start-developing/account-exports) to pull data back out.
+
+For the contact and audience data model this guide assumes, see [Contacts](/marketing/concepts/audiences/contacts).
+
+## What you'll need
+
+- [An audience](https://mailchimp.com/help/create-audience/) in your Mailchimp account.
+- The [audience ID](https://mailchimp.com/help/find-audience-id/) for that audience.
+- [Your API key and server prefix](/marketing/build/get-started/generate-your-api-key).
+
+## Add a single contact
+
+To add one new contact to an audience, POST to the Members endpoint with an email address and a subscription status:
+
+<CodeBlocks>
+```bash title="cURL"
+dc="YOUR_DC"
+apikey="YOUR_API_KEY"
+listid="YOUR_LIST_ID"
+
+curl -s --request POST \
+  --url "https://${dc}.api.mailchimp.com/3.0/lists/${listid}/members" \
+  --user "anystring:${apikey}" \
+  --data '{"email_address": "ada.lovelace@example.com", "status": "subscribed"}'
+```
+
+```javascript title="Node"
+const mailchimp = require("@mailchimp/mailchimp_marketing");
+
+mailchimp.setConfig({
+  apiKey: "YOUR_API_KEY",
+  server: "YOUR_SERVER_PREFIX",
+});
+
+const listId = "YOUR_LIST_ID";
+
+async function run() {
+  const response = await mailchimp.lists.addListMember(listId, {
+    email_address: "ada.lovelace@example.com",
+    status: "subscribed",
+  });
+
+  console.log(`Added contact with id ${response.id}`);
+}
+
+run();
+```
+</CodeBlocks>
+
+`status` is required. `subscribed` opts the contact into email; use `transactional` for a contact you're only tracking, not marketing to. This call fails with a 400 if the email address is already in the audience, since it's a create, not an upsert; upserting is exactly what the next section covers.
+
+## Upsert to avoid duplicates
+
+Calling the endpoint above a second time for the same contact returns an error instead of updating them. In practice, you rarely know in advance whether a contact already exists, so upsert—update if present, create if not—is the call to reach for by default. PUT to the same contact's specific URL instead of POSTing to the collection:
+
+<CodeBlocks>
+```bash title="cURL"
+dc="YOUR_DC"
+apikey="YOUR_API_KEY"
+listid="YOUR_LIST_ID"
+subscriber_email="ada.lovelace@example.com"
+subscriber_hash="$(echo -n "$subscriber_email" | tr '[:upper:]' '[:lower:]' | md5sum | cut -d' ' -f1)"
+# macOS: subscriber_hash="$(echo -n "$subscriber_email" | tr '[:upper:]' '[:lower:]' | md5 -q)"
+
+curl -s --request PUT \
+  --url "https://${dc}.api.mailchimp.com/3.0/lists/${listid}/members/${subscriber_hash}" \
+  --user "anystring:${apikey}" \
+  --data '{"email_address": "'"$subscriber_email"'", "status_if_new": "subscribed"}'
+```
+
+```javascript title="Node"
+const mailchimp = require("@mailchimp/mailchimp_marketing");
+const md5 = require("md5");
+
+mailchimp.setConfig({
+  apiKey: "YOUR_API_KEY",
+  server: "YOUR_SERVER_PREFIX",
+});
+
+const listId = "YOUR_LIST_ID";
+const email = "ada.lovelace@example.com";
+const subscriberHash = md5(email.toLowerCase());
+
+async function run() {
+  const response = await mailchimp.lists.setListMember(listId, subscriberHash, {
+    email_address: email,
+    status_if_new: "subscribed",
+  });
+
+  console.log(`Upserted contact with id ${response.id}`);
+}
+
+run();
+```
+</CodeBlocks>
+
+This endpoint identifies the contact by `subscriber_hash`: the MD5 hash of their lowercased email address, not the address itself. The same hashing rule applies everywhere the API addresses a contact directly, including [tags](/marketing/build/quickstarts/organize-contacts-with-tags). Compute it client-side; there's no lookup endpoint that takes a plain email address and returns the hash.
+
+The body takes `status_if_new` instead of `status` for a reason: this call might create the contact or update them, and those two cases need different information. `status_if_new` sets the status only when this call is the one creating the contact, so it's the field to set on an import where you don't know who's already in the audience. If you're deliberately updating a contact you know already exists, set `status` instead; on an existing contact `status_if_new` is ignored.
+
 <Note>
-**Draft**: This page is a placeholder created during the docs reorganization. Content is not yet written.
+`email_address` is required on every PUT to this endpoint, even though the URL already identifies the contact by hash. The API needs it to backfill the record if the hash doesn't match anyone yet.
 </Note>
 
-## The basics
+## Bulk import at volume
 
-Outline:
+Upserting one contact per request works for a signup form, but not for loading a few thousand rows from a spreadsheet. For that, wrap the same PUT calls in a single request to the [Batch endpoint](/marketing/api-concepts/batch-operations), which processes them in the background while you check on progress:
 
-- Add a single contact: `POST /3.0/lists/{list_id}/members`
-- **Upsert to avoid duplicates**: `PUT /3.0/lists/{list_id}/members/{subscriber_hash}` — the detail integrators most need
-- Bulk import at volume via `POST /3.0/batches`
-- Read contacts back: `GET /3.0/lists/{list_id}/members`
-- Bulk export: `POST /3.0/account-exports`, then `GET /3.0/account-exports/{export_id}`
+```bash title="cURL"
+dc="YOUR_DC"
+apikey="YOUR_API_KEY"
+listid="YOUR_LIST_ID"
 
-Assemble from [Account exports](/marketing/build/start-developing/account-exports) and [Batch operations](/marketing/api-concepts/batch-operations). Replaces the deleted audience-creation guide: integrators build against audiences that already exist.
+emails=("ada.lovelace@example.com" "grace.hopper@example.com")
+
+operations="[]"
+for email in "${emails[@]}"; do
+  hash="$(echo -n "$email" | tr '[:upper:]' '[:lower:]' | md5sum | cut -d' ' -f1)"
+  operation="$(jq -n --arg path "/lists/${listid}/members/${hash}" \
+    --arg id "$email" \
+    --arg body "{\"email_address\": \"${email}\", \"status_if_new\": \"subscribed\"}" \
+    '{method: "PUT", path: $path, operation_id: $id, body: $body}')"
+  operations="$(echo "$operations" | jq --argjson op "$operation" '. + [$op]')"
+done
+
+payload="$(jq -n --argjson ops "$operations" '{operations: $ops}')"
+
+curl -s --request POST \
+  --url "https://${dc}.api.mailchimp.com/3.0/batches" \
+  --user "anystring:${apikey}" \
+  --data "$payload"
+```
+
+Each operation in the array is one upsert, with its own precomputed `subscriber_hash` in the `path` and its own `operation_id` you choose, so you can match results back to your own records once the batch finishes. For how to check a batch's status, retrieve its results, and size a batch correctly, see [Batch operations](/marketing/api-concepts/batch-operations).
+
+## Read contacts back
+
+To retrieve the contacts in an audience, GET the same Members endpoint you posted to:
+
+<CodeBlocks>
+```bash title="cURL"
+dc="YOUR_DC"
+apikey="YOUR_API_KEY"
+listid="YOUR_LIST_ID"
+
+curl -s --request GET \
+  --url "https://${dc}.api.mailchimp.com/3.0/lists/${listid}/members?count=10&status=subscribed" \
+  --user "anystring:${apikey}"
+```
+
+```javascript title="Node"
+const mailchimp = require("@mailchimp/mailchimp_marketing");
+
+mailchimp.setConfig({
+  apiKey: "YOUR_API_KEY",
+  server: "YOUR_SERVER_PREFIX",
+});
+
+const listId = "YOUR_LIST_ID";
+
+async function run() {
+  const response = await mailchimp.lists.getListMembersInfo(listId, {
+    count: 10,
+    status: "subscribed",
+  });
+
+  console.log(`${response.total_items} subscribed contacts in this audience`);
+}
+
+run();
+```
+</CodeBlocks>
+
+The response includes `total_items` and a `members` array, trimmed here to one entry:
+
+```json
+{
+  "members": [
+    {
+      "id": "2b9150605ac374d671a306b5fcee60a0",
+      "email_address": "ada.lovelace@example.com",
+      "status": "subscribed"
+    }
+  ],
+  "total_items": 1,
+  "list_id": "YOUR_LIST_ID"
+}
+```
+
+`id` here is the same MD5 hash as `subscriber_hash`; it's how the API names the field on a member you've read back, rather than a separate identifier.
+
+`count` defaults to 10 and maxes out at 1000; page through a larger audience with `offset`. Filter by `status`, or by `since_last_changed` to pull only what's changed since your last sync.
+
+## Bulk export
+
+To pull audience data back out in bulk rather than paging through the Members endpoint, use [Account exports](/marketing/build/start-developing/account-exports). Request one with the `audiences` stage:
+
+```bash title="cURL"
+dc="YOUR_DC"
+apikey="YOUR_API_KEY"
+
+curl -s --request POST \
+  --url "https://${dc}.api.mailchimp.com/3.0/account-exports" \
+  --user "anystring:${apikey}" \
+  --data '{"include_stages": ["audiences"]}'
+```
+
+The response returns an `export_id` immediately, but the export itself builds in the background. Poll for it with the `export_id`:
+
+```bash title="cURL"
+dc="YOUR_DC"
+apikey="YOUR_API_KEY"
+exportid="YOUR_EXPORT_ID"
+
+curl -s --request GET \
+  --url "https://${dc}.api.mailchimp.com/3.0/account-exports/${exportid}" \
+  --user "anystring:${apikey}"
+```
+
+Check the response for a `download_url`; it's absent until the export finishes. Once it's there, it's a signed URL good for 90 days, and no further authentication is needed to fetch it, so guard it like you would your API key. For the full list of export stages, time-limiting an export, and the rate limits on how often you can request one, see [Account exports](/marketing/build/start-developing/account-exports).
+
+## More resources
+
+- [Organize contacts with tags](/marketing/build/quickstarts/organize-contacts-with-tags)
+- [Members API Reference](/marketing/api/lists/list-members)
+- [Batch API Reference](/marketing/api/batches/create)
+- [Account Exports API Reference](/marketing/api/account-exports/create)
