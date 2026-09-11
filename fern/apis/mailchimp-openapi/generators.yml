@@ -13,6 +13,12 @@ api:
         # Group every operation by its tag so the API reference nav organizes
         # endpoints into resource sections (not one flat expanded list).
         - group-names.yml
+
+whitelabel:
+  github:
+    username: mc-keith
+    email: keith@mailchimp.com
+    token: ${{ secrets.WHITELABEL_TOKEN }}
 # Mailchimp Marketing API SDKs — one group per language.
 # Each group publishes to its own fern-demo/mailchimp-<lang>-sdk repo as a
 # reviewable PR (mode: pull-request). Auth (basic/oauth2), servers (us1..us22
