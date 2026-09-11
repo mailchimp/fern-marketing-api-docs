@@ -1,14 +1,107 @@
 ---
 title: MCP server
-description: Connect an AI agent to the Mailchimp Marketing API through the Model Context Protocol.
+description: Query these docs from an AI agent through the Model Context Protocol.
 ---
 
 <Note>
-**Draft**: This page is a placeholder created during the docs reorganization. Content is not yet written.
+**This searches documentation, not your Mailchimp account.** The server
+answers questions using this site's published content, so it works without a
+Mailchimp credential. To let an agent act on your account, call the API
+directly or use [Agent skills](/marketing/build/ai-tools/agent-skills).
 </Note>
 
-## The basics
+[Model Context Protocol](https://modelcontextprotocol.io/) (MCP) is an open
+standard that lets an AI agent discover and call an external server's tools
+during a conversation.
 
-Outline: what MCP is, what the Mailchimp MCP server exposes, prerequisites, setup, managing access, troubleshooting, example prompts.
+This documentation site is itself an MCP server. Connect an agent to it and
+the agent can search these docs directly from your editor or terminal instead
+of you copying passages into the conversation by hand.
 
-Write from scratch — the Transactional MCP page is a separate product, not a template.
+Ask it what you'd ask a person:
+
+> "Search the docs for how Mailchimp scopes OAuth 2 tokens to a single
+> account."
+
+> "What does the Marketing API docs site say about pagination limits on the
+> Reports endpoints?"
+
+> "Find the docs page on batch operations and summarize the request size
+> limit."
+
+## Connect your agent
+
+**Claude Code**
+
+```bash
+claude mcp add --transport http fern_mcp_mailchimp-docs \
+  https://mailchimp.ferndocs.com/_mcp/server
+```
+
+**Cursor**
+
+Add the URL to your MCP server configuration:
+
+```
+https://mailchimp.ferndocs.com/_mcp/server
+```
+
+**Claude Desktop**
+
+Open Claude menu → Settings → Developer → Edit Config, then add the server
+under `mcpServers` in `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "mailchimp-docs": {
+      "type": "http",
+      "url": "https://mailchimp.ferndocs.com/_mcp/server"
+    }
+  }
+}
+```
+
+**VS Code**
+
+Add the same server to `.vscode/mcp.json` in your project:
+
+```json
+{
+  "servers": {
+    "mailchimp-docs": {
+      "type": "http",
+      "url": "https://mailchimp.ferndocs.com/_mcp/server"
+    }
+  }
+}
+```
+
+Restart the client after saving. Each one surfaces a connection indicator
+once the server responds.
+
+## Other ways agents can access these docs
+
+An agent can also read this site directly. Every page has a Markdown
+version at its own URL with `.md` appended, and an `llms.txt` index lists
+those pages at every level of the docs, down to individual sections. This
+works the same way on authenticated documentation sites and public ones like
+this one.
+
+```bash
+curl https://preview.developer.mailchimp.com/marketing/build/ai-tools/mcp-server.md
+```
+
+Searching and fetching solve different problems: the docs-search tool finds
+the right page when an agent doesn't know where to look, and a direct `.md`
+fetch reads a page you've already identified without spending tokens on
+HTML. Agents commonly use both in the same session. See
+[llms.txt](/marketing/build/ai-tools/llms-txt) for the full index format and
+how to scope one to just the section an agent needs.
+
+## Related
+
+- [Agent skills](/marketing/build/ai-tools/agent-skills) package workflows
+  that call the Marketing API itself.
+- [Authentication](/marketing/api-concepts/authentication) covers the API
+  key and OAuth 2 credentials for calling the Marketing API directly.
