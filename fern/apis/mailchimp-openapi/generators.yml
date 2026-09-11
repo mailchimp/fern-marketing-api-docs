@@ -23,6 +23,8 @@ groups:
     generators:
       - name: fern-cli-generator
         version: 0.39.4
+        config:
+          binaryName: mcapi
         github:
           repository: mailchimp/mailchimp-marketing-cli
           mode: pull-request
