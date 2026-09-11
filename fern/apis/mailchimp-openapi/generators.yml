@@ -13,19 +13,19 @@ api:
         # Group every operation by its tag so the API reference nav organizes
         # endpoints into resource sections (not one flat expanded list).
         - group-names.yml
-
-whitelabel:
-  github:
-    username: "mc-keith"
-    email: "keith@mailchimp.com"
-    token: ${{ secrets.WHITELABEL_TOKEN }}
-
 # Mailchimp Marketing API SDKs — one group per language.
 # Each group publishes to its own fern-demo/mailchimp-<lang>-sdk repo as a
 # reviewable PR (mode: pull-request). Auth (basic/oauth2), servers (us1..us22
 # datacenter variable), and pagination are configured in overrides.yml.
 # smart-casing keeps acronyms/initialisms/numbers idiomatic across all SDKs.
 groups:
+  cli:
+    generators:
+      - name: fern-cli-generator
+        version: 0.39.4
+        github:
+          repository: mailchimp/mailchimp-marketing-cli
+          mode: pull-request
   typescript-sdk:
     generators:
       - name: fernapi/fern-typescript-sdk
