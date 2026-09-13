@@ -14,7 +14,7 @@ No humor. Not dry humor, not a light touch, none. This is the one place where Ma
 
 > ### 401 Unauthorized
 >
-> Uh oh! It looks like something went wrong with your authentication. This usually means that the API key you're using isn't quite right. Don't worry though — this is one of the most common errors and it's usually a quick fix! Double-check that you've copied your key correctly and that you're using the right server prefix. Still stuck? Reach out to our support team and we'll be happy to help.
+> Uh oh! It looks like something went wrong with your authentication. This usually means that the API key you're using isn't quite right. Don't worry though — this is one of the most common errors and it's usually a quick fix! Double-check that you've copied your key correctly. Still stuck? Reach out to our support team and we'll be happy to help.
 
 ### After
 
@@ -23,7 +23,7 @@ No humor. Not dry humor, not a light touch, none. This is the one place where Ma
 > Your API key is missing, malformed, revoked, or belongs to a disabled account.
 >
 > 1. Confirm the key is passed as the password in HTTP Basic auth, with any non-empty string as the username.
-> 2. Confirm the server prefix in the URL matches the key's account. A key from `us19` will not authenticate against `us6`.
+> 2. Confirm you copied the whole key, with no extra whitespace.
 > 3. Check whether the key was revoked in your account's API Keys page.
 >
 > If all three check out, contact support with the full request, the error code, and the response body.
@@ -33,8 +33,7 @@ No humor. Not dry humor, not a light touch, none. This is the one place where Ma
 - Cut "Uh oh!", "Don't worry though," and "Still stuck?" This is the exact register to avoid. A reader debugging a 401 does not want reassurance; they want the cause list.
 - Removed "usually means," "isn't quite right," and "usually a quick fix." Hedging in an error page is actively harmful—the reader can't tell whether they're in the common case or not.
 - Fixed the spaced em dash. The one in the heading is closed up and separates the code from its short name.
-- Replaced "double-check that you've copied your key correctly" with the three things that actually cause a 401, in the order they're worth checking. **The mismatched server prefix is the highest-value item and the original didn't mention it at all.**
-- The concrete `us19`/`us6` example replaces abstract advice with something the reader can pattern-match against their own URL in two seconds.
+- Replaced "double-check that you've copied your key correctly" with the things that actually cause a 401, in the order they're worth checking.
 - The support instruction names what to include, so the first support reply isn't a request for more information.
 
 ---

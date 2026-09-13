@@ -1,6 +1,6 @@
 ---
 title: API structure
-description: How the Marketing API is organized—REST conventions, root URL, and data centers.
+description: How the Marketing API is organized—REST conventions and the root URL.
 ---
 
 The Marketing API generally follows REST conventions, with some deviations.
@@ -12,13 +12,7 @@ The Marketing API generally follows REST conventions, with some deviations.
 
 We use the [OpenAPI Specification](https://swagger.io/specification/v2/) (formerly known as Swagger) to describe each endpoint. [The API self-description](https://api.mailchimp.com/schema/3.0/Swagger.json?expand) also contains type information to help you error-check your requests.
 
-The root url for the API is `https://<dc>.api.mailchimp.com/3.0/`. The `<dc>` part of the URL corresponds to the data center for your account. For example, if the data center for your account is `us6`, all API endpoints for your account are available relative to `https://us6.api.mailchimp.com/3.0/`.
-
-There are a few ways to find your data center. It’s the first part of the URL you see in the[ API keys section](https://us1.admin.mailchimp.com/account/api/) of your account; if the URL is `https://us6.mailchimp.com/account/api/`, then the data center subdomain is `us6`. It’s also appended to your API key in the form key-dc; if your API key is `0123456789abcdef0123456789abcde-us6`, then the data center subdomain is `us6`. And finally, if you’re connecting via OAuth 2, you can find the data center associated with the token via the OAuth Metadata endpoint; for more information, see [OAuth 2](/marketing/api-concepts/authentication/oauth-2#the-server-prefix).
-
-<Note>
-**Note**: You will see the `<dc>` placeholder or an actual data center subdomain in examples throughout this documentation. Either way, make sure to replace it in your code with the data center subdomain for your account, or your request may generate an error.
-</Note>
+The root url for the API is `https://api.mailchimp.com/3.0/`. All API endpoints for your account are available relative to this URL.
 
 For more details on how to query Marketing API endpoints, see [Methods and Parameters](/marketing/api-concepts/methods-and-parameters). For troubleshooting API calls, see the [Errors](/marketing/api-concepts/errors) docs.
 

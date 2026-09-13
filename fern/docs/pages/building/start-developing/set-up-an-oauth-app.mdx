@@ -11,7 +11,7 @@ it has the steps it does, see
 ## What you'll need
 
 - A Mailchimp account
-- [An API key and your server prefix](/marketing/build/get-started/generate-your-api-key),
+- [An API key](/marketing/build/get-started/generate-your-api-key),
   if you want to test against your own account first
 - A **redirect URI** for your application, the URL Mailchimp sends users back
   to after they authorize your application. It must be reachable by the user's
@@ -109,48 +109,30 @@ app.get("/oauth/mailchimp/callback", async (req, res) => {
   const { access_token } = await tokenResponse.json();
   console.log(access_token);
 
-  // Now we're using the access token to get information about the user.
-  // Specifically, we want to get the user's server prefix, which we'll use to
-  // make calls to the API on their behalf.  This prefix will change from user
-  // to user.
-  const metadataResponse = await fetch(
-    "https://login.mailchimp.com/oauth2/metadata",
-    {
-      headers: {
-        Authorization: `OAuth ${access_token}`
-      }
-    }
-  );
-
-  const { dc } = await metadataResponse.json();
-  console.log(dc);
-
-  // Below, we're using the access token and server prefix to make an
-  // authenticated request on behalf of the user who just granted OAuth access.
-  // You wouldn't keep this in your production code, but it's here to
-  // demonstrate how the call is made.
+  // Below, we're using the access token to make an authenticated request on
+  // behalf of the user who just granted OAuth access. You wouldn't keep this
+  // in your production code, but it's here to demonstrate how the call is
+  // made.
 
   mailchimp.setConfig({
-    accessToken: access_token,
-    server: dc
+    accessToken: access_token
   });
 
   const response = await mailchimp.ping.get();
   console.log(response);
 
   res.send(`
-    <p>This user's access token is ${access_token} and their server prefix is ${dc}.</p>
+    <p>This user's access token is ${access_token}.</p>
 
     <p>When pinging the Mailchimp Marketing API's ping endpoint, the server responded:<p>
 
     <code>${response}</code>
   `);
 
-  // In reality, you'd want to store the access token and server prefix
-  // somewhere in your application.
+  // In reality, you'd want to store the access token somewhere in your
+  // application.
   // fakeDB.getCurrentUser();
   // fakeDB.storeMailchimpCredsForUser(user, {
-  //   dc,
   //   access_token
   // });
 });
@@ -205,41 +187,26 @@ if (isset($_GET['code'])) {
   $result = file_get_contents($url, false, $context);
   $decoded = json_decode($result);
   $access_token = $decoded->access_token;
-  // Now we're using the access token to get information about the user.
-  // Specifically, we want to get the user's server prefix, which we'll use to
-  // make calls to the API on their behalf.  This prefix will change from user
-  // to user.
-  $url = 'https://login.mailchimp.com/oauth2/metadata';
-  $context = stream_context_create([
-    'http' => [
-      'header' => "Authorization: OAuth $access_token",
-    ],
-  ]);
-  $result = file_get_contents($url, false, $context);
-  $decoded = json_decode($result);
-  $dc = $decoded->dc;
-  // Below, we're using the access token and server prefix to make an
-  // authenticated request on behalf of the user who just granted OAuth access.
-  // You wouldn't keep this in your production code, but it's here to
-  // demonstrate how the call is made.
+  // Below, we're using the access token to make an authenticated request on
+  // behalf of the user who just granted OAuth access. You wouldn't keep this
+  // in your production code, but it's here to demonstrate how the call is
+  // made.
   $mailchimp = new MailchimpMarketing\ApiClient();
   $mailchimp->setConfig([
     'accessToken' => $access_token,
-    'server' => $dc,
   ]);
   try {
     $response = $mailchimp->ping->get();
-    echo "<p>This user\'s access token is $access_token and their server prefix is $dc.</p>";
+    echo "<p>This user\'s access token is $access_token.</p>";
     echo "<p>When pinging the Mailchimp Marketing API\'s ping endpoint, the server responded:<p>";
     echo "<code>" . json_encode($response) . "</code>";
   } catch (exception $e) {
     var_dump($e);
   }
-  // In reality, you'd want to store the access token and server prefix
-  // somewhere in your application.
+  // In reality, you'd want to store the access token somewhere in your
+  // application.
   // fakeDB.getCurrentUser();
   // fakeDB.storeMailchimpCredsForUser(user, {
-  //   dc,
   //   access_token
   // });
 }
@@ -284,33 +251,22 @@ get '/oauth/mailchimp/callback' do
   response = JSON.parse(Net::HTTP.post(uri, body).body)
   access_token = response['access_token']
 
-  metadata_uri = URI("https://login.mailchimp.com/oauth2/metadata")
-  metadata_response = JSON.parse(
-    Net::HTTP.post(
-      metadata_uri,
-      nil,
-      {'Authorization' => "OAuth #{access_token}"}
-    ).body
-  )
-  dc = metadata_response['dc']
-
   mailchimp.set_config({
-    :access_token => access_token,
-    :server => dc
+    :access_token => access_token
   })
 
   mailchimp_res = mailchimp.ping.get
 
   """
-    <p>This user's access token is #{access_token} and their server prefix is #{dc}.</p>
+    <p>This user's access token is #{access_token}.</p>
 
     <p>When pinging the Mailchimp Marketing API's ping endpoint, the server responded:<p>
 
     <code>#{mailchimp_res}</code>
   """
 
-  # In reality, you'd want to store the access token and server prefix
-  # somewhere in your application.
+  # In reality, you'd want to store the access token somewhere in your
+  # application.
   # user = fake_db.get_current_user
   # fake_db.store_mailchimp_creds_for_user(user, { access_token: access_token });
 end
@@ -374,41 +330,27 @@ def authCallback():
     app.logger.info('response: %s' % tokenResponse.json())
     access_token = itemgetter('access_token')(tokenResponse.json())
 
-    # Now we're using the access token to get information about the user.
-    # Specifically, we want to get the user's server prefix, which we'll use to
-    # make calls to the API on their behalf.  This prefix will change from user
-    # to user.
-
-    metadataResponse = requests.get(
-        'https://login.mailchimp.com/oauth2/metadata',
-        headers={'Authorization': "OAuth {}".format(access_token)})
-
-    dc = itemgetter('dc')(metadataResponse.json())
-    app.logger.info('dc: %s' % dc)
-
-    # Below, we're using the access token and server prefix to make an
-    # authenticated request on behalf of the user who just granted OAuth access.
-    # You wouldn't keep this in your production code, but it's here to
-    # demonstrate how the call is made.
+    # Below, we're using the access token to make an authenticated request on
+    # behalf of the user who just granted OAuth access. You wouldn't keep this
+    # in your production code, but it's here to demonstrate how the call is
+    # made.
 
     mailchimp = MailchimpMarketing.Client()
     mailchimp.set_config({
-      "access_token": access_token,
-      "server": dc
+      "access_token": access_token
     })
 
     response = mailchimp.ping.get()
     app.logger.info('Ping response: %s' % json.dumps(response))
 
-    return """<p>This user's access token is {} and their server prefix is {}.</p>
+    return """<p>This user's access token is {}.</p>
           <p>When pinging the Mailchimp Marketing API's ping endpoint, the server responded:<p>
            <code>{}</code>
-          """.format(access_token, dc, code)
-    # In reality, you'd want to store the access token and server prefix
-    # somewhere in your application.
+          """.format(access_token, code)
+    # In reality, you'd want to store the access token somewhere in your
+    # application.
     # fakeDB.getCurrentUser()
     # fakeDB.storeMailchimpCredsForUser(user, {
-    #      "dc":dc,
     #      access_token
     # })
 
@@ -420,13 +362,12 @@ if __name__ == '__main__':
 The code above completes the flow and produces an access token, then uses it to
 call the [Ping endpoint](/marketing/api/ping/list), a trivial request that confirms the
 token works. It doesn't persist anything; in a real application you'd store the
-access token and server prefix against your own user record.
+access token against your own user record.
 
-The three URLs involved, if you're implementing this without the sample:
+The two URLs involved, if you're implementing this without the sample:
 
 - Redirect the user to `https://login.mailchimp.com/oauth2/authorize?response_type=code&client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI`
 - Exchange the returned `code` with a POST to `https://login.mailchimp.com/oauth2/token`
-- Get the server prefix with a GET to `https://login.mailchimp.com/oauth2/metadata`, with the header `Authorization: OAuth USERS_OAUTH_TOKEN`
 
 ## Rotate a client secret
 

@@ -59,7 +59,7 @@ user_lname="Grady"
 user_birthday="01/22"
 
 curl -sS --request POST \
-  --url "https://$API_SERVER.api.mailchimp.com/3.0/lists/$list_id/members?skip_merge_validation=false" \
+  --url "https://api.mailchimp.com/3.0/lists/$list_id/members?skip_merge_validation=false" \
   --user "key:$API_KEY" \
   --header 'content-type: application/json' \
   --data @- \
@@ -117,8 +117,7 @@ require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
 $mailchimp = new \MailchimpMarketing\ApiClient();
 
 $mailchimp->set_config([
-    'apiKey' => 'YOUR_API_KEY',
-    'server' => 'YOUR_SERVER_PREFIX'
+    'apiKey' => 'YOUR_API_KEY'
 ]);
 
 $list_id = "YOUR_LIST_ID";
@@ -151,8 +150,7 @@ require "MailchimpMarketing"
 
 mailchimp = MailchimpMarketing::Client.new
 mailchimp.set_config({
-  :api_key => ENV["API_KEY"],
-  :server => ENV["API_SERVER"]
+  :api_key => ENV["API_KEY"]
 })
 list_id = ENV["LIST_ID"]
 
@@ -184,8 +182,7 @@ from mailchimp_marketing.api_client import ApiClientError
 
 mailchimp = MailchimpMarketing.Client()
 mailchimp.set_config({
-  "api_key": "YOUR_API_KEY",
-  "server": "YOUR_SERVER_PREFIX"
+  "api_key": "YOUR_API_KEY"
 })
 
 list_id = "YOUR_LIST_ID"
