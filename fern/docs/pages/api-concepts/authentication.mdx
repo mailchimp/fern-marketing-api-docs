@@ -42,7 +42,7 @@ the username:
 
 ```bash
 curl --request GET \
-  --url 'https://<dc>.api.mailchimp.com/3.0/' \
+  --url 'https://api.mailchimp.com/3.0/' \
   --user 'anystring:TOKEN'
 ```
 
@@ -50,12 +50,9 @@ Bearer Authentication passes it in the `Authorization` header:
 
 ```bash
 curl --request GET \
-  --url 'https://<dc>.api.mailchimp.com/3.0/' \
+  --url 'https://api.mailchimp.com/3.0/' \
   --header 'Authorization: Bearer TOKEN'
 ```
-
-The `<dc>` in the host is your data center prefix. See
-[API structure](/marketing/api-concepts/api-structure) for how to find it.
 
 ## User access and revocation
 

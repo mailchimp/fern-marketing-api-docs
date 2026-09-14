@@ -21,8 +21,8 @@ whitelabel:
     token: ${{ secrets.WHITELABEL_TOKEN }}
 # Mailchimp Marketing API SDKs — one group per language.
 # Each group publishes to its own fern-demo/mailchimp-<lang>-sdk repo as a
-# reviewable PR (mode: pull-request). Auth (basic/oauth2), servers (us1..us22
-# datacenter variable), and pagination are configured in overrides.yml.
+# reviewable PR (mode: pull-request). Auth (basic/oauth2), servers, and
+# pagination are configured in overrides.yml.
 # smart-casing keeps acronyms/initialisms/numbers idiomatic across all SDKs.
 groups:
   cli:

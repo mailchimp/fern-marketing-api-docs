@@ -21,7 +21,7 @@ In this guide, we’re going to create a new “Influencer” tag to track and t
 
 - [An audience](https://mailchimp.com/help/create-audience/) in your Mailchimp account
 - The [Audience/List ID](https://mailchimp.com/help/find-audience-id/) for that audience
-- [Your API key and server prefix](/marketing/build/get-started/generate-your-api-key)
+- Your [API key](/marketing/build/get-started/generate-your-api-key)
 
 ## Label a contact with a tag
 
@@ -31,7 +31,6 @@ To add the Influencer tag, make this request using your List ID and [the MD5 has
 
 <CodeBlocks>
 ```bash title="cURL"
-dc="YOUR_DC"
 apikey="YOUR_API_KEY"
 listid="YOUR_LIST_ID"
 subscriber_email="urist.mcvankab@example.com"
@@ -40,7 +39,7 @@ subscriber_hash="$(echo -n "$subscriber_email" | md5sum | cut -d’ ‘ -f1)"
 # subscriber_hash="$(md5 -s "$subscriber_email" | cut -d' ' -f4)"
 
 curl -s --request POST \
---url "https://${dc}.api.mailchimp.com/3.0/lists/${listid}/members/${subscriber_hash}/tags" \
+--url "https://api.mailchimp.com/3.0/lists/${listid}/members/${subscriber_hash}/tags" \
 --user "foo:${apikey}" --include \
 --data '{"tags": [{"name": "Influencer", "status": "active"}]}'
 ```
@@ -51,7 +50,6 @@ const md5 = require("md5");
 
 mailchimp.setConfig({
   apiKey: "YOUR_API_KEY",
-  server: "YOUR_SERVER_PREFIX",
 });
 
 const email = "urist.mcvankab@example.com";
@@ -90,8 +88,7 @@ require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
 $mailchimp = new MailchimpMarketing\ApiClient();
 
 $mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY',
-    'server' => 'YOUR_SERVER_PREFIX'
+    'apiKey' => 'YOUR_API_KEY'
 ]);
 
 $email = "urist.mcvankab@example.com";
@@ -120,8 +117,7 @@ require "digest"
 
 mailchimp = MailchimpMarketing::Client.new
 mailchimp.set_config({
-  :api_key => ENV["API_KEY"],
-  :server => ENV["API_SERVER"]
+  :api_key => ENV["API_KEY"]
 })
 list_id = ENV["LIST_ID"]
 
@@ -151,8 +147,7 @@ SUBSCRIBER_HASH = hashlib.md5(EMAIL.encode('utf-8')).hexdigest()
 
 client = MailchimpMarketing.Client()
 mailchimp.set_config({
-  "api_key": "YOUR_API_KEY",
-  "server": "YOUR_SERVER_PREFIX"
+  "api_key": "YOUR_API_KEY"
 })
 try:
     response = client.lists.update_list_member_tags(LIST_ID, SUBSCRIBER_HASH, {
@@ -177,7 +172,6 @@ Now we want to check out all of Urist’s tags. Again, using [the MD5 hash](/mar
 
 <CodeBlocks>
 ```bash title="cURL"
-dc=”YOUR_DC”
 apikey=”YOUR_API_KEY”
 listid=”YOUR_LIST_ID”
 subscriber_email=”urist.mcvankab@example.com”
@@ -186,7 +180,7 @@ subscriber_hash=”$(echo -n “$subscriber_email” | md5sum | cut -d’ ‘ -f
 # subscriber_hash="$(md5 -s "$subscriber_email" | cut -d' ' -f4)"
 
 curl -s --request GET \
---url "https://${dc}.api.mailchimp.com/3.0/lists/${listid}/members/${subscriber_hash}/tags" \
+--url "https://api.mailchimp.com/3.0/lists/${listid}/members/${subscriber_hash}/tags" \
 --user "foo:${apikey}" | jq -r .
 ```
 
@@ -210,8 +204,7 @@ require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
 $mailchimp = new MailchimpMarketing\ApiClient();
 
 $mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY',
-    'server' => 'YOUR_SERVER_PREFIX'
+    'apiKey' => 'YOUR_API_KEY'
 ]);
 
 $email = "urist.mcvankab@example.com";
@@ -232,8 +225,7 @@ require "digest"
 
 mailchimp = MailchimpMarketing::Client.new
 mailchimp.set_config({
-  :api_key => ENV["API_KEY"],
-  :server => ENV["API_SERVER"]
+  :api_key => ENV["API_KEY"]
 })
 list_id = ENV["LIST_ID"]
 
@@ -256,8 +248,7 @@ SUBSCRIBER_HASH = hashlib.md5(EMAIL.encode('utf-8')).hexdigest()
 
 client = MailchimpMarketing.Client()
 mailchimp.set_config({
-  "api_key": "YOUR_API_KEY",
-  "server": "YOUR_SERVER_PREFIX"
+  "api_key": "YOUR_API_KEY"
 })
 try:
     response = client.lists.get_list_member_tags(LIST_ID, SUBSCRIBER_HASH)
@@ -295,7 +286,6 @@ Time passes; influence fades. We’ve decided to remove Urist’s Influencer tag
 
 <CodeBlocks>
 ```bash title="cURL"
-dc=”YOUR_DC”
 apikey=”YOUR_API_KEY”
 listid=”YOUR_LIST_ID”
 subscriber_email=”urist.mcvankab@example.com”
@@ -304,7 +294,7 @@ subscriber_hash=”$(echo -n “$subscriber_email” | md5sum | cut -d’ ‘ -f
 # subscriber_hash="$(md5 -s "$subscriber_email" | cut -d' ' -f4)"
 
 curl -s --request POST \
---url "https://${dc}.api.mailchimp.com/3.0/lists/${listid}/members/${subscriber_hash}/tags" \
+--url "https://api.mailchimp.com/3.0/lists/${listid}/members/${subscriber_hash}/tags" \
 --user "foo:${apikey}" --include \
 --data '{"tags": [{"name": "Influencer", "status": "inactive"}]}'
 ```
@@ -344,8 +334,7 @@ require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
 $mailchimp = new MailchimpMarketing\ApiClient();
 
 $mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY',
-    'server' => 'YOUR_SERVER_PREFIX'
+    'apiKey' => 'YOUR_API_KEY'
 ]);
 
 $email = "urist.mcvankab@example.com";
@@ -371,8 +360,7 @@ require "digest"
 
 mailchimp = MailchimpMarketing::Client.new
 mailchimp.set_config({
-  :api_key => ENV["API_KEY"],
-  :server => ENV["API_SERVER"]
+  :api_key => ENV["API_KEY"]
 })
 list_id = ENV["LIST_ID"]
 
@@ -402,8 +390,7 @@ SUBSCRIBER_HASH = hashlib.md5(EMAIL.encode('utf-8')).hexdigest()
 
 client = MailchimpMarketing.Client()
 mailchimp.set_config({
-  "api_key": "YOUR_API_KEY",
-  "server": "YOUR_SERVER_PREFIX"
+  "api_key": "YOUR_API_KEY"
 })
 try:
     response = client.lists.update_list_member_tags(LIST_ID, SUBSCRIBER_HASH, {
@@ -430,7 +417,6 @@ We can bulk tag contacts in two ways. First, if you’re using a tag that alread
 
 <CodeBlocks>
 ```bash title="cURL"
-dc=”YOUR_DC”
 apikey=”YOUR_API_KEY”
 listid=”YOUR_LIST_ID”
 tagid=”YOUR_TAG_ID”
@@ -447,7 +433,7 @@ EOT
 }
 
 count=”$(curl -s --request POST \
---url "https://${dc}.api.mailchimp.com/3.0/lists/${listid}/segments/${tagid}" \
+--url "https://api.mailchimp.com/3.0/lists/${listid}/segments/${tagid}" \
 --user "foo:${apikey}" --include \
 --data “$(body)” | jq -r ‘.total_added’)”
 
@@ -480,8 +466,7 @@ require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
 $mailchimp = new MailchimpMarketing\ApiClient();
 
 $mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY',
-    'server' => 'YOUR_SERVER_PREFIX'
+    'apiKey' => 'YOUR_API_KEY'
 ]);
 
 $list_id = "YOUR_LIST_ID";
@@ -500,8 +485,7 @@ require "MailchimpMarketing"
 
 mailchimp = MailchimpMarketing::Client.new
 mailchimp.set_config({
-  :api_key => ENV["API_KEY"],
-  :server => ENV["API_SERVER"]
+  :api_key => ENV["API_KEY"]
 })
 list_id = ENV["LIST_ID"]
 tag_id = ENV["TAG_ID"]
@@ -524,8 +508,7 @@ TAG_ID = "YOUR_TAG_ID"
 
 client = MailchimpMarketing.Client()
 mailchimp.set_config({
-  "api_key": "YOUR_API_KEY",
-  "server": "YOUR_SERVER_PREFIX"
+  "api_key": "YOUR_API_KEY"
 })
 try:
     response = client.lists.batch_segment_members({
@@ -544,7 +527,6 @@ The payload requires an array of members you want to _add_ to your tag. To untag
 
 <CodeBlocks>
 ```bash title="cURL"
-dc=”YOUR_DC”
 apikey=”YOUR_API_KEY”
 listid=”YOUR_LIST_ID”
 tagid=”YOUR_TAG_ID”
@@ -561,7 +543,7 @@ EOT
 }
 
 count=”$(curl -s --request POST \
---url "https://${dc}.api.mailchimp.com/3.0/lists/${listid}/segments/${tagid}" \
+--url "https://api.mailchimp.com/3.0/lists/${listid}/segments/${tagid}" \
 --user "foo:${apikey}" --include \
 --data “$(body)” | jq -r ‘.total_removed’)”
 
@@ -594,8 +576,7 @@ require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
 $mailchimp = new MailchimpMarketing\ApiClient();
 
 $mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY',
-    'server' => 'YOUR_SERVER_PREFIX'
+    'apiKey' => 'YOUR_API_KEY'
 ]);
 
 $list_id = "YOUR_LIST_ID";
@@ -616,7 +597,7 @@ try {
 require "MailchimpMarketing"
 
 mailchimp = MailchimpMarketing::Client.new
-mailchimp.set_config ENV["API_KEY"], ENV["API_SERVER"]
+mailchimp.set_config ENV["API_KEY"]
 list_id = ENV["LIST_ID"]
 tag_id = ENV["TAG_ID"]
 
@@ -634,13 +615,12 @@ import mailchimp_marketing as MailchimpMarketing
 from mailchimp_marketing.api_client import ApiClientError
 
 API_KEY = "YOUR_API_KEY"
-SERVER_PREFIX = "YOUR_SERVER_PREFIX"
 
 LIST_ID = "YOUR_LIST_ID"
 TAG_ID = "YOUR_TAG_ID"
 
 client = MailchimpMarketing.Client()
-client.setConfig(API_KEY, SERVER_PREFIX)
+client.setConfig(API_KEY)
 try:
     response = client.lists.batch_segment_members({
         "members_to_remove": [
@@ -658,7 +638,6 @@ If, instead, we wanted to bulk add users to a completely new tag—say, “MegaI
 
 <CodeBlocks>
 ```bash title="cURL"
-dc=”YOUR_DC”
 apikey=”YOUR_API_KEY”
 listid=”YOUR_LIST_ID”
 
@@ -675,7 +654,7 @@ EOT
 }
 
 tagid=”$(curl -s --request POST \
---url "https://${dc}.api.mailchimp.com/3.0/lists/${listid}/segments/" \
+--url "https://api.mailchimp.com/3.0/lists/${listid}/segments/" \
 --user "foo:${apikey}" --include \
 --data “$(body)” | jq -r ‘.id’)”
 
@@ -704,8 +683,7 @@ require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
 $mailchimp = new MailchimpMarketing\ApiClient();
 
 $mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY',
-    'server' => 'YOUR_SERVER_PREFIX'
+    'apiKey' => 'YOUR_API_KEY'
 ]);
 
 $list_id = "YOUR_LIST_ID";
@@ -726,7 +704,7 @@ try {
 require "MailchimpMarketing"
 
 mailchimp = MailchimpMarketing::Client.new
-mailchimp.set_config ENV["API_KEY"], ENV["API_SERVER"]
+mailchimp.set_config ENV["API_KEY"]
 list_id = ENV["LIST_ID"]
 
 tag = {
@@ -744,12 +722,11 @@ import mailchimp_marketing as MailchimpMarketing
 from mailchimp_marketing.api_client import ApiClientError
 
 API_KEY = "YOUR_API_KEY"
-SERVER_PREFIX = "YOUR_SERVER_PREFIX"
 
 LIST_ID = "YOUR_LIST_ID"
 
 client = MailchimpMarketing.Client()
-client.setConfig(API_KEY, SERVER_PREFIX)
+client.setConfig(API_KEY)
 try:
     response = client.lists.create_segment(LIST_ID, {
         "name": "MegaInfluencer",

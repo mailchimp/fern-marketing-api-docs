@@ -36,19 +36,16 @@ pip install mailchimp-marketing
 
 ## Make your first API call
 
-To test that you have everything set up correctly, we’ll make a simple request to the Ping endpoint. Hitting this endpoint acts as a health check on the Mailchimp API service; it won’t affect your account in any way. 
-
-To find the value for the `server` parameter used in `mailchimp.setConfig`, log into your Mailchimp account and look at the URL in your browser. You’ll see something like `https://us19.admin.mailchimp.com/`; the `us19` part is the server prefix. Note that your specific value may be different.
+To test that you have everything set up correctly, we’ll make a simple request to the Ping endpoint. Hitting this endpoint acts as a health check on the Mailchimp API service; it won’t affect your account in any way.
 
 <CodeBlocks>
 ```bash title="cURL"
 # install jq: https://stedolan.github.io/jq/download/
 
-dc="YOUR_DC"
 apikey="YOUR_API_KEY"
 
 curl -sS \
-  "https://${dc}.api.mailchimp.com/3.0/ping" \
+  "https://api.mailchimp.com/3.0/ping" \
   --user "anystring:${apikey}" | jq -r
 ```
 
@@ -57,7 +54,6 @@ const mailchimp = require("@mailchimp/mailchimp_marketing");
 
 mailchimp.setConfig({
   apiKey: "YOUR_API_KEY",
-  server: "YOUR_SERVER_PREFIX",
 });
 
 async function run() {
@@ -74,8 +70,7 @@ require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
 $mailchimp = new \MailchimpMarketing\ApiClient();
 
 $mailchimp->setConfig([
-	'apiKey' => 'YOUR_API_KEY',
-	'server' => 'YOUR_SERVER_PREFIX'
+	'apiKey' => 'YOUR_API_KEY'
 ]);
 
 $response = $mailchimp->ping->get();
@@ -87,8 +82,7 @@ require "MailchimpMarketing"
 
 mailchimp = MailchimpMarketing::Client.new
 mailchimp.set_config({
-  :api_key => ENV["API_KEY"],
-  :server => ENV["API_SERVER"]
+  :api_key => ENV["API_KEY"]
 })
 
 response = mailchimp.ping.get
@@ -100,8 +94,7 @@ from mailchimp_marketing import Client
 
 mailchimp = Client()
 mailchimp.set_config({
-  "api_key": "YOUR_API_KEY",
-  "server": "YOUR_SERVER_PREFIX"
+  "api_key": "YOUR_API_KEY"
 })
 
 response = mailchimp.ping.get()
