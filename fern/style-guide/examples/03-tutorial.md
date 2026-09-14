@@ -39,7 +39,7 @@ The failure mode here is narration: telling the reader what they're about to do,
 
 > ## Prerequisites
 >
-> Before we begin this journey, there are a few crucial things you'll need to have in place. First, you'll need an established Mailchimp audience. Second, you'll need your Audience/List ID. Third, you'll need your API credentials, including both your API key and your server prefix.
+> Before we begin this journey, there are a few crucial things you'll need to have in place. First, you'll need an established Mailchimp audience. Second, you'll need your Audience/List ID. Third, you'll need your API key.
 
 ### After
 
@@ -49,7 +49,7 @@ The failure mode here is narration: telling the reader what they're about to do,
 >
 > - A Mailchimp audience
 > - Your audience's `list_id`, from the audience settings page or the [Lists endpoint](#)
-> - Your API key and server prefix
+> - Your API key
 >
 > If you don't have an audience yet, [create your first audience](#) first.
 

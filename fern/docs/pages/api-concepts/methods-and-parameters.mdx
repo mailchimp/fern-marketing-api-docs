@@ -39,9 +39,9 @@ Every API call response includes headers and an optional JSON-formatted body. DE
 
 In an API URL, resource names and unique identifiers help you figure out how to structure your requests. Resource names are immutable, but resource identifiers need to be replaced with real values from your Mailchimp account. Resource identifier placeholders are indicated in curly brackets throughout this documentation.
 
-Resources can be nested several levels deep in a path, such as `https://<dc>.api.mailchimp.com/3.0/lists/{list_id}/members/{subscriber_hash}/notes/{id}`. In this example, there is one primary resource, `lists`, and two subresources, `members` and `notes`. There are also three different path parameters that you need to replace with real values from your Mailchimp account: `list_id`, `email_id`, and `id`. When you replace those values with actual data, your final URL should look something like this:
+Resources can be nested several levels deep in a path, such as `https://api.mailchimp.com/3.0/lists/{list_id}/members/{subscriber_hash}/notes/{id}`. In this example, there is one primary resource, `lists`, and two subresources, `members` and `notes`. There are also three different path parameters that you need to replace with real values from your Mailchimp account: `list_id`, `email_id`, and `id`. When you replace those values with actual data, your final URL should look something like this:
 
-`https://us6.api.mailchimp.com/3.0/lists/57afe96172/members/62eeb292278cc15f5817cb78f7790b08/notes`
+`https://api.mailchimp.com/3.0/lists/57afe96172/members/62eeb292278cc15f5817cb78f7790b08/notes`
 
 <Note>
 **Note**: We refer to some endpoints by name and others by URI. For example, you can find a collection of reports at the [Reports endpoint](/marketing/api/reports/list), or individual reports at the [/reports/{campaign_id} endpoint](/marketing/api/reports/get).
@@ -55,7 +55,7 @@ You also don’t need to maintain a mapping from your contact to Mailchimp’s i
 
 We use optional query string parameters for filtering, pagination, and partial responses in the Mailchimp API. The format for query string parameters is the full resource URL followed by a question mark and optional parameters:
 
-`https://usX.api.mailchimp.com/3.0/campaigns?count=10&offset=10`**` `**
+`https://api.mailchimp.com/3.0/campaigns?count=10&offset=10`**` `**
 
 ### Filtering resources
 
@@ -71,7 +71,7 @@ You can paginate your API requests to limit response results and make them easie
 
 The maximum value for `count` is `1000`; the default value is `10`. If not included, offset defaults to `0`. (To retrieve the first ten results, set `count` to `10` and `offset` to `0`. To retrieve the following ten results, the `offset` should be `10` and the `count` should remain `10`.) This URL represents the default query string parameters for pagination:
 
-`https://usX.api.mailchimp.com/3.0/campaigns?offset=0&count=10 `
+`https://api.mailchimp.com/3.0/campaigns?offset=0&count=10 `
 
 ### Partial responses
 
@@ -81,11 +81,11 @@ If your calls are failing to return the correct fields, make sure that your requ
 
 For example, the following URL uses the `fields` query string parameter to only include the audience name (`lists.name`) and ID (`lists.id`) fields in the response:
 
-`https://usX.api.mailchimp.com/3.0/lists?fields=lists.name,lists.id `
+`https://api.mailchimp.com/3.0/lists?fields=lists.name,lists.id `
 
 However, if you wanted to return just the name of a specific audience, you would do so with the [`/lists/{list_id} endpoint`](/marketing/api/lists/get) and the audience name field should be referred to as `name`, like this:
 
-`https://usX.api.mailchimp.com/3.0/lists/{list_id}?fields=name `
+`https://api.mailchimp.com/3.0/lists/{list_id}?fields=name `
 
 This is because response for this endpoint returns a differently structured JSON object—`name` is at the top level, not embedded in another object named `lists`. 
 

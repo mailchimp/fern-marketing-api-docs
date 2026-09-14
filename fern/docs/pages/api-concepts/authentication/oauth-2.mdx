@@ -24,18 +24,8 @@ Workflows differ between providers in small ways, so here's Mailchimp's:
 3. Your server exchanges that `code` for an access token, in a request that also
    carries your `client_secret`. This step happens server-to-server, so the
    secret is never exposed to the browser.
-4. Your server calls the OAuth Metadata endpoint with the access token to get
-   the user's **server prefix**.
 
-You persist two values per user: the access token and the server prefix.
-
-## The server prefix
-
-The Metadata endpoint step isn't optional. Mailchimp accounts are distributed
-across data centers, and the Marketing API host is data-center-specific, so the
-same token must be sent to a different hostname depending on which user it
-belongs to. The prefix identifies which one. It varies from user to user, so
-store it alongside the token rather than hardcoding it.
+You persist one value per user: the access token.
 
 ## Tokens don't expire
 
@@ -48,9 +38,9 @@ So a token that stops working means the user revoked your access. Retrying
 won't help; send them back through the authorization flow instead.
 
 The obligation runs both ways: when a user disconnects or uninstalls your
-application, delete the access token and server prefix you stored for them,
-along with any syncing configuration tied to that connection. Don't keep
-credentials for a connection the user has ended.
+application, delete the access token you stored for them, along with any
+syncing configuration tied to that connection. Don't keep credentials for a
+connection the user has ended.
 
 ## Your application's credentials
 

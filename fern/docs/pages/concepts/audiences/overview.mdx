@@ -21,6 +21,9 @@ Audience
 │   └── Merge field values
 ├── Merge fields        the field definitions for this audience
 └── Segments            saved queries that select contacts
+
+Each contact also carries consent, recorded separately per channel
+(email, SMS).
 ```
 
 **Contacts** are the people in an audience. Each one is identified by their
@@ -48,9 +51,48 @@ is a question you *ask about* contacts. Tags are one of the things a segment
 can filter on, which is why they're easy to confuse.
 </Note>
 
+## Consent
+
+Consent is the record of what a contact agreed to receive from you, and it
+belongs to the contact rather than to the audience. Mailchimp tracks it per
+channel: agreeing to marketing email says nothing about agreeing to marketing
+SMS, and the two are stored and updated independently.
+
+Consent is an input, not the final answer to "can I send to this person?" What
+Mailchimp sends on is a subscription status, which it derives from the consent
+you supply, the audience's opt-in configuration, and whether the contact is
+reachable on that channel at all. A contact who consented to email can still
+stop receiving it because their address started bouncing. You record consent;
+Mailchimp decides deliverability.
+
+That split is the part integrations get wrong. Writing a contact through the
+API is a consent event, so the value you send has to reflect something the
+person actually did. If your checkout form has a marketing checkbox, the state
+of that checkbox is your consent record. Sending every customer through as
+opted in because they bought something is the failure mode to avoid.
+
+### Why this matters
+
+Email and SMS marketing are regulated—GDPR, CAN-SPAM, CASL, and TCPA among
+others—and the obligations attach to you as the sender, not to Mailchimp as the
+platform. Consent is the evidence that you met them, which is why the API asks
+you to state it explicitly rather than inferring it.
+
+SMS carries the stricter rules of the two. Consent to email does not extend to
+SMS under any regime we know of, and several require separate, provable opt-in
+for messages sent to a phone. Treat the two channels as genuinely separate
+records, because that is what they are.
+
+Which endpoint you use to record consent depends on the channel, and the
+mechanics differ between them. See
+[Contacts](/marketing/concepts/audiences/contacts) for the contact-level model
+and [Audiences endpoints (beta)](/marketing/api-concepts/audiences-endpoints-beta)
+for the SMS channel.
+
 ## Where to go next
 
 - [Contacts](/marketing/concepts/audiences/contacts) — the contact model, subscription status, and tags
 - [Merge fields](/marketing/concepts/audiences/merge-fields) — defining and populating custom fields
 - [Segments](/marketing/concepts/audiences/segments) — building queries over your contacts
+- [Audiences endpoints (beta)](/marketing/api-concepts/audiences-endpoints-beta) — the per-channel consent model, including SMS
 - [Import and export contacts](/marketing/build/quickstarts/import-and-export-contacts) — a walkthrough against an existing audience

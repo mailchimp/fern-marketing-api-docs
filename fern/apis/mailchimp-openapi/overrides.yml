@@ -71,7 +71,7 @@ info:
 
     ## Base URL
 
-    All API requests use the format `https://{server_prefix}.api.mailchimp.com/3.0/` where `{server_prefix}` is the data center prefix from your API key (e.g., `us1`).
+    All API requests use the format `https://api.mailchimp.com/3.0/`.
 
     ## Pagination
 
@@ -91,36 +91,19 @@ info:
 # avoids the array-merge pitfall and matches Mailchimp's documented method
 # (HTTP Basic with any username + API key as password).
 
+# Replaces the raw export's `servers` array wholesale, which is deliberate and
+# load-bearing for two reasons:
+#
+#   1. Every account uses the same host. The export has carried a templated
+#      `https://{serverPrefix}.api.mailchimp.com` (us1..us22); there is no
+#      per-datacenter host to select, so the single plain URL below is correct.
+#   2. The export also ships an internal `https://dev.api.mailchimp.com`
+#      labeled "Mailchimp development environment". Replacing the array is what
+#      keeps that host out of the published docs and the generated SDKs. It
+#      reappears in openapi.json on every re-vendor, so do not narrow this to a
+#      merge or drop it — the dev host would become public.
 servers:
   - description: Mailchimp public API
-    url: https://{serverPrefix}.api.mailchimp.com
-    variables:
-      serverPrefix:
-        default: us1
-        enum:
-          - us1
-          - us2
-          - us3
-          - us4
-          - us5
-          - us6
-          - us7
-          - us8
-          - us9
-          - us10
-          - us11
-          - us12
-          - us13
-          - us14
-          - us15
-          - us16
-          - us17
-          - us18
-          - us19
-          - us20
-          - us21
-          - us22
-  - description: Mailchimp development environment (internal)
     url: https://api.mailchimp.com
 
 paths:

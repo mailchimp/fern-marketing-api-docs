@@ -30,7 +30,7 @@ Using the Batch endpoint, we’ll walk through making the batch request, checkin
 - A Mailchimp account
 - [An audience](https://mailchimp.com/help/create-audience/) in your Mailchimp account (for this example)
 - The [Audience ID](https://mailchimp.com/help/find-audience-id/) for that audience (for this example)
-- [Your API key and server prefix](/marketing/build/get-started/generate-your-api-key)
+- Your [API key](/marketing/build/get-started/generate-your-api-key)
 
 ## Make a batch operations request
 
@@ -60,7 +60,6 @@ The final code might look like this:
 #!/bin/bash
 set -euo pipefail
 
-server="YOUR_SERVER_PREFIX"
 apikey="YOUR_API_KEY"
 listid="YOUR_LIST_ID"
 
@@ -77,7 +76,7 @@ declare -A subscriber2=(
 )
 
 curl -sS --request POST \
-  "https://${server}.api.mailchimp.com/3.0/batches" \
+  "https://api.mailchimp.com/3.0/batches" \
   --user "`anystring`:${apikey}" \
   --data @- \
 <<EOF | jq 'del(._links)'
@@ -104,8 +103,7 @@ EOF
 const mailchimp = require("@mailchimp/mailchimp_marketing");
 
 mailchimp.setConfig({
-  apiKey: "YOUR_API_KEY",
-  server: "YOUR_SERVER_PREFIX"
+  apiKey: "YOUR_API_KEY"
 });
 
 const listId = "YOUR_LIST_ID";
@@ -148,8 +146,7 @@ require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
 $mailchimp = new MailchimpMarketing\ApiClient();
 
 $mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY',
-    'server' => 'YOUR_SERVER_PREFIX'
+    'apiKey' => 'YOUR_API_KEY'
 ]);
 
 $list_id = "YOUR_LIST_ID";
@@ -192,8 +189,7 @@ require "MailchimpMarketing"
 
 mailchimp = MailchimpMarketing::Client.new
 mailchimp.set_config({
-  :api_key => ENV["API_KEY"],
-  :server => ENV["API_SERVER"]
+  :api_key => ENV["API_KEY"]
 })
 list_id = ENV["LIST_ID"]
 
@@ -230,8 +226,7 @@ import json
 
 mailchimp = Client()
 mailchimp.set_config({
-  "api_key": "YOUR_API_KEY",
-  "server": "YOUR_SERVER_PREFIX"
+  "api_key": "YOUR_API_KEY"
 })
 
 list_id = 'YOUR_LIST_ID'
@@ -305,12 +300,11 @@ Our operations are queued, but to find out if they’re finished, we need to che
 #!/bin/bash
 set -euo pipefail
 
-server="YOUR_SERVER_PREFIX"
 apikey="YOUR_API_KEY"
 batchid="YOUR_BATCH_ID"
 
 curl -sS \
-  "https://${server}.api.mailchimp.com/3.0/batches/${batchid}" \
+  "https://api.mailchimp.com/3.0/batches/${batchid}" \
   --user "`anystring`:${apikey}" | jq '.status'
 ```
 
@@ -331,8 +325,7 @@ require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
 $mailchimp = new MailchimpMarketing\ApiClient();
 
 $mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY',
-    'server' => 'YOUR_SERVER_PREFIX'
+    'apiKey' => 'YOUR_API_KEY'
 ]);
 
 $batch_id = 'YOUR_BATCH_ID';
@@ -350,8 +343,7 @@ require "MailchimpMarketing"
 
 mailchimp = MailchimpMarketing::Client.new
 mailchimp.set_config({
-  :api_key => ENV["API_KEY"],
-  :server => ENV["API_SERVER"]
+  :api_key => ENV["API_KEY"]
 })
 batch_id = ENV["BATCH_OPERATION_ID"]
 
@@ -509,13 +501,12 @@ To create a batch webhook, use the [Batch Webhooks endpoint](/marketing/api/batc
 #!/bin/bash
 set -euo pipefail
 
-server="SERVER_PREFIX"
 apikey="YOUR_API_KEY"
 
 url="https://example.com/your-webhook-url"
 
 curl -sS --request POST \
-  "https://${server}.api.mailchimp.com/3.0/batch-webhooks" \
+  "https://api.mailchimp.com/3.0/batch-webhooks" \
   --user "foo:${apikey}" \
   --data @- \
 <<EOF | jq
@@ -542,8 +533,7 @@ require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
 $mailchimp = new MailchimpMarketing\ApiClient();
 
 $mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY',
-    'server' => 'YOUR_SERVER_PREFIX'
+    'apiKey' => 'YOUR_API_KEY'
 ]);
 
 try {
@@ -562,8 +552,7 @@ require "MailchimpMarketing"
 
 mailchimp = MailchimpMarketing::Client.new
 mailchimp.set_config({
-  :api_key => ENV["API_KEY"],
-  :server => ENV["API_SERVER"]
+  :api_key => ENV["API_KEY"]
 })
 
 url = "https://example.com/your-webhook-url"
@@ -637,16 +626,16 @@ The full payload, parsed and represented as JSON, would look like this:
 
 ```json
 {
-"data[_links][0][href]": "https://usX.api.mailchimp.com/3.0/batches",
+"data[_links][0][href]": "https://api.mailchimp.com/3.0/batches",
 "data[_links][0][method]": "GET",
 "data[_links][0][rel]":  "parent",
-"data[_links][0][schema]": "https://usX.api.mailchimp.com/schema/3.0/CollectionLinks/Batches.json",
-"data[_links][0][targetSchema]": "https://usX.api.mailchimp.com/schema/3.0/Definitions/Batches/CollectionResponse.json",
-"data[_links][1][href]": "https://usX.api.mailchimp.com/3.0/batches/1234ab56cd",
+"data[_links][0][schema]": "https://api.mailchimp.com/schema/3.0/CollectionLinks/Batches.json",
+"data[_links][0][targetSchema]": "https://api.mailchimp.com/schema/3.0/Definitions/Batches/CollectionResponse.json",
+"data[_links][1][href]": "https://api.mailchimp.com/3.0/batches/1234ab56cd",
 "data[_links][1][method]": "GET",
 "data[_links][1][rel]":  "self",
-"data[_links][1][targetSchema]": "https://usX.api.mailchimp.com/schema/3.0/Definitions/Batches/Response.json",
-"data[_links][2][href]": "https://usX.api.mailchimp.com/3.0/batches/1234ab56cd",
+"data[_links][1][targetSchema]": "https://api.mailchimp.com/schema/3.0/Definitions/Batches/Response.json",
+"data[_links][2][href]": "https://api.mailchimp.com/3.0/batches/1234ab56cd",
 "data[_links][2][method]": "DELETE",
 "data[_links][2][rel]":  "delete",
 "data[completed_at]":  "2017-02-10T14:44:22+00:00",
