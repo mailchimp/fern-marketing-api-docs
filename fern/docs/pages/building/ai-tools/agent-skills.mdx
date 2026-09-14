@@ -1,12 +1,135 @@
 ---
 title: Agent skills
-description: Package Mailchimp workflows as reusable skills for AI agents.
+description: Install Mailchimp's agent skills, or package your own Marketing API workflows as skills.
 ---
 
-<Note>
-**Draft**: This page is a placeholder created during the docs reorganization. Content is not yet written.
-</Note>
+A skill is a Markdown file that teaches a coding agent how to do one task
+correctly. The agent reads its description, decides the skill is relevant to
+what you asked, and loads the instructions before it writes code.
 
-## The basics
+That makes a skill different from the two things it sits between. A single API
+call is one request; a skill is the judgment around a whole task—which endpoint
+fits the shape of your data, what to store, what to check before moving on. A
+prompt you paste into a chat carries the same guidance, but you supply it every
+time and it leaves with the conversation.
 
-Outline: what a skill is, available Mailchimp skills, authoring your own, distribution.
+Mailchimp publishes skills for the parts of the Marketing API where a
+reasonable first implementation is wrong in a way that passes review. Consent
+writes that overwrite a contact's earlier choice. An OAuth callback that
+accepts any `code` delivered to it. A batch job that reports success on a run
+where a third of the operations failed.
+
+## Install the skills
+
+Every page on this site carries an **Install the Mailchimp skills** action with
+the install command. In an agent that supports the
+[Agent Skills specification](https://agentskills.io), install all four at once:
+
+```bash
+npx skills add https://mailchimp.ferndocs.com
+```
+
+Claude Code, Cursor, and other agents that read the specification pick them up
+from there. To install one by hand, save its `SKILL.md` into the directory your
+agent reads skills from.
+
+Skills carry no credentials. Each one tells your agent how to call the
+Marketing API; you still supply the API key or OAuth token, and the agent acts
+with whatever access that credential has.
+
+## Available skills
+
+| Skill | Use it when |
+|---|---|
+| [Set consent correctly](https://mailchimp.ferndocs.com/.well-known/agent-skills/set-consent-correctly/SKILL.md) | Adding or updating contacts from a signup form, checkout, or CRM sync, and the write has to record what the person chose without overwriting consent they already gave. |
+| [Set up OAuth](https://mailchimp.ferndocs.com/.well-known/agent-skills/set-up-oauth/SKILL.md) | Implementing OAuth 2 to connect other people's Mailchimp accounts: the authorize redirect, the callback and code exchange, and token storage per account. |
+| [Subscribe to webhooks](https://mailchimp.ferndocs.com/.well-known/agent-skills/subscribe-to-webhooks/SKILL.md) | Creating a webhook, verifying delivery signatures, and keeping a handler that survives duplicate deliveries without echoing its own writes back into the audience. |
+| [Run a bulk job safely](https://mailchimp.ferndocs.com/.well-known/agent-skills/run-bulk-jobs/SKILL.md) | A job is too large for one request, and you need to choose between the bulk endpoints, poll a batch without hitting the connection limit, and tell a partial failure from a success. |
+
+Each skill links to the concept pages behind it, so an agent that needs the
+full mechanism can follow the reference rather than work from the summary.
+
+The machine-readable index lives at a fixed path. It lists every skill with a
+`sha256` digest of the file, so an agent can tell whether a cached copy is
+current:
+
+```
+https://mailchimp.ferndocs.com/.well-known/agent-skills/index.json
+```
+
+## Write your own
+
+A skill is a directory holding a `SKILL.md` file. The directory name is the
+skill name, and the file opens with YAML frontmatter:
+
+```markdown
+---
+name: sync-store-orders
+description: Use when syncing e-commerce orders into Mailchimp, including
+  backfills, and the sync must not change a contact's subscription status
+  as a side effect.
+---
+
+# Sync store orders
+
+Writing a customer or an order upserts a contact, so order ingestion changes
+subscription status unless you account for it...
+```
+
+The `description` does more work than anything else in the file. It is the only
+part the agent reads when deciding whether to load the skill, so write it as a
+trigger rather than a summary: say what situation calls for the skill, in the
+words someone would use describing the task. "Use when syncing e-commerce
+orders" earns a load. "Order sync utilities" does not.
+
+For the body, a few things that hold generally:
+
+Write for an agent that already knows how to program. The skills here skip HTTP
+and JSON and spend their length on what is specific to Mailchimp: which
+endpoint owns consent, that a signing secret is returned once, that
+`POST /3.0/batches` returns before the work is done.
+
+State the numbers. Timeouts, maximums, and connection limits are what an agent
+cannot infer from an endpoint name.
+
+Link the mechanism instead of restating it. A skill that reproduces a concept
+page goes stale when that page changes; a skill that links to it stays correct.
+
+Say what to do when the response is ambiguous. A batch that finished is not a
+batch that succeeded, and the check for that belongs in the skill.
+
+Keep one task per skill. Two loosely related tasks in one file dilute the
+`description`, and the agent loads the skill for the wrong half.
+
+## Distribute a skill
+
+Skills install from a URL, so publishing one means serving the files at a known
+path on a host you control:
+
+```
+/.well-known/agent-skills/index.json
+/.well-known/agent-skills/{skill-name}/SKILL.md
+```
+
+The index lists each skill's `name`, `description`, `url`, and `digest`.
+Generate it from your `SKILL.md` frontmatter rather than maintaining it by
+hand; the digest is a hash of the file's bytes, so any edit to a skill changes
+it. This repository does that with a script, which also fails the build if a
+skill's declared `name` and its directory name disagree.
+
+Point an agent at the site root and it resolves the index from there:
+
+```bash
+npx skills add https://your-docs-site.example
+```
+
+## Related
+
+- [MCP server](/marketing/build/ai-tools/mcp-server) connects an agent to this
+  documentation so it can search these pages. Skills and the MCP server solve
+  different problems: a skill tells an agent how to call the Marketing API, and
+  the MCP server answers questions about the docs.
+- [llms.txt](/marketing/build/ai-tools/llms-txt) indexes every page in Markdown
+  for agents that read the docs directly.
+- [Authentication](/marketing/api-concepts/authentication) covers the API key
+  and OAuth 2 credentials an agent needs to call the API.
