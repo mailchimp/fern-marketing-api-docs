@@ -11,13 +11,14 @@ That makes a skill different from the two things it sits between. A single API
 call is one request; a skill is the judgment around a whole task—which endpoint
 fits the shape of your data, what to store, what to check before moving on. A
 prompt you paste into a chat carries the same guidance, but you supply it every
-time and it leaves with the conversation.
+time
+and it leaves with the conversation.
 
 Mailchimp publishes skills for the parts of the Marketing API where a
 reasonable first implementation is wrong in a way that passes review. Consent
-writes that overwrite a contact's earlier choice. An OAuth callback that
-accepts any `code` delivered to it. A batch job that reports success on a run
-where a third of the operations failed.
+writes that overwrite a contact's earlier choice. An OAuth callback
+that accepts any `code` delivered to it. A batch job that reports success on a
+run where a third of the operations failed.
 
 ## Install the skills
 
@@ -91,8 +92,8 @@ For the body, a few things that hold generally:
 
 Write for an agent that already knows how to program. The skills here skip HTTP
 and JSON and spend their length on what is specific to Mailchimp: which
-endpoint owns consent, that a signing secret is returned once, that
-`POST /3.0/batches` returns before the work is done.
+endpoint owns consent, that a signing secret is returned once, that `POST /3.0/batches`
+returns before the work is done.
 
 State the numbers. Timeouts, maximums, and connection limits are what an agent
 cannot infer from an endpoint name.
