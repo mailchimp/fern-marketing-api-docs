@@ -286,6 +286,7 @@ A few other things to keep in mind when making a call to the Batch endpoint:
 
 - Operations in a request are not guaranteed to run in order.
 - GET requests that do not include a `count` parameter automatically page through the entire collection.
+- A single batch isn't limited to one endpoint family. Mix operations across `/lists/.../members` and `/audiences/.../contacts` paths in the same request for a combined, cross-channel accounting of a contact's classic and SMS records, rather than running two separate batches and reconciling them yourself.
 
 <Note>
 **Note**: Each operation you define in a batch request can include an `optional operation_id` parameter, which is a string. The `optional operation_id` you supply in the request is returned with the results of that call, allowing you to match a set of results to a specific operation in the original request. We recommend using a unique and meaningful value for `optional operation_id`, though the Batch endpoint does not enforce uniqueness for the `optional operation_id`; it’s purely for your use.
