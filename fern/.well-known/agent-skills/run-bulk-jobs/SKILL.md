@@ -27,11 +27,12 @@ endpoint. Ask what the operations look like instead.
 | Mixed methods or paths, or work you would rather hand off than hold a connection for | `POST /3.0/batches` | A batch ID to poll |
 | Few enough to finish well inside 120 seconds, and you need each result as it lands | A loop of single calls | Per-call responses |
 
-`POST /3.0/lists/{list_id}`, batch subscribe or unsubscribe, is the one people
-miss, because the volume suggests the endpoint named "batch." For contact
-imports it returns `new_members`, `updated_members`, and `errors`
-synchronously, so an 8,000-contact import is 16 calls you read the results of
-directly, with no polling and no archive to unpack. Send
+[`POST /3.0/lists/{list_id}`](/marketing/api/lists/batch-subscribe-or-unsubscribe),
+batch subscribe or unsubscribe, is the one people miss, because the volume
+suggests the endpoint named "batch." For contact imports it returns
+`new_members`, `updated_members`, and `errors` synchronously, so an
+8,000-contact import is 16 calls you read the results of directly, with no
+polling and no archive to unpack. Send
 `update_existing: true` to make a re-run safe; without it, addresses already on
 the audience come back as errors.
 
