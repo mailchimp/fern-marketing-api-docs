@@ -2,6 +2,12 @@
   "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
   "skills": [
     {
+      "name": "run-bulk-jobs",
+      "description": "Use when a Mailchimp Marketing API job is too large for one request\u2014importing or updating thousands of contacts, pulling bulk report data, or any loop that would run for minutes\u2014and you need to pick between the bulk endpoints, poll a batch without becoming a rate-limit problem, and tell a partially failed job from a successful one.",
+      "url": "/.well-known/agent-skills/run-bulk-jobs/SKILL.md",
+      "digest": "sha256:e21e1a1c94e49ed2877e4801db45c54ccf95bf7619d69a65e77fd1404ba3e913"
+    },
+    {
       "name": "set-consent-correctly",
       "type": "skill-md",
       "description": "Use when adding or updating Mailchimp contacts from a signup form, checkout, CRM sync, or any flow where a person chose whether to receive marketing email or SMS, and you need to record that choice without overwriting consent they already gave.",
