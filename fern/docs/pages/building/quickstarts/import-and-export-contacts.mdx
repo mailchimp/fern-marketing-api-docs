@@ -56,6 +56,10 @@ run();
 
 `status` is required. `subscribed` opts the contact into email; use `transactional` for a contact you're only tracking, not marketing to. This call fails with a 400 if the email address is already in the audience, since it's a create, not an upsert; upserting is exactly what the next section covers.
 
+<Note>
+Send `subscribed` only on a single opt-in audience. On a double opt-in audience, `subscribed` skips the confirmation email, so you end up with a contact marked subscribed who never actually confirmed; send `pending` instead, and Mailchimp handles the confirmation email for you. Check `double_optin` on `GET /3.0/lists/{list_id}` to know which kind of audience you're working with. For the full model, see [Audiences](/marketing/concepts/audiences/overview).
+</Note>
+
 ## Upsert to avoid duplicate-contact errors
 
 Calling the endpoint above a second time for the same contact doesn't create a second record; it fails outright, since the email address is already taken on that audience. In practice, you rarely know in advance whether a contact already exists, so reach for upsert by default: it updates the contact if they're already there, and creates them if they're not. PUT to the same contact's specific URL instead of POSTing to the collection:
@@ -103,7 +107,7 @@ This endpoint identifies the contact by `subscriber_hash`: the MD5 hash of their
 
 The newer, beta [Audiences endpoints](/marketing/api-concepts/audiences-endpoints-beta) identify a contact by `contact_id` instead of a hash. This guide uses the stable Members endpoint throughout, so every example below addresses contacts by `subscriber_hash`.
 
-The body takes `status_if_new` in addition to `status` for a reason: this call might create the contact or update them, and Mailchimp only requires `status_if_new` for the case where it's the one creating the contact. That makes it the field to set on an import where you don't know who's already in the audience. If you already know the contact exists and only need to update them, `status` covers that case.
+The body takes `status_if_new` in addition to `status` for a reason: this call might create the contact or update them, and Mailchimp only requires `status_if_new` for the case where it's the one creating the contact. That makes it the field to set on an import where you don't know who's already in the audience. If you already know the contact exists and only need to update them, `status` covers that case. The same single opt-in versus double opt-in choice from the previous section applies to whichever field you're setting.
 
 <Note>
 `email_address` is required on every PUT to this endpoint, even though the URL already identifies the contact by hash. The API needs it to backfill the record if the hash doesn't match anyone yet.
@@ -137,7 +141,7 @@ curl -s --request POST \
   --data "$payload"
 ```
 
-Each operation in the array is one upsert, with its own precomputed `subscriber_hash` in the `path` and its own `operation_id` you choose, so you can match results back to your own records once the batch finishes. For how to check a batch's status, retrieve its results, and size a batch correctly, see [Batch operations](/marketing/api-concepts/batch-operations).
+Each operation in the array is one upsert, with its own precomputed `subscriber_hash` in the `path` and its own `operation_id` you choose, so you can match results back to your own records once the batch finishes. This example sends `subscribed`, which assumes a single opt-in audience; send `pending` instead on a double opt-in one, same as above. For how to check a batch's status, retrieve its results, and size a batch correctly, see [Batch operations](/marketing/api-concepts/batch-operations).
 
 ## Read contacts back
 
