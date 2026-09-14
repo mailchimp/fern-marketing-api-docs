@@ -22,23 +22,23 @@ page-actions:
         Agent skills that teach coding agents the parts of the Marketing API
         that are easy to get wrong. Install them into Claude Code, Cursor, or
         any agent that supports the Agent Skills specification.
-      install-command: npx skills add https://mailchimp.ferndocs.com
+      install-command: npx skills add https://preview.developer.mailchimp.com
       skills:
         - name: set-consent-correctly
           description: >-
             Record marketing consent from a signup form, checkout, or CRM sync
             without overwriting consent a contact already gave.
-          url: https://mailchimp.ferndocs.com/.well-known/agent-skills/set-consent-correctly/SKILL.md
+          url: https://preview.developer.mailchimp.com/.well-known/agent-skills/set-consent-correctly/SKILL.md
         - name: set-up-oauth
           description: >-
             Implement the Mailchimp OAuth 2 flow, validate the state parameter,
             and store access tokens per connected account.
-          url: https://mailchimp.ferndocs.com/.well-known/agent-skills/set-up-oauth/SKILL.md
+          url: https://preview.developer.mailchimp.com/.well-known/agent-skills/set-up-oauth/SKILL.md
         - name: subscribe-to-webhooks
           description: >-
             Create a webhook, verify delivery signatures, and keep a handler
             idempotent without echoing your own writes back into the audience.
-          url: https://mailchimp.ferndocs.com/.well-known/agent-skills/subscribe-to-webhooks/SKILL.md
+          url: https://preview.developer.mailchimp.com/.well-known/agent-skills/subscribe-to-webhooks/SKILL.md
 metadata:
   og:site_name: Mailchimp Developer
   og:title: Mailchimp Developer Documentation
