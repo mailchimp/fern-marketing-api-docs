@@ -9,7 +9,7 @@ To improve the experience for all our users, we impose some limits on API reques
 
 ## Throttling
 
-The Marketing API has a limit of 10 simultaneous connections. You’ll receive a [429 error](/marketing/api-concepts/errors/#error-glossary) if you reach the limit. At exceptionally high volumes, you may receive an HTTP 429 or 403 without a JSON body.
+The Marketing API has a limit of 10 simultaneous connections. The limit is per user, not per API key or per client. You’ll receive a [429 error](/marketing/api-concepts/errors/#error-glossary) if you reach the limit. At exceptionally high volumes, you may receive an HTTP 429 or 403 without a JSON body.
 
 We recommend that you cache frequently accessed values that do not change often in your application’s data store. This will prevent your application from bumping up against the throttling limitations and will likely provide faster access to that data.
 
