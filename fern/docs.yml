@@ -29,6 +29,11 @@ page-actions:
             Record marketing consent from a signup form, checkout, or CRM sync
             without overwriting consent a contact already gave.
           url: https://mailchimp.ferndocs.com/.well-known/agent-skills/set-consent-correctly/SKILL.md
+        - name: set-up-oauth
+          description: >-
+            Implement the Mailchimp OAuth 2 flow, validate the state parameter,
+            and store access tokens per connected account.
+          url: https://mailchimp.ferndocs.com/.well-known/agent-skills/set-up-oauth/SKILL.md
         - name: subscribe-to-webhooks
           description: >-
             Create a webhook, verify delivery signatures, and keep a handler

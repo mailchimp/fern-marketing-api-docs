@@ -8,6 +8,12 @@
       "digest": "sha256:e948e6923c853f47562a0808fbd34b43b93ececffadd82cdd31ce33468d368f9"
     },
     {
+      "name": "set-up-oauth",
+      "description": "Use when implementing Mailchimp OAuth 2 in an application that connects other people's Mailchimp accounts, including the authorize redirect, the callback and code exchange, and storing access tokens for one or many connected accounts.",
+      "url": "/.well-known/agent-skills/set-up-oauth/SKILL.md",
+      "digest": "sha256:a27e6c245e610389c4b8ad6fc0fb802d4dbea156f024b586f97e1e1d096b753c"
+    },
+    {
       "name": "subscribe-to-webhooks",
       "description": "Use when building a Mailchimp webhook integration\u2014creating a webhook through the API, verifying delivery signatures, or keeping an external database in sync with an audience\u2014and you need the handler to survive duplicate deliveries and avoid echoing your own writes back at yourself.",
       "url": "/.well-known/agent-skills/subscribe-to-webhooks/SKILL.md",
