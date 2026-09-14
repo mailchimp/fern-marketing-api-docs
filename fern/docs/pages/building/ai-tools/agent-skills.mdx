@@ -27,7 +27,7 @@ the install command. In an agent that supports the
 [Agent Skills specification](https://agentskills.io), install all four at once:
 
 ```bash
-npx skills add https://mailchimp.ferndocs.com
+npx skills add https://preview.developer.mailchimp.com
 ```
 
 Claude Code, Cursor, and other agents that read the specification pick them up
@@ -53,14 +53,14 @@ full mechanism can follow the reference rather than work from the summary.
 To read one before installing it, fetch it by name:
 
 ```bash
-curl https://mailchimp.ferndocs.com/.well-known/agent-skills/set-up-oauth/SKILL.md
+curl https://preview.developer.mailchimp.com/.well-known/agent-skills/set-up-oauth/SKILL.md
 ```
 
 The machine-readable index lists every skill with a `sha256` digest of the
 file, so an agent can tell whether a cached copy is current:
 
 ```
-https://mailchimp.ferndocs.com/.well-known/agent-skills/index.json
+https://preview.developer.mailchimp.com/.well-known/agent-skills/index.json
 ```
 
 ## Write your own
