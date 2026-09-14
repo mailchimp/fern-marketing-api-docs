@@ -15,7 +15,7 @@ For the contact and audience data model this guide assumes, see [Contacts](/mark
 
 - [An audience](https://mailchimp.com/help/create-audience/) in your Mailchimp account.
 - The [audience ID](https://mailchimp.com/help/find-audience-id/) for that audience.
-- [Your API key and server prefix](/marketing/build/get-started/generate-your-api-key).
+- [Your API key](/marketing/build/get-started/generate-your-api-key).
 
 ## Add a single contact
 
@@ -23,12 +23,11 @@ To add one new contact to an audience, POST to the Members endpoint with an emai
 
 <CodeBlocks>
 ```bash title="cURL"
-dc="YOUR_DC"
 apikey="YOUR_API_KEY"
 listid="YOUR_LIST_ID"
 
 curl -s --request POST \
-  --url "https://${dc}.api.mailchimp.com/3.0/lists/${listid}/members" \
+  --url "https://api.mailchimp.com/3.0/lists/${listid}/members" \
   --user "anystring:${apikey}" \
   --data '{"email_address": "ada.lovelace@example.com", "status": "subscribed"}'
 ```
@@ -38,7 +37,6 @@ const mailchimp = require("@mailchimp/mailchimp_marketing");
 
 mailchimp.setConfig({
   apiKey: "YOUR_API_KEY",
-  server: "YOUR_SERVER_PREFIX",
 });
 
 const listId = "YOUR_LIST_ID";
@@ -64,7 +62,6 @@ Calling the endpoint above a second time for the same contact doesn't create a s
 
 <CodeBlocks>
 ```bash title="cURL"
-dc="YOUR_DC"
 apikey="YOUR_API_KEY"
 listid="YOUR_LIST_ID"
 subscriber_email="ada.lovelace@example.com"
@@ -72,7 +69,7 @@ subscriber_hash="$(echo -n "$subscriber_email" | tr '[:upper:]' '[:lower:]' | md
 # macOS: subscriber_hash="$(echo -n "$subscriber_email" | tr '[:upper:]' '[:lower:]' | md5 -q)"
 
 curl -s --request PUT \
-  --url "https://${dc}.api.mailchimp.com/3.0/lists/${listid}/members/${subscriber_hash}" \
+  --url "https://api.mailchimp.com/3.0/lists/${listid}/members/${subscriber_hash}" \
   --user "anystring:${apikey}" \
   --data '{"email_address": "'"$subscriber_email"'", "status_if_new": "subscribed"}'
 ```
@@ -83,7 +80,6 @@ const md5 = require("md5");
 
 mailchimp.setConfig({
   apiKey: "YOUR_API_KEY",
-  server: "YOUR_SERVER_PREFIX",
 });
 
 const listId = "YOUR_LIST_ID";
@@ -118,7 +114,6 @@ The body takes `status_if_new` in addition to `status` for a reason: this call m
 Upserting one contact per request works for a signup form, but not for loading a few thousand rows from a spreadsheet. For that, wrap the same PUT calls in a single request to the [Batch endpoint](/marketing/api-concepts/batch-operations), which processes them in the background while you check on progress:
 
 ```bash title="cURL"
-dc="YOUR_DC"
 apikey="YOUR_API_KEY"
 listid="YOUR_LIST_ID"
 
@@ -137,7 +132,7 @@ done
 payload="$(jq -n --argjson ops "$operations" '{operations: $ops}')"
 
 curl -s --request POST \
-  --url "https://${dc}.api.mailchimp.com/3.0/batches" \
+  --url "https://api.mailchimp.com/3.0/batches" \
   --user "anystring:${apikey}" \
   --data "$payload"
 ```
@@ -150,12 +145,11 @@ To retrieve the contacts in an audience, GET the same Members endpoint you poste
 
 <CodeBlocks>
 ```bash title="cURL"
-dc="YOUR_DC"
 apikey="YOUR_API_KEY"
 listid="YOUR_LIST_ID"
 
 curl -s --request GET \
-  --url "https://${dc}.api.mailchimp.com/3.0/lists/${listid}/members?count=10&status=subscribed" \
+  --url "https://api.mailchimp.com/3.0/lists/${listid}/members?count=10&status=subscribed" \
   --user "anystring:${apikey}"
 ```
 
@@ -164,7 +158,6 @@ const mailchimp = require("@mailchimp/mailchimp_marketing");
 
 mailchimp.setConfig({
   apiKey: "YOUR_API_KEY",
-  server: "YOUR_SERVER_PREFIX",
 });
 
 const listId = "YOUR_LIST_ID";
@@ -211,11 +204,10 @@ The Batch endpoint isn't only for writes. If you need to look up a specific set 
 To request just the audience data instead of the whole account, use the `audiences` stage:
 
 ```bash title="cURL"
-dc="YOUR_DC"
 apikey="YOUR_API_KEY"
 
 curl -s --request POST \
-  --url "https://${dc}.api.mailchimp.com/3.0/account-exports" \
+  --url "https://api.mailchimp.com/3.0/account-exports" \
   --user "anystring:${apikey}" \
   --data '{"include_stages": ["audiences"]}'
 ```
@@ -223,12 +215,11 @@ curl -s --request POST \
 The response returns an `export_id` immediately, but the export itself builds in the background. Poll for it with the `export_id`:
 
 ```bash title="cURL"
-dc="YOUR_DC"
 apikey="YOUR_API_KEY"
 exportid="YOUR_EXPORT_ID"
 
 curl -s --request GET \
-  --url "https://${dc}.api.mailchimp.com/3.0/account-exports/${exportid}" \
+  --url "https://api.mailchimp.com/3.0/account-exports/${exportid}" \
   --user "anystring:${apikey}"
 ```
 
