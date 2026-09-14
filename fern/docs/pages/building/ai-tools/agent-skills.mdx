@@ -41,17 +41,22 @@ with whatever access that credential has.
 
 | Skill | Use it when |
 |---|---|
-| [Set consent correctly](https://mailchimp.ferndocs.com/.well-known/agent-skills/set-consent-correctly/SKILL.md) | Adding or updating contacts from a signup form, checkout, or CRM sync, and the write has to record what the person chose without overwriting consent they already gave. |
-| [Set up OAuth](https://mailchimp.ferndocs.com/.well-known/agent-skills/set-up-oauth/SKILL.md) | Implementing OAuth 2 to connect other people's Mailchimp accounts: the authorize redirect, the callback and code exchange, and token storage per account. |
-| [Subscribe to webhooks](https://mailchimp.ferndocs.com/.well-known/agent-skills/subscribe-to-webhooks/SKILL.md) | Creating a webhook, verifying delivery signatures, and keeping a handler that survives duplicate deliveries without echoing its own writes back into the audience. |
-| [Run a bulk job safely](https://mailchimp.ferndocs.com/.well-known/agent-skills/run-bulk-jobs/SKILL.md) | A job is too large for one request, and you need to choose between the bulk endpoints, poll a batch without hitting the connection limit, and tell a partial failure from a success. |
+| `set-consent-correctly` | Adding or updating contacts from a signup form, checkout, or CRM sync, and the write has to record what the person chose without overwriting consent they already gave. |
+| `set-up-oauth` | Implementing OAuth 2 to connect other people's Mailchimp accounts: the authorize redirect, the callback and code exchange, and token storage per account. |
+| `subscribe-to-webhooks` | Creating a webhook, verifying delivery signatures, and keeping a handler that survives duplicate deliveries without echoing its own writes back into the audience. |
+| `run-bulk-jobs` | A job is too large for one request, and you need to choose between the bulk endpoints, poll a batch without hitting the connection limit, and tell a partial failure from a success. |
 
 Each skill links to the concept pages behind it, so an agent that needs the
 full mechanism can follow the reference rather than work from the summary.
 
-The machine-readable index lives at a fixed path. It lists every skill with a
-`sha256` digest of the file, so an agent can tell whether a cached copy is
-current:
+To read one before installing it, fetch it by name:
+
+```bash
+curl https://mailchimp.ferndocs.com/.well-known/agent-skills/set-up-oauth/SKILL.md
+```
+
+The machine-readable index lists every skill with a `sha256` digest of the
+file, so an agent can tell whether a cached copy is current:
 
 ```
 https://mailchimp.ferndocs.com/.well-known/agent-skills/index.json
