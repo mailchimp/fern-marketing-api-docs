@@ -6,8 +6,8 @@ description: Use when a Mailchimp Marketing API job is too large for one request
 # Run a bulk job safely
 
 Three limits shape every large job on the Marketing API: calls time out at 120
-seconds, you get 10 simultaneous connections, and `POST /3.0/batches` is
-asynchronous, so its response tells you a job started rather than that it
+seconds, you get 10 simultaneous connections per user, and `POST /3.0/batches`
+is asynchronous, so its response tells you a job started rather than that it
 worked. [Rate limits and timeouts](/marketing/api-concepts/rate-limits-and-timeouts)
 and [Batch operations](/marketing/api-concepts/batch-operations) carry the
 numbers and the batch mechanism. This skill covers choosing the right endpoint,
@@ -16,33 +16,42 @@ polling it, and reading the result.
 The job to avoid is the one that parallelizes into `429`s and then reports
 success on a batch where a third of the operations failed.
 
-## Pick the endpoint before you write the loop
+## Pick the endpoint by shape, not by record count
 
-Three shapes of bulk write exist, and they are not interchangeable.
+Record count is the wrong first question; it puts every large job on the batch
+endpoint. Ask what the operations look like instead.
 
-| Approach | Use when | Returns |
+| Are the operations... | Use | Returns |
 |---|---|---|
-| A loop of single calls | Under a few hundred records, or you need each result immediately | Per-call responses |
-| `POST /3.0/lists/{list_id}` | Adding or updating contacts on one audience, 500 or fewer per call | Per-address results in the same response |
-| `POST /3.0/batches` | Thousands of operations, mixed methods or paths, or a job that would exceed 120 seconds | A batch ID to poll |
+| All member adds or updates on one audience | `POST /3.0/lists/{list_id}`, up to 500 members per call | Per-address results in the same response |
+| Mixed methods or paths, or work you would rather hand off than hold a connection for | `POST /3.0/batches` | A batch ID to poll |
+| Few enough to finish well inside 120 seconds, and you need each result as it lands | A loop of single calls | Per-call responses |
 
 `POST /3.0/lists/{list_id}`, batch subscribe or unsubscribe, is the one people
-miss. For contact imports it takes up to 500 members per call and returns
-`new_members`, `updated_members`, and `errors` synchronously, so an
-8,000-contact import is 16 calls you can read the results of directly. Send
+miss, because the volume suggests the endpoint named "batch." For contact
+imports it returns `new_members`, `updated_members`, and `errors`
+synchronously, so an 8,000-contact import is 16 calls you read the results of
+directly, with no polling and no archive to unpack. Send
 `update_existing: true` to make a re-run safe; without it, addresses already on
 the audience come back as errors.
 
-Reach for `POST /3.0/batches` when the work does not fit that shape: operations
-against different paths, methods other than a member upsert, or a volume where
-you would rather hand the job to Mailchimp than hold a connection open.
+Contact imports are also where the status you send matters. A bulk import
+asserts consent for every address in it, so decide `subscribed` against
+`pending` deliberately rather than per default; the `set-consent-correctly`
+skill covers that decision.
 
-The two 500s are unrelated, and conflating them produces oddly shaped code.
-`POST /3.0/lists/{list_id}` caps at 500 members **per call**. The batch
-endpoint's 500 is a cap on **pending batch requests** across your account.
-There is no documented cap on operations inside a single batch; the worked
-example in [Batch operations](/marketing/api-concepts/batch-operations) submits
-1,000 in one call.
+Three different 500s appear in this area, and conflating them produces oddly
+shaped code:
+
+| 500 | What it limits |
+|---|---|
+| Members per call to `POST /3.0/lists/{list_id}` | One request's payload |
+| Pending batch jobs | How many batches your account can have unfinished at once |
+| Pending batch webhook events | Also throttles new batch creation |
+
+None of them caps operations inside a single batch. The worked example in
+[Batch operations](/marketing/api-concepts/batch-operations) submits 1,000 in
+one call.
 
 ## Do not parallelize to go faster
 
@@ -65,6 +74,30 @@ account. Back off exponentially on `429` with jitter, and cap the retries. If
 you are at the limit often enough that backoff is doing real work, the job
 wants the batch endpoint rather than a bigger pool.
 
+## Build operations with the body as a string
+
+Each entry in `operations` needs `method` and `path`; `operation_id` and
+`body` are optional and you want both. `path` is relative to `/3.0`, and
+`body` is a **string** holding the JSON payload, not a nested object:
+
+```json
+{
+  "method": "PUT",
+  "path": "/lists/{list_id}/members/{subscriber_hash}",
+  "operation_id": "crm-8815",
+  "body": "{\"email_address\":\"person@example.com\",\"status_if_new\":\"subscribed\"}"
+}
+```
+
+Serializing the payload is a step people skip, because every other JSON API
+takes an object here and the field is typed loosely enough that a nested
+object does not fail until the operation runs. Send `params` rather than
+`body` for GET operations.
+
+Set `operation_id` to your own record's identifier. It is the only value that
+maps a result back to the row it came from, and operations are not guaranteed
+to run in order, so position tells you nothing.
+
 ## Poll on a backoff, not a fixed interval
 
 `POST /3.0/batches` returns a batch ID. Poll
@@ -78,13 +111,14 @@ requests that displace the work you are trying to do. Start around 5 seconds,
 double up to a ceiling of a minute or so, and set an overall deadline so a
 wedged job fails loudly instead of looping forever.
 
-Poll only when a person or process is waiting. For anything recurring, create a
-[batch webhook](/marketing/api/batch-webhooks/create) and let Mailchimp tell you
-the job finished. Two constraints come with them: the callback URL is validated
-with a GET before the webhook is accepted, so the endpoint has to answer GET as
-well as POST, and 500 pending batch webhook events throttle new batch creation,
-which surfaces as a `429` on submit rather than on the webhook. The
-`subscribe-to-webhooks` skill covers handler-side verification and idempotency.
+Polling suits a one-off run someone is watching. For a scheduled or recurring
+job, create a [batch webhook](/marketing/api/batch-webhooks/create) and let
+Mailchimp tell you the batch finished. Two constraints come with them: the
+callback URL is validated with a GET before the webhook is accepted, so the
+endpoint has to answer GET as well as POST, and pending batch webhook events
+throttle new batch creation, which surfaces as a `429` on submit rather than
+on the webhook. The `subscribe-to-webhooks` skill covers handler-side
+verification and idempotency.
 
 ## A finished batch is not a successful batch
 
@@ -121,10 +155,6 @@ operation only until an operation returns paged data, at which point its
 responses split across several files, so walk every file in the archive rather
 than assuming a fixed layout.
 
-Set `operation_id` to your own record's identifier when you build the batch.
-It is the only value that maps a result back to the row it came from, and
-operations are not guaranteed to run in order, so position tells you nothing.
-
 ## Retry the failed subset, not the batch
 
 Resubmitting the whole batch re-runs every operation that already succeeded.
@@ -148,10 +178,11 @@ lose the only per-operation record of what happened.
 ## Before you ship
 
 - Endpoint chosen for the job's shape, not the record count alone.
-- Concurrency stays under 10, with backoff on `429` that branches on status
-  code rather than response body.
+- Anything issuing calls in parallel stays well under 10 at once, with backoff
+  on `429` that branches on status code rather than response body.
 - Timeouts are not retried immediately.
+- Batch operations send `body` as a JSON string, with `operation_id` set to
+  your own record identifier.
 - Polling backs off and has a deadline; recurring jobs use a batch webhook.
 - Success requires `errored_operations` of 0, not just `status: "finished"`.
-- `operation_id` carries your own record identifier.
 - Retries cover only the failed subset, split by status code.

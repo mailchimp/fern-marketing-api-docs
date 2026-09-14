@@ -5,7 +5,7 @@
       "name": "run-bulk-jobs",
       "description": "Use when a Mailchimp Marketing API job is too large for one request\u2014importing or updating thousands of contacts, pulling bulk report data, or any loop that would run for minutes\u2014and you need to pick between the bulk endpoints, poll a batch without becoming a rate-limit problem, and tell a partially failed job from a successful one.",
       "url": "/.well-known/agent-skills/run-bulk-jobs/SKILL.md",
-      "digest": "sha256:e21e1a1c94e49ed2877e4801db45c54ccf95bf7619d69a65e77fd1404ba3e913"
+      "digest": "sha256:1dcb6e5f800c5980fc038c8e4cc919cab092595e4ec88cbcd331c3881e1c1e95"
     },
     {
       "name": "set-consent-correctly",
