@@ -5,16 +5,16 @@ description: Use when a Mailchimp Marketing API job is too large for one request
 
 # Run a bulk job safely
 
-Three limits shape every large job on the Marketing API: calls time out at 120
-seconds, you get 10 simultaneous connections per user, and `POST /3.0/batches`
+Three things shape every large job on the Marketing API: calls time out at 120
+seconds, you can hold only 10 connections open at once, and `POST /3.0/batches`
 is asynchronous, so its response tells you a job started rather than that it
 worked. [Rate limits and timeouts](/marketing/api-concepts/rate-limits-and-timeouts)
 and [Batch operations](/marketing/api-concepts/batch-operations) carry the
 numbers and the batch mechanism. This skill covers choosing the right endpoint,
 polling it, and reading the result.
 
-The job to avoid is the one that parallelizes into `429`s and then reports
-success on a batch where a third of the operations failed.
+The job to avoid is the one that adds workers until it hits `429`s, then
+reports success on a batch where a third of the operations failed.
 
 ## Pick the endpoint by shape, not by record count
 
@@ -54,26 +54,36 @@ None of them caps operations inside a single batch. The worked example in
 [Batch operations](/marketing/api-concepts/batch-operations) submits 1,000 in
 one call.
 
-## Do not parallelize to go faster
+## The limit counts open connections, not queued work
 
-The limit is 10 simultaneous connections, and it is per user, not per API key
-or per client. Issuing a second key or splitting work across processes buys
-nothing; those connections land in the same bucket, and the eleventh gets a
+The 10-connection limit counts requests you are holding open at this instant,
+and it is per user rather than per API key or per client. Issuing a second key
+or splitting work across processes buys nothing; those connections land in the
+same bucket, and the eleventh gets a
 [429](/marketing/api-concepts/errors/#error-glossary).
 
-Two consequences worth designing around:
+A submitted batch is not one of those connections. `POST /3.0/batches` returns
+as soon as the job is accepted, and the operations then run on Mailchimp's
+infrastructure rather than on a connection of yours. You can have many batches
+executing at once while holding none open, which is what the batch endpoint is
+for: it converts work that would occupy your connections into work that
+occupies none. The ceiling on batches in flight is the 500 pending jobs, not
+the 10 connections.
+
+So the limit constrains a request loop, not the number of jobs you have
+running. When you are issuing calls yourself, keep concurrency well under 10
+and leave headroom for anything else using the account. Two things make that
+pool smaller than it looks:
 
 - A request that times out on your side may still be running on Mailchimp's,
-  holding its connection. Retrying a timeout immediately narrows the pool
-  you have left, which is how one slow request turns into a run of `429`s.
+  holding its connection. Retrying a timeout immediately narrows the pool you
+  have left, which is how one slow request turns into a run of `429`s.
 - At high volume you can get a `429` or `403` with no JSON body, so a handler
   that parses the body to decide whether to retry will throw on the response
   that most needs handling. Branch on the status code.
 
-Keep concurrency well under 10 and leave headroom for anything else using the
-account. Back off exponentially on `429` with jitter, and cap the retries. If
-you are at the limit often enough that backoff is doing real work, the job
-wants the batch endpoint rather than a bigger pool.
+Back off exponentially on `429` with jitter, and cap the retries. If backoff is
+doing real work, the job wants the batch endpoint rather than a bigger pool.
 
 ## Build operations with the body as a string
 
@@ -106,11 +116,14 @@ to run in order, so position tells you nothing.
 moves through `pending`, `preprocessing`, `started`, `finalizing`, and
 `finished`. Results are only available at `finished`.
 
-A tight poll loop is itself a rate-limit problem: every poll holds one of your
-10 connections, and a batch that takes 20 minutes polled every second is 1,200
-requests that displace the work you are trying to do. Start around 5 seconds,
-double up to a ceiling of a minute or so, and set an overall deadline so a
-wedged job fails loudly instead of looping forever.
+Polling is the one part of a batch job that does consume your connections, and
+a tight loop is a rate-limit problem in its own right. Each poll holds a
+connection for its duration, and a batch that takes 20 minutes polled every
+second is 1,200 requests competing with the work you are trying to do. Start
+around 5 seconds, double up to a ceiling of a minute or so, and set an overall
+deadline so a wedged job fails loudly instead of looping forever. Polling
+several batches at once multiplies this, so back off per job rather than
+polling each one hard.
 
 Polling suits a one-off run someone is watching. For a scheduled or recurring
 job, create a [batch webhook](/marketing/api/batch-webhooks/create) and let
@@ -179,8 +192,9 @@ lose the only per-operation record of what happened.
 ## Before you ship
 
 - Endpoint chosen for the job's shape, not the record count alone.
-- Anything issuing calls in parallel stays well under 10 at once, with backoff
-  on `429` that branches on status code rather than response body.
+- Open connections stay well under 10 at once, counting polls; submitted
+  batches do not count. Backoff on `429` branches on status code rather than
+  response body.
 - Timeouts are not retried immediately.
 - Batch operations send `body` as a JSON string, with `operation_id` set to
   your own record identifier.
