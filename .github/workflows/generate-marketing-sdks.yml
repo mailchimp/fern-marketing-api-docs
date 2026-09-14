@@ -58,4 +58,5 @@ jobs:
       - name: Generate ${{ matrix.group }}
         env:
           FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
+          WHITELABEL_TOKEN: ${{ secrets.WHITELABEL_TOKEN }}
         run: fern generate --api mailchimp-openapi --group ${{ matrix.group }} --retry-rate-limited --log-level debug
