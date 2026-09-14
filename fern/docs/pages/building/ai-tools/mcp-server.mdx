@@ -35,7 +35,7 @@ Ask it what you'd ask a person:
 
 ```bash
 claude mcp add --transport http fern_mcp_mailchimp-docs \
-  https://mailchimp.ferndocs.com/_mcp/server
+  https://preview.developer.mailchimp.com/_mcp/server
 ```
 
 **Cursor**
@@ -43,7 +43,7 @@ claude mcp add --transport http fern_mcp_mailchimp-docs \
 Add the URL to your MCP server configuration:
 
 ```
-https://mailchimp.ferndocs.com/_mcp/server
+https://preview.developer.mailchimp.com/_mcp/server
 ```
 
 **Claude Desktop**
@@ -56,7 +56,7 @@ under `mcpServers` in `claude_desktop_config.json`:
   "mcpServers": {
     "mailchimp-docs": {
       "type": "http",
-      "url": "https://mailchimp.ferndocs.com/_mcp/server"
+      "url": "https://preview.developer.mailchimp.com/_mcp/server"
     }
   }
 }
@@ -71,7 +71,7 @@ Add the same server to `.vscode/mcp.json` in your project:
   "servers": {
     "mailchimp-docs": {
       "type": "http",
-      "url": "https://mailchimp.ferndocs.com/_mcp/server"
+      "url": "https://preview.developer.mailchimp.com/_mcp/server"
     }
   }
 }
