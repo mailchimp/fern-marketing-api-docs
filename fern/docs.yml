@@ -29,6 +29,11 @@ page-actions:
             Record marketing consent from a signup form, checkout, or CRM sync
             without overwriting consent a contact already gave.
           url: https://mailchimp.ferndocs.com/.well-known/agent-skills/set-consent-correctly/SKILL.md
+        - name: subscribe-to-webhooks
+          description: >-
+            Create a webhook, verify delivery signatures, and keep a handler
+            idempotent without echoing your own writes back into the audience.
+          url: https://mailchimp.ferndocs.com/.well-known/agent-skills/subscribe-to-webhooks/SKILL.md
 metadata:
   og:site_name: Mailchimp Developer
   og:title: Mailchimp Developer Documentation
