@@ -3,7 +3,8 @@
   "skills": [
     {
       "name": "run-bulk-jobs",
-      "description": "Use when a Mailchimp Marketing API job is too large for one request\u2014importing or updating thousands of contacts, pulling bulk report data, or any loop that would run for minutes\u2014and you need to pick between the bulk endpoints, poll a batch without becoming a rate-limit problem, and tell a partially failed job from a successful one.",
+      "type": "skill-md",
+      "description": "Use when a Mailchimp Marketing API job is too large for one request—importing or updating thousands of contacts, pulling bulk report data, or any loop that would run for minutes—and you need to pick between the bulk endpoints, poll a batch without becoming a rate-limit problem, and tell a partially failed job from a successful one.",
       "url": "/.well-known/agent-skills/run-bulk-jobs/SKILL.md",
       "digest": "sha256:5b74ddb46afad51ed0ee8b1dc1c8091ac9b173eacfcae15f0c61562504cee892"
     },

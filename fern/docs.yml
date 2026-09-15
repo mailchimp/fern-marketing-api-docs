@@ -29,7 +29,7 @@ page-actions:
             Choose between the bulk endpoints, poll a batch job without hitting
             the connection limit, and catch operations that failed inside a
             batch that reports itself finished.
-          url: https://mailchimp.ferndocs.com/.well-known/agent-skills/run-bulk-jobs/SKILL.md
+          url: https://preview.developer.mailchimp.com/.well-known/agent-skills/run-bulk-jobs/SKILL.md
         - name: set-consent-correctly
           description: >-
             Record marketing consent from a signup form, checkout, or CRM sync
