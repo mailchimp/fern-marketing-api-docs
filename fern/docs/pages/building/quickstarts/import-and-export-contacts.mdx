@@ -1,15 +1,11 @@
 ---
 title: Import and export contacts
-description: Import contacts into an existing audience and export them back out, including bulk operations.
+description: Import contacts into an existing audience and read them back out, including bulk operations.
 ---
 
 ## At a glance
 
 This guide covers the contact operations you'll use in most integrations: adding a contact, upserting one whether or not it already exists, importing a batch of them at once, and reading them back. We'll use the [Members endpoint](/marketing/api/lists/create-member) to add and update contacts one at a time, and the [Batch endpoint](/marketing/api-concepts/batch-operations) to scale that up.
-
-This guide also covers [Account exports](/marketing/build/start-developing/account-exports), which exports your whole account at once—audiences, campaigns, templates, and reporting data together. It's the right tool for a full account snapshot, not for scaling contact reads on their own; accounts are limited to one export every 24 hours, so batched, paginated GET calls are the better fit when contacts are all you need.
-
-This guide also covers writing and reading SMS contacts through the newer, beta [Audiences endpoints](/marketing/api-concepts/audiences-endpoints-beta), which model a contact across the email and SMS channels together. The classic Members endpoint above has no phone or SMS field at all, so SMS work happens through this separate surface.
 
 For the contact and audience data model this guide assumes, see [Contacts](/marketing/concepts/audiences/contacts).
 
@@ -107,16 +103,14 @@ run();
 
 This endpoint identifies the contact by `subscriber_hash`: the MD5 hash of their lowercased email address, not the address itself. The same hashing rule applies everywhere the Members endpoint addresses a contact directly, including [tags](/marketing/build/quickstarts/organize-contacts-with-tags). Compute it client-side; there's no lookup endpoint that takes a plain email address and returns the hash.
 
-The newer, beta [Audiences endpoints](/marketing/api-concepts/audiences-endpoints-beta) identify a contact by `contact_id` instead of a hash, and they're the only surface that records SMS consent; see [Write a new SMS contact](#write-a-new-sms-contact) later in this guide. The examples above use the stable Members endpoint, so they address contacts by `subscriber_hash`.
-
-The body takes `status_if_new` in addition to `status` for a reason: this call might create the contact or update them, and Mailchimp only requires `status_if_new` for the case where it's the one creating the contact. That makes it the field to set on an import where you don't know who's already in the audience. If you already know the contact exists and only need to update them, `status` covers that case. The same single opt-in versus double opt-in choice from the previous section applies to whichever field you're setting.
+`email_address` is the only field this endpoint requires. `status_if_new` is optional, and Mailchimp only requires it for the call that actually creates the contact; `status` is the field for updating one you know already exists. Send `status_if_new` anyway on an import where you don't know who's already in the audience: it sets the status for whichever contacts turn out to be new, without you having to check first. The same single opt-in versus double opt-in choice from the previous section applies to whichever field you're setting.
 
 <Note>
 `email_address` is required on every PUT to this endpoint, even though the URL already identifies the contact by hash. The API needs it to backfill the record if the hash doesn't match anyone yet.
 </Note>
 
 <Note>
-If a coding agent is writing this integration for you, it doesn't have to infer the opt-in rules above on its own. Install Mailchimp's [agent skills](/marketing/build/ai-tools/agent-skills) with `npx skills add https://preview.developer.mailchimp.com`, and the `set-consent-correctly` skill teaches it the same single opt-in versus double opt-in logic directly.
+If a coding agent is writing this integration for you, it doesn't have to infer the opt-in rules above on its own. Install Mailchimp's [agent skills](/marketing/build/ai-tools/agent-skills) with `npx skills add https://preview.developer.mailchimp.com`, and the `set-consent-correctly` skill teaches it the same single opt-in versus double opt-in logic directly. It's also the place to go for less common cases this guide doesn't cover.
 </Note>
 
 ## Bulk import at volume
@@ -205,132 +199,15 @@ The response includes `total_items` and a `members` array, trimmed here to one e
 
 `count` defaults to 10 and maxes out at 1000; page through a larger audience with `offset`. Filter by `status`, or by `since_last_changed` to pull only what's changed since your last sync.
 
-The Batch endpoint isn't only for writes. If you need to look up a specific set of contacts, such as everyone from the import above, batch a GET operation per `subscriber_hash` the same way as the PUT calls in the previous section, rather than paging through the whole audience to find them. A single batch can also mix operations across `/lists/.../members` and `/audiences/.../contacts` paths, for a combined read across a contact's classic and SMS records; see [Batch operations](/marketing/api-concepts/batch-operations) for how that works.
-
-## Bulk export
-
-[Account exports](/marketing/build/start-developing/account-exports) exports your whole account at once—audiences, campaigns, templates, and reporting data together—not just contacts. It's the right choice for a full account snapshot; for contacts alone at scale, batch paginated GET calls instead, as in the previous section. Accounts are limited to one export every 24 hours, so Account exports isn't a fit for routine contact syncing.
-
-To request just the audience data instead of the whole account, use the `audiences` stage:
-
-```bash title="cURL"
-apikey="YOUR_API_KEY"
-
-curl -s --request POST \
-  --url "https://api.mailchimp.com/3.0/account-exports" \
-  --user "anystring:${apikey}" \
-  --data '{"include_stages": ["audiences"]}'
-```
-
-The response returns an `export_id` immediately, but the export itself builds in the background. Poll for it with the `export_id`:
-
-```bash title="cURL"
-apikey="YOUR_API_KEY"
-exportid="YOUR_EXPORT_ID"
-
-curl -s --request GET \
-  --url "https://api.mailchimp.com/3.0/account-exports/${exportid}" \
-  --user "anystring:${apikey}"
-```
-
-Check the response for a `download_url`; it's absent until the export finishes. Once it's there, it's a signed URL good for 90 days, and no further authentication is needed to fetch it, so guard it like you would your API key. For the full list of export stages, time-limiting an export, and the rate limits on how often you can request one, see [Account exports](/marketing/build/start-developing/account-exports).
-
-## Write a new SMS contact
-
-SMS contacts don't go through the Members endpoint above, since it has no phone field. Write one through the beta [Audiences endpoints](/marketing/api-concepts/audiences-endpoints-beta) instead, which model a contact across channels rather than one endpoint per channel:
-
-```bash title="cURL"
-apikey="YOUR_API_KEY"
-audienceid="YOUR_AUDIENCE_ID"
-
-curl -s --request POST \
-  --url "https://api.mailchimp.com/3.0/audiences/${audienceid}/contacts" \
-  --user "anystring:${apikey}" \
-  --data '{
-    "sms_channel": {
-      "sms_phone": "+16155550128",
-      "marketing_consent": { "status": "consented" }
-    }
-  }'
-```
-
-`marketing_consent.status` follows the same single opt-in versus double opt-in split as email: send `consented` on a single opt-in audience, `confirmed` on a double opt-in one. `denied` isn't accepted on create; it's only valid on an update, covered next. To add both channels on the same person in one call, include an `email_channel` object alongside `sms_channel`; a contact isn't limited to one channel.
-
-The response returns the new contact's `id`, plus `sms_channel.hashed_sms_phone`: the SHA256 hash of the phone number in E.164 format, which is how you'll address this contact going forward.
+The Batch endpoint isn't only for writes. If you need to look up a specific set of contacts, such as everyone from the import above, batch a GET operation per `subscriber_hash` the same way as the PUT calls in the previous section, rather than paging through the whole audience to find them.
 
 <Note>
-This call fails if the phone number is already on a contact in this audience, the same way the classic Members endpoint fails on a duplicate email. Set `update_existing: true` in the body to upsert instead, matching an existing contact by email or phone and updating them rather than erroring.
+Contacts aren't limited to email. The beta [Audiences endpoints](/marketing/api-concepts/audiences-endpoints-beta) let you add and read a contact by SMS phone number too, through `/3.0/audiences/{audience_id}/contacts`. For consent rules, addressing a contact by phone, and the rest of what that surface can do, see the `set-consent-correctly` skill mentioned above.
 </Note>
-
-## Update an SMS contact
-
-PATCH the same resource, addressing the contact either by the `id` from the create response or by a channel hash: `sms:` followed by the SHA256 hash of the E.164 phone number, computed the same way `subscriber_hash` is computed for email, just with a different algorithm:
-
-```bash title="cURL"
-apikey="YOUR_API_KEY"
-audienceid="YOUR_AUDIENCE_ID"
-phone="+16155550128"
-sms_hash="sms:$(echo -n "$phone" | sha256sum | cut -d' ' -f1)"
-# macOS: sms_hash="sms:$(echo -n "$phone" | shasum -a 256 | cut -d' ' -f1)"
-
-curl -s --request PATCH \
-  --url "https://api.mailchimp.com/3.0/audiences/${audienceid}/contacts/${sms_hash}" \
-  --user "anystring:${apikey}" \
-  --data '{"merge_fields": {"FNAME": "Grace"}}'
-```
-
-To withdraw SMS consent, send `denied` explicitly. The same rule as email applies: silence isn't a withdrawal, and neither is an update that leaves consent untouched. Only an explicit `denied` counts.
-
-```bash title="cURL"
-curl -s --request PATCH \
-  --url "https://api.mailchimp.com/3.0/audiences/${audienceid}/contacts/${sms_hash}" \
-  --user "anystring:${apikey}" \
-  --data '{"sms_channel": {"marketing_consent": {"status": "denied"}}}'
-```
-
-`denied` is accepted here but not on create; it's the SMS equivalent of setting `status` to `unsubscribed` on the classic Members endpoint. Act on a withdrawal promptly, same as with email.
-
-## Bulk read contacts across channels
-
-The Members endpoint's GET only returns email contacts. To read contacts with both channels in one record, GET the Audiences/Contacts collection instead:
-
-```bash title="cURL"
-apikey="YOUR_API_KEY"
-audienceid="YOUR_AUDIENCE_ID"
-
-curl -s --request GET \
-  --url "https://api.mailchimp.com/3.0/audiences/${audienceid}/contacts?count=10" \
-  --user "anystring:${apikey}"
-```
-
-The response is shaped differently from the Members endpoint: it paginates with a `next_cursor` instead of `offset`, and each contact carries both channels, trimmed here to one entry:
-
-```json
-{
-  "contacts": [
-    {
-      "id": "7CCF816ADF6CE1B11AE09BB024A02B9B",
-      "audience_id": "YOUR_AUDIENCE_ID",
-      "email_channel": {
-        "email": "ada.lovelace@example.com",
-        "effective_subscription_status": { "value": "subscribed" }
-      },
-      "sms_channel": {
-        "sms_phone": "+16155550128",
-        "effective_subscription_status": { "value": "subscribed" }
-      }
-    }
-  ],
-  "next_cursor": "..."
-}
-```
-
-Set `cursor` to the previous response's `next_cursor` to get the next page; an empty or absent `next_cursor` means you've reached the end. Filter with `created_since`, `updated_since`, and their `_before` counterparts to pull only what's changed since your last sync, the same idea as `since_last_changed` on the classic endpoint.
 
 ## More resources
 
 - [Organize contacts with tags](/marketing/build/quickstarts/organize-contacts-with-tags)
-- [Audiences endpoints (beta)](/marketing/api-concepts/audiences-endpoints-beta)
+- [Agent skills](/marketing/build/ai-tools/agent-skills)
 - [Members API Reference](/marketing/api/lists/list-members)
 - [Batch API Reference](/marketing/api/batches/create)
-- [Account Exports API Reference](/marketing/api/account-exports/create)
