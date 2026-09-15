@@ -10,7 +10,7 @@ description: Scale large or long-running calls to the Marketing API with batch r
 The Batch endpoint lets you scale more efficiently by leveraging Mailchimp’s infrastructure to enqueue and monitor longer-running requests. Batch operations run in the background on Mailchimp’s servers, and are particularly useful in three contexts:
 
 1. Requests to the Marketing API time out at 120 seconds, so if you’re making a long-running request that won’t finish in that time, you may need to use the Batch endpoint to complete the request.
-2. The Marketing API has a limit of 10 concurrent connections for your API key. If you’re expecting to make a higher volume of requests from your application, Batch requests will let you work around this limitation.
+2. The Marketing API has a limit of 10 simultaneous connections. The limit is per user, not per API key or per client, so issuing a second key or splitting the work across processes does not raise it. Sending the work to the Batch endpoint as a single request does, because Mailchimp runs the operations on its own infrastructure rather than on your connections.
 3. Depending on your server language or architecture, you may not want a request to the Marketing API to block other threads. Batch requests are fast and won’t block while long operations take place.
 
 You can use the Batch endpoint to do things like: 
