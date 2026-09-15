@@ -14,8 +14,10 @@ and [Batch operations](https://preview.developer.mailchimp.com/marketing/api-con
 carry the numbers and the batch mechanism. This skill covers choosing the right
 endpoint, polling it, and reading the result.
 
-The job to avoid is the one that adds workers until it hits `429`s, then
-reports success on a batch where a third of the operations failed.
+Two mistakes are common enough to name. One is adding workers to make a job go
+faster until the extra requests start returning `429`. The other is treating a
+batch as successful because it finished, when a finished batch can contain
+operations that all failed.
 
 ## Pick the endpoint by shape, not by record count
 
@@ -59,8 +61,8 @@ submits 1,000 in one call.
 
 The 10-connection limit counts requests you are holding open at this instant,
 and it is per user rather than per API key or per client. Issuing a second key
-or splitting work across processes buys nothing; those connections land in the
-same bucket, and the eleventh gets a
+or splitting work across processes does not raise it, because those connections
+count against the same limit, and the eleventh gets a
 [429](https://preview.developer.mailchimp.com/marketing/api-concepts/errors.md#error-glossary).
 
 A submitted batch is not one of those connections. `POST /3.0/batches` returns
@@ -83,8 +85,9 @@ pool smaller than it looks:
   that parses the body to decide whether to retry will throw on the response
   that most needs handling. Branch on the status code.
 
-Back off exponentially on `429` with jitter, and cap the retries. If backoff is
-doing real work, the job wants the batch endpoint rather than a bigger pool.
+Back off exponentially on `429` with jitter, and cap the retries. If you are
+hitting `429` often enough that the backoff runs regularly, send the job to the
+batch endpoint instead of enlarging the connection pool.
 
 ## Build operations with the body as a string
 
@@ -138,10 +141,9 @@ verification and idempotency.
 
 ## A finished batch is not a successful batch
 
-This is the failure that ships. `status: "finished"` means Mailchimp ran every
-operation, not that any of them worked, and `finished_operations` counts
-operations that returned an error. So the obvious completeness check passes on
-a job that half-failed:
+`status: "finished"` means Mailchimp ran every operation, not that any of them
+worked, and `finished_operations` counts operations that returned an error. So
+the obvious completeness check passes on a job that half-failed:
 
 ```
 finished_operations == total_operations   // true even when everything errored
@@ -165,7 +167,7 @@ entry per operation:
 ]
 ```
 
-Two things about that archive catch people out. `response` is a JSON string
+Two things about that archive are easy to get wrong. `response` is a JSON string
 that needs a second parse, not a nested object. And there is one file per
 operation only until an operation returns paged data, at which point its
 responses split across several files, so walk every file in the archive rather
@@ -181,12 +183,17 @@ Build the retry from the `operation_id`s that failed, and split them by
 |---|---|---|
 | `429` | Throttled | Resubmit after a backoff |
 | `5xx` | Mailchimp-side | Resubmit after a backoff |
-| `400`, `422` | The operation is malformed or the data is invalid | Fix the record; resubmitting is a loop |
+| `400`, `422` | The operation is malformed or the data is invalid | Fix the record; resubmitting without fixing the data returns the same `400` or `422` |
 | `404` | The target does not exist | Fix the path or the record |
 
-A bad email address returns `400` every time it is sent. Blind retries on the
-whole failed set turn a reportable data problem into an infinite loop that
-still ends with the same records missing.
+A bad email address returns `400` every time it is sent. Retrying the whole
+failed set without separating these turns a data problem you could report into
+a loop that ends with the same records still missing.
+
+If a `429` response carries a `Retry-After` header, wait for the interval it
+gives before resubmitting rather than using your own backoff, or you risk being
+throttled again. Mailchimp does not currently send the header, so treat it as
+an instruction to follow when present rather than something to depend on.
 
 Keep the archive, or a digest of it, after the job. Once the batch ages out you
 lose the only per-operation record of what happened.
@@ -194,9 +201,9 @@ lose the only per-operation record of what happened.
 ## Before you ship
 
 - Endpoint chosen for the job's shape, not the record count alone.
-- Open connections stay well under 10 at once, counting polls; submitted
+- Open connections stay well under 10 at a time, counting polls; submitted
   batches do not count. Backoff on `429` branches on status code rather than
-  response body.
+  response body, and honors `Retry-After` when the response carries it.
 - Timeouts are not retried immediately.
 - Batch operations send `body` as a JSON string, with `operation_id` set to
   your own record identifier.
