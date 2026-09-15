@@ -99,109 +99,223 @@ curl -sS --request POST \
 EOF
 ```
 
-```javascript title="Node"
-const mailchimp = require("@mailchimp/mailchimp_marketing");
+```typescript title="TypeScript"
+import { MailchimpClient } from "@mailchimp/mailchimp-marketing";
 
-mailchimp.setConfig({
-  apiKey: "YOUR_API_KEY"
+const client = new MailchimpClient({
+  token: "YOUR_API_KEY",
 });
 
 const listId = "YOUR_LIST_ID";
 
-async function run() {
-  const myUsers = [
-    {
-      id: "1",
-      email: "user1@example.com"
-    },
-    {
-      id: "2",
-      email: "user2@example.com"
-    }
-    // etc...
-  ];
+const myUsers = [
+  { id: "1", email: "user1@example.com" },
+  { id: "2", email: "user2@example.com" },
+  // etc...
+];
 
-  const operations = myUsers.map((user, i) => ({
-    method: "POST",
-    path: `/lists/${listId}/members}`,
-    operation_id: user.id,
-    body: JSON.stringify({
-      email_address: user.email,
-      status: "subscribed"
+const operations = myUsers.map((user) => ({
+  method: "POST" as const,
+  path: `/lists/${listId}/members`,
+  operation_id: user.id,
+  body: JSON.stringify({
+    email_address: user.email,
+    status: "subscribed",
+  }),
+}));
+
+const response = await client.batches.create({ operations });
+console.log(response);
+```
+
+```python title="Python"
+import json
+from mailchimp_marketing import MailchimpClient
+
+client = MailchimpClient(token="YOUR_API_KEY")
+
+list_id = "YOUR_LIST_ID"
+
+users = [
+    {"id": "1", "email": "user1@example.com"},
+    {"id": "2", "email": "user2@example.com"},
+]
+
+operations = []
+for user in users:
+    operations.append({
+        "method": "POST",
+        "path": f"/lists/{list_id}/members",
+        "operation_id": user["id"],
+        "body": json.dumps({
+            "email_address": user["email"],
+            "status": "subscribed",
+        }),
     })
-  }));
 
-  const response = await mailchimp.batches.start({
-    operations
-  });
-  console.log(response);
+response = client.batches.create(operations=operations)
+print(response)
+```
+
+```go title="Go"
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+
+	sdk "github.com/mailchimp/mailchimp-marketing-go-sdk"
+	mailchimp "github.com/mailchimp/mailchimp-marketing-go-sdk/client"
+	"github.com/mailchimp/mailchimp-marketing-go-sdk/option"
+)
+
+client := mailchimp.NewMailchimpClient(
+	option.WithToken("YOUR_API_KEY"),
+)
+
+listID := "YOUR_LIST_ID"
+
+type user struct {
+	ID    string
+	Email string
 }
 
-run();
+users := []user{
+	{ID: "1", Email: "user1@example.com"},
+	{ID: "2", Email: "user2@example.com"},
+}
+
+var operations []*sdk.CreateBatchesRequestOperationsItem
+for _, u := range users {
+	body, _ := json.Marshal(map[string]string{
+		"email_address": u.Email,
+		"status":        "subscribed",
+	})
+	operationID := u.ID
+	operations = append(operations, &sdk.CreateBatchesRequestOperationsItem{
+		Method:      sdk.CreateBatchesRequestOperationsItemMethodPost,
+		Path:        fmt.Sprintf("/lists/%s/members", listID),
+		OperationID: &operationID,
+		Body:        sdk.String(string(body)),
+	})
+}
+
+response, err := client.Batches.Create(context.Background(), &sdk.CreateBatchesRequest{
+	Operations: operations,
+})
+fmt.Println(response)
+```
+
+```java title="Java"
+import com.mailchimp.marketing.MailchimpClient;
+import com.mailchimp.marketing.resources.batches.requests.CreateBatchesRequest;
+import com.mailchimp.marketing.resources.batches.types.CreateBatchesRequestOperationsItem;
+import com.mailchimp.marketing.resources.batches.types.CreateBatchesRequestOperationsItemMethod;
+
+MailchimpClient client = MailchimpClient.builder()
+    .token("YOUR_API_KEY")
+    .build();
+
+String listId = "YOUR_LIST_ID";
+
+record User(String id, String email) {}
+List<User> users = List.of(
+    new User("1", "user1@example.com"),
+    new User("2", "user2@example.com")
+);
+
+List<CreateBatchesRequestOperationsItem> operations = users.stream()
+    .map(user -> CreateBatchesRequestOperationsItem.builder()
+        .method(CreateBatchesRequestOperationsItemMethod.POST)
+        .path("/lists/" + listId + "/members")
+        .operationId(user.id())
+        .body("{\"email_address\":\"" + user.email() + "\",\"status\":\"subscribed\"}")
+        .build())
+    .toList();
+
+var response = client.batches().create(
+    CreateBatchesRequest.builder()
+        .operations(operations)
+        .build()
+);
+System.out.println(response);
+```
+
+```csharp title="C#"
+using Mailchimp.Marketing;
+
+var client = new MailchimpClient("YOUR_API_KEY");
+
+var listId = "YOUR_LIST_ID";
+
+var users = new[]
+{
+    (Id: "1", Email: "user1@example.com"),
+    (Id: "2", Email: "user2@example.com"),
+};
+
+var operations = users.Select(user => new CreateBatchesRequestOperationsItem
+{
+    Method = CreateBatchesRequestOperationsItemMethod.Post,
+    Path = $"/lists/{listId}/members",
+    OperationId = user.Id,
+    Body = System.Text.Json.JsonSerializer.Serialize(new { email_address = user.Email, status = "subscribed" }),
+}).ToList();
+
+var response = await client.Batches.CreateAsync(
+    new CreateBatchesRequest { Operations = operations }
+);
+Console.WriteLine(response);
 ```
 
 ```php title="PHP"
-require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
+require_once('/path/to/vendor/autoload.php');
 
-$mailchimp = new MailchimpMarketing\ApiClient();
+use Mailchimp\MailchimpClient;
+use Mailchimp\Batches\Requests\CreateBatchesRequest;
+use Mailchimp\Batches\Types\CreateBatchesRequestOperationsItem;
+use Mailchimp\Batches\Types\CreateBatchesRequestOperationsItemMethod;
 
-$mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY'
-]);
+$mailchimp = new MailchimpClient('YOUR_API_KEY');
 
 $list_id = "YOUR_LIST_ID";
 
 $users = [
-    [
-        'id' => '1',
-        'email' => 'user1@example.com'
-    ],
-    [
-        'id' => '2',
-        'email' => 'user2@example.com'
-    ],
+    ['id' => '1', 'email' => 'user1@example.com'],
+    ['id' => '2', 'email' => 'user2@example.com'],
 ];
 
 $operations = [];
 foreach ($users as $user) {
-    $operation = [
-        'method' => 'POST',
+    $operations[] = new CreateBatchesRequestOperationsItem([
+        'method' => CreateBatchesRequestOperationsItemMethod::Post,
         'path' => "/lists/$list_id/members",
-        'operation_id' => $user['id'],
+        'operationId' => $user['id'],
         'body' => json_encode([
             'email_address' => $user['email'],
             'status' => 'subscribed'
         ])
-    ];
-    array_push($operations, $operation);
+    ]);
 }
 
 try {
-    $response = $mailchimp->batches->start($operations);
+    $response = $mailchimp->batches->create(new CreateBatchesRequest([
+        'operations' => $operations,
+    ]));
     echo $response;
-} catch (\MailchimpMarketing\ApiException $e) {
+} catch (Exception $e) {
     echo $e->getMessage();
 }
 ```
 
 ```ruby title="Ruby"
-require "MailchimpMarketing"
+require "mailchimp"
 
-mailchimp = MailchimpMarketing::Client.new
-mailchimp.set_config({
-  :api_key => ENV["API_KEY"]
-})
+mailchimp = Mailchimp::Client.new(token: ENV["API_KEY"])
 list_id = ENV["LIST_ID"]
 
 mock_users = [
-  {
-    id: 1,
-    email: "user1@example.com"
-  },
-  {
-    id: 2,
-    email: "user2@example.com"
-  }
+  { id: "1", email: "user1@example.com" },
+  { id: "2", email: "user2@example.com" }
 ]
 
 operations = mock_users.map do |user|
@@ -212,55 +326,70 @@ operations = mock_users.map do |user|
     body: {
       email_address: user[:email],
       status: "subscribed"
-    }
+    }.to_json
   }
 end
 
-response = mailchimp.batches.start operations
+response = mailchimp.batches.create(operations: operations)
 puts response
 ```
 
-```python title="Python"
-from mailchimp_marketing import Client
-import json
+```swift title="Swift"
+import Mailchimp
 
-mailchimp = Client()
-mailchimp.set_config({
-  "api_key": "YOUR_API_KEY"
-})
+let client = MailchimpClient(token: "YOUR_API_KEY")
 
-list_id = 'YOUR_LIST_ID'
+let listId = "YOUR_LIST_ID"
 
-users = [
-    {
-        'id': '1',
-        'email': 'user1@example.com'
-    },
-    {
-        'id': '2',
-        'email': 'user2@example.com'
-    },
+let users = [
+    (id: "1", email: "user1@example.com"),
+    (id: "2", email: "user2@example.com"),
 ]
 
-operations = []
-for user in users:
-    operation = {
-        "method": "POST",
-        "path": f"/lists/{list_id}/members",
-        "operation_id": user['id'],
-        "body": json.dumps({
-            "email_address": user['email'],
-            "status": "subscribed"
-        })
-    }
-    operations.append(operation)
-
-payload = {
-    "operations": operations
+let operations = users.map { user in
+    CreateBatchesRequestOperationsItem(
+        method: .post,
+        path: "/lists/\(listId)/members",
+        operationId: user.id,
+        body: "{\"email_address\":\"\(user.email)\",\"status\":\"subscribed\"}"
+    )
 }
 
-response = mailchimp.batches.start(payload)
+let response = try await client.batches.create(
+    request: Requests.CreateBatchesRequest(operations: operations)
+)
 print(response)
+```
+
+```rust title="Rust"
+use mailchimp_marketing::prelude::*;
+
+let config = ClientConfig {
+    token: Some("YOUR_API_KEY".to_string()),
+    ..Default::default()
+};
+let client = MailchimpClient::new(config).expect("Failed to build client");
+
+let list_id = "YOUR_LIST_ID";
+let users = vec![("1", "user1@example.com"), ("2", "user2@example.com")];
+
+let operations = users
+    .into_iter()
+    .map(|(id, email)| CreateBatchesRequestOperationsItem {
+        method: CreateBatchesRequestOperationsItemMethod::Post,
+        path: format!("/lists/{list_id}/members"),
+        operation_id: Some(id.to_string()),
+        body: Some(format!(r#"{{"email_address":"{email}","status":"subscribed"}}"#)),
+        headers: None,
+        params: None,
+    })
+    .collect();
+
+let response = client
+    .batches
+    .create(&CreateBatchesRequest { operations }, None)
+    .await;
+println!("{:?}", response);
 ```
 </CodeBlocks>
 
@@ -309,54 +438,122 @@ curl -sS \
   --user "`anystring`:${apikey}" | jq '.status'
 ```
 
-```javascript title="Node"
+```typescript title="TypeScript"
 const batchId = "YOUR_BATCH_OPERATION_ID";
 
-async function run() {
-  const response = await mailchimp.batches.status(batchId);
-  console.log(response.status);
-}
+const response = await client.batches.get({ batch_id: batchId });
+console.log(response.status);
+```
 
-run();
+```python title="Python"
+batch_id = "YOUR_BATCH_ID"
+
+response = client.batches.get(batch_id)
+print(response.status)
+```
+
+```go title="Go"
+import (
+	"context"
+	"fmt"
+
+	sdk "github.com/mailchimp/mailchimp-marketing-go-sdk"
+	mailchimp "github.com/mailchimp/mailchimp-marketing-go-sdk/client"
+	"github.com/mailchimp/mailchimp-marketing-go-sdk/option"
+)
+
+client := mailchimp.NewMailchimpClient(
+	option.WithToken("YOUR_API_KEY"),
+)
+
+batchID := "YOUR_BATCH_ID"
+
+response, err := client.Batches.Get(context.Background(), &sdk.GetBatchesRequest{
+	BatchID: batchID,
+})
+fmt.Println(*response.Status)
+```
+
+```java title="Java"
+import com.mailchimp.marketing.MailchimpClient;
+
+MailchimpClient client = MailchimpClient.builder()
+    .token("YOUR_API_KEY")
+    .build();
+
+String batchId = "YOUR_BATCH_ID";
+
+var response = client.batches().get(batchId);
+System.out.println(response.getStatus().orElse(null));
+```
+
+```csharp title="C#"
+using Mailchimp.Marketing;
+
+var client = new MailchimpClient("YOUR_API_KEY");
+
+var batchId = "YOUR_BATCH_ID";
+
+var response = await client.Batches.GetAsync(
+    new GetBatchesRequest { BatchId = batchId }
+);
+Console.WriteLine(response.Status);
 ```
 
 ```php title="PHP"
-require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
+require_once('/path/to/vendor/autoload.php');
 
-$mailchimp = new MailchimpMarketing\ApiClient();
+use Mailchimp\MailchimpClient;
 
-$mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY'
-]);
+$mailchimp = new MailchimpClient('YOUR_API_KEY');
 
 $batch_id = 'YOUR_BATCH_ID';
 
 try {
-    $response = $mailchimp->batches->status($batch_id);
-    echo $response["status"];
-} catch (\MailchimpMarketing\ApiException $e) {
+    $response = $mailchimp->batches->get($batch_id);
+    echo $response->status;
+} catch (Exception $e) {
     echo $e->getMessage();
 }
 ```
 
 ```ruby title="Ruby"
-require "MailchimpMarketing"
+require "mailchimp"
 
-mailchimp = MailchimpMarketing::Client.new
-mailchimp.set_config({
-  :api_key => ENV["API_KEY"]
-})
-batch_id = ENV["BATCH_OPERATION_ID"]
+mailchimp = Mailchimp::Client.new(token: ENV["API_KEY"])
+batch_id = ENV["BATCH_ID"]
 
-response = mailchimp.batches.status batch_id
+response = mailchimp.batches.get(batch_id: batch_id)
 puts response.status
 ```
 
-```python title="Python"
-batch_id = 'YOUR_BATCH_ID'
+```swift title="Swift"
+import Mailchimp
 
-response = mailchimp.batches.status(batch_id)
-print(response)
+let client = MailchimpClient(token: "YOUR_API_KEY")
+
+let batchId = "YOUR_BATCH_ID"
+
+let response = try await client.batches.get(batchId: batchId)
+print(response.status?.rawValue ?? "unknown")
+```
+
+```rust title="Rust"
+use mailchimp_marketing::prelude::*;
+
+let config = ClientConfig {
+    token: Some("YOUR_API_KEY".to_string()),
+    ..Default::default()
+};
+let client = MailchimpClient::new(config).expect("Failed to build client");
+
+let batch_id = "YOUR_BATCH_ID";
+
+let response = client
+    .batches
+    .get(batch_id, &BatchesGetQueryRequest::default(), None)
+    .await;
+println!("{:?}", response);
 ```
 </CodeBlocks>
 
@@ -517,59 +714,140 @@ curl -sS --request POST \
 EOF
 ```
 
-```javascript title="Node"
-const url = 'https://example.com/your-webhook-url';
+```typescript title="TypeScript"
+import { MailchimpClient } from "@mailchimp/mailchimp-marketing";
 
-async function run() {
-  const response = await mailchimp.batchWebhooks.create({ url });
-  console.log(response);
-}
+const client = new MailchimpClient({
+  token: "YOUR_API_KEY",
+});
 
-run();
+const url = "https://example.com/your-webhook-url";
+
+const response = await client.batchWebhooks.create({ url });
+console.log(response);
+```
+
+```python title="Python"
+from mailchimp_marketing import MailchimpClient
+
+client = MailchimpClient(token="YOUR_API_KEY")
+
+webhook_url = "https://example.com/your-webhook-url"
+
+response = client.batch_webhooks.create(url=webhook_url)
+print(response)
+```
+
+```go title="Go"
+import (
+	"context"
+	"fmt"
+
+	sdk "github.com/mailchimp/mailchimp-marketing-go-sdk"
+	mailchimp "github.com/mailchimp/mailchimp-marketing-go-sdk/client"
+	"github.com/mailchimp/mailchimp-marketing-go-sdk/option"
+)
+
+client := mailchimp.NewMailchimpClient(
+	option.WithToken("YOUR_API_KEY"),
+)
+
+url := "https://example.com/your-webhook-url"
+
+response, err := client.BatchWebhooks.Create(context.Background(), &sdk.CreateBatchWebhooksRequest{
+	URL: url,
+})
+fmt.Println(response)
+```
+
+```java title="Java"
+import com.mailchimp.marketing.MailchimpClient;
+import com.mailchimp.marketing.resources.batchwebhooks.requests.CreateBatchWebhooksRequest;
+
+MailchimpClient client = MailchimpClient.builder()
+    .token("YOUR_API_KEY")
+    .build();
+
+var response = client.batchWebhooks().create(
+    CreateBatchWebhooksRequest.builder()
+        .url("https://example.com/your-webhook-url")
+        .build()
+);
+System.out.println(response);
+```
+
+```csharp title="C#"
+using Mailchimp.Marketing;
+
+var client = new MailchimpClient("YOUR_API_KEY");
+
+var response = await client.BatchWebhooks.CreateAsync(
+    new CreateBatchWebhooksRequest { Url = "https://example.com/your-webhook-url" }
+);
+Console.WriteLine(response);
 ```
 
 ```php title="PHP"
-require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
+require_once('/path/to/vendor/autoload.php');
 
-$mailchimp = new MailchimpMarketing\ApiClient();
+use Mailchimp\MailchimpClient;
+use Mailchimp\BatchWebhooks\Requests\CreateBatchWebhooksRequest;
 
-$mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY'
-]);
+$mailchimp = new MailchimpClient('YOUR_API_KEY');
 
 try {
-    $response = $mailchimp->batchWebhooks->create([
-        "url" => "https://example.com/your-webhook-url",
-    ]);
+    $response = $mailchimp->batchWebhooks->create(new CreateBatchWebhooksRequest([
+        'url' => "https://example.com/your-webhook-url",
+    ]));
 
     echo $response;
-} catch (\MailchimpMarketing\ApiException $e) {
+} catch (Exception $e) {
     echo $e->getMessage();
 }
 ```
 
 ```ruby title="Ruby"
-require "MailchimpMarketing"
+require "mailchimp"
 
-mailchimp = MailchimpMarketing::Client.new
-mailchimp.set_config({
-  :api_key => ENV["API_KEY"]
-})
+mailchimp = Mailchimp::Client.new(token: ENV["API_KEY"])
 
 url = "https://example.com/your-webhook-url"
 
-response = mailchimp.batchWebhooks.create url
+response = mailchimp.batch_webhooks.create(url: url)
 puts response
 ```
 
-```python title="Python"
-webhook_url = "YOUR_WEBHOOK_ABSOLUTE_URL"
-payload = {
-    "url": webhook_url
-}
+```swift title="Swift"
+import Mailchimp
 
-response = mailchimp.batchWebhooks.create(payload)
+let client = MailchimpClient(token: "YOUR_API_KEY")
+
+let response = try await client.batchWebhooks.create(
+    request: Requests.CreateBatchWebhooksRequest(url: "https://example.com/your-webhook-url")
+)
 print(response)
+```
+
+```rust title="Rust"
+use mailchimp_marketing::prelude::*;
+
+let config = ClientConfig {
+    token: Some("YOUR_API_KEY".to_string()),
+    ..Default::default()
+};
+let client = MailchimpClient::new(config).expect("Failed to build client");
+
+let response = client
+    .batch_webhooks
+    .create(
+        &CreateBatchWebhooksRequest {
+            enabled: None,
+            url: "https://example.com/your-webhook-url".to_string(),
+        },
+        None,
+    )
+    .await;
+println!("{:?}", response);
 ```
 </CodeBlocks>
 
