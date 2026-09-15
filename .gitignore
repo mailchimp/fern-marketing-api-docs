@@ -1,2 +1,5 @@
 
 .playwright-mcp/
+
+# Per-user Claude Code settings; the shared skills in .claude/skills are tracked
+.claude/settings.local.json
