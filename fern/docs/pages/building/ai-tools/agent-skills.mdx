@@ -1,12 +1,69 @@
 ---
 title: Agent skills
-description: Package Mailchimp workflows as reusable skills for AI agents.
+description: Install Mailchimp's agent skills so your coding agent calls the Marketing API correctly.
 ---
 
-<Note>
-**Draft**: This page is a placeholder created during the docs reorganization. Content is not yet written.
-</Note>
+A skill is a folder of instructions that teaches a coding agent how to do one
+task correctly. The agent reads the skill's description, decides it applies to
+what you asked, and loads the full instructions before it writes code.
 
-## The basics
+Skills do two things a prompt cannot. They pick the right steps for the job at
+hand, so you are not choosing between endpoints yourself, and they stay
+installed, so you are not pasting the same guidance into every new
+conversation.
 
-Outline: what a skill is, available Mailchimp skills, authoring your own, distribution.
+Mailchimp publishes skills for the parts of the Marketing API where a
+reasonable first implementation is wrong in a way that passes review: consent
+writes that overwrite a contact's earlier choice, an OAuth callback that
+accepts any `code` delivered to it, a batch job that reports success on a run
+where a third of the operations failed.
+
+For the skill format itself, and the agents that support it, see
+[Agent Skills](https://agentskills.io).
+
+## Available skills
+
+| Skill | Use it when |
+|---|---|
+| `set-consent-correctly` | Adding or updating contacts from a signup form, checkout, or CRM sync, and the write has to record what the person chose without overwriting consent they already gave. |
+| `set-up-oauth` | Implementing OAuth 2 to connect other people's Mailchimp accounts: the authorize redirect, the callback and code exchange, and token storage per account. |
+| `subscribe-to-webhooks` | Creating a webhook, verifying delivery signatures, and keeping a handler that survives duplicate deliveries without echoing its own writes back into the audience. |
+| `run-bulk-jobs` | A job is too large for one request, and you need to choose between the bulk endpoints, poll a batch without hitting the connection limit, and tell a partial failure from a success. |
+
+Each skill links to the concept pages behind it, so an agent that needs the
+full mechanism can follow the reference rather than work from the summary.
+
+## Install them
+
+Install a skill by its own URL, one per command:
+
+```bash
+npx skills add https://preview.developer.mailchimp.com/.well-known/agent-skills/set-up-oauth/SKILL.md
+```
+
+Swap the skill name for any of the four. Claude Code, Cursor, and the other
+agents that support the format read them from the directory the command writes
+to.
+
+Each of these skills is a single `SKILL.md` file with no bundled scripts or
+reference files, so you can also read one before installing it, or save it into
+the directory your agent loads skills from:
+
+```bash
+curl https://preview.developer.mailchimp.com/.well-known/agent-skills/set-up-oauth/SKILL.md
+```
+
+Skills carry no credentials. Each one tells your agent how to call the
+Marketing API; you supply the API key or OAuth token, and the agent acts with
+whatever access that credential has.
+
+## Related
+
+- [MCP server](/marketing/build/ai-tools/mcp-server) connects an agent to this
+  documentation so it can search these pages. Skills and the MCP server solve
+  different problems: a skill tells an agent how to call the Marketing API, and
+  the MCP server answers questions about the docs.
+- [llms.txt](/marketing/build/ai-tools/llms-txt) indexes every page in Markdown
+  for agents that read the docs directly.
+- [Authentication](/marketing/api-concepts/authentication) covers the API key
+  and OAuth 2 credentials an agent needs to call the API.
