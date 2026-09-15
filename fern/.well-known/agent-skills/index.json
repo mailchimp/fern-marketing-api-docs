@@ -1,21 +1,24 @@
 {
-  "version": "0.2.0",
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
   "skills": [
     {
       "name": "set-consent-correctly",
+      "type": "skill-md",
       "description": "Use when adding or updating Mailchimp contacts from a signup form, checkout, CRM sync, or any flow where a person chose whether to receive marketing email or SMS, and you need to record that choice without overwriting consent they already gave.",
       "url": "/.well-known/agent-skills/set-consent-correctly/SKILL.md",
       "digest": "sha256:e948e6923c853f47562a0808fbd34b43b93ececffadd82cdd31ce33468d368f9"
     },
     {
       "name": "set-up-oauth",
+      "type": "skill-md",
       "description": "Use when implementing Mailchimp OAuth 2 in an application that connects other people's Mailchimp accounts, including the authorize redirect, the callback and code exchange, and storing access tokens for one or many connected accounts.",
       "url": "/.well-known/agent-skills/set-up-oauth/SKILL.md",
       "digest": "sha256:a27e6c245e610389c4b8ad6fc0fb802d4dbea156f024b586f97e1e1d096b753c"
     },
     {
       "name": "subscribe-to-webhooks",
-      "description": "Use when building a Mailchimp webhook integration\u2014creating a webhook through the API, verifying delivery signatures, or keeping an external database in sync with an audience\u2014and you need the handler to survive duplicate deliveries and avoid echoing your own writes back at yourself.",
+      "type": "skill-md",
+      "description": "Use when building a Mailchimp webhook integration—creating a webhook through the API, verifying delivery signatures, or keeping an external database in sync with an audience—and you need the handler to survive duplicate deliveries and avoid echoing your own writes back at yourself.",
       "url": "/.well-known/agent-skills/subscribe-to-webhooks/SKILL.md",
       "digest": "sha256:6ecd58edca09d239ce6d51ff5e0b88f6b4942d8d514e94f75e9b2017634f5e54"
     }
