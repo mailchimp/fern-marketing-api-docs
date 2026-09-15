@@ -1,20 +1,213 @@
 ---
 title: Import and export contacts
-description: Import contacts into an existing audience and export them back out, including bulk operations.
+description: Import contacts into an existing audience and read them back out, including bulk operations.
 ---
 
+## At a glance
+
+This guide covers the contact operations you'll use in most integrations: adding a contact, upserting one whether or not it already exists, importing a batch of them at once, and reading them back. We'll use the [Members endpoint](/marketing/api/lists/create-member) to add and update contacts one at a time, and the [Batch endpoint](/marketing/api-concepts/batch-operations) to scale that up.
+
+For the contact and audience data model this guide assumes, see [Contacts](/marketing/concepts/audiences/contacts).
+
+## What you'll need
+
+- [An audience](https://mailchimp.com/help/create-audience/) in your Mailchimp account.
+- The [audience ID](https://mailchimp.com/help/find-audience-id/) for that audience.
+- [Your API key](/marketing/build/get-started/generate-your-api-key).
+
+## Add a single contact
+
+To add one new contact to an audience, POST to the Members endpoint with an email address and a subscription status:
+
+<CodeBlocks>
+```bash title="cURL"
+apikey="YOUR_API_KEY"
+listid="YOUR_LIST_ID"
+
+curl -s --request POST \
+  --url "https://api.mailchimp.com/3.0/lists/${listid}/members" \
+  --user "anystring:${apikey}" \
+  --data '{"email_address": "ada.lovelace@example.com", "status": "subscribed"}'
+```
+
+```javascript title="Node"
+const mailchimp = require("@mailchimp/mailchimp_marketing");
+
+mailchimp.setConfig({
+  apiKey: "YOUR_API_KEY",
+});
+
+const listId = "YOUR_LIST_ID";
+
+async function run() {
+  const response = await mailchimp.lists.addListMember(listId, {
+    email_address: "ada.lovelace@example.com",
+    status: "subscribed",
+  });
+
+  console.log(`Added contact with id ${response.id}`);
+}
+
+run();
+```
+</CodeBlocks>
+
+`status` is required. `subscribed` opts the contact into email; use `transactional` for a contact you're only tracking, not marketing to. This call fails with a 400 if the email address is already in the audience, since it's a create, not an upsert; upserting is exactly what the next section covers.
+
 <Note>
-**Draft**: This page is a placeholder created during the docs reorganization. Content is not yet written.
+Send `subscribed` only on a single opt-in audience. On a double opt-in audience, `subscribed` skips the confirmation email, so you end up with a contact marked subscribed who never actually confirmed; send `pending` instead, and Mailchimp handles the confirmation email for you. Check `double_optin` on `GET /3.0/lists/{list_id}` to know which kind of audience you're working with. For the full model, see [Audiences](/marketing/concepts/audiences/overview).
 </Note>
 
-## The basics
+## Upsert to avoid duplicate-contact errors
 
-Outline:
+Calling the endpoint above a second time for the same contact doesn't create a second record; it fails outright, since the email address is already taken on that audience. In practice, you rarely know in advance whether a contact already exists, so reach for upsert by default: it updates the contact if they're already there, and creates them if they're not. PUT to the same contact's specific URL instead of POSTing to the collection:
 
-- Add a single contact: `POST /3.0/lists/{list_id}/members`
-- **Upsert to avoid duplicates**: `PUT /3.0/lists/{list_id}/members/{subscriber_hash}` — the detail integrators most need
-- Bulk import at volume via `POST /3.0/batches`
-- Read contacts back: `GET /3.0/lists/{list_id}/members`
-- Bulk export: `POST /3.0/account-exports`, then `GET /3.0/account-exports/{export_id}`
+<CodeBlocks>
+```bash title="cURL"
+apikey="YOUR_API_KEY"
+listid="YOUR_LIST_ID"
+subscriber_email="ada.lovelace@example.com"
+subscriber_hash="$(echo -n "$subscriber_email" | tr '[:upper:]' '[:lower:]' | md5sum | cut -d' ' -f1)"
+# macOS: subscriber_hash="$(echo -n "$subscriber_email" | tr '[:upper:]' '[:lower:]' | md5 -q)"
 
-Assemble from [Account exports](/marketing/build/start-developing/account-exports) and [Batch operations](/marketing/api-concepts/batch-operations). Replaces the deleted audience-creation guide: integrators build against audiences that already exist.
+curl -s --request PUT \
+  --url "https://api.mailchimp.com/3.0/lists/${listid}/members/${subscriber_hash}" \
+  --user "anystring:${apikey}" \
+  --data '{"email_address": "'"$subscriber_email"'", "status_if_new": "subscribed"}'
+```
+
+```javascript title="Node"
+const mailchimp = require("@mailchimp/mailchimp_marketing");
+const md5 = require("md5");
+
+mailchimp.setConfig({
+  apiKey: "YOUR_API_KEY",
+});
+
+const listId = "YOUR_LIST_ID";
+const email = "ada.lovelace@example.com";
+const subscriberHash = md5(email.toLowerCase());
+
+async function run() {
+  const response = await mailchimp.lists.setListMember(listId, subscriberHash, {
+    email_address: email,
+    status_if_new: "subscribed",
+  });
+
+  console.log(`Upserted contact with id ${response.id}`);
+}
+
+run();
+```
+</CodeBlocks>
+
+This endpoint identifies the contact by `subscriber_hash`: the MD5 hash of their lowercased email address, not the address itself. The same hashing rule applies everywhere the Members endpoint addresses a contact directly, including [tags](/marketing/build/quickstarts/organize-contacts-with-tags). Compute it client-side; there's no lookup endpoint that takes a plain email address and returns the hash.
+
+`email_address` is the only field this endpoint requires. `status_if_new` is optional, and Mailchimp only requires it for the call that actually creates the contact; `status` is the field for updating one you know already exists. Send `status_if_new` anyway on an import where you don't know who's already in the audience: it sets the status for whichever contacts turn out to be new, without you having to check first. The same single opt-in versus double opt-in choice from the previous section applies to whichever field you're setting.
+
+<Note>
+`email_address` is required on every PUT to this endpoint, even though the URL already identifies the contact by hash. The API needs it to backfill the record if the hash doesn't match anyone yet.
+</Note>
+
+<Note>
+If a coding agent is writing this integration for you, it doesn't have to infer the opt-in rules above on its own. Install Mailchimp's [agent skills](/marketing/build/ai-tools/agent-skills) with `npx skills add https://preview.developer.mailchimp.com`, and the `set-consent-correctly` skill teaches it the same single opt-in versus double opt-in logic directly. It's also the place to go for less common cases this guide doesn't cover.
+</Note>
+
+## Bulk import at volume
+
+Upserting one contact per request works for a signup form, but not for loading a few thousand rows from a spreadsheet. For that, wrap the same PUT calls in a single request to the [Batch endpoint](/marketing/api-concepts/batch-operations), which processes them in the background while you check on progress:
+
+```bash title="cURL"
+apikey="YOUR_API_KEY"
+listid="YOUR_LIST_ID"
+
+emails=("ada.lovelace@example.com" "grace.hopper@example.com")
+
+operations="[]"
+for email in "${emails[@]}"; do
+  hash="$(echo -n "$email" | tr '[:upper:]' '[:lower:]' | md5sum | cut -d' ' -f1)"
+  operation="$(jq -n --arg path "/lists/${listid}/members/${hash}" \
+    --arg id "$email" \
+    --arg body "{\"email_address\": \"${email}\", \"status_if_new\": \"subscribed\"}" \
+    '{method: "PUT", path: $path, operation_id: $id, body: $body}')"
+  operations="$(echo "$operations" | jq --argjson op "$operation" '. + [$op]')"
+done
+
+payload="$(jq -n --argjson ops "$operations" '{operations: $ops}')"
+
+curl -s --request POST \
+  --url "https://api.mailchimp.com/3.0/batches" \
+  --user "anystring:${apikey}" \
+  --data "$payload"
+```
+
+Each operation in the array is one upsert, with its own precomputed `subscriber_hash` in the `path` and its own `operation_id` you choose, so you can match results back to your own records once the batch finishes. This example sends `subscribed`, which assumes a single opt-in audience; send `pending` instead on a double opt-in one, same as above. For how to check a batch's status, retrieve its results, and size a batch correctly, see [Batch operations](/marketing/api-concepts/batch-operations).
+
+## Read contacts back
+
+To retrieve the contacts in an audience, GET the same Members endpoint you posted to:
+
+<CodeBlocks>
+```bash title="cURL"
+apikey="YOUR_API_KEY"
+listid="YOUR_LIST_ID"
+
+curl -s --request GET \
+  --url "https://api.mailchimp.com/3.0/lists/${listid}/members?count=10&status=subscribed" \
+  --user "anystring:${apikey}"
+```
+
+```javascript title="Node"
+const mailchimp = require("@mailchimp/mailchimp_marketing");
+
+mailchimp.setConfig({
+  apiKey: "YOUR_API_KEY",
+});
+
+const listId = "YOUR_LIST_ID";
+
+async function run() {
+  const response = await mailchimp.lists.getListMembersInfo(listId, {
+    count: 10,
+    status: "subscribed",
+  });
+
+  console.log(`${response.total_items} subscribed contacts in this audience`);
+}
+
+run();
+```
+</CodeBlocks>
+
+The response includes `total_items` and a `members` array, trimmed here to one entry:
+
+```json
+{
+  "members": [
+    {
+      "id": "2b9150605ac374d671a306b5fcee60a0",
+      "email_address": "ada.lovelace@example.com",
+      "status": "subscribed"
+    }
+  ],
+  "total_items": 1,
+  "list_id": "YOUR_LIST_ID"
+}
+```
+
+`id` here is the same MD5 hash as `subscriber_hash`; it's how the API names the field on a contact you've read back, rather than a separate identifier.
+
+`count` defaults to 10 and maxes out at 1000; page through a larger audience with `offset`. Filter by `status`, or by `since_last_changed` to pull only what's changed since your last sync.
+
+The Batch endpoint isn't only for writes. If you need to look up a specific set of contacts, such as everyone from the import above, batch a GET operation per `subscriber_hash` the same way as the PUT calls in the previous section, rather than paging through the whole audience to find them.
+
+<Note>
+Contacts aren't limited to email. The beta [Audiences endpoints](/marketing/api-concepts/audiences-endpoints-beta) let you add and read a contact by SMS phone number too, through `/3.0/audiences/{audience_id}/contacts`. For consent rules, addressing a contact by phone, and the rest of what that surface can do, see the `set-consent-correctly` skill mentioned above.
+</Note>
+
+## More resources
+
+- [Organize contacts with tags](/marketing/build/quickstarts/organize-contacts-with-tags)
+- [Agent skills](/marketing/build/ai-tools/agent-skills)
+- [Members API Reference](/marketing/api/lists/list-members)
+- [Batch API Reference](/marketing/api/batches/create)
