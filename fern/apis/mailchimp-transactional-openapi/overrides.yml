@@ -3,320 +3,584 @@
 #  tag x-displayName for API-reference group labels.)
 # - Shorten a handful of long/awkward endpoint titles for the side nav.
 
+# --- Command/section group names (x-fern-sdk-group-name) -------------------
+# Upstream's tag names are terse acronyms ("IPs", "MC Templates", "URLs").
+# These were previously fixed by renaming the tags inside openapi.json, which
+# meant the fix was silently lost the moment the spec was re-vendored (PR #54):
+# the CLI kebab-cased the raw acronyms into `i-ps`, `m-c-templates` and
+# `u-r-ls`. Pinning the group explicitly per operation puts the fix in the
+# overlay where it survives every future sync.
+#
+# Fern ignores tag `x-displayName` for API-reference group labels, so the tag
+# name itself is not a usable lever - hence per-operation group names, the same
+# mechanism the Marketing workspace uses (see ../mailchimp-openapi/group-names.yml).
+#
+#   upstream tag      -> group id
+#   IPs               -> dedicated-ips
+#   MC Templates      -> mailchimp-templates
+#   URLs              -> tracking-domains
+#   (the other 12 tags map to their lowercased name)
+#
+# Also carries the endpoint `summary` overrides that were already here, so the
+# side-nav titles are unchanged.
 paths:
+  /allowlists/add:
+    post:
+      x-fern-sdk-group-name: allowlist
+  /allowlists/list:
+    post:
+      x-fern-sdk-group-name: allowlist
+  /allowlists/delete:
+    post:
+      x-fern-sdk-group-name: allowlist
+  /exports/info:
+    post:
+      x-fern-sdk-group-name: exports
+  /exports/list:
+    post:
+      x-fern-sdk-group-name: exports
+  /exports/rejects:
+    post:
+      x-fern-sdk-group-name: exports
+  /exports/whitelist:
+    post:
+      x-fern-sdk-group-name: exports
+      summary: Export allowlist (legacy)
+  /exports/allowlist:
+    post:
+      x-fern-sdk-group-name: exports
+  /exports/activity:
+    post:
+      x-fern-sdk-group-name: exports
+  /ips/list:
+    post:
+      x-fern-sdk-group-name: dedicated-ips
+      tags:
+      - Dedicated Ips
+  /ips/info:
+    post:
+      x-fern-sdk-group-name: dedicated-ips
+      tags:
+      - Dedicated Ips
+  /ips/provision:
+    post:
+      x-fern-sdk-group-name: dedicated-ips
+      tags:
+      - Dedicated Ips
+  /ips/start-warmup:
+    post:
+      x-fern-sdk-group-name: dedicated-ips
+      tags:
+      - Dedicated Ips
+  /ips/cancel-warmup:
+    post:
+      x-fern-sdk-group-name: dedicated-ips
+      tags:
+      - Dedicated Ips
+  /ips/set-pool:
+    post:
+      x-fern-sdk-group-name: dedicated-ips
+      tags:
+      - Dedicated Ips
+  /ips/delete:
+    post:
+      x-fern-sdk-group-name: dedicated-ips
+      tags:
+      - Dedicated Ips
+  /ips/list-pools:
+    post:
+      x-fern-sdk-group-name: dedicated-ips
+      tags:
+      - Dedicated Ips
+  /ips/pool-info:
+    post:
+      x-fern-sdk-group-name: dedicated-ips
+      tags:
+      - Dedicated Ips
+  /ips/create-pool:
+    post:
+      x-fern-sdk-group-name: dedicated-ips
+      tags:
+      - Dedicated Ips
+  /ips/delete-pool:
+    post:
+      x-fern-sdk-group-name: dedicated-ips
+      tags:
+      - Dedicated Ips
+  /ips/check-custom-dns:
+    post:
+      x-fern-sdk-group-name: dedicated-ips
+      tags:
+      - Dedicated Ips
+  /ips/set-custom-dns:
+    post:
+      x-fern-sdk-group-name: dedicated-ips
+      tags:
+      - Dedicated Ips
+  /inbound/domains:
+    post:
+      x-fern-sdk-group-name: inbound
+  /inbound/add-domain:
+    post:
+      x-fern-sdk-group-name: inbound
+  /inbound/check-domain:
+    post:
+      x-fern-sdk-group-name: inbound
+  /inbound/delete-domain:
+    post:
+      x-fern-sdk-group-name: inbound
+  /inbound/routes:
+    post:
+      x-fern-sdk-group-name: inbound
+  /inbound/add-route:
+    post:
+      x-fern-sdk-group-name: inbound
+  /inbound/update-route:
+    post:
+      x-fern-sdk-group-name: inbound
+  /inbound/delete-route:
+    post:
+      x-fern-sdk-group-name: inbound
+  /inbound/send-raw:
+    post:
+      x-fern-sdk-group-name: inbound
+  /mctemplates/info:
+    post:
+      x-fern-sdk-group-name: mailchimp-templates
+      summary: Get template info
+      tags:
+      - Mailchimp Templates
+  /mctemplates/list:
+    post:
+      x-fern-sdk-group-name: mailchimp-templates
+      summary: List templates
+      tags:
+      - Mailchimp Templates
+  /mctemplates/render:
+    post:
+      x-fern-sdk-group-name: mailchimp-templates
+      summary: Render template
+      tags:
+      - Mailchimp Templates
+  /mctemplates/time-series:
+    post:
+      x-fern-sdk-group-name: mailchimp-templates
+      summary: Get template time series
+      tags:
+      - Mailchimp Templates
   /messages/send:
     post:
+      x-fern-sdk-group-name: messages
       summary: Send a message
   /messages/send-template:
     post:
+      x-fern-sdk-group-name: messages
       summary: Send using a template
-  /messages/send-raw:
+  /messages/send-mc-template:
     post:
-      summary: Send a raw message
+      x-fern-sdk-group-name: messages
+  /messages/search:
+    post:
+      x-fern-sdk-group-name: messages
+  /messages/search-time-series:
+    post:
+      x-fern-sdk-group-name: messages
+      summary: Search time series
   /messages/info:
     post:
+      x-fern-sdk-group-name: messages
       summary: Get message info
   /messages/content:
     post:
+      x-fern-sdk-group-name: messages
       summary: Get message content
-  /messages/search-time-series:
+  /messages/parse:
     post:
-      summary: Search time series
-  /users/info:
+      x-fern-sdk-group-name: messages
+  /messages/send-raw:
     post:
-      summary: Get account info
-  /users/ping:
+      x-fern-sdk-group-name: messages
+      summary: Send a raw message
+  /messages/list-scheduled:
     post:
-      summary: Ping
-  /users/ping2:
+      x-fern-sdk-group-name: messages
+  /messages/cancel-scheduled:
     post:
-      summary: Ping (strict JSON)
-  /users/senders:
+      x-fern-sdk-group-name: messages
+  /messages/reschedule:
     post:
-      summary: List account senders
-  /mctemplates/info:
+      x-fern-sdk-group-name: messages
+  /messages/send-sms:
     post:
-      summary: Get template info
-  /mctemplates/list:
+      x-fern-sdk-group-name: messages
+  /metadata/list:
     post:
-      summary: List templates
-  /mctemplates/render:
+      x-fern-sdk-group-name: metadata
+  /metadata/add:
     post:
-      summary: Render template
-  /mctemplates/time-series:
+      x-fern-sdk-group-name: metadata
+  /metadata/update:
     post:
-      summary: Get template time series
+      x-fern-sdk-group-name: metadata
+  /metadata/delete:
+    post:
+      x-fern-sdk-group-name: metadata
+  /rejects/add:
+    post:
+      x-fern-sdk-group-name: rejects
   /rejects/add-sms:
     post:
+      x-fern-sdk-group-name: rejects
       summary: Add SMS to denylist
+  /rejects/list:
+    post:
+      x-fern-sdk-group-name: rejects
+  /rejects/list-sms:
+    post:
+      x-fern-sdk-group-name: rejects
+      summary: List SMS denylist
   /rejects/delete:
     post:
+      x-fern-sdk-group-name: rejects
       summary: Remove from blacklist
   /rejects/delete-sms:
     post:
+      x-fern-sdk-group-name: rejects
       summary: Remove SMS from denylist
-  /rejects/list-sms:
+  /senders/list:
     post:
-      summary: List SMS denylist
+      x-fern-sdk-group-name: senders
+  /senders/domains:
+    post:
+      x-fern-sdk-group-name: senders
+  /senders/add-domain:
+    post:
+      x-fern-sdk-group-name: senders
+  /senders/check-domain:
+    post:
+      x-fern-sdk-group-name: senders
+  /senders/verify-domain:
+    post:
+      x-fern-sdk-group-name: senders
   /senders/info:
     post:
+      x-fern-sdk-group-name: senders
       summary: Get sender info
+  /senders/time-series:
+    post:
+      x-fern-sdk-group-name: senders
+  /senders/delete-domain:
+    post:
+      x-fern-sdk-group-name: senders
+  /subaccounts/list:
+    post:
+      x-fern-sdk-group-name: subaccounts
+  /subaccounts/add:
+    post:
+      x-fern-sdk-group-name: subaccounts
+  /subaccounts/info:
+    post:
+      x-fern-sdk-group-name: subaccounts
+  /subaccounts/update:
+    post:
+      x-fern-sdk-group-name: subaccounts
+  /subaccounts/delete:
+    post:
+      x-fern-sdk-group-name: subaccounts
+  /subaccounts/pause:
+    post:
+      x-fern-sdk-group-name: subaccounts
+  /subaccounts/resume:
+    post:
+      x-fern-sdk-group-name: subaccounts
+  /tags/list:
+    post:
+      x-fern-sdk-group-name: tags
+  /tags/delete:
+    post:
+      x-fern-sdk-group-name: tags
   /tags/info:
     post:
+      x-fern-sdk-group-name: tags
       summary: Get tag info
   /tags/time-series:
     post:
+      x-fern-sdk-group-name: tags
       summary: Get tag time series
-  /exports/whitelist:
+  /tags/all-time-series:
     post:
-      summary: Export allowlist (legacy)
-
-# --- Response typing fixes (tighten loose schemas -> concrete SDK types) ---
-# The source spec models InboundSendRawResponse as oneOf[typed array, {untyped
-# "null" branch}]. The untyped branch makes generators fall back to a loose type
-# (`unknown` in TS, `mixed` in PHP) — and PHP unions it to the illegal
-# `mixed|null` at InboundClient::sendRaw(), which breaks the PHP build. Replace
-# the oneOf with the single typed array branch so every SDK emits a concrete
-# return type (a nullable array of matched-route results).
+      x-fern-sdk-group-name: tags
+  /templates/add:
+    post:
+      x-fern-sdk-group-name: templates
+  /templates/info:
+    post:
+      x-fern-sdk-group-name: templates
+  /templates/update:
+    post:
+      x-fern-sdk-group-name: templates
+  /templates/publish:
+    post:
+      x-fern-sdk-group-name: templates
+  /templates/delete:
+    post:
+      x-fern-sdk-group-name: templates
+  /templates/list:
+    post:
+      x-fern-sdk-group-name: templates
+  /templates/time-series:
+    post:
+      x-fern-sdk-group-name: templates
+  /templates/render:
+    post:
+      x-fern-sdk-group-name: templates
+  /urls/tracking-domains:
+    post:
+      x-fern-sdk-group-name: tracking-domains
+      tags:
+      - Tracking Domains
+  /urls/add-tracking-domain:
+    post:
+      x-fern-sdk-group-name: tracking-domains
+      tags:
+      - Tracking Domains
+  /urls/check-tracking-domain:
+    post:
+      x-fern-sdk-group-name: tracking-domains
+      tags:
+      - Tracking Domains
+  /urls/delete-tracking-domain:
+    post:
+      x-fern-sdk-group-name: tracking-domains
+      tags:
+      - Tracking Domains
+  /users/info:
+    post:
+      x-fern-sdk-group-name: users
+      summary: Get account info
+  /users/ping:
+    post:
+      x-fern-sdk-group-name: users
+      summary: Ping
+  /users/ping2:
+    post:
+      x-fern-sdk-group-name: users
+      summary: Ping (strict JSON)
+  /users/senders:
+    post:
+      x-fern-sdk-group-name: users
+      summary: List account senders
+  /webhooks/list:
+    post:
+      x-fern-sdk-group-name: webhooks
+  /webhooks/add:
+    post:
+      x-fern-sdk-group-name: webhooks
+  /webhooks/info:
+    post:
+      x-fern-sdk-group-name: webhooks
+  /webhooks/update:
+    post:
+      x-fern-sdk-group-name: webhooks
+  /webhooks/delete:
+    post:
+      x-fern-sdk-group-name: webhooks
 components:
   schemas:
     InboundSendRawResponse:
-      description: >-
-        Array of processing results showing matched routes (empty or absent when
-        no recipients are processed or the message is invalid).
-      # Fern overrides merge oneOf element-wise, so we re-state both branches:
-      # [0] the typed array of matched-route results, and [1] the "no results"
-      # branch retyped from an untyped object (-> `unknown`/`mixed`) to an
-      # explicit `null`, yielding a clean nullable array in every SDK.
+      description: Array of processing results showing matched routes (empty or absent when no recipients are processed
+        or the message is invalid).
       oneOf:
-        - type: array
-          items:
-            type: object
-            required:
-              - email
-              - pattern
-              - url
-            properties:
-              email:
-                type: string
-                format: email
-                description: The email address that was processed.
-              pattern:
-                type: string
-                description: The route pattern that matched this email.
-              url:
-                type: string
-                format: uri
-                description: The webhook URL where this message was sent.
-        - type: "null"
-
-    # --- Conformance fixes from the Mandrill real-account SDK test pass ---
-    # (2026-08-31 findings doc; every item below reproduced against a live
-    #  account in at least one language.)
-    #
-    # NOTE ON `format: null`: Fern's override merge is a deep merge, so a key
-    # present in the source spec cannot be dropped by omitting it here — it has
-    # to be explicitly nulled. Verified against `fern ir`: omitting `format`
-    # leaves the field as DATE_TIME; `format: null` correctly yields a string.
-
-    # 1. users/ping2 returns {"PING":"PONG!"}, but the source schema declares a
-    #    `const` object with no `type`, so the converter falls back to string —
-    #    every SDK types this as a bare string and fails to decode the real
-    #    response (`type UsersPing2Response = string` in the Go SDK today).
-    #    Clear the const and state the object shape explicitly.
+      - type: array
+        items:
+          type: object
+          required:
+          - email
+          - pattern
+          - url
+          properties:
+            email:
+              type: string
+              format: email
+              description: The email address that was processed.
+            pattern:
+              type: string
+              description: The route pattern that matched this email.
+            url:
+              type: string
+              format: uri
+              description: The webhook URL where this message was sent.
+      - type: 'null'
     UsersPing2Response:
       description: Static JSON payload confirming the API is reachable.
       const: null
       type: object
       required:
-        - PING
+      - PING
       properties:
         PING:
           type: string
           enum:
-            - PONG!
+          - PONG!
           description: Always the literal string "PONG!".
       example:
         PING: PONG!
-
-    # 2. Datetime format. Mandrill emits `YYYY-MM-DD HH:MM:SS`, space-separated,
-    #    with optional fractional seconds and an empty string for "not yet set".
-    #    That is not RFC3339, so `format: date-time` makes Go/Rust fail to parse
-    #    real responses and makes Go/Rust/Python serialize `send_at` in a format
-    #    the API rejects with HTTP 500.
-    #
-    #    25 comparable fields in this spec are already annotated the correct way
-    #    (`type: string` + pattern) and none of them failed the test pass. These
-    #    20 are the stragglers still on `format: date-time`; this brings them in
-    #    line with the rest of the spec.
     Sender:
       properties:
-        created_at: &mandrill-datetime
+        created_at: &id001
           type: string
           format: null
-          pattern: "^$|^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}(\\.\\d+)?$"
+          pattern: ^$|^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(\.\d+)?$
     SendersHourStat:
       properties:
-        time: *mandrill-datetime
+        time: *id001
     SendersSenderDomain:
       properties:
-        created_at: *mandrill-datetime
-        last_tested_at: *mandrill-datetime
-        verified_at: *mandrill-datetime
+        created_at: *id001
+        last_tested_at: *id001
+        verified_at: *id001
     VerificationDetail:
       properties:
-        valid_after: *mandrill-datetime
+        valid_after: *id001
     TemplatesTemplateHistory:
       properties:
-        time: *mandrill-datetime
+        time: *id001
     MessagesSendRequest:
       allOf:
-        - {}
-        - properties:
-            send_at: *mandrill-datetime
+      - {}
+      - properties:
+          send_at: *id001
     MessagesSendTemplateRequest:
       allOf:
-        - {}
-        - properties:
-            send_at: *mandrill-datetime
+      - {}
+      - properties:
+          send_at: *id001
     MessagesSendRawRequest:
       allOf:
-        - {}
-        - properties:
-            send_at: *mandrill-datetime
+      - {}
+      - properties:
+          send_at: *id001
     MessagesSendMcTemplateRequest:
       allOf:
-        - {}
-        - properties:
-            send_at: *mandrill-datetime
+      - {}
+      - properties:
+          send_at: *id001
     MessagesRescheduleRequest:
       allOf:
-        - {}
-        - properties:
-            send_at: *mandrill-datetime
-
-    # 3. Fields typed required/non-nullable that real responses omit or null out.
-    #    `draft_updated_at` was absent from 7 of 60+ real templates, so it is a
-    #    missing key (-> optional), not a null value (-> nullable). The `required`
-    #    arrays are restated in full because array merges are element-wise.
+      - {}
+      - properties:
+          send_at: *id001
     MctemplatesMcTemplate:
       required:
-        - mc_template_id
-        - mc_template_name
-        - labels
-        - code
-        - subject
-        - from_email
-        - from_name
-        - text
-        - publish_code
-        - publish_text
-        - published_at
-        - created_at
-        - updated_at
-        - is_broken_template
+      - mc_template_id
+      - mc_template_name
+      - labels
+      - code
+      - subject
+      - from_email
+      - from_name
+      - text
+      - publish_code
+      - publish_text
+      - published_at
+      - created_at
+      - updated_at
+      - is_broken_template
       properties:
         published_at:
           type:
-            - string
-            - "null"
+          - string
+          - 'null'
           format: null
-          pattern: "^$|^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}(\\.\\d+)?$"
-        created_at: *mandrill-datetime
-        updated_at: *mandrill-datetime
-        draft_updated_at: *mandrill-datetime
+          pattern: ^$|^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(\.\d+)?$
+        created_at: *id001
+        updated_at: *id001
+        draft_updated_at: *id001
     TemplatesTemplate:
       required:
-        - slug
-        - name
-        - labels
-        - code
-        - subject
-        - from_email
-        - from_name
-        - text
-        - publish_name
-        - publish_code
-        - publish_subject
-        - publish_from_email
-        - publish_from_name
-        - publish_text
-        - published_at
-        - created_at
-        - updated_at
-        - is_broken_template
+      - slug
+      - name
+      - labels
+      - code
+      - subject
+      - from_email
+      - from_name
+      - text
+      - publish_name
+      - publish_code
+      - publish_subject
+      - publish_from_email
+      - publish_from_name
+      - publish_text
+      - published_at
+      - created_at
+      - updated_at
+      - is_broken_template
       properties:
         published_at:
           type:
-            - string
-            - "null"
+          - string
+          - 'null'
           format: null
-          pattern: "^$|^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}(\\.\\d+)?$"
-        created_at: *mandrill-datetime
-        updated_at: *mandrill-datetime
-        draft_updated_at: *mandrill-datetime
-
-    # `valid_mx` is null until the domain's MX records have been checked.
+          pattern: ^$|^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(\.\d+)?$
+        created_at: *id001
+        updated_at: *id001
+        draft_updated_at: *id001
     InboundDomain:
       properties:
         valid_mx:
           type:
-            - boolean
-            - "null"
-
-    # `expires_at` is null on permanent (non-expiring) denylist entries.
+          - boolean
+          - 'null'
     RejectsListResponse:
       items:
         properties:
           expires_at:
             type:
-              - string
-              - "null"
-
-    # `detail` is null on allowlist entries added without a comment.
+            - string
+            - 'null'
     AllowlistsListResponse:
       items:
         properties:
           detail:
             type:
-              - string
-              - "null"
-
-    # 4. messages/info omits `diag` entirely when there is no delivery
-    #    diagnostic yet. On MessagesEmailInfo it is declared `["string","null"]`
-    #    but *required*, and Fern's Ruby union matcher rejects a member whose
-    #    required field is absent without consulting `nullable` — so neither the
-    #    MessagesEmailInfo nor the MessagesSmsInfo arm matches and the SDK
-    #    silently returns an untyped Hash instead of the documented model.
-    #    Marking it optional lets the arm resolve. (The generator-side gap —
-    #    `nullable` being ignored in that presence check — is a separate bug,
-    #    still worth filing; this just stops the spec from tripping it.)
-    #
-    #    allOf branches merge element-wise, so the first three entries are
-    #    placeholders and only allOf[3]'s `required` list is restated.
+            - string
+            - 'null'
     MessagesEmailInfo:
       allOf:
-        - {}
-        - {}
-        - {}
-        - required:
-            - smtp_events
-            - subaccount
-            - resends
-            - reject
-
-    # The nested SMTP-event `diag` is a plain required string. Not directly
-    # evidenced in the test pass, but it is the same shape of gap (a diagnostic
-    # that only exists once something has gone wrong), so relax it too.
+      - {}
+      - {}
+      - {}
+      - required:
+        - smtp_events
+        - subaccount
+        - resends
+        - reject
     MessagesSmtpEvent:
       required:
-        - ts
-        - type
-        - source_ip
-        - destination_ip
-        - size
+      - ts
+      - type
+      - source_ip
+      - destination_ip
+      - size
       properties:
         diag:
           type:
-            - string
-            - "null"
+          - string
+          - 'null'
+tags:
+- name: Allowlist
+- name: Exports
+- name: Inbound
+- name: Dedicated Ips
+- name: Mailchimp Templates
+- name: Messages
+- name: Metadata
+- name: Rejects
+- name: Senders
+- name: Subaccounts
+- name: Tags
+- name: Templates
+- name: Tracking Domains
+- name: Users
+- name: Webhooks
