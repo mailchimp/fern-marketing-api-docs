@@ -80,13 +80,18 @@ Ask the user to paste back the PR URL that `gh` prints.
 Exact format, no deviation:
 
 ```
-:pr-2338: *<PR URL|PR title>* @mc-api-core
+:pr-2338: **<PR URL|PR title>** <!subteam^S08D0TCQV1C>
 <brief description of changes>
 ```
 
 - `:pr-2338:` is literal — it is the team's PR emoji, not the PR number.
-- The title is bold and links to the PR using Slack's `<url|text>` link syntax.
-- `@mc-api-core` is on the first line, after the title.
+- The title is **bold with double asterisks** and links to the PR using Slack's
+  `<url|text>` link syntax. The send tool takes standard markdown, so single
+  asterisks render *italic*, not bold. This differs from typing in Slack's own
+  composer, where `*one*` is bold — do not copy that habit here.
+- `<!subteam^S08D0TCQV1C>` is the `@mc-api-core` group. Send the raw token; it
+  renders as a real ping. Writing plain `@mc-api-core` posts literal text and
+  notifies nobody.
 - The description goes on its own line below, one to three sentences. Say what
   changed and why someone should care, not a file list.
 
@@ -95,8 +100,12 @@ message.
 
 ## Step 4 — Post to #idi-api-core
 
-Only after the user approves. Send the approved text verbatim to
-`#idi-api-core` with the Slack send-message tool.
+Only after the user approves. Send the approved text verbatim with the Slack
+send-message tool:
+
+- `channel_id`: `C03TH568YKF` (#idi-api-core) — hardcoded, no channel lookup
+  needed.
+- `unfurl_app_links`: `true`, so the GitHub PR gets a rich preview.
 
 If the Slack tool isn't connected in this session, say so and hand the user the
 message to paste rather than silently skipping the step.
