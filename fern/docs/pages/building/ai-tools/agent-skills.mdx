@@ -3,20 +3,20 @@ title: Agent skills
 description: Install Mailchimp's agent skills so your coding agent calls the Marketing API correctly.
 ---
 
-A skill is a folder of instructions that teaches a coding agent how to do one
-task correctly. The agent reads the skill's description, decides it applies to
-what you asked, and loads the full instructions before it writes code.
+Even the best-designed platforms have idiosyncrasies, and Mailchimp is no
+exception. Your agent is a capable coder and our docs give it plenty of
+context, but a skill teaches it how to handle those quirks in advance, so it
+writes code like a seasoned Mailchimp integration developer instead of
+discovering the gotchas the hard way.
 
-Skills do two things a prompt cannot. They pick the right steps for the job at
-hand, so you are not choosing between endpoints yourself, and they stay
-installed, so you are not pasting the same guidance into every new
-conversation.
+Each skill is a single set of instructions your agent loads when it recognizes
+you're working on a relevant task. It reads the description, decides the skill
+applies to what you asked, and pulls in the full instructions before it starts.
+Once installed, a skill stays available in every new conversation, so you are
+not pasting the same guidance in each time.
 
-Mailchimp publishes skills for the parts of the Marketing API where a
-reasonable first implementation is wrong in a way that passes review: consent
-writes that overwrite a contact's earlier choice, an OAuth callback that
-accepts any `code` delivered to it, a batch job that reports success on a run
-where a third of the operations failed.
+Mailchimp publishes skills for the parts of the Marketing API where the right
+implementation is not the obvious or intuitive one.
 
 For the skill format itself, and the agents that support it, see
 [Agent Skills](https://agentskills.io).
@@ -35,27 +35,27 @@ full mechanism can follow the reference rather than work from the summary.
 
 ## Install them
 
-Install a skill by its own URL, one per command:
+Point the installer at the docs site and pick what you want from the list it
+shows you:
 
 ```bash
-npx skills add https://preview.developer.mailchimp.com/.well-known/agent-skills/set-up-oauth/SKILL.md
+npx skills add https://preview.developer.mailchimp.com
 ```
 
-Swap the skill name for any of the four. Claude Code, Cursor, and the other
-agents that support the format read them from the directory the command writes
-to.
+We recommend installing all skills as a first step whenever you code against the
+Marketing API with an AI agent. Installing a skill is free, and having it
+installed pays off when your agent needs it.
 
-Each of these skills is a single `SKILL.md` file with no bundled scripts or
-reference files, so you can also read one before installing it, or save it into
+Claude Code, Cursor, and the other agents that support the format read them
+from the directory the command writes to.
+
+Each skill is a single `SKILL.md` file with no bundled scripts or reference
+files, so you can also read one before installing it, or save it straight into
 the directory your agent loads skills from:
 
 ```bash
 curl https://preview.developer.mailchimp.com/.well-known/agent-skills/set-up-oauth/SKILL.md
 ```
-
-Skills carry no credentials. Each one tells your agent how to call the
-Marketing API; you supply the API key or OAuth token, and the agent acts with
-whatever access that credential has.
 
 ## Related
 
