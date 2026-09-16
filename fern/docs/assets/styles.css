@@ -119,8 +119,14 @@
   align-items: center;
   box-sizing: border-box;
   display: flex;
+  /* the tab bar (.fern-header-tabs) can be a direct child of the header, so
+     stack it under the content row instead of beside it */
+  flex-direction: column;
   justify-content: center;
   padding: 2.5em 3em;
+  width: 100%;
+}
+#fern-header > .fern-header-tabs {
   width: 100%;
 }
 /* Fern 5.89 caps the header content at page-width (max-w-page / 88rem) and it
@@ -1075,6 +1081,11 @@ header.fern-background-image { border-bottom: none !important; }
    article (e.g. the featured "Reintroducing Mailchimp Transactional" post). */
 .mc-blog-route .fern-main aside {
   display: none !important;
+}
+/* The content column is a fixed-width flex item next to the aside; once the
+   aside is gone it needs auto margins to stay centred. */
+.mc-blog-route .fern-main > .fern-layout-content-wrapper {
+  margin-inline: auto !important;
 }
 .mc-blog-route article.w-content-width {
   width: auto !important;
