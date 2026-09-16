@@ -128,6 +128,8 @@
 }
 #fern-header > .fern-header-tabs {
   width: 100%;
+  max-width: 144rem;
+  margin-inline: auto;
 }
 /* Fern 5.89 caps the header content at page-width (max-w-page / 88rem) and it
    ends up left-aligned inside our full-width custom header. Re-cap it at our
