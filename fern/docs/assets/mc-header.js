@@ -156,6 +156,9 @@
   }
   function toggle() { isOpen ? close() : openMenu(); }
   function openMenu() {
+    // The header persists across view transitions but <body> is swapped, so
+    // the panel can end up detached.
+    if (!panel.isConnected) document.body.appendChild(panel);
     isOpen = true; position();
     panel.classList.add("is-open");
     trigger.classList.add("is-open");

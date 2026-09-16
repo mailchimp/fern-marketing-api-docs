@@ -841,8 +841,10 @@ header.fern-background-image { border-bottom: none !important; }
   pointer-events: none;
 }
 /* The whole content row fades out together as one uniform block... */
-.mc-header .width-before-scroll-bar { transition: opacity .4s ease; }
-.mc-header.mc-header-collapsed .width-before-scroll-bar {
+.mc-header .width-before-scroll-bar,
+.mc-header > .fern-header-tabs { transition: opacity .4s ease; }
+.mc-header.mc-header-collapsed .width-before-scroll-bar,
+.mc-header.mc-header-collapsed > .fern-header-tabs {
   opacity: 0 !important;
   pointer-events: none !important;
 }
