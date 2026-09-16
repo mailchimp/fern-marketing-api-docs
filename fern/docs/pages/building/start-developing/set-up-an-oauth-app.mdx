@@ -40,13 +40,13 @@ code for an access token, then making a first authenticated request on their
 behalf. Pick your language.
 
 <CodeBlocks>
-```javascript title="Node"
+```typescript title="TypeScript"
 const express = require("express");
 const querystring = require("querystring");
 const bodyParser = require("body-parser");
 const fetch = require("node-fetch");
 const { URLSearchParams } = require("url");
-const mailchimp = require("@mailchimp/mailchimp_marketing");
+const { MailchimpClient } = require("@mailchimp/mailchimp-marketing");
 
 // Basic express app setup
 const app = express();
@@ -114,11 +114,11 @@ app.get("/oauth/mailchimp/callback", async (req, res) => {
   // in your production code, but it's here to demonstrate how the call is
   // made.
 
-  mailchimp.setConfig({
-    accessToken: access_token
+  const mailchimp = new MailchimpClient({
+    token: access_token
   });
 
-  const response = await mailchimp.ping.get();
+  const response = await mailchimp.ping.list();
   console.log(response);
 
   res.send(`
@@ -146,7 +146,10 @@ app.listen(3000, "127.0.0.1", function() {
 
 ```php title="PHP"
 <?php
-require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
+require_once('/path/to/vendor/autoload.php');
+
+use Mailchimp\MailchimpClient;
+
 // You should always store your client id and secret in environment variables for security.
 $mailchimp_client_id = getenv('MAILCHIMP_CLIENT_ID');
 $mailchimp_client_secret = getenv('MAILCHIMP_CLIENT_SECRET');
@@ -191,12 +194,9 @@ if (isset($_GET['code'])) {
   // behalf of the user who just granted OAuth access. You wouldn't keep this
   // in your production code, but it's here to demonstrate how the call is
   // made.
-  $mailchimp = new MailchimpMarketing\ApiClient();
-  $mailchimp->setConfig([
-    'accessToken' => $access_token,
-  ]);
+  $mailchimp = new MailchimpClient($access_token);
   try {
-    $response = $mailchimp->ping->get();
+    $response = $mailchimp->ping->list();
     echo "<p>This user\'s access token is $access_token.</p>";
     echo "<p>When pinging the Mailchimp Marketing API\'s ping endpoint, the server responded:<p>";
     echo "<code>" . json_encode($response) . "</code>";
@@ -213,7 +213,7 @@ if (isset($_GET['code'])) {
 ```
 
 ```ruby title="Ruby"
-require 'MailchimpMarketing'
+require 'mailchimp'
 require 'sinatra'
 require 'net/http'
 
@@ -221,8 +221,6 @@ MAILCHIMP_CLIENT_ID = ENV['MAILCHIMP_CLIENT_ID']
 MAILCHIMP_CLIENT_SECRET = ENV['MAILCHIMP_CLIENT_SECRET']
 BASE_URL = "http://127.0.0.1:3000"
 OAUTH_CALLBACK = "#{BASE_URL}/oauth/mailchimp/callback"
-
-mailchimp = MailchimpMarketing::Client.new()
 
 # Basic Sinatra setup
 configure do
@@ -251,11 +249,9 @@ get '/oauth/mailchimp/callback' do
   response = JSON.parse(Net::HTTP.post(uri, body).body)
   access_token = response['access_token']
 
-  mailchimp.set_config({
-    :access_token => access_token
-  })
+  mailchimp = Mailchimp::Client.new(token: access_token)
 
-  mailchimp_res = mailchimp.ping.get
+  mailchimp_res = mailchimp.ping.list
 
   """
     <p>This user's access token is #{access_token}.</p>
@@ -281,7 +277,7 @@ from operator import itemgetter
 import json
 import requests
 from flask import Flask, redirect, request
-import mailchimp_marketing as MailchimpMarketing
+from mailchimp_marketing import MailchimpClient
 
 BASE_URL = "http://127.0.0.1:5000"
 OAUTH_CALLBACK = "{}/oauth/mailchimp/callback".format(BASE_URL)
@@ -335,12 +331,9 @@ def authCallback():
     # in your production code, but it's here to demonstrate how the call is
     # made.
 
-    mailchimp = MailchimpMarketing.Client()
-    mailchimp.set_config({
-      "access_token": access_token
-    })
+    mailchimp = MailchimpClient(token=access_token)
 
-    response = mailchimp.ping.get()
+    response = mailchimp.ping.list()
     app.logger.info('Ping response: %s' % json.dumps(response))
 
     return """<p>This user's access token is {}.</p>

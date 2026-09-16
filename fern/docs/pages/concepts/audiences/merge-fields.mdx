@@ -83,134 +83,122 @@ curl -sS --request POST \
 EOF
 ```
 
-```javascript title="Node"
-const run = async () => {
-    const response = await client.lists.addListMember("list_id",
-        {
-            email_address: "Elinore.Grady9@gmail.com",
-            status: "pending",
-            merge_fields: {
-                FNAME: "Elinore",
-                LNAME: "Grady",
-                BIRTHDAY: "01/22",
-                ADDRESS: {
-                    addr1: "123 Freddie Ave",
-                    city: "Atlanta",
-                    state: "GA",
-                    zip: "12345",
-                },
-            },
-        },
-        {
-            skipMergeValidation: false
-        }
-    );
-};
+```typescript title="TypeScript"
+import { MailchimpClient } from "@mailchimp/mailchimp-marketing";
 
+const client = new MailchimpClient({
+  token: "YOUR_API_KEY",
+});
 
-run();
+const response = await client.lists.createMember({
+  list_id: "YOUR_LIST_ID",
+  email_address: "Elinore.Grady9@gmail.com",
+  status: "pending",
+  skip_merge_validation: false,
+  merge_fields: {
+    FNAME: "Elinore",
+    LNAME: "Grady",
+    BIRTHDAY: "01/22",
+    ADDRESS: {
+      addr1: "123 Freddie Ave",
+      city: "Atlanta",
+      state: "GA",
+      zip: "12345",
+    },
+  },
+});
+console.log(response);
 ```
 
 ```php title="PHP"
-require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
+require_once('/path/to/vendor/autoload.php');
 
-$mailchimp = new \MailchimpMarketing\ApiClient();
+use Mailchimp\MailchimpClient;
+use Mailchimp\Lists\Requests\CreateMemberListsRequest;
 
-$mailchimp->set_config([
-    'apiKey' => 'YOUR_API_KEY'
-]);
+$mailchimp = new MailchimpClient('YOUR_API_KEY');
 
 $list_id = "YOUR_LIST_ID";
 
 try {
-    $response = $mailchimp->lists->addListMember($list_id, [
-        "email_address" => "Elinore.Grady9@gmail.com",
-        "status" => "pending",
-        "merge_fields" => [
-          "FNAME" => "Elinore",
-          "LNAME" => "Grady",
-          "BIRTHDAY" => "01/22",
-	     "ADDRESS" => [
-              "addr1" => "123 Freddie Ave",
-              "city" => "Atlanta",
-              "state" => "GA",
-              "zip" => "12345"
+    $response = $mailchimp->lists->createMember($list_id, new CreateMemberListsRequest([
+        'emailAddress' => "Elinore.Grady9@gmail.com",
+        'status' => "pending",
+        'skipMergeValidation' => false,
+        'mergeFields' => [
+            "FNAME" => "Elinore",
+            "LNAME" => "Grady",
+            "BIRTHDAY" => "01/22",
+            "ADDRESS" => [
+                "addr1" => "123 Freddie Ave",
+                "city" => "Atlanta",
+                "state" => "GA",
+                "zip" => "12345"
             ]
-
         ]
-    ], ["skip_merge_validation" => false]);
+    ]));
     print_r($response);
-} catch (MailchimpMarketing\ApiException $e) {
+} catch (Exception $e) {
     echo $e->getMessage();
 }
 ```
 
 ```ruby title="Ruby"
-require "MailchimpMarketing"
+require "mailchimp"
 
-mailchimp = MailchimpMarketing::Client.new
-mailchimp.set_config({
-  :api_key => ENV["API_KEY"]
-})
+mailchimp = Mailchimp::Client.new(token: ENV["API_KEY"])
 list_id = ENV["LIST_ID"]
 
-subscriber = {
-    email_address: "Elinore.Grady9@gmail.com",
-    status: "pending",
-    merge_fields: {
-      FNAME: "Elinore",
-      LNAME: "Grady",
-      BIRTHDAY: "01/22",
-      ADDRESS: {
-          addr1: "123 Freddie Ave",
-          city: "Atlanta",
-          state: "GA",
-          zip: "12345",
-      },
-
+response = mailchimp.lists.create_member(
+  list_id: list_id,
+  email_address: "Elinore.Grady9@gmail.com",
+  status: "pending",
+  skip_merge_validation: false,
+  merge_fields: {
+    FNAME: "Elinore",
+    LNAME: "Grady",
+    BIRTHDAY: "01/22",
+    ADDRESS: {
+      addr1: "123 Freddie Ave",
+      city: "Atlanta",
+      state: "GA",
+      zip: "12345",
     },
   }
-
-response = mailchimp.lists.add_list_member list_id, subscriber, {skip_merge_validation:false}
+)
 
 puts "Successfully added contact as an audience member. The contact's id is #{response.id}."
 ```
 
 ```python title="Python"
-import mailchimp_marketing as MailchimpMarketing
-from mailchimp_marketing.api_client import ApiClientError
+from mailchimp_marketing import MailchimpClient
+from mailchimp_marketing.core.api_error import ApiError
 
-mailchimp = MailchimpMarketing.Client()
-mailchimp.set_config({
-  "api_key": "YOUR_API_KEY"
-})
+mailchimp = MailchimpClient(token="YOUR_API_KEY")
 
 list_id = "YOUR_LIST_ID"
 
-member_info = {
-    "email_address": "Elinore.Grady9@gmail.com",
-    "status": "pending",
-    "merge_fields": {
-      "FNAME": "Elinore",
-      "LNAME": "Grady",
-      "BIRTHDAY": "01/22",
-      "ADDRESS": {
-           "addr1": "123 Freddie Ave",
-           "city": "Atlanta",
-           "state": "GA",
-           "zip": "12345",
-
-     }
-    }
-  }
-
-kwargs = {"skip_merge_validation":False}
-
 try:
-  response = mailchimp.lists.add_list_member(list_id, member_info, **kwargs)
+  response = mailchimp.lists.create_member(
+      list_id,
+      email_address="Elinore.Grady9@gmail.com",
+      status="pending",
+      skip_merge_validation=False,
+      merge_fields={
+          "FNAME": "Elinore",
+          "LNAME": "Grady",
+          "BIRTHDAY": "01/22",
+          "ADDRESS": {
+              "addr1": "123 Freddie Ave",
+              "city": "Atlanta",
+              "state": "GA",
+              "zip": "12345",
+          },
+      },
+  )
   print("response: {}".format(response))
-except ApiClientError as error:
-  print("An exception occurred: {}".format(error.text))
+except ApiError as error:
+  print("An exception occurred: {}".format(error))
 ```
 </CodeBlocks>
 

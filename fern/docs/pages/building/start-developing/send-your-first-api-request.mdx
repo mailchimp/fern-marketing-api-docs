@@ -15,22 +15,42 @@ language:
 # No client installation necessary; just using curl
 ```
 
-```javascript title="Node"
-yarn add @mailchimp/mailchimp_marketing
-# OR
-npm install @mailchimp/mailchimp_marketing
-```
-
-```php title="PHP"
-composer require mailchimp/marketing
-```
-
-```ruby title="Ruby"
-gem install MailchimpMarketing
+```typescript title="TypeScript"
+npm install @mailchimp/mailchimp-marketing
 ```
 
 ```python title="Python"
 pip install mailchimp-marketing
+```
+
+```go title="Go"
+go get github.com/mailchimp/mailchimp-marketing-go-sdk
+```
+
+```java title="Java"
+// Gradle
+implementation("com.mailchimp:mailchimp-marketing:LATEST_VERSION")
+```
+
+```csharp title="C#"
+dotnet add package Mailchimp.Marketing
+```
+
+```php title="PHP"
+composer require mailchimp/marketing-sdk
+```
+
+```ruby title="Ruby"
+gem install mailchimp-marketing
+```
+
+```swift title="Swift"
+// Swift Package Manager — add to Package.swift dependencies:
+.package(url: "https://github.com/mailchimp/mailchimp-marketing-swift-sdk", from: "1.0.0")
+```
+
+```rust title="Rust"
+cargo add mailchimp_marketing
 ```
 </CodeBlocks>
 
@@ -49,56 +69,105 @@ curl -sS \
   --user "anystring:${apikey}" | jq -r
 ```
 
-```javascript title="Node"
-const mailchimp = require("@mailchimp/mailchimp_marketing");
+```typescript title="TypeScript"
+import { MailchimpClient } from "@mailchimp/mailchimp-marketing";
 
-mailchimp.setConfig({
-  apiKey: "YOUR_API_KEY",
+const client = new MailchimpClient({
+  token: "YOUR_API_KEY",
 });
 
-async function run() {
-  const response = await mailchimp.ping.get();
-  console.log(response);
-}
+const response = await client.ping.list();
+console.log(response);
+```
 
-run();
+```python title="Python"
+from mailchimp_marketing import MailchimpClient
+
+client = MailchimpClient(
+    token="YOUR_API_KEY",
+)
+
+response = client.ping.list()
+print(response)
+```
+
+```go title="Go"
+import (
+	"context"
+	"fmt"
+
+	mailchimp "github.com/mailchimp/mailchimp-marketing-go-sdk/client"
+	"github.com/mailchimp/mailchimp-marketing-go-sdk/option"
+)
+
+client := mailchimp.NewMailchimpClient(
+	option.WithToken("YOUR_API_KEY"),
+)
+
+response, err := client.Ping.List(context.Background())
+fmt.Println(response)
+```
+
+```java title="Java"
+import com.mailchimp.marketing.MailchimpClient;
+
+MailchimpClient client = MailchimpClient.builder()
+    .token("YOUR_API_KEY")
+    .build();
+
+var response = client.ping().list();
+System.out.println(response);
+```
+
+```csharp title="C#"
+using Mailchimp.Marketing;
+
+var client = new MailchimpClient("YOUR_API_KEY");
+
+var response = await client.Ping.ListAsync();
+Console.WriteLine(response);
 ```
 
 ```php title="PHP"
-require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
+require_once('/path/to/vendor/autoload.php');
 
-$mailchimp = new \MailchimpMarketing\ApiClient();
+use Mailchimp\MailchimpClient;
 
-$mailchimp->setConfig([
-	'apiKey' => 'YOUR_API_KEY'
-]);
+$client = new MailchimpClient('YOUR_API_KEY');
 
-$response = $mailchimp->ping->get();
+$response = $client->ping->list();
 print_r($response);
 ```
 
 ```ruby title="Ruby"
-require "MailchimpMarketing"
+require "mailchimp"
 
-mailchimp = MailchimpMarketing::Client.new
-mailchimp.set_config({
-  :api_key => ENV["API_KEY"]
-})
+client = Mailchimp::Client.new(token: "YOUR_API_KEY")
 
-response = mailchimp.ping.get
+response = client.ping.list
 puts response
 ```
 
-```python title="Python"
-from mailchimp_marketing import Client
+```swift title="Swift"
+import Mailchimp
 
-mailchimp = Client()
-mailchimp.set_config({
-  "api_key": "YOUR_API_KEY"
-})
+let client = MailchimpClient(token: "YOUR_API_KEY")
 
-response = mailchimp.ping.get()
+let response = try await client.ping.list()
 print(response)
+```
+
+```rust title="Rust"
+use mailchimp_marketing::prelude::*;
+
+let config = ClientConfig {
+    token: Some("YOUR_API_KEY".to_string()),
+    ..Default::default()
+};
+let client = MailchimpClient::new(config).expect("Failed to build client");
+
+let response = client.ping.list(None).await;
+println!("{:?}", response);
 ```
 </CodeBlocks>
 

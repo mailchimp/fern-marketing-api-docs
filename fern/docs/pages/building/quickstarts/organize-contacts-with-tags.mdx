@@ -44,121 +44,254 @@ curl -s --request POST \
 --data '{"tags": [{"name": "Influencer", "status": "active"}]}'
 ```
 
-```javascript title="Node"
-const mailchimp = require("@mailchimp/mailchimp_marketing");
-const md5 = require("md5");
+```typescript title="TypeScript"
+import { MailchimpClient } from "@mailchimp/mailchimp-marketing";
+import crypto from "crypto";
 
-mailchimp.setConfig({
-  apiKey: "YOUR_API_KEY",
+const client = new MailchimpClient({
+  token: "YOUR_API_KEY",
 });
 
 const email = "urist.mcvankab@example.com";
 const listId = "YOUR_LIST_ID";
-const subscriberHash = md5(email.toLowerCase());
+const subscriberHash = crypto
+  .createHash("md5")
+  .update(email.toLowerCase())
+  .digest("hex");
 
-async function run() {
-  const response = await mailchimp.lists.updateListMemberTags(
+const response = await client.lists.createMemberTag({
+  list_id: listId,
+  subscriber_hash: subscriberHash,
+  tags: [
+    {
+      name: "Influencer",
+      status: "active",
+    },
+  ],
+});
+
+console.log(
+  `The return type for this endpoint is null, so this should be true: ${
+    response === null
+  }`
+);
+```
+
+```python title="Python"
+import hashlib
+from mailchimp_marketing import MailchimpClient
+from mailchimp_marketing.core.api_error import ApiError
+
+EMAIL = "urist.mcvankab@example.com"
+LIST_ID = "YOUR_LIST_ID"
+SUBSCRIBER_HASH = hashlib.md5(EMAIL.encode('utf-8')).hexdigest()
+
+client = MailchimpClient(token="YOUR_API_KEY")
+
+try:
+    response = client.lists.create_member_tag(
+        LIST_ID,
+        SUBSCRIBER_HASH,
+        tags=[{"name": "Influencer", "status": "active"}],
+    )
+    print("client.lists.create_member_tag() response: {}".format(response))
+except ApiError as error:
+    print("An exception occurred: {}".format(error))
+```
+
+```go title="Go"
+import (
+	"context"
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
+	"strings"
+
+	sdk "github.com/mailchimp/mailchimp-marketing-go-sdk"
+	mailchimp "github.com/mailchimp/mailchimp-marketing-go-sdk/client"
+	"github.com/mailchimp/mailchimp-marketing-go-sdk/option"
+)
+
+client := mailchimp.NewMailchimpClient(
+	option.WithToken("YOUR_API_KEY"),
+)
+
+email := "urist.mcvankab@example.com"
+listID := "YOUR_LIST_ID"
+hash := md5.Sum([]byte(strings.ToLower(email)))
+subscriberHash := hex.EncodeToString(hash[:])
+
+err := client.Lists.CreateMemberTag(context.Background(), &sdk.CreateMemberTagListsRequest{
+	ListID:         listID,
+	SubscriberHash: subscriberHash,
+	Tags: []*sdk.CreateMemberTagListsRequestTagsItem{
+		{
+			Name:   "Influencer",
+			Status: sdk.CreateMemberTagListsRequestTagsItemStatusActive,
+		},
+	},
+})
+fmt.Println("Error (should be nil):", err)
+```
+
+```java title="Java"
+import com.mailchimp.marketing.MailchimpClient;
+import com.mailchimp.marketing.resources.lists.requests.CreateMemberTagListsRequest;
+import com.mailchimp.marketing.resources.lists.types.CreateMemberTagListsRequestTagsItem;
+import com.mailchimp.marketing.resources.lists.types.CreateMemberTagListsRequestTagsItemStatus;
+import java.security.MessageDigest;
+import java.math.BigInteger;
+
+MailchimpClient client = MailchimpClient.builder()
+    .token("YOUR_API_KEY")
+    .build();
+
+String email = "urist.mcvankab@example.com";
+String listId = "YOUR_LIST_ID";
+
+MessageDigest md = MessageDigest.getInstance("MD5");
+byte[] digest = md.digest(email.toLowerCase().getBytes());
+String subscriberHash = String.format("%032x", new BigInteger(1, digest));
+
+client.lists().createMemberTag(
     listId,
     subscriberHash,
+    CreateMemberTagListsRequest.builder()
+        .tags(List.of(
+            CreateMemberTagListsRequestTagsItem.builder()
+                .name("Influencer")
+                .status(CreateMemberTagListsRequestTagsItemStatus.ACTIVE)
+                .build()))
+        .build()
+);
+System.out.println("Request completed with no exception thrown.");
+```
+
+```csharp title="C#"
+using Mailchimp.Marketing;
+using System.Security.Cryptography;
+using System.Text;
+
+var client = new MailchimpClient("YOUR_API_KEY");
+
+var email = "urist.mcvankab@example.com";
+var listId = "YOUR_LIST_ID";
+var subscriberHash = Convert.ToHexString(
+    MD5.HashData(Encoding.UTF8.GetBytes(email.ToLower()))
+).ToLower();
+
+await client.Lists.CreateMemberTagAsync(
+    new CreateMemberTagListsRequest
     {
-      tags: [
-        [
-          {
-            name: "Influencer",
-            status: "active",
-          },          
-        ],
-      ],
+        ListId = listId,
+        SubscriberHash = subscriberHash,
+        Tags = new List<CreateMemberTagListsRequestTagsItem>
+        {
+            new() { Name = "Influencer", Status = CreateMemberTagListsRequestTagsItemStatus.Active },
+        },
     }
-  );
-
-  console.log(
-    `The return type for this endpoint is null, so this should be true: ${
-      response === null
-    }`
-  );
-}
-
-run();
+);
+Console.WriteLine("Request completed with no exception thrown.");
 ```
 
 ```php title="PHP"
-require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
+require_once('/path/to/vendor/autoload.php');
 
-$mailchimp = new MailchimpMarketing\ApiClient();
+use Mailchimp\MailchimpClient;
+use Mailchimp\Lists\Requests\CreateMemberTagListsRequest;
 
-$mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY'
-]);
+$mailchimp = new MailchimpClient('YOUR_API_KEY');
 
 $email = "urist.mcvankab@example.com";
 $list_id = "YOUR_LIST_ID";
 $subscriber_hash = md5(strtolower($email));
 
 try {
-  $mailchimp->lists->updateListMemberTags($list_id, $subscriber_hash, [
-    "tags" => [
-      [
-        "name" => "Influencer",
-        "status" => "active"      
-      ]
-    ]
-  ]);
+    $mailchimp->lists->createMemberTag($list_id, $subscriber_hash, new CreateMemberTagListsRequest([
+        'tags' => [
+            ['name' => "Influencer", 'status' => "active"],
+        ],
+    ]));
 
     echo "The return type for this endpoint is null";
-} catch (MailchimpMarketing\ApiException $e) {
+} catch (Exception $e) {
     echo $e->getMessage();
 }
 ```
 
 ```ruby title="Ruby"
-require "MailchimpMarketing"
+require "mailchimp"
 require "digest"
 
-mailchimp = MailchimpMarketing::Client.new
-mailchimp.set_config({
-  :api_key => ENV["API_KEY"]
-})
+mailchimp = Mailchimp::Client.new(token: ENV["API_KEY"])
 list_id = ENV["LIST_ID"]
 
 email = "urist.mcvankab@example.com"
 subscriber_hash = Digest::MD5.hexdigest email.downcase
 
-response = mailchimp.lists.update_list_member_tags list_id, subscriber_hash, {
+response = mailchimp.lists.create_member_tag(
+  list_id: list_id,
+  subscriber_hash: subscriber_hash,
   tags: [
-    {
-      name: "Influencer",
-      status: "active"
-    }
+    { name: "Influencer", status: "active" }
   ]
-}
+)
 
-puts "The return type for this endpoint is nil, so this should be true: #{response.nil?}" 
+puts "The return type for this endpoint is nil, so this should be true: #{response.nil?}"
 ```
 
-```python title="Python"
-import hashlib
-import mailchimp_marketing as MailchimpMarketing
-from mailchimp_marketing.api_client import ApiClientError
+```swift title="Swift"
+import Mailchimp
+import Crypto
 
-EMAIL = "urist.mcvankab@example.com"
-LIST_ID = "YOUR_LIST_ID"
-SUBSCRIBER_HASH = hashlib.md5(EMAIL.encode('utf-8')).hexdigest()
+let client = MailchimpClient(token: "YOUR_API_KEY")
 
-client = MailchimpMarketing.Client()
-mailchimp.set_config({
-  "api_key": "YOUR_API_KEY"
-})
-try:
-    response = client.lists.update_list_member_tags(LIST_ID, SUBSCRIBER_HASH, {
-        "tags": [{
-            "name": "Influencer",
-            "status": "active"
-        }]
-    })
-    print("client.lists.update_list_member_tags() response: {}".format(response))
-except ApiClientError as error:
-    print("An exception occurred: {}".format(error.text))
+let email = "urist.mcvankab@example.com"
+let listId = "YOUR_LIST_ID"
+let subscriberHash = Insecure.MD5.hash(data: Data(email.lowercased().utf8))
+    .map { String(format: "%02hhx", $0) }
+    .joined()
+
+try await client.lists.createMemberTag(
+    listId: listId,
+    subscriberHash: subscriberHash,
+    request: Requests.CreateMemberTagListsRequest(
+        tags: [CreateMemberTagListsRequestTagsItem(name: "Influencer", status: .active)]
+    )
+)
+print("Request completed with no exception thrown.")
+```
+
+```rust title="Rust"
+use mailchimp_marketing::prelude::*;
+use md5::{Digest, Md5};
+
+let config = ClientConfig {
+    token: Some("YOUR_API_KEY".to_string()),
+    ..Default::default()
+};
+let client = MailchimpClient::new(config).expect("Failed to build client");
+
+let email = "urist.mcvankab@example.com";
+let list_id = "YOUR_LIST_ID";
+let subscriber_hash = format!("{:x}", Md5::digest(email.to_lowercase().as_bytes()));
+
+let response = client
+    .lists
+    .create_member_tag(
+        list_id,
+        &subscriber_hash,
+        &CreateMemberTagListsRequest {
+            is_syncing: None,
+            tags: vec![CreateMemberTagListsRequestTagsItem {
+                name: "Influencer".to_string(),
+                status: CreateMemberTagListsRequestTagsItemStatus::Active,
+            }],
+        },
+        None,
+    )
+    .await;
+println!("{:?}", response);
 ```
 </CodeBlocks>
 
@@ -184,77 +317,147 @@ curl -s --request GET \
 --user "foo:${apikey}" | jq -r .
 ```
 
-```javascript title="Node"
+```typescript title="TypeScript"
+import { MailchimpClient } from "@mailchimp/mailchimp-marketing";
+import crypto from "crypto";
+
+const client = new MailchimpClient({
+  token: "YOUR_API_KEY",
+});
+
 const listId = "YOUR_LIST_ID";
 const email = "urist.mcvankab@example.com";
-const subscriberHash = md5(email.toLowerCase());
+const subscriberHash = crypto
+  .createHash("md5")
+  .update(email.toLowerCase())
+  .digest("hex");
 
-async function run() {
-  const response = await mailchimp.lists.getListMemberTags(listId, subscriberHash);
+const response = await client.lists.listMemberTags({
+  list_id: listId,
+  subscriber_hash: subscriberHash,
+});
 
-  console.log(`Urist has been tagged ${response.total_items} times.`);
-}
-
-run();
-```
-
-```php title="PHP"
-require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
-
-$mailchimp = new MailchimpMarketing\ApiClient();
-
-$mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY'
-]);
-
-$email = "urist.mcvankab@example.com";
-$list_id = "YOUR_LIST_ID";
-$subscriber_hash = md5(strtolower($email));
-
-try {
-    $response = $mailchimp->lists->getListMemberTags($list_id, $subscriber_hash);
-    echo "Urist has been tagged {$response["total_times"]} times.";
-} catch (MailchimpMarketing\ApiException $e) {
-    echo $e->getMessage();
-}
-```
-
-```ruby title="Ruby"
-require "MailchimpMarketing"
-require "digest"
-
-mailchimp = MailchimpMarketing::Client.new
-mailchimp.set_config({
-  :api_key => ENV["API_KEY"]
-})
-list_id = ENV["LIST_ID"]
-
-email = "urist.mcvankab@example.com"
-subscriber_hash = Digest::MD5.hexdigest email.downcase
-
-response = mailchimp.lists.get_list_member_tags list_id, subscriber_hash
-
-puts "Urist has been tagged #{response["total_items"]} times."
+console.log(`Urist has been tagged ${response.response.total_items} times.`);
 ```
 
 ```python title="Python"
 import hashlib
-import mailchimp_marketing as MailchimpMarketing
-from mailchimp_marketing.api_client import ApiClientError
+from mailchimp_marketing import MailchimpClient
+from mailchimp_marketing.core.api_error import ApiError
 
 EMAIL = "urist.mcvankab@example.com"
 LIST_ID = "YOUR_LIST_ID"
 SUBSCRIBER_HASH = hashlib.md5(EMAIL.encode('utf-8')).hexdigest()
 
-client = MailchimpMarketing.Client()
-mailchimp.set_config({
-  "api_key": "YOUR_API_KEY"
-})
+client = MailchimpClient(token="YOUR_API_KEY")
+
 try:
-    response = client.lists.get_list_member_tags(LIST_ID, SUBSCRIBER_HASH)
-    print("client.ping.get() response: {}".format(response))
-except ApiClientError as error:
-    print("An exception occurred: {}".format(error.text))
+    response = client.lists.list_member_tags(LIST_ID, SUBSCRIBER_HASH)
+    print("Urist has been tagged {} times.".format(response.response.total_items))
+except ApiError as error:
+    print("An exception occurred: {}".format(error))
+```
+
+```go title="Go"
+import (
+	"context"
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
+	"strings"
+
+	sdk "github.com/mailchimp/mailchimp-marketing-go-sdk"
+	mailchimp "github.com/mailchimp/mailchimp-marketing-go-sdk/client"
+	"github.com/mailchimp/mailchimp-marketing-go-sdk/option"
+)
+
+client := mailchimp.NewMailchimpClient(
+	option.WithToken("YOUR_API_KEY"),
+)
+
+listID := "YOUR_LIST_ID"
+email := "urist.mcvankab@example.com"
+hash := md5.Sum([]byte(strings.ToLower(email)))
+subscriberHash := hex.EncodeToString(hash[:])
+
+page, err := client.Lists.ListMemberTags(context.Background(), &sdk.ListMemberTagsListsRequest{
+	ListID:         listID,
+	SubscriberHash: subscriberHash,
+})
+if err != nil {
+	panic(err)
+}
+fmt.Printf("Urist has been tagged %d times.\n", *page.Response.TotalItems)
+```
+
+```java title="Java"
+String listId = "YOUR_LIST_ID";
+String email = "urist.mcvankab@example.com";
+
+MessageDigest md = MessageDigest.getInstance("MD5");
+byte[] digest = md.digest(email.toLowerCase().getBytes());
+String subscriberHash = String.format("%032x", new BigInteger(1, digest));
+
+var response = client.lists().listMemberTags(listId, subscriberHash);
+System.out.println("Urist has been tagged " + response.getItems().size() + " times.");
+```
+
+```csharp title="C#"
+var listId = "YOUR_LIST_ID";
+var email = "urist.mcvankab@example.com";
+var subscriberHash = Convert.ToHexString(
+    MD5.HashData(Encoding.UTF8.GetBytes(email.ToLower()))
+).ToLower();
+
+var pager = await client.Lists.ListMemberTagsAsync(
+    new ListMemberTagsListsRequest { ListId = listId, SubscriberHash = subscriberHash }
+);
+Console.WriteLine($"Urist has been tagged {pager.CurrentPage.Items.Count} times.");
+```
+
+```php title="PHP"
+$email = "urist.mcvankab@example.com";
+$list_id = "YOUR_LIST_ID";
+$subscriber_hash = md5(strtolower($email));
+
+try {
+    $tags = iterator_to_array($mailchimp->lists->listMemberTags($list_id, $subscriber_hash));
+    echo "Urist has been tagged " . count($tags) . " times.";
+} catch (Exception $e) {
+    echo $e->getMessage();
+}
+```
+
+```ruby title="Ruby"
+email = "urist.mcvankab@example.com"
+subscriber_hash = Digest::MD5.hexdigest email.downcase
+
+tags = mailchimp.lists.list_member_tags(list_id: list_id, subscriber_hash: subscriber_hash)
+
+puts "Urist has been tagged #{tags.to_a.length} times."
+```
+
+```swift title="Swift"
+let listId = "YOUR_LIST_ID"
+let email = "urist.mcvankab@example.com"
+let subscriberHash = Insecure.MD5.hash(data: Data(email.lowercased().utf8))
+    .map { String(format: "%02hhx", $0) }
+    .joined()
+
+let response = try await client.lists.listMemberTags(listId: listId, subscriberHash: subscriberHash)
+print("Urist has been tagged \(response.totalItems ?? 0) times.")
+```
+
+```rust title="Rust"
+let list_id = "YOUR_LIST_ID";
+let email = "urist.mcvankab@example.com";
+let subscriber_hash = format!("{:x}", Md5::digest(email.to_lowercase().as_bytes()));
+
+let response = client
+    .lists
+    .list_member_tags(list_id, &subscriber_hash, &ListMemberTagsQueryRequest::default(), None)
+    .await?;
+println!("Urist has been tagged {:?} times.", response.total_items);
 ```
 </CodeBlocks>
 
@@ -299,109 +502,171 @@ curl -s --request POST \
 --data '{"tags": [{"name": "Influencer", "status": "inactive"}]}'
 ```
 
-```javascript title="Node"
+```typescript title="TypeScript"
 const listId = "YOUR_LIST_ID";
 const email = "urist.mcvankab@example.com";
-const subscriberHash = md5(email.toLowerCase());
+const subscriberHash = crypto
+  .createHash("md5")
+  .update(email.toLowerCase())
+  .digest("hex");
 
-async function run() {
-  const response = await mailchimp.lists.updateListMemberTags(
-    listId,
-    subscriberHash,
-    {
-      tags: [
-        {
-          name: "Influencer",
-          status: "inactive",
-        },
-      ],
-    }
-  );
-
-  console.log(
-    `The return type for this endpoint is null, so this should be true: ${
-      response === null
-    }`
-  );
-}
-
-run();
-```
-
-```php title="PHP"
-require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
-
-$mailchimp = new MailchimpMarketing\ApiClient();
-
-$mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY'
-]);
-
-$email = "urist.mcvankab@example.com";
-$list_id = "YOUR_LIST_ID";
-$subscriber_hash = md5(strtolower($email));
-
-try {
-    $mailchimp->lists->updateListMemberTags($list_id, $subscriber_hash, [
-      "tags" => [
-        "name" => "Influencer",
-        "status" => "inactive"
-      ]
-    ]);
-    echo "The return type for this endpoint is null";
-} catch (MailchimpMarketing\ApiException $e) {
-    echo $e->getMessage();
-}
-```
-
-```ruby title="Ruby"
-require "MailchimpMarketing"
-require "digest"
-
-mailchimp = MailchimpMarketing::Client.new
-mailchimp.set_config({
-  :api_key => ENV["API_KEY"]
-})
-list_id = ENV["LIST_ID"]
-
-email = "urist.mcvankab@example.com"
-subscriber_hash = Digest::MD5.hexdigest email.downcase
-
-response = mailchimp.lists.update_list_member_tags list_id, subscriber_hash, {
+const response = await client.lists.createMemberTag({
+  list_id: listId,
+  subscriber_hash: subscriberHash,
   tags: [
     {
       name: "Influencer",
-      status: "inactive"
-    }
-  ]
-}
+      status: "inactive",
+    },
+  ],
+});
 
-puts "The return type for this endpoint is nil, so this should be true: #{response.nil?}"
+console.log(
+  `The return type for this endpoint is null, so this should be true: ${
+    response === null
+  }`
+);
 ```
 
 ```python title="Python"
 import hashlib
-import mailchimp_marketing as MailchimpMarketing
-from mailchimp_marketing.api_client import ApiClientError
+from mailchimp_marketing.core.api_error import ApiError
 
 EMAIL = "urist.mcvankab@example.com"
 LIST_ID = "YOUR_LIST_ID"
 SUBSCRIBER_HASH = hashlib.md5(EMAIL.encode('utf-8')).hexdigest()
 
-client = MailchimpMarketing.Client()
-mailchimp.set_config({
-  "api_key": "YOUR_API_KEY"
-})
 try:
-    response = client.lists.update_list_member_tags(LIST_ID, SUBSCRIBER_HASH, {
-        "tags": [{
-            "name": "Influencer",
-            "status": "inactive"
-        }]
-    })
-    print("client.ping.get() response: {}".format(response))
-except ApiClientError as error:
-    print("An exception occurred: {}".format(error.text))
+    response = client.lists.create_member_tag(
+        LIST_ID,
+        SUBSCRIBER_HASH,
+        tags=[{"name": "Influencer", "status": "inactive"}],
+    )
+    print("client.lists.create_member_tag() response: {}".format(response))
+except ApiError as error:
+    print("An exception occurred: {}".format(error))
+```
+
+```go title="Go"
+email := "urist.mcvankab@example.com"
+listID := "YOUR_LIST_ID"
+hash := md5.Sum([]byte(strings.ToLower(email)))
+subscriberHash := hex.EncodeToString(hash[:])
+
+err := client.Lists.CreateMemberTag(context.Background(), &sdk.CreateMemberTagListsRequest{
+	ListID:         listID,
+	SubscriberHash: subscriberHash,
+	Tags: []*sdk.CreateMemberTagListsRequestTagsItem{
+		{
+			Name:   "Influencer",
+			Status: sdk.CreateMemberTagListsRequestTagsItemStatusInactive,
+		},
+	},
+})
+fmt.Println("Error (should be nil):", err)
+```
+
+```java title="Java"
+client.lists().createMemberTag(
+    listId,
+    subscriberHash,
+    CreateMemberTagListsRequest.builder()
+        .tags(List.of(
+            CreateMemberTagListsRequestTagsItem.builder()
+                .name("Influencer")
+                .status(CreateMemberTagListsRequestTagsItemStatus.INACTIVE)
+                .build()))
+        .build()
+);
+System.out.println("Request completed with no exception thrown.");
+```
+
+```csharp title="C#"
+await client.Lists.CreateMemberTagAsync(
+    new CreateMemberTagListsRequest
+    {
+        ListId = listId,
+        SubscriberHash = subscriberHash,
+        Tags = new List<CreateMemberTagListsRequestTagsItem>
+        {
+            new() { Name = "Influencer", Status = CreateMemberTagListsRequestTagsItemStatus.Inactive },
+        },
+    }
+);
+Console.WriteLine("Request completed with no exception thrown.");
+```
+
+```php title="PHP"
+$email = "urist.mcvankab@example.com";
+$list_id = "YOUR_LIST_ID";
+$subscriber_hash = md5(strtolower($email));
+
+try {
+    $mailchimp->lists->createMemberTag($list_id, $subscriber_hash, new CreateMemberTagListsRequest([
+        'tags' => [
+            ['name' => "Influencer", 'status' => "inactive"],
+        ],
+    ]));
+
+    echo "The return type for this endpoint is null";
+} catch (Exception $e) {
+    echo $e->getMessage();
+}
+```
+
+```ruby title="Ruby"
+email = "urist.mcvankab@example.com"
+subscriber_hash = Digest::MD5.hexdigest email.downcase
+
+response = mailchimp.lists.create_member_tag(
+  list_id: list_id,
+  subscriber_hash: subscriber_hash,
+  tags: [
+    { name: "Influencer", status: "inactive" }
+  ]
+)
+
+puts "The return type for this endpoint is nil, so this should be true: #{response.nil?}"
+```
+
+```swift title="Swift"
+let email = "urist.mcvankab@example.com"
+let listId = "YOUR_LIST_ID"
+let subscriberHash = Insecure.MD5.hash(data: Data(email.lowercased().utf8))
+    .map { String(format: "%02hhx", $0) }
+    .joined()
+
+try await client.lists.createMemberTag(
+    listId: listId,
+    subscriberHash: subscriberHash,
+    request: Requests.CreateMemberTagListsRequest(
+        tags: [CreateMemberTagListsRequestTagsItem(name: "Influencer", status: .inactive)]
+    )
+)
+print("Request completed with no exception thrown.")
+```
+
+```rust title="Rust"
+let email = "urist.mcvankab@example.com";
+let list_id = "YOUR_LIST_ID";
+let subscriber_hash = format!("{:x}", Md5::digest(email.to_lowercase().as_bytes()));
+
+let response = client
+    .lists
+    .create_member_tag(
+        list_id,
+        &subscriber_hash,
+        &CreateMemberTagListsRequest {
+            is_syncing: None,
+            tags: vec![CreateMemberTagListsRequestTagsItem {
+                name: "Influencer".to_string(),
+                status: CreateMemberTagListsRequestTagsItemStatus::Inactive,
+            }],
+        },
+        None,
+    )
+    .await;
+println!("{:?}", response);
 ```
 </CodeBlocks>
 
@@ -440,86 +705,136 @@ count=”$(curl -s --request POST \
 echo “Successfully tagged ${count} contacts”
 ```
 
-```javascript title="Node"
+```typescript title="TypeScript"
 const listId = "YOUR_LIST_ID";
 const tagId = "YOUR_TAG_ID";
-const body = {
-  members_to_add: ["dolly.parton@example.com", "rihanna@example.com"]
-};
 
-async function run() {
-  const response = await mailchimp.lists.batchSegmentMembers(
-    body,
+const response = await client.lists.batchAddOrRemoveMembers({
+  list_id: listId,
+  segment_id: tagId,
+  members_to_add: ["dolly.parton@example.com", "rihanna@example.com"],
+});
+
+console.log(`Successfully tagged ${response.total_added} contacts`);
+```
+
+```python title="Python"
+LIST_ID = "YOUR_LIST_ID"
+TAG_ID = "YOUR_TAG_ID"
+
+try:
+    response = client.lists.batch_add_or_remove_members(
+        LIST_ID,
+        TAG_ID,
+        members_to_add=["dolly.parton@example.com", "rihanna@example.com"],
+    )
+    print("Successfully tagged {} contacts".format(response.total_added))
+except ApiError as error:
+    print("An exception occurred: {}".format(error))
+```
+
+```go title="Go"
+listID := "YOUR_LIST_ID"
+tagID := "YOUR_TAG_ID"
+
+response, err := client.Lists.BatchAddOrRemoveMembers(context.Background(), &sdk.BatchAddOrRemoveMembersListsRequest{
+	ListID:       listID,
+	SegmentID:    tagID,
+	MembersToAdd: []string{"dolly.parton@example.com", "rihanna@example.com"},
+})
+fmt.Printf("Successfully tagged %d contacts\n", *response.TotalAdded)
+```
+
+```java title="Java"
+String listId = "YOUR_LIST_ID";
+String tagId = "YOUR_TAG_ID";
+
+var response = client.lists().batchAddOrRemoveMembers(
     listId,
-    tagId
-  );
+    tagId,
+    BatchAddOrRemoveMembersListsRequest.builder()
+        .membersToAdd(List.of("dolly.parton@example.com", "rihanna@example.com"))
+        .build()
+);
+System.out.println("Successfully tagged " + response.getTotalAdded().orElse(0) + " contacts");
+```
 
-  console.log(`Successfully tagged ${response.total_added} contacts`);
-}
+```csharp title="C#"
+var listId = "YOUR_LIST_ID";
+var tagId = "YOUR_TAG_ID";
 
-run();
+var response = await client.Lists.BatchAddOrRemoveMembersAsync(
+    new BatchAddOrRemoveMembersListsRequest
+    {
+        ListId = listId,
+        SegmentId = tagId,
+        MembersToAdd = new List<string> { "dolly.parton@example.com", "rihanna@example.com" },
+    }
+);
+Console.WriteLine($"Successfully tagged {response.TotalAdded} contacts");
 ```
 
 ```php title="PHP"
-require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
-
-$mailchimp = new MailchimpMarketing\ApiClient();
-
-$mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY'
-]);
-
 $list_id = "YOUR_LIST_ID";
 $tag_id = "YOUR_TAG_ID";
 
 try {
-    $response = $mailchimp->lists->batchSegmentMembers(["body" => ["dolly.parton@example.com", "rihanna@example.com"]], $list_id, $tag_id);
-    echo "Successfully tagged {$response["total_added"]} contacts";
-} catch (MailchimpMarketing\ApiException $e) {
+    $response = $mailchimp->lists->batchAddOrRemoveMembers($list_id, $tag_id, new BatchAddOrRemoveMembersListsRequest([
+        'membersToAdd' => ["dolly.parton@example.com", "rihanna@example.com"],
+    ]));
+    echo "Successfully tagged {$response->totalAdded} contacts";
+} catch (Exception $e) {
     echo $e->getMessage();
 }
 ```
 
 ```ruby title="Ruby"
-require "MailchimpMarketing"
-
-mailchimp = MailchimpMarketing::Client.new
-mailchimp.set_config({
-  :api_key => ENV["API_KEY"]
-})
 list_id = ENV["LIST_ID"]
 tag_id = ENV["TAG_ID"]
 
-body = {
+response = mailchimp.lists.batch_add_or_remove_members(
+  list_id: list_id,
+  segment_id: tag_id,
   members_to_add: ["dolly.parton@example.com", "rihanna@example.com"]
-}
+)
 
-response = mailchimp.lists.batch_segment_members body, list_id, tag_id
-
-puts "Successfully tagged #{response["total_added"]} contacts"
+puts "Successfully tagged #{response.total_added} contacts"
 ```
 
-```python title="Python"
-import mailchimp_marketing as MailchimpMarketing
-from mailchimp_marketing.api_client import ApiClientError
+```swift title="Swift"
+let listId = "YOUR_LIST_ID"
+let tagId = "YOUR_TAG_ID"
 
-LIST_ID = "YOUR_LIST_ID"
-TAG_ID = "YOUR_TAG_ID"
+let response = try await client.lists.batchAddOrRemoveMembers(
+    listId: listId,
+    segmentId: tagId,
+    request: Requests.BatchAddOrRemoveMembersListsRequest(
+        membersToAdd: ["dolly.parton@example.com", "rihanna@example.com"]
+    )
+)
+print("Successfully tagged \(response.totalAdded ?? 0) contacts")
+```
 
-client = MailchimpMarketing.Client()
-mailchimp.set_config({
-  "api_key": "YOUR_API_KEY"
-})
-try:
-    response = client.lists.batch_segment_members({
-        "members_to_add": [
-            "dolly.parton@example.com",
-            "rihanna@example.com",
-        ]
-    }, LIST_ID, TAG_ID)
-    print("client.ping.get() response: {}".format(response))
-except ApiClientError as error:
-    print("An exception occurred: {}".format(error.text))
+```rust title="Rust"
+let list_id = "YOUR_LIST_ID";
+let tag_id = "YOUR_TAG_ID";
+
+let response = client
+    .lists
+    .batch_add_or_remove_members(
+        list_id,
+        tag_id,
+        &BatchAddOrRemoveMembersListsRequest {
+            members_to_add: Some(vec![
+                "dolly.parton@example.com".to_string(),
+                "rihanna@example.com".to_string(),
+            ]),
+            members_to_remove: None,
+        },
+        None,
+    )
+    .await;
+println!("{:?}", response);
 ```
 </CodeBlocks>
 
@@ -550,87 +865,136 @@ count=”$(curl -s --request POST \
 echo “Successfully untagged ${count} contacts”
 ```
 
-```javascript title="Node"
+```typescript title="TypeScript"
 const listId = "YOUR_LIST_ID";
 const tagId = "YOUR_TAG_ID";
-const body = {
-  members_to_remove: ["john.smith@example.com", "brad.hudson@example.com"]
-};
 
-async function run() {
-  const response = await apiInstance.batchSegmentMembers(
-    body,
+const response = await client.lists.batchAddOrRemoveMembers({
+  list_id: listId,
+  segment_id: tagId,
+  members_to_remove: ["john.smith@example.com", "brad.hudson@example.com"],
+});
+
+console.log(`Successfully untagged ${response.total_removed} contacts`);
+```
+
+```python title="Python"
+LIST_ID = "YOUR_LIST_ID"
+TAG_ID = "YOUR_TAG_ID"
+
+try:
+    response = client.lists.batch_add_or_remove_members(
+        LIST_ID,
+        TAG_ID,
+        members_to_remove=["john.smith@example.com", "brad.hudson@example.com"],
+    )
+    print("Successfully untagged {} contacts".format(response.total_removed))
+except ApiError as error:
+    print("An exception occurred: {}".format(error))
+```
+
+```go title="Go"
+listID := "YOUR_LIST_ID"
+tagID := "YOUR_TAG_ID"
+
+response, err := client.Lists.BatchAddOrRemoveMembers(context.Background(), &sdk.BatchAddOrRemoveMembersListsRequest{
+	ListID:          listID,
+	SegmentID:       tagID,
+	MembersToRemove: []string{"john.smith@example.com", "brad.hudson@example.com"},
+})
+fmt.Printf("Successfully untagged %d contacts\n", *response.TotalRemoved)
+```
+
+```java title="Java"
+String listId = "YOUR_LIST_ID";
+String tagId = "YOUR_TAG_ID";
+
+var response = client.lists().batchAddOrRemoveMembers(
     listId,
-    tagId
-  );
+    tagId,
+    BatchAddOrRemoveMembersListsRequest.builder()
+        .membersToRemove(List.of("john.smith@example.com", "brad.hudson@example.com"))
+        .build()
+);
+System.out.println("Successfully untagged " + response.getTotalRemoved().orElse(0) + " contacts");
+```
 
-  console.log(`Successfully untagged ${response.total_removed} contacts`);
-}
+```csharp title="C#"
+var listId = "YOUR_LIST_ID";
+var tagId = "YOUR_TAG_ID";
 
-run();
+var response = await client.Lists.BatchAddOrRemoveMembersAsync(
+    new BatchAddOrRemoveMembersListsRequest
+    {
+        ListId = listId,
+        SegmentId = tagId,
+        MembersToRemove = new List<string> { "john.smith@example.com", "brad.hudson@example.com" },
+    }
+);
+Console.WriteLine($"Successfully untagged {response.TotalRemoved} contacts");
 ```
 
 ```php title="PHP"
-require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
-
-$mailchimp = new MailchimpMarketing\ApiClient();
-
-$mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY'
-]);
-
 $list_id = "YOUR_LIST_ID";
-$tag_id = YOUR_TAG_ID;
-
-$members_to_remove = new MailchimpMarketing\Model\MembersToAddremoveTofromAStaticSegment();
-$membersToAdd->setMembersToRemove(["dolly.parton@example.com", "rihanna@example.com"]);
+$tag_id = "YOUR_TAG_ID";
 
 try {
-    $response = $mailchimp->lists->batchSegmentMembers($members_to_remove, $list_id, $tag_id);
-    echo "Successfully untagged {$response->getTotalRemoved()} contacts";
-} catch (MailchimpMarketing\ApiException $e) {
+    $response = $mailchimp->lists->batchAddOrRemoveMembers($list_id, $tag_id, new BatchAddOrRemoveMembersListsRequest([
+        'membersToRemove' => ["john.smith@example.com", "brad.hudson@example.com"],
+    ]));
+    echo "Successfully untagged {$response->totalRemoved} contacts";
+} catch (Exception $e) {
     echo $e->getMessage();
 }
 ```
 
 ```ruby title="Ruby"
-require "MailchimpMarketing"
-
-mailchimp = MailchimpMarketing::Client.new
-mailchimp.set_config ENV["API_KEY"]
 list_id = ENV["LIST_ID"]
 tag_id = ENV["TAG_ID"]
 
-body = {
+response = mailchimp.lists.batch_add_or_remove_members(
+  list_id: list_id,
+  segment_id: tag_id,
   members_to_remove: ["john.smith@example.com", "brad.hudson@example.com"]
-}
+)
 
-response = mailchimp.lists.batch_segment_members body, list_id, tag_id
-
-puts "Successfully untagged #{response["total_removed"]} contacts"
+puts "Successfully untagged #{response.total_removed} contacts"
 ```
 
-```python title="Python"
-import mailchimp_marketing as MailchimpMarketing
-from mailchimp_marketing.api_client import ApiClientError
+```swift title="Swift"
+let listId = "YOUR_LIST_ID"
+let tagId = "YOUR_TAG_ID"
 
-API_KEY = "YOUR_API_KEY"
+let response = try await client.lists.batchAddOrRemoveMembers(
+    listId: listId,
+    segmentId: tagId,
+    request: Requests.BatchAddOrRemoveMembersListsRequest(
+        membersToRemove: ["john.smith@example.com", "brad.hudson@example.com"]
+    )
+)
+print("Successfully untagged \(response.totalRemoved ?? 0) contacts")
+```
 
-LIST_ID = "YOUR_LIST_ID"
-TAG_ID = "YOUR_TAG_ID"
+```rust title="Rust"
+let list_id = "YOUR_LIST_ID";
+let tag_id = "YOUR_TAG_ID";
 
-client = MailchimpMarketing.Client()
-client.setConfig(API_KEY)
-try:
-    response = client.lists.batch_segment_members({
-        "members_to_remove": [
-            "john.smith@example.com",
-            "brad.hudson@example.com",
-        ]
-    }, LIST_ID, TAG_ID)
-    print("client.ping.get() response: {}".format(response))
-except ApiClientError as error:
-    print("An exception occurred: {}".format(error.text))
+let response = client
+    .lists
+    .batch_add_or_remove_members(
+        list_id,
+        tag_id,
+        &BatchAddOrRemoveMembersListsRequest {
+            members_to_add: None,
+            members_to_remove: Some(vec![
+                "john.smith@example.com".to_string(),
+                "brad.hudson@example.com".to_string(),
+            ]),
+        },
+        None,
+    )
+    .await;
+println!("{:?}", response);
 ```
 </CodeBlocks>
 
@@ -661,83 +1025,130 @@ tagid=”$(curl -s --request POST \
 echo “Tag successfully created! Your tag id is ${tagid}”
 ```
 
-```javascript title="Node"
+```typescript title="TypeScript"
 const listId = "YOUR_LIST_ID";
-const tag = {
+
+const response = await client.lists.createSegment({
+  list_id: listId,
   name: "MegaInfluencer",
-  static_segment: ["dolly.parton@example.com", "rihanna@example.com"]
-};
+  static_segment: ["dolly.parton@example.com", "rihanna@example.com"],
+});
 
-async function run() {
-  const response = await mailchimp.lists.createSegment(listId, tag);
+console.log(`Tag successfully created! Your tag id is ${response.id}`);
+```
 
-  console.log(`Tag successfully created! Your tag id is ${response.id}`);
-}
+```python title="Python"
+LIST_ID = "YOUR_LIST_ID"
 
-run();
+try:
+    response = client.lists.create_segment(
+        LIST_ID,
+        name="MegaInfluencer",
+        static_segment=["dolly.parton@example.com", "rihanna@example.com"],
+    )
+    print("Tag successfully created! Your tag id is {}".format(response.id))
+except ApiError as error:
+    print("An exception occurred: {}".format(error))
+```
+
+```go title="Go"
+listID := "YOUR_LIST_ID"
+
+response, err := client.Lists.CreateSegment(context.Background(), &sdk.CreateSegmentListsRequest{
+	ListID:        listID,
+	Name:          "MegaInfluencer",
+	StaticSegment: []string{"dolly.parton@example.com", "rihanna@example.com"},
+})
+fmt.Printf("Tag successfully created! Your tag id is %d\n", *response.ID)
+```
+
+```java title="Java"
+String listId = "YOUR_LIST_ID";
+
+var response = client.lists().createSegment(
+    listId,
+    CreateSegmentListsRequest.builder()
+        .name("MegaInfluencer")
+        .staticSegment(List.of("dolly.parton@example.com", "rihanna@example.com"))
+        .build()
+);
+System.out.println("Tag successfully created! Your tag id is " + response.getId().orElse(null));
+```
+
+```csharp title="C#"
+var listId = "YOUR_LIST_ID";
+
+var response = await client.Lists.CreateSegmentAsync(
+    new CreateSegmentListsRequest
+    {
+        ListId = listId,
+        Name = "MegaInfluencer",
+        StaticSegment = new List<string> { "dolly.parton@example.com", "rihanna@example.com" },
+    }
+);
+Console.WriteLine($"Tag successfully created! Your tag id is {response.Id}");
 ```
 
 ```php title="PHP"
-require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
-
-$mailchimp = new MailchimpMarketing\ApiClient();
-
-$mailchimp->setConfig([
-    'apiKey' => 'YOUR_API_KEY'
-]);
+use Mailchimp\Lists\Requests\CreateSegmentListsRequest;
 
 $list_id = "YOUR_LIST_ID";
 
-$tag = new MailchimpMarketing\Model\List7();
-$tag->setName("MegaInfluencer");
-$tag->setStaticSegment(["dolly.parton@example.com", "rihanna@example.com"]);
-
 try {
-    $response = $mailchimp->lists->createSegment($list_id, $tag);
-    echo "Tag successfully created! Your tag id is " . $response->getId();
-} catch (MailchimpMarketing\ApiException $e) {
+    $response = $mailchimp->lists->createSegment($list_id, new CreateSegmentListsRequest([
+        'name' => "MegaInfluencer",
+        'staticSegment' => ["dolly.parton@example.com", "rihanna@example.com"],
+    ]));
+    echo "Tag successfully created! Your tag id is " . $response->id;
+} catch (Exception $e) {
     echo $e->getMessage();
 }
 ```
 
 ```ruby title="Ruby"
-require "MailchimpMarketing"
-
-mailchimp = MailchimpMarketing::Client.new
-mailchimp.set_config ENV["API_KEY"]
 list_id = ENV["LIST_ID"]
 
-tag = {
+response = mailchimp.lists.create_segment(
+  list_id: list_id,
   name: "MegaInfluencer",
   static_segment: ["dolly.parton@example.com", "rihanna@example.com"]
-}
+)
 
-response = mailchimp.lists.create_segment list_id, tag
-
-puts "Tag successfully created! Your tag id is #{response["id"]}"
+puts "Tag successfully created! Your tag id is #{response.id}"
 ```
 
-```python title="Python"
-import mailchimp_marketing as MailchimpMarketing
-from mailchimp_marketing.api_client import ApiClientError
+```swift title="Swift"
+let listId = "YOUR_LIST_ID"
 
-API_KEY = "YOUR_API_KEY"
+let response = try await client.lists.createSegment(
+    listId: listId,
+    request: Requests.CreateSegmentListsRequest(
+        name: "MegaInfluencer",
+        staticSegment: ["dolly.parton@example.com", "rihanna@example.com"]
+    )
+)
+print("Tag successfully created! Your tag id is \(response.id ?? 0)")
+```
 
-LIST_ID = "YOUR_LIST_ID"
+```rust title="Rust"
+let list_id = "YOUR_LIST_ID";
 
-client = MailchimpMarketing.Client()
-client.setConfig(API_KEY)
-try:
-    response = client.lists.create_segment(LIST_ID, {
-        "name": "MegaInfluencer",
-        "static_segment": [
-            "dolly.parton@example.com",
-            "rihanna@example.com",
-        ]
-    }, LIST_ID, SUBSCRIBER_HASH)
-    print("client.ping.get() response: {}".format(response))
-except ApiClientError as error:
-    print("An exception occurred: {}".format(error.text))
+let response = client
+    .lists
+    .create_segment(
+        list_id,
+        &CreateSegmentListsRequest {
+            name: "MegaInfluencer".to_string(),
+            options: None,
+            static_segment: Some(vec![
+                "dolly.parton@example.com".to_string(),
+                "rihanna@example.com".to_string(),
+            ]),
+        },
+        None,
+    )
+    .await;
+println!("{:?}", response);
 ```
 </CodeBlocks>
 

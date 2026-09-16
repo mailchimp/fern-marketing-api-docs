@@ -32,69 +32,159 @@ curl -X POST \
   -d '{"include_stages":["audiences", "gallery_files"]}'
 ```
 
-```javascript title="Node"
-const client = require("mailchimp-marketing");
+```typescript title="TypeScript"
+import { MailchimpClient } from "@mailchimp/mailchimp-marketing";
 
-client.setConfig({
-  apiKey: "YOUR_API_KEY",
+const client = new MailchimpClient({
+  token: "YOUR_API_KEY",
 });
 
-const run = async () => {
-  const response = await client.accountExports.createAccountExport({
-    include_stages: '["audiences", "gallery_files"]',
-  });
-  console.log(response);
-};
+const response = await client.accountExports.create({
+  include_stages: ["audiences", "gallery_files"],
+});
+console.log(response);
+```
 
-run();
+```python title="Python"
+from mailchimp_marketing import MailchimpClient
+from mailchimp_marketing.core.api_error import ApiError
+
+client = MailchimpClient(token="YOUR_API_KEY")
+
+try:
+  response = client.account_exports.create(
+      include_stages=["audiences", "gallery_files"],
+  )
+  print(response)
+except ApiError as error:
+  print("Error: {}".format(error))
+```
+
+```go title="Go"
+import (
+	"context"
+	"fmt"
+
+	sdk "github.com/mailchimp/mailchimp-marketing-go-sdk"
+	mailchimp "github.com/mailchimp/mailchimp-marketing-go-sdk/client"
+	"github.com/mailchimp/mailchimp-marketing-go-sdk/option"
+)
+
+client := mailchimp.NewMailchimpClient(
+	option.WithToken("YOUR_API_KEY"),
+)
+
+response, err := client.AccountExports.Create(context.Background(), &sdk.CreateAccountExportsRequest{
+	IncludeStages: []sdk.CreateAccountExportsRequestIncludeStagesItem{
+		sdk.CreateAccountExportsRequestIncludeStagesItemAudiences,
+		sdk.CreateAccountExportsRequestIncludeStagesItemGalleryFiles,
+	},
+})
+fmt.Println(response)
+```
+
+```java title="Java"
+import com.mailchimp.marketing.MailchimpClient;
+import com.mailchimp.marketing.resources.accountexports.types.CreateAccountExportsRequestIncludeStagesItem;
+import com.mailchimp.marketing.resources.accountexports.requests.CreateAccountExportsRequest;
+
+MailchimpClient client = MailchimpClient.builder()
+    .token("YOUR_API_KEY")
+    .build();
+
+var response = client.accountExports().create(
+    CreateAccountExportsRequest.builder()
+        .includeStages(List.of(
+            CreateAccountExportsRequestIncludeStagesItem.AUDIENCES,
+            CreateAccountExportsRequestIncludeStagesItem.GALLERY_FILES))
+        .build()
+);
+System.out.println(response);
+```
+
+```csharp title="C#"
+using Mailchimp.Marketing;
+
+var client = new MailchimpClient("YOUR_API_KEY");
+
+var response = await client.AccountExports.CreateAsync(
+    new CreateAccountExportsRequest
+    {
+        IncludeStages = new List<CreateAccountExportsRequestIncludeStagesItem>
+        {
+            CreateAccountExportsRequestIncludeStagesItem.Audiences,
+            CreateAccountExportsRequestIncludeStagesItem.GalleryFiles,
+        },
+    }
+);
+Console.WriteLine(response);
 ```
 
 ```php title="PHP"
-<?php
-require_once '/path/to/MailchimpMarketing/vendor/autoload.php';
+require_once '/path/to/vendor/autoload.php';
 
-$client = new MailchimpMarketing\ApiClient();
-$client->setConfig([
-    'apiKey' => 'YOUR_API_KEY',
-]);
+use Mailchimp\MailchimpClient;
+use Mailchimp\AccountExports\Requests\CreateAccountExportsRequest;
 
-$response = $client->accountExports->createAccountExport([
-    "include_stages" => "[\"audiences\", \"gallery_files\"]",
-]);
+$client = new MailchimpClient('YOUR_API_KEY');
+
+$response = $client->accountExports->create(new CreateAccountExportsRequest([
+    'includeStages' => ["audiences", "gallery_files"],
+]));
 print_r($response);
 ```
 
 ```ruby title="Ruby"
-require 'MailchimpMarketing'
+require 'mailchimp'
 
 begin
-  client = MailchimpMarketing::Client.new
-  client.set_config({ api_key: 'YOUR_API_KEY' })
+  client = Mailchimp::Client.new(token: 'YOUR_API_KEY')
 
-  response =
-    client.accountExports.create_account_export(
-      { 'include_stages' => "[\"audiences\", \"gallery_files\"]" }
-    )
+  response = client.account_exports.create(
+    include_stages: ["audiences", "gallery_files"]
+  )
   p response
-rescue MailchimpMarketing::ApiError => e
+rescue Mailchimp::Errors::ApiError => e
   puts "Error: #{e}"
 end
 ```
 
-```python title="Python"
-import mailchimp_marketing as MailchimpMarketing
-from mailchimp_marketing.api_client import ApiClientError
+```swift title="Swift"
+import Mailchimp
 
-try:
-  client = MailchimpMarketing.Client()
-  client.set_config({
-    "api_key": "YOUR_API_KEY"
-  })
+let client = MailchimpClient(token: "YOUR_API_KEY")
 
-  response = client.accountExports.create_account_export({"include_stages": "[\"audiences\", \"gallery_files\"]"})
-  print(response)
-except ApiClientError as error:
-  print("Error: {}".format(error.text))
+let response = try await client.accountExports.create(
+    request: Requests.CreateAccountExportsRequest(
+        includeStages: [.audiences, .galleryFiles]
+    )
+)
+print(response)
+```
+
+```rust title="Rust"
+use mailchimp_marketing::prelude::*;
+
+let config = ClientConfig {
+    token: Some("YOUR_API_KEY".to_string()),
+    ..Default::default()
+};
+let client = MailchimpClient::new(config).expect("Failed to build client");
+
+let response = client
+    .account_exports
+    .create(
+        &CreateAccountExportsRequest {
+            include_stages: vec![
+                CreateAccountExportsRequestIncludeStagesItem::Audiences,
+                CreateAccountExportsRequestIncludeStagesItem::GalleryFiles,
+            ],
+            since_timestamp: None,
+        },
+        None,
+    )
+    .await;
+println!("{:?}", response);
 ```
 </CodeBlocks>
 
@@ -129,73 +219,175 @@ curl -X POST \
   -d '{"include_stages":["audiences", "gallery_files"], "since_timestamp": 2000-04-04T00:00:01+00:00}'
 ```
 
-```javascript title="Node"
-const client = require("mailchimp-marketing");
+```typescript title="TypeScript"
+import { MailchimpClient } from "@mailchimp/mailchimp-marketing";
 
-client.setConfig({
-  apiKey: "YOUR_API_KEY",
+const client = new MailchimpClient({
+  token: "YOUR_API_KEY",
 });
 
-const run = async () => {
-  const response = await client.accountExports.createAccountExport({
-    include_stages: '["audiences", "gallery_files"]',
-    since_timestamp:  '2000-04-04T00:00:01+00:00',
-  });
-  console.log(response);
-};
+const response = await client.accountExports.create({
+  include_stages: ["audiences", "gallery_files"],
+  since_timestamp: "2000-04-04T00:00:01+00:00",
+});
+console.log(response);
+```
 
-run();
+```python title="Python"
+from datetime import datetime, timezone
+from mailchimp_marketing import MailchimpClient
+from mailchimp_marketing.core.api_error import ApiError
+
+client = MailchimpClient(token="YOUR_API_KEY")
+
+try:
+  response = client.account_exports.create(
+      include_stages=["audiences", "gallery_files"],
+      since_timestamp=datetime(2000, 4, 4, 0, 0, 1, tzinfo=timezone.utc),
+  )
+  print(response)
+except ApiError as error:
+  print("Error: {}".format(error))
+```
+
+```go title="Go"
+import (
+	"context"
+	"fmt"
+	"time"
+
+	sdk "github.com/mailchimp/mailchimp-marketing-go-sdk"
+	mailchimp "github.com/mailchimp/mailchimp-marketing-go-sdk/client"
+	"github.com/mailchimp/mailchimp-marketing-go-sdk/option"
+)
+
+client := mailchimp.NewMailchimpClient(
+	option.WithToken("YOUR_API_KEY"),
+)
+
+sinceTimestamp := time.Date(2000, 4, 4, 0, 0, 1, 0, time.UTC)
+
+response, err := client.AccountExports.Create(context.Background(), &sdk.CreateAccountExportsRequest{
+	IncludeStages: []sdk.CreateAccountExportsRequestIncludeStagesItem{
+		sdk.CreateAccountExportsRequestIncludeStagesItemAudiences,
+		sdk.CreateAccountExportsRequestIncludeStagesItemGalleryFiles,
+	},
+	SinceTimestamp: &sinceTimestamp,
+})
+fmt.Println(response)
+```
+
+```java title="Java"
+import com.mailchimp.marketing.MailchimpClient;
+import com.mailchimp.marketing.resources.accountexports.types.CreateAccountExportsRequestIncludeStagesItem;
+import com.mailchimp.marketing.resources.accountexports.requests.CreateAccountExportsRequest;
+import java.time.OffsetDateTime;
+
+MailchimpClient client = MailchimpClient.builder()
+    .token("YOUR_API_KEY")
+    .build();
+
+var response = client.accountExports().create(
+    CreateAccountExportsRequest.builder()
+        .includeStages(List.of(
+            CreateAccountExportsRequestIncludeStagesItem.AUDIENCES,
+            CreateAccountExportsRequestIncludeStagesItem.GALLERY_FILES))
+        .sinceTimestamp(OffsetDateTime.parse("2000-04-04T00:00:01+00:00"))
+        .build()
+);
+System.out.println(response);
+```
+
+```csharp title="C#"
+using Mailchimp.Marketing;
+
+var client = new MailchimpClient("YOUR_API_KEY");
+
+var response = await client.AccountExports.CreateAsync(
+    new CreateAccountExportsRequest
+    {
+        IncludeStages = new List<CreateAccountExportsRequestIncludeStagesItem>
+        {
+            CreateAccountExportsRequestIncludeStagesItem.Audiences,
+            CreateAccountExportsRequestIncludeStagesItem.GalleryFiles,
+        },
+        SinceTimestamp = DateTime.Parse("2000-04-04T00:00:01+00:00"),
+    }
+);
+Console.WriteLine(response);
 ```
 
 ```php title="PHP"
-<?php
-require_once '/path/to/MailchimpMarketing/vendor/autoload.php';
+require_once '/path/to/vendor/autoload.php';
 
-$client = new MailchimpMarketing\ApiClient();
-$client->setConfig([
-    'apiKey' => 'YOUR_API_KEY',
-]);
+use Mailchimp\MailchimpClient;
+use Mailchimp\AccountExports\Requests\CreateAccountExportsRequest;
 
-$response = $client->accountExports->createAccountExport([
-    "include_stages" => "[\"audiences\", \"gallery_files\"]",
-    "since_timestamp" =>  "2000-04-04T00:00:01+00:00"
-]);
+$client = new MailchimpClient('YOUR_API_KEY');
+
+$response = $client->accountExports->create(new CreateAccountExportsRequest([
+    'includeStages' => ["audiences", "gallery_files"],
+    'sinceTimestamp' => new DateTime("2000-04-04T00:00:01+00:00"),
+]));
 print_r($response);
 ```
 
 ```ruby title="Ruby"
-require 'MailchimpMarketing'
+require 'mailchimp'
 
 begin
-  client = MailchimpMarketing::Client.new
-  client.set_config({ api_key: 'YOUR_API_KEY' })
+  client = Mailchimp::Client.new(token: 'YOUR_API_KEY')
 
-  response =
-    client.accountExports.create_account_export(
-      { 'include_stages' => "[\"audiences\", \"gallery_files\"]",
-        'since_timestamp' =>  "2000-04-04T00:00:01+00:00"
-      }
-    )
+  response = client.account_exports.create(
+    include_stages: ["audiences", "gallery_files"],
+    since_timestamp: "2000-04-04T00:00:01+00:00"
+  )
   p response
-rescue MailchimpMarketing::ApiError => e
+rescue Mailchimp::Errors::ApiError => e
   puts "Error: #{e}"
 end
 ```
 
-```python title="Python"
-import mailchimp_marketing as MailchimpMarketing
-from mailchimp_marketing.api_client import ApiClientError
+```swift title="Swift"
+import Mailchimp
 
-try:
-  client = MailchimpMarketing.Client()
-  client.set_config({
-    "api_key": "YOUR_API_KEY"
-  })
+let client = MailchimpClient(token: "YOUR_API_KEY")
 
-  response = client.accountExports.create_account_export({"include_stages": "[\"audiences\", \"gallery_files\"]", "since_timestamp":  "2000-04-04T00:00:01+00:00"})
-  print(response)
-except ApiClientError as error:
-  print("Error: {}".format(error.text))
+let formatter = ISO8601DateFormatter()
+let sinceTimestamp = formatter.date(from: "2000-04-04T00:00:01+00:00")
+
+let response = try await client.accountExports.create(
+    request: Requests.CreateAccountExportsRequest(
+        includeStages: [.audiences, .galleryFiles],
+        sinceTimestamp: sinceTimestamp
+    )
+)
+print(response)
+```
+
+```rust title="Rust"
+use mailchimp_marketing::prelude::*;
+
+let config = ClientConfig {
+    token: Some("YOUR_API_KEY".to_string()),
+    ..Default::default()
+};
+let client = MailchimpClient::new(config).expect("Failed to build client");
+
+let response = client
+    .account_exports
+    .create(
+        &CreateAccountExportsRequest {
+            include_stages: vec![
+                CreateAccountExportsRequestIncludeStagesItem::Audiences,
+                CreateAccountExportsRequestIncludeStagesItem::GalleryFiles,
+            ],
+            since_timestamp: Some("2000-04-04T00:00:01+00:00".parse().unwrap()),
+        },
+        None,
+    )
+    .await;
+println!("{:?}", response);
 ```
 </CodeBlocks>
 
