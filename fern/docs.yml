@@ -3,7 +3,6 @@
 instances:
   - url: mailchimp.docs.buildwithfern.com
     custom-domain:
-      - mailchimp.ferndocs.com
       - preview.developer.mailchimp.com
     edit-this-page:
       github:
