@@ -16,8 +16,8 @@ api:
 
 whitelabel:
   github:
-    username: mc-keith
-    email: keith@mailchimp.com
+    username: mailchimp-api-bot
+    email: idi-api-core@intuit.com
     token: ${WHITELABEL_TOKEN}
 # Mailchimp Marketing API SDKs — one group per language.
 # Each group publishes to its own fern-demo/mailchimp-<lang>-sdk repo as a
