@@ -1,12 +1,153 @@
 ---
 title: CLI
-description: Install and use the Mailchimp CLI to work with the Marketing API from your terminal.
+description: Install and use the Mailchimp CLI to call the Marketing API from your terminal.
 ---
 
-<Note>
-**Draft**: This page is a placeholder created during the docs reorganization. Content is not yet written.
-</Note>
+`mcapi` is a command-line client for the Marketing API. Every resource in the API reference has a matching subcommand, so you can call an endpoint, inspect a response, or script a sequence of calls without writing a request by hand. Use it for testing requests, automation, and one-off scripts; use a [client library](/marketing/build/start-developing/client-libraries-and-sdks) for application code.
 
-## The basics
+## Install
 
-Outline: installation, authentication, common commands, scripting patterns.
+<CodeBlocks>
+```bash title="macOS / Linux"
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/mailchimp/mailchimp-marketing-cli/releases/latest/download/fern-cli-sdk-installer.sh | sh
+```
+
+```powershell title="Windows"
+powershell -ExecutionPolicy ByPass -c "irm https://github.com/mailchimp/mailchimp-marketing-cli/releases/latest/download/fern-cli-sdk-installer.ps1 | iex"
+```
+</CodeBlocks>
+
+To build from source instead, install the [Rust toolchain](https://rustup.rs/) and run:
+
+```bash
+cargo build --release
+./target/release/mcapi --help
+```
+
+## Authenticate
+
+The CLI reads your API key from an environment variable. See [Authentication](/marketing/api-concepts/authentication) for how to generate one.
+
+```bash
+export MCAPI_TOKEN="YOUR_API_KEY"
+```
+
+A `.env` file in the working directory works too; the CLI loads it on startup.
+
+## Quick start
+
+```bash
+mcapi --help
+```
+
+lists every resource. Each resource is a subcommand:
+
+```bash
+mcapi <resource> <method>
+```
+
+Run `mcapi <resource> --help` to see the methods available on that resource, and pass parameters as flags or as a JSON body:
+
+```bash
+mcapi lists get-member --list-id "abc123" --subscriber-hash "0bc83cb571cd1c752a8..."
+mcapi lists create-member --list-id "abc123" --json '{"email_address": "user@example.com", "status": "subscribed"}'
+```
+
+## Command reference
+
+Every command maps to one API endpoint; the full set is in the [API reference](/marketing/api). The groups below cover the commands you'll reach for most often.
+
+### Health check
+
+| Command | Endpoint |
+|---|---|
+| `mcapi ping list` | `GET /3.0/ping` |
+| `mcapi root list` | `GET /3.0/` |
+
+### Audiences and contacts
+
+| Command | Endpoint |
+|---|---|
+| `mcapi lists list` | `GET /3.0/lists` |
+| `mcapi lists get --list-id` | `GET /3.0/lists/{list_id}` |
+| `mcapi lists create-member --list-id` | `POST /3.0/lists/{list_id}/members` |
+| `mcapi lists get-member --list-id --subscriber-hash` | `GET /3.0/lists/{list_id}/members/{subscriber_hash}` |
+| `mcapi lists batch-add-or-remove-members --list-id` | `POST /3.0/lists/{list_id}` |
+| `mcapi search-members list --query` | `GET /3.0/search-members` |
+
+### Campaigns and automations
+
+| Command | Endpoint |
+|---|---|
+| `mcapi campaigns list` | `GET /3.0/campaigns` |
+| `mcapi campaigns create` | `POST /3.0/campaigns` |
+| `mcapi automations list` | `GET /3.0/automations` |
+| `mcapi sms-campaigns list` | `GET /3.0/sms-campaigns` |
+
+### Reports
+
+| Command | Endpoint |
+|---|---|
+| `mcapi reports list` | `GET /3.0/reports` |
+| `mcapi reporting list` | `GET /3.0/reporting` |
+
+### Webhooks
+
+| Command | Endpoint |
+|---|---|
+| `mcapi lists create-webhook --list-id` | `POST /3.0/lists/{list_id}/webhooks` |
+| `mcapi batch-webhooks create` | `POST /3.0/batch-webhooks` |
+
+See [Webhooks](/marketing/api-concepts/webhooks) for how Mailchimp delivers webhook events; the CLI only creates and manages the subscription, it doesn't receive events.
+
+### Batch operations
+
+| Command | Endpoint |
+|---|---|
+| `mcapi batches list` | `GET /3.0/batches` |
+| `mcapi batches get --batch-id` | `GET /3.0/batches/{batch_id}` |
+
+See [Batch operations](/marketing/api-concepts/batch-operations) for how batching works.
+
+## Common flags
+
+These flags work on every command:
+
+| Flag | Description |
+|---|---|
+| `--dry-run` | Validates the request locally and prints the HTTP request without sending it. |
+| `--json <JSON\|->` | Supplies a request body as JSON, or `-` to read stdin. |
+| `--params <JSON>` | Merges extra parameters as JSON, overriding individual flags. |
+| `--format <json\|table\|yaml\|csv>` | Sets the output format. Default is `table` in an interactive terminal, `json` otherwise. |
+| `--output <path>` | Writes a binary response to a file. |
+| `--base-url <url>` | Overrides the API base URL. |
+| `--no-extract` | Prints the full response body instead of the extracted return value. |
+| `--no-retry` | Disables automatic retries, including for network errors. |
+| `-q, --quiet` | Suppresses stdout on success. Errors still go to stderr. |
+
+Commands on paginated endpoints also accept `--page-all` to auto-paginate and stream results as NDJSON, `--page-limit <n>` to cap the number of pages (default `10`), and `--page-delay <ms>` to set the delay between page fetches (default `100`).
+
+Generate shell completions with:
+
+```bash
+mcapi completion <bash|zsh|fish|powershell>
+```
+
+## Typical workflow
+
+Export an audience's contacts and pipe the result through `jq`:
+
+```bash
+mcapi lists list --format json | jq -r '.lists[0].id'
+mcapi lists get-member --list-id "abc123" --subscriber-hash "0bc83cb571cd1c752a8..." --format json | jq
+```
+
+To pull every member instead of one page, add `--page-all`:
+
+```bash
+mcapi lists list-members --list-id "abc123" --page-all --format json > members.ndjson
+```
+
+## Next steps
+
+If you're making your first call to the API, [Send your first API request](/marketing/build/start-developing/send-your-first-api-request) walks through the same Ping request shown above using a client library instead.
