@@ -119,9 +119,17 @@
   align-items: center;
   box-sizing: border-box;
   display: flex;
+  /* the tab bar (.fern-header-tabs) can be a direct child of the header, so
+     stack it under the content row instead of beside it */
+  flex-direction: column;
   justify-content: center;
   padding: 2.5em 3em;
   width: 100%;
+}
+#fern-header > .fern-header-tabs {
+  width: 100%;
+  max-width: 144rem;
+  margin-inline: auto;
 }
 /* Fern 5.89 caps the header content at page-width (max-w-page / 88rem) and it
    ends up left-aligned inside our full-width custom header. Re-cap it at our
@@ -584,7 +592,7 @@
    FOOTER
 ============================================= */
 .mc-site-footer {
-  background-color: #001D28;
+  background-color: #0c2832;
 }
 /* With a custom footer, Fern shortens the sticky desktop sidebar by the footer's
    visible height so it always ends above the footer. Our footer is ~560px tall,
@@ -835,8 +843,10 @@ header.fern-background-image { border-bottom: none !important; }
   pointer-events: none;
 }
 /* The whole content row fades out together as one uniform block... */
-.mc-header .width-before-scroll-bar { transition: opacity .4s ease; }
-.mc-header.mc-header-collapsed .width-before-scroll-bar {
+.mc-header .width-before-scroll-bar,
+.mc-header > .fern-header-tabs { transition: opacity .4s ease; }
+.mc-header.mc-header-collapsed .width-before-scroll-bar,
+.mc-header.mc-header-collapsed > .fern-header-tabs {
   opacity: 0 !important;
   pointer-events: none !important;
 }
@@ -1075,6 +1085,11 @@ header.fern-background-image { border-bottom: none !important; }
    article (e.g. the featured "Reintroducing Mailchimp Transactional" post). */
 .mc-blog-route .fern-main aside {
   display: none !important;
+}
+/* The content column is a fixed-width flex item next to the aside; once the
+   aside is gone it needs auto margins to stay centred. */
+.mc-blog-route .fern-main > .fern-layout-content-wrapper {
+  margin-inline: auto !important;
 }
 .mc-blog-route article.w-content-width {
   width: auto !important;

@@ -4,58 +4,85 @@
 tags:
   - name: root
     x-displayName: Root
+    description: "Account-level metadata and the resources available to it."
   - name: account-exports
     x-displayName: Account Exports
+    description: "Create and retrieve full exports of account data."
   - name: activity-feed
     x-displayName: Activity Feed
+    description: "Recent account activity and Chimp Chatter notifications."
   - name: authorized-apps
     x-displayName: Authorized Apps
+    description: "OAuth-authorized applications connected to the account."
   - name: automations
     x-displayName: Automations
+    description: "Classic automation workflows, their emails, and queued subscribers."
   - name: batch-webhooks
     x-displayName: Batch Webhooks
+    description: "Webhook endpoints notified when batch operations finish."
   - name: batches
     x-displayName: Batches
+    description: "Submit and monitor batch operations that run many requests asynchronously."
   - name: campaign-folders
     x-displayName: Campaign Folders
+    description: "Folders used to organize campaigns."
   - name: campaigns
     x-displayName: Campaigns
+    description: "Create, send, schedule, test, and act on campaigns."
   - name: connected-sites
     x-displayName: Connected Sites
+    description: "Sites connected to the account for tracking and ecommerce."
   - name: conversations
     x-displayName: Conversations
+    description: "Conversation threads and the messages within them."
   - name: customer-journeys
     x-displayName: Customer Journeys
+    description: "Trigger a step in a Customer Journey for a contact."
   - name: ecommerce
     x-displayName: Ecommerce
+    description: "Stores and their carts, orders, products, customers, and promo rules."
   - name: facebook-ads
     x-displayName: Facebook Ads
+    description: "Facebook ad outreach and its performance data."
   - name: file-manager
     x-displayName: File Manager
+    description: "Files and folders in the content studio."
   - name: landing-pages
     x-displayName: Landing Pages
+    description: "Landing pages, their content, and publish state."
   - name: lists
     x-displayName: Lists
+    description: "Audiences and their contacts, tags, segments, merge fields, and webhooks."
   - name: ping
     x-displayName: Ping
+    description: "Health check for the API and the supplied credentials."
   - name: reporting
     x-displayName: Reporting
+    description: "Reporting for Facebook ads and survey responses."
   - name: reports
     x-displayName: Reports
+    description: "Campaign reports: opens, clicks, bounces, ecommerce, and domain performance."
   - name: search-campaigns
     x-displayName: Search Campaigns
+    description: "Search campaigns by title, subject line, or content."
   - name: search-members
     x-displayName: Search Members
+    description: "Search contacts across every audience or within one."
   - name: sms-campaigns
     x-displayName: SMS Campaigns
+    description: "SMS campaigns and their content."
   - name: surveys
     x-displayName: Surveys
+    description: "Surveys attached to an audience, and their publish actions."
   - name: template-folders
     x-displayName: Template Folders
+    description: "Folders used to organize templates."
   - name: templates
     x-displayName: Templates
+    description: "Email templates and their default content."
   - name: verified-domains
     x-displayName: Verified Domains
+    description: "Sending domains and their verification state."
 
 info:
   description: |

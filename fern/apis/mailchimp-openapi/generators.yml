@@ -37,7 +37,7 @@ groups:
   typescript-sdk:
     generators:
       - name: fernapi/fern-typescript-sdk
-        version: 3.88.3
+        version: 3.94.2
         smart-casing: true
         output:
           location: npm
@@ -48,7 +48,7 @@ groups:
         config:
           namespaceExport: Mailchimp
           allowCustomFetcher: true
-          skipResponseValidation: true
+          noSerdeLayer: false
           includeApiReference: true
 
   python-sdk:
@@ -110,19 +110,20 @@ groups:
   php-sdk:
     generators:
       - name: fernapi/fern-php-sdk
-        version: 2.20.4
+        version: 2.21.0
         smart-casing: true
         github:
           repository: mailchimp/mailchimp-marketing-php-sdk
           mode: pull-request
         config:
+          rejectEmptyDateTimeStrings: true
           clientName: MailchimpClient
           packageName: mailchimp/marketing-sdk
 
   ruby-sdk:
     generators:
       - name: fernapi/fern-ruby-sdk
-        version: 1.24.0
+        version: 1.25.0
         smart-casing: true
         output:
           location: rubygems
@@ -136,6 +137,9 @@ groups:
         # Naming/FileName lint. The gem name + repo already differentiate the two
         # Ruby SDKs. (Filed as an upstream generator bug.)
 
+        config:
+          respectNullableUnionFields: true
+          coerceAliasResponses: true
   swift-sdk:
     generators:
       - name: fernapi/fern-swift-sdk
@@ -172,7 +176,7 @@ groups:
   typescript-sdk-release:
     generators:
       - name: fernapi/fern-typescript-sdk
-        version: 3.88.3
+        version: 3.94.2
         smart-casing: true
         output:
           location: npm
@@ -184,7 +188,7 @@ groups:
         config:
           namespaceExport: Mailchimp
           allowCustomFetcher: true
-          skipResponseValidation: true
+          noSerdeLayer: false
           includeApiReference: true
 
   python-sdk-release:
@@ -255,19 +259,20 @@ groups:
   php-sdk-release:
     generators:
       - name: fernapi/fern-php-sdk
-        version: 2.20.4
+        version: 2.21.0
         smart-casing: true
         github:
           repository: mailchimp/mailchimp-marketing-php-sdk
           mode: release
         config:
+          rejectEmptyDateTimeStrings: true
           clientName: MailchimpClient
           packageName: mailchimp/marketing-sdk
 
   ruby-sdk-release:
     generators:
       - name: fernapi/fern-ruby-sdk
-        version: 1.24.0
+        version: 1.25.0
         smart-casing: true
         output:
           location: rubygems
@@ -277,6 +282,9 @@ groups:
           repository: mailchimp/mailchimp-marketing-ruby-sdk
           mode: release
 
+        config:
+          respectNullableUnionFields: true
+          coerceAliasResponses: true
   swift-sdk-release:
     generators:
       - name: fernapi/fern-swift-sdk

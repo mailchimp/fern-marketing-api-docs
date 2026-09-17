@@ -3,7 +3,6 @@
 instances:
   - url: mailchimp.docs.buildwithfern.com
     custom-domain:
-      - mailchimp.ferndocs.com
       - preview.developer.mailchimp.com
     edit-this-page:
       github:
@@ -192,6 +191,10 @@ ai-search:
        facts?
 ai-examples:
   enabled: true
+
+settings:
+  search:
+    default-filter-by-current-product: true
 
 landing-page:
   page: Welcome
