@@ -3,10 +3,29 @@ title: Overview
 description: How AI agents and assistants work with the Mailchimp Marketing API.
 ---
 
-<Note>
-**Draft**: This page is a placeholder created during the docs reorganization. Content is not yet written.
-</Note>
+If you're building or coding with an AI agent, these docs and the Marketing
+API both give it a hand: one set of tools helps it read the documentation
+directly, and another teaches it to call the API the way an experienced
+Mailchimp developer would.
 
-## The basics
+## Read the docs
 
-Outline: what agents can do with Mailchimp, available surfaces (MCP server, skills, llms.txt), authentication and scoping considerations, when to use an agent vs. direct API calls.
+- [MCP server](/marketing/build/ai-tools/mcp-server) connects your agent to
+  this site over the Model Context Protocol, so it can search these docs from
+  your editor or terminal instead of you pasting passages into the
+  conversation.
+- [llms.txt](/marketing/build/ai-tools/llms-txt) is a machine-readable index
+  of every page, in markdown. Point an agent at it to fetch docs directly,
+  without parsing HTML.
+
+Searching and fetching solve different problems: use the MCP server when your
+agent doesn't know where to look, and llms.txt when it already knows which
+page it needs.
+
+## Call the API correctly
+
+[Agent skills](/marketing/build/ai-tools/agent-skills) package Mailchimp's API
+quirks, like tags being managed through `segments` and contacts addressed by
+an MD5 hash of a lowercased email address, into instructions your agent loads
+automatically for the relevant task. Install them once and every coding agent
+that supports the format uses them from then on.
