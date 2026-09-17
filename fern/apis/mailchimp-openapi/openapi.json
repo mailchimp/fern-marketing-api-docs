@@ -6418,6 +6418,352 @@
         "title": "Campaign",
         "type": "object"
       },
+      "AudiencesContact": {
+        "description": "An instance of a contact.",
+        "properties": {
+          "audience_id": {
+            "description": "The unique ID for the audience.",
+            "example": "773280e405",
+            "readOnly": true,
+            "title": "Audience ID",
+            "type": "string"
+          },
+          "created_at": {
+            "description": "The date that the contact was created.",
+            "format": "date-time",
+            "readOnly": true,
+            "title": "Created At",
+            "type": "string"
+          },
+          "email_channel": {
+            "properties": {
+              "effective_subscription_status": {
+                "description": "A computation performed by the Mailchimp platform, triggered whenever any of its inputs change. Some inputs are controlled by API users, while others are tracked internally by the platform. Computation is based on: audience opt-in configuration (single vs. double opt-in), marketing consent status, and deliverability status (an internal state for a contact, maintained by Mailchimp for a specific marketing channel instance). This new API field is distinct from how contacts are displayed in the UI. See the [Audiences (BETA) documentation](https://mailchimp.com/developer/marketing/docs/audiences-introduction) to learn about supported values.",
+                "properties": {
+                  "value": {
+                    "enum": [
+                      "subscribed",
+                      "unsubscribed",
+                      "nonsubscribed",
+                      "pending"
+                    ],
+                    "readOnly": true,
+                    "title": "Effective Subscription Status",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "email": {
+                "description": "Email address",
+                "example": "example@freddiemail.com",
+                "title": "Email Address",
+                "type": "string"
+              },
+              "hashed_email": {
+                "description": "MD5 hash of the email address",
+                "example": "9115d71ba28088047d342e3bcedacd0f",
+                "title": "Hashed Email Address",
+                "type": "string"
+              },
+              "marketing_consent": {
+                "description": "A contact's current consent status for email marketing communications. See the [Audiences (BETA) documentation](https://mailchimp.com/developer/marketing/docs/audiences-introduction) to learn about supported values.",
+                "properties": {
+                  "source": {
+                    "description": "The source from which the parent's entity was created.",
+                    "properties": {
+                      "name": {
+                        "description": "The name of the entity's source",
+                        "title": "Entity source name",
+                        "type": "string"
+                      }
+                    },
+                    "title": "Source",
+                    "type": "object"
+                  },
+                  "status": {
+                    "enum": [
+                      "consented",
+                      "denied",
+                      "confirmed",
+                      "unknown"
+                    ],
+                    "title": "Marketing Consent Status",
+                    "type": "string"
+                  },
+                  "captured_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "title": "Captured At",
+                    "description": "The ISO 8601 timestamp when the email marketing consent state was recorded; accepted and returned only when status is `confirmed` or `consented`; defaults to the current time if omitted; ignored if older than an existing stored timestamp (staleness guard).",
+                    "example": "2024-01-15T10:30:00Z"
+                  }
+                },
+                "type": "object"
+              },
+              "source": {
+                "description": "The source from which the parent's entity was created.",
+                "properties": {
+                  "name": {
+                    "description": "The name of the entity's source",
+                    "title": "Entity source name",
+                    "type": "string"
+                  }
+                },
+                "title": "Source",
+                "type": "object"
+              }
+            },
+            "title": "Email Channel Details",
+            "type": "object"
+          },
+          "id": {
+            "description": "The unique ID for the contact.",
+            "example": "7CCF816ADF6CE1B11AE09BB024A02B9B",
+            "readOnly": true,
+            "title": "Contact ID",
+            "type": "string"
+          },
+          "language": {
+            "description": "The contact's detected language. Empty string when no language has been detected or set.",
+            "enum": [
+              "",
+              "en",
+              "ar",
+              "af",
+              "be",
+              "bg",
+              "ca",
+              "zh",
+              "zh_CN",
+              "hr",
+              "cs",
+              "da",
+              "nl",
+              "et",
+              "fa",
+              "fi",
+              "fr",
+              "fr_CA",
+              "de",
+              "el",
+              "he",
+              "hi",
+              "hu",
+              "is",
+              "id",
+              "ga",
+              "it",
+              "ja",
+              "km",
+              "ko",
+              "lv",
+              "lt",
+              "mt",
+              "ms",
+              "mk",
+              "no",
+              "pl",
+              "pt",
+              "pt_PT",
+              "ro",
+              "ru",
+              "sr",
+              "sk",
+              "sl",
+              "es",
+              "es_ES",
+              "sw",
+              "sv",
+              "ta",
+              "th",
+              "tr",
+              "uk",
+              "vi"
+            ],
+            "example": "en",
+            "title": "Language",
+            "type": "string"
+          },
+          "last_updated_at": {
+            "description": "The date that the contact was last updated.",
+            "format": "date-time",
+            "readOnly": true,
+            "title": "Update At",
+            "type": "string"
+          },
+          "merge_fields": {
+            "additionalProperties": {
+              "description": "This object's keys are merge tags (like FNAME). It's values are the values to be added to the merge field.",
+              "oneOf": [
+                {
+                  "type": "object",
+                  "required": [
+                    "addr1",
+                    "city",
+                    "state",
+                    "zip"
+                  ],
+                  "properties": {
+                    "addr1": {
+                      "type": "string"
+                    },
+                    "addr2": {
+                      "type": "string"
+                    },
+                    "city": {
+                      "type": "string"
+                    },
+                    "state": {
+                      "type": "string"
+                    },
+                    "zip": {
+                      "type": "string"
+                    },
+                    "country": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            },
+            "description": "A dictionary of merge fields where the keys are the merge tags. See the [Merge Fields documentation](https://mailchimp.com/developer/marketing/docs/merge-fields/#structure) for more about the structure.",
+            "title": "Merge Fields",
+            "oneOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sms_channel": {
+            "properties": {
+              "effective_subscription_status": {
+                "description": "A computation performed by the Mailchimp platform, triggered whenever any of its inputs change. Some inputs are controlled by API users, while others are tracked internally by the platform. Computation is based on: audience opt-in configuration (single vs. double opt-in), marketing consent status, and deliverability status (an internal state for a contact, maintained by Mailchimp for a specific marketing channel instance). This new API field is distinct from how contacts are displayed in the UI. See the [Audiences (BETA) documentation](https://mailchimp.com/developer/marketing/docs/audiences-introduction) to learn about supported values.",
+                "properties": {
+                  "value": {
+                    "enum": [
+                      "subscribed",
+                      "unsubscribed",
+                      "nonsubscribed",
+                      "pending"
+                    ],
+                    "readOnly": true,
+                    "title": "Effective Subscription Status",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "marketing_consent": {
+                "description": "A contact's current consent status for SMS marketing communications. See the [Audiences (BETA) documentation](https://mailchimp.com/developer/marketing/docs/audiences-introduction) to learn about supported values.",
+                "properties": {
+                  "source": {
+                    "description": "The source from which the parent's entity was created.",
+                    "properties": {
+                      "name": {
+                        "description": "The name of the entity's source",
+                        "title": "Entity source name",
+                        "type": "string"
+                      }
+                    },
+                    "title": "Source",
+                    "type": "object"
+                  },
+                  "status": {
+                    "enum": [
+                      "consented",
+                      "confirmed",
+                      "denied",
+                      "unknown"
+                    ],
+                    "title": "Marketing Consent Status",
+                    "description": "The contact's SMS marketing consent status. Use `confirmed` for double opt-in audiences, `consented` for single opt-in audiences. `denied` is accepted on PATCH/PUT only (not POST) and drives an API-initiated unsubscribe; it cannot be used when creating a new contact.",
+                    "type": "string"
+                  },
+                  "captured_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "title": "Captured At",
+                    "description": "The timestamp when SMS marketing consent was captured (ISO 8601). Only accepted and returned when status is `confirmed`. The timestamp of the consent state change being recorded. Defaults to the current time if not provided. If the contact already has a consent timestamp on record that is equal to or newer than the supplied value, the supplied value is ignored (staleness guard); to update the consent timestamp supply a value strictly newer than the stored one.",
+                    "example": "2024-01-15T10:30:00Z"
+                  }
+                },
+                "type": "object"
+              },
+              "sms_phone": {
+                "description": "SMS Phone Number",
+                "example": "+14045550102",
+                "title": "SMS Phone Number",
+                "type": "string"
+              },
+              "source": {
+                "description": "The source from which the parent's entity was created.",
+                "properties": {
+                  "name": {
+                    "description": "The name of the entity's source",
+                    "title": "Entity source name",
+                    "type": "string"
+                  }
+                },
+                "title": "Source",
+                "type": "object"
+              },
+              "hashed_sms_phone": {
+                "description": "SHA256 hash of the SMS phone number",
+                "example": "0572084e1f8288816f02cdb7bd930c62400bc8aef510adfaa9eec2b995fa7609",
+                "title": "Hashed SMS Phone Number",
+                "type": "string"
+              }
+            },
+            "title": "SMS Channel Details",
+            "type": "object"
+          },
+          "source": {
+            "description": "The source from which the parent's entity was created.",
+            "properties": {
+              "name": {
+                "description": "The name of the entity's source",
+                "title": "Entity source name",
+                "type": "string"
+              }
+            },
+            "title": "Source",
+            "type": "object"
+          },
+          "status": {
+            "description": "The status of a contact.",
+            "enum": [
+              "active",
+              "archived"
+            ],
+            "example": "active",
+            "readOnly": true,
+            "title": "Status",
+            "type": "string"
+          },
+          "tags": {
+            "description": "The tags assigned to this contact.",
+            "items": {
+              "description": "The name of the tag",
+              "title": "Tag Name",
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          }
+        },
+        "type": "object",
+        "title": "AudiencesContact"
+      },
       "ECommerceStore": {
         "description": "An individual store in an account.",
         "properties": {
@@ -7785,194 +8131,6 @@
         "type": "object",
         "title": "FacebookAd"
       },
-      "ListWebhooks": {
-        "description": "Webhook configured for the given list.",
-        "properties": {
-          "_links": {
-            "description": "A list of link types and descriptions for the API schema documents.",
-            "items": {
-              "description": "This object represents a link from the resource where it is found to another resource or action that may be performed.",
-              "properties": {
-                "href": {
-                  "description": "This property contains a fully-qualified URL that can be called to retrieve the linked resource or perform the linked action.",
-                  "readOnly": true,
-                  "title": "Href",
-                  "type": "string"
-                },
-                "method": {
-                  "description": "The HTTP method that should be used when accessing the URL defined in 'href'.",
-                  "enum": [
-                    "GET",
-                    "POST",
-                    "PUT",
-                    "PATCH",
-                    "DELETE",
-                    "OPTIONS",
-                    "HEAD"
-                  ],
-                  "readOnly": true,
-                  "title": "Method",
-                  "type": "string"
-                },
-                "rel": {
-                  "description": "As with an HTML 'rel' attribute, this describes the type of link.",
-                  "readOnly": true,
-                  "title": "Rel",
-                  "type": "string"
-                },
-                "schema": {
-                  "description": "For HTTP methods that can receive bodies (POST and PUT), this is a URL representing the schema that the body should conform to.",
-                  "readOnly": true,
-                  "title": "Schema",
-                  "type": "string"
-                },
-                "targetSchema": {
-                  "description": "For GETs, this is a URL representing the schema that the response should conform to.",
-                  "readOnly": true,
-                  "title": "Target Schema",
-                  "type": "string"
-                }
-              },
-              "title": "Resource Link",
-              "type": "object"
-            },
-            "readOnly": true,
-            "title": "Links",
-            "type": "array"
-          },
-          "events": {
-            "description": "The events that can trigger the webhook and whether they are enabled.",
-            "properties": {
-              "campaign": {
-                "description": "Whether the webhook is triggered when a campaign is sent or cancelled.",
-                "example": true,
-                "title": "Campaign Sent",
-                "type": "boolean"
-              },
-              "cleaned": {
-                "description": "Whether the webhook is triggered when a subscriber's email address is cleaned from the list.",
-                "example": true,
-                "title": "Cleaned",
-                "type": "boolean"
-              },
-              "profile": {
-                "description": "Whether the webhook is triggered when a contact's profile is updated. This includes email subscribers and SMS-only contacts [BETA].",
-                "example": true,
-                "title": "Profile Updated",
-                "type": "boolean"
-              },
-              "subscribe": {
-                "description": "Whether the webhook is triggered when a list subscriber is added.",
-                "example": true,
-                "title": "Subscribed",
-                "type": "boolean"
-              },
-              "unsubscribe": {
-                "description": "Whether the webhook is triggered when a list member unsubscribes.",
-                "example": true,
-                "title": "Unsubscribed",
-                "type": "boolean"
-              },
-              "upemail": {
-                "description": "Whether the webhook is triggered when a subscriber's email address is changed.",
-                "example": true,
-                "title": "Email Address Updated",
-                "type": "boolean"
-              },
-              "sms_subscribe": {
-                "description": "[BETA] Whether the webhook is triggered when a contact subscribes to SMS.",
-                "example": true,
-                "title": "SMS Subscribed [BETA]",
-                "type": "boolean"
-              },
-              "sms_unsubscribe": {
-                "description": "[BETA] Whether the webhook is triggered when a contact unsubscribes from SMS.",
-                "example": true,
-                "title": "SMS Unsubscribed [BETA]",
-                "type": "boolean"
-              },
-              "upsms": {
-                "description": "[BETA] Whether the webhook is triggered when a contact's SMS phone number is updated.",
-                "example": true,
-                "title": "SMS Phone Number Updated [BETA]",
-                "type": "boolean"
-              },
-              "sms_campaign": {
-                "description": "[BETA] Whether the webhook is triggered when an SMS campaign is sent.",
-                "example": true,
-                "title": "SMS Campaign Sent [BETA]",
-                "type": "boolean"
-              }
-            },
-            "readOnly": true,
-            "title": "Events",
-            "type": "object"
-          },
-          "id": {
-            "description": "An string that uniquely identifies this webhook.",
-            "example": "5d9a5e3f7b",
-            "readOnly": true,
-            "title": "Unique ID",
-            "type": "string"
-          },
-          "list_id": {
-            "description": "The unique id for the list.",
-            "example": "4ca5becb8d",
-            "readOnly": true,
-            "title": "List ID",
-            "type": "string"
-          },
-          "signing_enabled": {
-            "description": "Whether outbound deliveries are HMAC-signed.",
-            "example": true,
-            "readOnly": true,
-            "title": "Signing Enabled",
-            "type": "boolean"
-          },
-          "signing_secret": {
-            "description": "The HMAC signing secret. Returned exactly once at creation. This should be stored securely; if lost, delete and recreate the webhook to obtain a new secret.",
-            "example": "zI3tsLziqBWhlz6V4PRlGg41u0gdhu7LhYXX4wa0ARM",
-            "readOnly": true,
-            "title": "Signing Secret",
-            "type": "string"
-          },
-          "sources": {
-            "description": "The possible sources of any events that can trigger the webhook and whether they are enabled.",
-            "properties": {
-              "admin": {
-                "description": "Whether the webhook is triggered by admin-initiated actions in the web interface.",
-                "example": true,
-                "title": "Admin",
-                "type": "boolean"
-              },
-              "api": {
-                "description": "Whether the webhook is triggered by actions initiated via the API.",
-                "example": true,
-                "title": "API",
-                "type": "boolean"
-              },
-              "user": {
-                "description": "Whether the webhook is triggered by subscriber-initiated actions.",
-                "example": true,
-                "title": "User",
-                "type": "boolean"
-              }
-            },
-            "readOnly": true,
-            "title": "Sources",
-            "type": "object"
-          },
-          "url": {
-            "description": "A valid URL for the Webhook.",
-            "example": "http://yourdomain.com/webhook",
-            "readOnly": true,
-            "title": "URL",
-            "type": "string"
-          }
-        },
-        "title": "List Webhooks",
-        "type": "object"
-      },
       "ECommerceProductVariant": {
         "description": "Information about a specific product variant.",
         "properties": {
@@ -8207,6 +8365,187 @@
           }
         },
         "title": "E-commerce Order Line Item",
+        "type": "object"
+      },
+      "ListWebhooks": {
+        "description": "Webhook configured for the given list.",
+        "properties": {
+          "_links": {
+            "description": "A list of link types and descriptions for the API schema documents.",
+            "items": {
+              "description": "This object represents a link from the resource where it is found to another resource or action that may be performed.",
+              "properties": {
+                "href": {
+                  "description": "This property contains a fully-qualified URL that can be called to retrieve the linked resource or perform the linked action.",
+                  "readOnly": true,
+                  "title": "Href",
+                  "type": "string"
+                },
+                "method": {
+                  "description": "The HTTP method that should be used when accessing the URL defined in 'href'.",
+                  "enum": [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "PATCH",
+                    "DELETE",
+                    "OPTIONS",
+                    "HEAD"
+                  ],
+                  "readOnly": true,
+                  "title": "Method",
+                  "type": "string"
+                },
+                "rel": {
+                  "description": "As with an HTML 'rel' attribute, this describes the type of link.",
+                  "readOnly": true,
+                  "title": "Rel",
+                  "type": "string"
+                },
+                "schema": {
+                  "description": "For HTTP methods that can receive bodies (POST and PUT), this is a URL representing the schema that the body should conform to.",
+                  "readOnly": true,
+                  "title": "Schema",
+                  "type": "string"
+                },
+                "targetSchema": {
+                  "description": "For GETs, this is a URL representing the schema that the response should conform to.",
+                  "readOnly": true,
+                  "title": "Target Schema",
+                  "type": "string"
+                }
+              },
+              "title": "Resource Link",
+              "type": "object"
+            },
+            "readOnly": true,
+            "title": "Links",
+            "type": "array"
+          },
+          "events": {
+            "description": "The events that can trigger the webhook and whether they are enabled.",
+            "properties": {
+              "campaign": {
+                "description": "Whether the webhook is triggered when a campaign is sent or cancelled.",
+                "example": true,
+                "title": "Campaign Sent",
+                "type": "boolean"
+              },
+              "cleaned": {
+                "description": "Whether the webhook is triggered when a subscriber's email address is cleaned from the list.",
+                "example": true,
+                "title": "Cleaned",
+                "type": "boolean"
+              },
+              "profile": {
+                "description": "Whether the webhook is triggered when a contact's profile is updated. This includes email subscribers and SMS-only contacts [BETA].",
+                "example": true,
+                "title": "Profile Updated",
+                "type": "boolean"
+              },
+              "subscribe": {
+                "description": "Whether the webhook is triggered when a list subscriber is added.",
+                "example": true,
+                "title": "Subscribed",
+                "type": "boolean"
+              },
+              "unsubscribe": {
+                "description": "Whether the webhook is triggered when a list member unsubscribes.",
+                "example": true,
+                "title": "Unsubscribed",
+                "type": "boolean"
+              },
+              "upemail": {
+                "description": "Whether the webhook is triggered when a subscriber's email address is changed.",
+                "example": true,
+                "title": "Email Address Updated",
+                "type": "boolean"
+              },
+              "sms_subscribe": {
+                "description": "[BETA] Whether the webhook is triggered when a contact subscribes to SMS.",
+                "example": true,
+                "title": "SMS Subscribed [BETA]",
+                "type": "boolean"
+              },
+              "sms_unsubscribe": {
+                "description": "[BETA] Whether the webhook is triggered when a contact unsubscribes from SMS.",
+                "example": true,
+                "title": "SMS Unsubscribed [BETA]",
+                "type": "boolean"
+              },
+              "upsms": {
+                "description": "[BETA] Whether the webhook is triggered when a contact's SMS phone number is updated.",
+                "example": true,
+                "title": "SMS Phone Number Updated [BETA]",
+                "type": "boolean"
+              },
+              "sms_campaign": {
+                "description": "[BETA] Whether the webhook is triggered when an SMS campaign is sent.",
+                "example": true,
+                "title": "SMS Campaign Sent [BETA]",
+                "type": "boolean"
+              }
+            },
+            "readOnly": true,
+            "title": "Events",
+            "type": "object"
+          },
+          "id": {
+            "description": "An string that uniquely identifies this webhook.",
+            "example": "5d9a5e3f7b",
+            "readOnly": true,
+            "title": "Unique ID",
+            "type": "string"
+          },
+          "list_id": {
+            "description": "The unique id for the list.",
+            "example": "4ca5becb8d",
+            "readOnly": true,
+            "title": "List ID",
+            "type": "string"
+          },
+          "signing_enabled": {
+            "description": "Whether outbound deliveries are HMAC-signed.",
+            "example": true,
+            "readOnly": true,
+            "title": "Signing Enabled",
+            "type": "boolean"
+          },
+          "sources": {
+            "description": "The possible sources of any events that can trigger the webhook and whether they are enabled.",
+            "properties": {
+              "admin": {
+                "description": "Whether the webhook is triggered by admin-initiated actions in the web interface.",
+                "example": true,
+                "title": "Admin",
+                "type": "boolean"
+              },
+              "api": {
+                "description": "Whether the webhook is triggered by actions initiated via the API.",
+                "example": true,
+                "title": "API",
+                "type": "boolean"
+              },
+              "user": {
+                "description": "Whether the webhook is triggered by subscriber-initiated actions.",
+                "example": true,
+                "title": "User",
+                "type": "boolean"
+              }
+            },
+            "readOnly": true,
+            "title": "Sources",
+            "type": "object"
+          },
+          "url": {
+            "description": "A valid URL for the Webhook.",
+            "example": "http://yourdomain.com/webhook",
+            "readOnly": true,
+            "title": "URL",
+            "type": "string"
+          }
+        },
+        "title": "List Webhooks",
         "type": "object"
       },
       "MergeField": {
@@ -9574,103 +9913,6 @@
         "title": "Member Notes",
         "type": "object"
       },
-      "BatchWebhook": {
-        "description": "A webhook configured for batch status updates.",
-        "properties": {
-          "_links": {
-            "description": "A list of link types and descriptions for the API schema documents.",
-            "items": {
-              "description": "A list of link types and descriptions for the API schema documents.",
-              "items": {
-                "description": "This object represents a link from the resource where it is found to another resource or action that may be performed.",
-                "properties": {
-                  "href": {
-                    "description": "This property contains a fully-qualified URL that can be called to retrieve the linked resource or perform the linked action.",
-                    "readOnly": true,
-                    "title": "Href",
-                    "type": "string"
-                  },
-                  "method": {
-                    "description": "The HTTP method that should be used when accessing the URL defined in 'href'.",
-                    "enum": [
-                      "GET",
-                      "POST",
-                      "PUT",
-                      "PATCH",
-                      "DELETE",
-                      "OPTIONS",
-                      "HEAD"
-                    ],
-                    "readOnly": true,
-                    "title": "Method",
-                    "type": "string"
-                  },
-                  "rel": {
-                    "description": "As with an HTML 'rel' attribute, this describes the type of link.",
-                    "readOnly": true,
-                    "title": "Rel",
-                    "type": "string"
-                  },
-                  "schema": {
-                    "description": "For HTTP methods that can receive bodies (POST and PUT), this is a URL representing the schema that the body should conform to.",
-                    "readOnly": true,
-                    "title": "Schema",
-                    "type": "string"
-                  },
-                  "targetSchema": {
-                    "description": "For GETs, this is a URL representing the schema that the response should conform to.",
-                    "readOnly": true,
-                    "title": "Target Schema",
-                    "type": "string"
-                  }
-                },
-                "title": "Resource Link",
-                "type": "object"
-              },
-              "readOnly": true,
-              "title": "Links",
-              "type": "array"
-            },
-            "readOnly": true,
-            "title": "Links",
-            "type": "array"
-          },
-          "enabled": {
-            "description": "Whether the webhook receives requests or not.",
-            "example": true,
-            "title": "Enabled",
-            "type": "boolean"
-          },
-          "id": {
-            "description": "A string that uniquely identifies this Batch Webhook.",
-            "readOnly": true,
-            "title": "Batch Webhook ID",
-            "type": "string"
-          },
-          "signing_enabled": {
-            "description": "Whether outbound deliveries are HMAC-signed.",
-            "example": true,
-            "readOnly": true,
-            "title": "Signing Enabled",
-            "type": "boolean"
-          },
-          "signing_secret": {
-            "description": "The HMAC signing secret. Returned exactly once at creation. This should be stored securely; if lost, delete and recreate the webhook to obtain a new secret.",
-            "example": "zI3tsLziqBWhlz6V4PRlGg41u0gdhu7LhYXX4wa0ARM",
-            "readOnly": true,
-            "title": "Signing Secret",
-            "type": "string"
-          },
-          "url": {
-            "description": "A valid URL for the Webhook.",
-            "example": "http://yourdomain.com/webhook",
-            "title": "URL",
-            "type": "string"
-          }
-        },
-        "title": "Batch Webhook",
-        "type": "object"
-      },
       "ConnectedSite": {
         "description": "Information about a specific connected site.",
         "properties": {
@@ -10917,6 +11159,96 @@
           }
         },
         "title": "Landing Page Report",
+        "type": "object"
+      },
+      "BatchWebhook": {
+        "description": "A webhook configured for batch status updates.",
+        "properties": {
+          "_links": {
+            "description": "A list of link types and descriptions for the API schema documents.",
+            "items": {
+              "description": "A list of link types and descriptions for the API schema documents.",
+              "items": {
+                "description": "This object represents a link from the resource where it is found to another resource or action that may be performed.",
+                "properties": {
+                  "href": {
+                    "description": "This property contains a fully-qualified URL that can be called to retrieve the linked resource or perform the linked action.",
+                    "readOnly": true,
+                    "title": "Href",
+                    "type": "string"
+                  },
+                  "method": {
+                    "description": "The HTTP method that should be used when accessing the URL defined in 'href'.",
+                    "enum": [
+                      "GET",
+                      "POST",
+                      "PUT",
+                      "PATCH",
+                      "DELETE",
+                      "OPTIONS",
+                      "HEAD"
+                    ],
+                    "readOnly": true,
+                    "title": "Method",
+                    "type": "string"
+                  },
+                  "rel": {
+                    "description": "As with an HTML 'rel' attribute, this describes the type of link.",
+                    "readOnly": true,
+                    "title": "Rel",
+                    "type": "string"
+                  },
+                  "schema": {
+                    "description": "For HTTP methods that can receive bodies (POST and PUT), this is a URL representing the schema that the body should conform to.",
+                    "readOnly": true,
+                    "title": "Schema",
+                    "type": "string"
+                  },
+                  "targetSchema": {
+                    "description": "For GETs, this is a URL representing the schema that the response should conform to.",
+                    "readOnly": true,
+                    "title": "Target Schema",
+                    "type": "string"
+                  }
+                },
+                "title": "Resource Link",
+                "type": "object"
+              },
+              "readOnly": true,
+              "title": "Links",
+              "type": "array"
+            },
+            "readOnly": true,
+            "title": "Links",
+            "type": "array"
+          },
+          "enabled": {
+            "description": "Whether the webhook receives requests or not.",
+            "example": true,
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "id": {
+            "description": "A string that uniquely identifies this Batch Webhook.",
+            "readOnly": true,
+            "title": "Batch Webhook ID",
+            "type": "string"
+          },
+          "signing_enabled": {
+            "description": "Whether outbound deliveries are HMAC-signed.",
+            "example": true,
+            "readOnly": true,
+            "title": "Signing Enabled",
+            "type": "boolean"
+          },
+          "url": {
+            "description": "A valid URL for the Webhook.",
+            "example": "http://yourdomain.com/webhook",
+            "title": "URL",
+            "type": "string"
+          }
+        },
+        "title": "Batch Webhook",
         "type": "object"
       },
       "Batch": {
@@ -16703,6 +17035,1309 @@
         }
       }
     },
+    "/3.0/audiences/{audience_id}/contacts": {
+      "get": {
+        "description": "Get a list of omni-channel contacts for a given audience.",
+        "operationId": "getAudienceContactList",
+        "parameters": [
+          {
+            "description": "A comma-separated list of fields to return. Reference parameters of sub-objects with dot notation.",
+            "explode": false,
+            "in": "query",
+            "name": "fields",
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "x-title": "Fields"
+            },
+            "style": "form",
+            "x-title": "Fields"
+          },
+          {
+            "description": "A comma-separated list of fields to exclude. Reference parameters of sub-objects with dot notation.",
+            "explode": false,
+            "in": "query",
+            "name": "exclude_fields",
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "x-title": "Exclude Fields"
+            },
+            "style": "form",
+            "x-title": "Exclude Fields"
+          },
+          {
+            "description": "The number of records to return. Default value is 10. Maximum value is 1000",
+            "in": "query",
+            "name": "count",
+            "schema": {
+              "default": 10,
+              "maximum": 1000,
+              "type": "integer",
+              "x-title": "Count"
+            },
+            "x-title": "Count"
+          },
+          {
+            "description": "Paginate through a collection of records by setting the `cursor` parameter to a `next_cursor` attribute returned by a previous request. Default value fetches the first \"page\" of results.",
+            "in": "query",
+            "name": "cursor",
+            "schema": {
+              "type": "string",
+              "x-title": "cursor"
+            },
+            "x-title": "cursor"
+          },
+          {
+            "description": "Restricts the response to contacts created at or before the specified time (inclusive). Uses ISO 8601 format: 2025-04-23T15:41:36+00:00.",
+            "in": "query",
+            "name": "created_before",
+            "schema": {
+              "format": "date-time",
+              "type": "string",
+              "x-title": "Created Before Time"
+            },
+            "x-title": "Created Before Time"
+          },
+          {
+            "description": "Restricts the response to contacts created after the specified time (exclusive). Uses ISO 8601 format: 2025-04-23T15:41:36+00:00.",
+            "in": "query",
+            "name": "created_since",
+            "schema": {
+              "format": "date-time",
+              "type": "string",
+              "x-title": "Created Since Time"
+            },
+            "x-title": "Created Since Time"
+          },
+          {
+            "description": "Restricts the response to contacts updated at or before the specified time (inclusive). Uses ISO 8601 format: 2025-04-23T15:41:36+00:00.",
+            "in": "query",
+            "name": "updated_before",
+            "schema": {
+              "format": "date-time",
+              "type": "string",
+              "x-title": "Updated Before Time"
+            },
+            "x-title": "Updated Before Time"
+          },
+          {
+            "description": "Restricts the response to contacts updated after the specified time (exclusive). Uses ISO 8601 format: 2025-04-23T15:41:36+00:00.",
+            "in": "query",
+            "name": "updated_since",
+            "schema": {
+              "format": "date-time",
+              "type": "string",
+              "x-title": "Updated Since Time"
+            },
+            "x-title": "Updated Since Time"
+          },
+          {
+            "description": "The unique ID for the audience.",
+            "in": "path",
+            "name": "audience_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Audience ID"
+            },
+            "x-title": "Audience ID"
+          },
+          {
+            "description": "Specifies the field to sort the returned contacts by.",
+            "in": "query",
+            "name": "sort_field",
+            "schema": {
+              "enum": [
+                "created_at",
+                "updated_at"
+              ],
+              "type": "string",
+              "x-title": "Sort By Field"
+            },
+            "x-title": "Sort By Field"
+          },
+          {
+            "description": "Determines the order direction for sorted results.",
+            "in": "query",
+            "name": "sort_dir",
+            "schema": {
+              "enum": [
+                "ASC",
+                "DESC"
+              ],
+              "type": "string",
+              "x-title": "Sort Direction"
+            },
+            "x-title": "Sort Direction"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "An array of objects, each representing a contact record.",
+                  "properties": {
+                    "contacts": {
+                      "description": "An array of objects, each representing a contact record.",
+                      "items": {
+                        "$ref": "#/components/schemas/AudiencesContact"
+                      },
+                      "title": "Contacts",
+                      "type": "array"
+                    },
+                    "next_cursor": {
+                      "description": "A cursor pointing to the last item on this page of the collection. Paginate through a collection of records by setting the `cursor` parameter on a subsequent request to this value.",
+                      "readOnly": true,
+                      "title": "Next Cursor",
+                      "type": "string"
+                    },
+                    "_links": {
+                      "description": "A list of link types and descriptions for the API schema documents.",
+                      "items": {
+                        "description": "This object represents a link from the resource where it is found to another resource or action that may be performed.",
+                        "properties": {
+                          "href": {
+                            "description": "This property contains a fully-qualified URL that can be called to retrieve the linked resource or perform the linked action.",
+                            "readOnly": true,
+                            "title": "Href",
+                            "type": "string"
+                          },
+                          "method": {
+                            "description": "The HTTP method that should be used when accessing the URL defined in 'href'.",
+                            "enum": [
+                              "GET",
+                              "POST",
+                              "PUT",
+                              "PATCH",
+                              "DELETE",
+                              "OPTIONS",
+                              "HEAD"
+                            ],
+                            "readOnly": true,
+                            "title": "Method",
+                            "type": "string"
+                          },
+                          "rel": {
+                            "description": "As with an HTML 'rel' attribute, this describes the type of link.",
+                            "readOnly": true,
+                            "title": "Rel",
+                            "type": "string"
+                          },
+                          "schema": {
+                            "description": "For HTTP methods that can receive bodies (POST and PUT), this is a URL representing the schema that the body should conform to.",
+                            "readOnly": true,
+                            "title": "Schema",
+                            "type": "string"
+                          },
+                          "targetSchema": {
+                            "description": "For GETs, this is a URL representing the schema that the response should conform to.",
+                            "readOnly": true,
+                            "title": "Target Schema",
+                            "type": "string"
+                          }
+                        },
+                        "title": "Resource Link",
+                        "type": "object"
+                      },
+                      "readOnly": true,
+                      "title": "Links",
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "description": "An error generated by the Mailchimp API. The response conforms to [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).",
+                  "properties": {
+                    "detail": {
+                      "description": "A human-readable explanation specific to this occurrence of the problem. [Learn more about errors](/developer/guides/get-started-with-mailchimp-api-3/#Errors).",
+                      "examples": [
+                        "The requested resource could not be found."
+                      ],
+                      "title": "Error Message",
+                      "type": "string"
+                    },
+                    "instance": {
+                      "description": "A string that identifies this specific occurrence of the problem. Please provide this ID when contacting support.",
+                      "examples": [
+                        "995c5cb0-3280-4a6e-808b-3b096d0bb219"
+                      ],
+                      "title": "Instance ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The HTTP status code (RFC2616, Section 6) generated by the origin server for this occurrence of the problem.",
+                      "examples": [
+                        404
+                      ],
+                      "title": "HTTP Status Code",
+                      "type": "integer"
+                    },
+                    "title": {
+                      "description": "A short, human-readable summary of the problem type. It shouldn't change based on the occurrence of the problem, except for purposes of localization.",
+                      "examples": [
+                        "Resource Not Found"
+                      ],
+                      "title": "Error Title",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "An absolute URI that identifies the problem type. When dereferenced, it should provide human-readable documentation for the problem type.",
+                      "examples": [
+                        "https://mailchimp.com/developer/marketing/docs/errors/"
+                      ],
+                      "title": "Problem Type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "detail",
+                    "instance",
+                    "status",
+                    "title",
+                    "type"
+                  ],
+                  "title": "Problem Detail Document",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "An error generated by the Mailchimp API."
+          }
+        },
+        "summary": "A collection of Audience Contacts",
+        "tags": [
+          "audiences"
+        ],
+        "x-custom-config": {
+          "methodNameCamel": "listAudienceContactList",
+          "methodNameSnake": "list_audience_contact_list"
+        }
+      },
+      "post": {
+        "description": "Create a new omni-channel contact for an audience.",
+        "operationId": "createAudienceContact",
+        "parameters": [
+          {
+            "description": "The unique ID for the audience.",
+            "in": "path",
+            "name": "audience_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Audience ID"
+            },
+            "x-title": "Audience ID"
+          },
+          {
+            "description": "Defines how merge field validation is handled. When set to `ignore_required_checks`, the API does not raise an error if required merge fields are missing from the request. When set to `strict`, the API enforces validation and returns an error if any required merge field is not provided. If this setting is omitted, `strict` is applied by default.",
+            "in": "query",
+            "name": "merge_field_validation_mode",
+            "schema": {
+              "enum": [
+                "ignore_required_checks",
+                "strict"
+              ],
+              "type": "string",
+              "x-title": "Merge Field Validation Mode"
+            },
+            "x-title": "Merge Field Validation Mode"
+          },
+          {
+            "description": "Indicates the data processing mode. In `historical` mode, contact data changes do not trigger automations or webhooks. In `live mode`, such changes do trigger them.",
+            "in": "query",
+            "name": "data_mode",
+            "schema": {
+              "enum": [
+                "historical",
+                "live"
+              ],
+              "type": "string",
+              "x-title": "Data Mode"
+            },
+            "x-title": "Data Mode"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "description": "An instance of a contact.",
+                "properties": {
+                  "email_channel": {
+                    "properties": {
+                      "email": {
+                        "description": "Email address",
+                        "example": "example@freddiemail.com",
+                        "title": "Email Address",
+                        "type": "string"
+                      },
+                      "marketing_consent": {
+                        "description": "A contact's current consent status for email marketing communications. See the [Audiences (BETA) documentation](https://mailchimp.com/developer/marketing/docs/audiences-introduction) to learn about supported values.",
+                        "properties": {
+                          "status": {
+                            "description": "Status of a contacts Marketing Consent",
+                            "enum": [
+                              "confirmed",
+                              "consented",
+                              "denied",
+                              "unknown"
+                            ],
+                            "example": "confirmed",
+                            "title": "Marketing Consent Status",
+                            "type": "string"
+                          }
+                        },
+                        "title": "Marketing Consent Details",
+                        "type": "object"
+                      }
+                    },
+                    "title": "Email Channel Details",
+                    "type": "object"
+                  },
+                  "language": {
+                    "description": "The contact's detected language.",
+                    "example": "EN",
+                    "title": "Language",
+                    "type": "string"
+                  },
+                  "merge_fields": {
+                    "additionalProperties": {
+                      "description": "This object's keys are merge tags (like FNAME). It's values are the values to be added to the merge field.",
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "addr1",
+                            "city",
+                            "state",
+                            "zip"
+                          ],
+                          "properties": {
+                            "addr1": {
+                              "type": "string"
+                            },
+                            "addr2": {
+                              "type": "string"
+                            },
+                            "city": {
+                              "type": "string"
+                            },
+                            "state": {
+                              "type": "string"
+                            },
+                            "zip": {
+                              "type": "string"
+                            },
+                            "country": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        }
+                      ]
+                    },
+                    "description": "A dictionary of merge fields where the keys are the merge tags. See the [Merge Fields documentation](https://mailchimp.com/developer/marketing/docs/merge-fields/#structure) for more about the structure.",
+                    "title": "Merge Fields",
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "sms_channel": {
+                    "properties": {
+                      "marketing_consent": {
+                        "description": "A contact's current consent status for SMS marketing communications. See the [Audiences (BETA) documentation](https://mailchimp.com/developer/marketing/docs/audiences-introduction) to learn about supported values.",
+                        "type": "object",
+                        "properties": {
+                          "source": {
+                            "description": "The source from which the parent's entity was created.",
+                            "properties": {
+                              "name": {
+                                "description": "The name of the entity's source",
+                                "title": "Entity source name",
+                                "type": "string"
+                              }
+                            },
+                            "title": "Source",
+                            "type": "object"
+                          },
+                          "status": {
+                            "enum": [
+                              "consented",
+                              "confirmed",
+                              "unknown"
+                            ],
+                            "title": "Marketing Consent Status",
+                            "description": "The contact's SMS marketing consent status. Use `confirmed` for double opt-in audiences, `consented` for single opt-in audiences.",
+                            "type": "string",
+                            "example": "confirmed"
+                          },
+                          "captured_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "title": "Captured At",
+                            "description": "The timestamp when SMS marketing consent was captured (ISO 8601). Only accepted and returned when status is `confirmed`. The timestamp of the consent state change being recorded. Defaults to the current time if not provided. If the contact already has a consent timestamp on record that is equal to or newer than the supplied value, the supplied value is ignored (staleness guard); to update the consent timestamp supply a value strictly newer than the stored one.",
+                            "example": "2024-01-15T10:30:00Z"
+                          }
+                        }
+                      },
+                      "sms_phone": {
+                        "description": "SMS Phone Number",
+                        "example": "+16155550128",
+                        "title": "SMS Phone Number",
+                        "type": "string"
+                      }
+                    },
+                    "title": "SMS Channel Details",
+                    "type": "object"
+                  },
+                  "tags": {
+                    "description": "An array of tags to add to the contact. Accepts tag name strings or objects with name and status. This operation is append-only; existing tags will be preserved, and only new tags from this array will be added.",
+                    "example": [
+                      "new_tag",
+                      "another_tag"
+                    ],
+                    "items": {
+                      "oneOf": [
+                        {
+                          "title": "Tag Name",
+                          "type": "string"
+                        },
+                        {
+                          "title": "Tag Object",
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "title": "Tag Name"
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "active",
+                                "inactive"
+                              ],
+                              "title": "Tag Status"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "status"
+                          ]
+                        }
+                      ]
+                    },
+                    "title": "Tags",
+                    "type": "array"
+                  },
+                  "update_existing": {
+                    "description": "If a contact already exists, update them instead of returning a conflict error. When `true` and a matching contact is found (by email or phone), the existing contact is updated with the provided channel data. Defaults to `false`.",
+                    "example": true,
+                    "title": "Update Existing",
+                    "type": "boolean"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AudiencesContact"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "description": "An error generated by the Mailchimp API. The response conforms to [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).",
+                  "properties": {
+                    "detail": {
+                      "description": "A human-readable explanation specific to this occurrence of the problem. [Learn more about errors](/developer/guides/get-started-with-mailchimp-api-3/#Errors).",
+                      "examples": [
+                        "The requested resource could not be found."
+                      ],
+                      "title": "Error Message",
+                      "type": "string"
+                    },
+                    "instance": {
+                      "description": "A string that identifies this specific occurrence of the problem. Please provide this ID when contacting support.",
+                      "examples": [
+                        "995c5cb0-3280-4a6e-808b-3b096d0bb219"
+                      ],
+                      "title": "Instance ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The HTTP status code (RFC2616, Section 6) generated by the origin server for this occurrence of the problem.",
+                      "examples": [
+                        404
+                      ],
+                      "title": "HTTP Status Code",
+                      "type": "integer"
+                    },
+                    "title": {
+                      "description": "A short, human-readable summary of the problem type. It shouldn't change based on the occurrence of the problem, except for purposes of localization.",
+                      "examples": [
+                        "Resource Not Found"
+                      ],
+                      "title": "Error Title",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "An absolute URI that identifies the problem type. When dereferenced, it should provide human-readable documentation for the problem type.",
+                      "examples": [
+                        "https://mailchimp.com/developer/marketing/docs/errors/"
+                      ],
+                      "title": "Problem Type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "detail",
+                    "instance",
+                    "status",
+                    "title",
+                    "type"
+                  ],
+                  "title": "Problem Detail Document",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "An error generated by the Mailchimp API."
+          }
+        },
+        "summary": "Add Contact",
+        "tags": [
+          "audiences"
+        ]
+      }
+    },
+    "/3.0/audiences/{audience_id}/contacts/{contact_id}": {
+      "get": {
+        "description": "Retrieve a specific omni-channel contact in an audience.",
+        "operationId": "getAudienceContact",
+        "parameters": [
+          {
+            "description": "A comma-separated list of fields to return. Reference parameters of sub-objects with dot notation.",
+            "explode": false,
+            "in": "query",
+            "name": "fields",
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "x-title": "Fields"
+            },
+            "style": "form",
+            "x-title": "Fields"
+          },
+          {
+            "description": "A comma-separated list of fields to exclude. Reference parameters of sub-objects with dot notation.",
+            "explode": false,
+            "in": "query",
+            "name": "exclude_fields",
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "x-title": "Exclude Fields"
+            },
+            "style": "form",
+            "x-title": "Exclude Fields"
+          },
+          {
+            "description": "The unique ID for the audience.",
+            "in": "path",
+            "name": "audience_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Audience ID"
+            },
+            "x-title": "Audience ID"
+          },
+          {
+            "description": "A unique identifier for the contact, which can be a Mailchimp contact ID or a channel hash. A channel hash must follow the format email:[md5_hash] (where the hash is the MD5 of the lowercased email address) or sms:[sha256_hash] (where the hash is the SHA256 of the E.164-formatted phone number).",
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Contact ID or Channel Hash"
+            },
+            "x-title": "Contact ID or Channel Hash"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AudiencesContact"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "description": "An error generated by the Mailchimp API. The response conforms to [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).",
+                  "properties": {
+                    "detail": {
+                      "description": "A human-readable explanation specific to this occurrence of the problem. [Learn more about errors](/developer/guides/get-started-with-mailchimp-api-3/#Errors).",
+                      "examples": [
+                        "The requested resource could not be found."
+                      ],
+                      "title": "Error Message",
+                      "type": "string"
+                    },
+                    "instance": {
+                      "description": "A string that identifies this specific occurrence of the problem. Please provide this ID when contacting support.",
+                      "examples": [
+                        "995c5cb0-3280-4a6e-808b-3b096d0bb219"
+                      ],
+                      "title": "Instance ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The HTTP status code (RFC2616, Section 6) generated by the origin server for this occurrence of the problem.",
+                      "examples": [
+                        404
+                      ],
+                      "title": "HTTP Status Code",
+                      "type": "integer"
+                    },
+                    "title": {
+                      "description": "A short, human-readable summary of the problem type. It shouldn't change based on the occurrence of the problem, except for purposes of localization.",
+                      "examples": [
+                        "Resource Not Found"
+                      ],
+                      "title": "Error Title",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "An absolute URI that identifies the problem type. When dereferenced, it should provide human-readable documentation for the problem type.",
+                      "examples": [
+                        "https://mailchimp.com/developer/marketing/docs/errors/"
+                      ],
+                      "title": "Problem Type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "detail",
+                    "instance",
+                    "status",
+                    "title",
+                    "type"
+                  ],
+                  "title": "Problem Detail Document",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "An error generated by the Mailchimp API."
+          }
+        },
+        "summary": "Get a contact record",
+        "tags": [
+          "audiences"
+        ],
+        "x-custom-config": {
+          "methodNameCamel": "getAudienceContactId",
+          "methodNameSnake": "get_audience_contact_id"
+        }
+      },
+      "patch": {
+        "description": "Update an existing omni-channel contact.",
+        "operationId": "patchAudienceContact",
+        "parameters": [
+          {
+            "description": "The unique ID for the audience.",
+            "in": "path",
+            "name": "audience_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Audience ID"
+            },
+            "x-title": "Audience ID"
+          },
+          {
+            "description": "The unique id for the contact.",
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Contact ID"
+            },
+            "x-title": "Contact ID"
+          },
+          {
+            "description": "Defines how merge field validation is handled. When set to `ignore_required_checks`, the API does not raise an error if required merge fields are missing from the request. When set to `strict`, the API enforces validation and returns an error if any required merge field is not provided. If this setting is omitted, `strict` is applied by default.",
+            "in": "query",
+            "name": "merge_field_validation_mode",
+            "schema": {
+              "enum": [
+                "ignore_required_checks",
+                "strict"
+              ],
+              "type": "string",
+              "x-title": "Merge Field Validation Mode"
+            },
+            "x-title": "Merge Field Validation Mode"
+          },
+          {
+            "description": "Indicates the data processing mode. In `historical` mode, contact data changes do not trigger automations or webhooks. In `live mode`, such changes do trigger them.",
+            "in": "query",
+            "name": "data_mode",
+            "schema": {
+              "enum": [
+                "historical",
+                "live"
+              ],
+              "type": "string",
+              "x-title": "Data Mode"
+            },
+            "x-title": "Data Mode"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "description": "An instance of a contact.",
+                "properties": {
+                  "email_channel": {
+                    "properties": {
+                      "email": {
+                        "description": "Email address",
+                        "example": "example@freddiemail.com",
+                        "title": "Email Address",
+                        "type": "string"
+                      },
+                      "marketing_consent": {
+                        "description": "A contact's current consent status for email marketing communications. See the [Audiences (BETA) documentation](https://mailchimp.com/developer/marketing/docs/audiences-introduction) to learn about supported values.",
+                        "properties": {
+                          "source": {
+                            "description": "The source from which the parent's entity was created.",
+                            "properties": {
+                              "name": {
+                                "description": "The name of the entity's source",
+                                "title": "Entity source name",
+                                "type": "string"
+                              }
+                            },
+                            "title": "Source",
+                            "type": "object"
+                          },
+                          "status": {
+                            "enum": [
+                              "consented",
+                              "denied",
+                              "confirmed",
+                              "unknown"
+                            ],
+                            "title": "Marketing Consent Status",
+                            "type": "string"
+                          },
+                          "captured_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "title": "Captured At",
+                            "description": "The ISO 8601 timestamp when the email marketing consent state was recorded; accepted and returned only when status is `confirmed` or `consented`; defaults to the current time if omitted; ignored if older than an existing stored timestamp (staleness guard).",
+                            "example": "2024-01-15T10:30:00Z"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "title": "Email Channel Details",
+                    "type": "object"
+                  },
+                  "language": {
+                    "description": "The contact's detected language.",
+                    "example": "EN",
+                    "title": "Language",
+                    "type": "string"
+                  },
+                  "merge_fields": {
+                    "additionalProperties": {
+                      "description": "This object's keys are merge tags (like FNAME). It's values are the values to be added to the merge field.",
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "addr1",
+                            "city",
+                            "state",
+                            "zip"
+                          ],
+                          "properties": {
+                            "addr1": {
+                              "type": "string"
+                            },
+                            "addr2": {
+                              "type": "string"
+                            },
+                            "city": {
+                              "type": "string"
+                            },
+                            "state": {
+                              "type": "string"
+                            },
+                            "zip": {
+                              "type": "string"
+                            },
+                            "country": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        }
+                      ]
+                    },
+                    "description": "A dictionary of merge fields where the keys are the merge tags. See the [Merge Fields documentation](https://mailchimp.com/developer/marketing/docs/merge-fields/#structure) for more about the structure.",
+                    "title": "Merge Fields",
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "sms_channel": {
+                    "properties": {
+                      "marketing_consent": {
+                        "description": "A contact's current consent status for SMS marketing communications. See the [Audiences (BETA) documentation](https://mailchimp.com/developer/marketing/docs/audiences-introduction) to learn about supported values.",
+                        "properties": {
+                          "source": {
+                            "description": "The source from which the parent's entity was created.",
+                            "properties": {
+                              "name": {
+                                "description": "The name of the entity's source",
+                                "title": "Entity source name",
+                                "type": "string"
+                              }
+                            },
+                            "title": "Source",
+                            "type": "object"
+                          },
+                          "status": {
+                            "enum": [
+                              "consented",
+                              "confirmed",
+                              "denied",
+                              "unknown"
+                            ],
+                            "title": "Marketing Consent Status",
+                            "description": "The contact's SMS marketing consent status. Use `confirmed` for double opt-in audiences, `consented` for single opt-in audiences. `denied` is accepted on PATCH/PUT only (not POST) and drives an API-initiated unsubscribe; it cannot be used when creating a new contact.",
+                            "type": "string"
+                          },
+                          "captured_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "title": "Captured At",
+                            "description": "The timestamp when SMS marketing consent was captured (ISO 8601). Only accepted and returned when status is `confirmed`. The timestamp of the consent state change being recorded. Defaults to the current time if not provided. If the contact already has a consent timestamp on record that is equal to or newer than the supplied value, the supplied value is ignored (staleness guard); to update the consent timestamp supply a value strictly newer than the stored one.",
+                            "example": "2024-01-15T10:30:00Z"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "sms_phone": {
+                        "description": "SMS Phone Number",
+                        "example": "+16155550128",
+                        "title": "SMS Phone Number",
+                        "type": "string"
+                      }
+                    },
+                    "title": "SMS Channel Details",
+                    "type": "object"
+                  },
+                  "tags": {
+                    "description": "An array of tags to add to the contact. Accepts tag name strings or objects with name and status. This operation is append-only; existing tags will be preserved, and only new tags from this array will be added.",
+                    "example": [
+                      "tag_to_add_1",
+                      "tag_to_add_2"
+                    ],
+                    "items": {
+                      "oneOf": [
+                        {
+                          "title": "Tag Name",
+                          "type": "string"
+                        },
+                        {
+                          "title": "Tag Object",
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "title": "Tag Name"
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "active",
+                                "inactive"
+                              ],
+                              "title": "Tag Status"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "status"
+                          ]
+                        }
+                      ]
+                    },
+                    "title": "Tags",
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AudiencesContact"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "description": "An error generated by the Mailchimp API. The response conforms to [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).",
+                  "properties": {
+                    "detail": {
+                      "description": "A human-readable explanation specific to this occurrence of the problem. [Learn more about errors](/developer/guides/get-started-with-mailchimp-api-3/#Errors).",
+                      "examples": [
+                        "The requested resource could not be found."
+                      ],
+                      "title": "Error Message",
+                      "type": "string"
+                    },
+                    "instance": {
+                      "description": "A string that identifies this specific occurrence of the problem. Please provide this ID when contacting support.",
+                      "examples": [
+                        "995c5cb0-3280-4a6e-808b-3b096d0bb219"
+                      ],
+                      "title": "Instance ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The HTTP status code (RFC2616, Section 6) generated by the origin server for this occurrence of the problem.",
+                      "examples": [
+                        404
+                      ],
+                      "title": "HTTP Status Code",
+                      "type": "integer"
+                    },
+                    "title": {
+                      "description": "A short, human-readable summary of the problem type. It shouldn't change based on the occurrence of the problem, except for purposes of localization.",
+                      "examples": [
+                        "Resource Not Found"
+                      ],
+                      "title": "Error Title",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "An absolute URI that identifies the problem type. When dereferenced, it should provide human-readable documentation for the problem type.",
+                      "examples": [
+                        "https://mailchimp.com/developer/marketing/docs/errors/"
+                      ],
+                      "title": "Problem Type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "detail",
+                    "instance",
+                    "status",
+                    "title",
+                    "type"
+                  ],
+                  "title": "Problem Detail Document",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "An error generated by the Mailchimp API."
+          }
+        },
+        "summary": "Update Contact",
+        "tags": [
+          "audiences"
+        ]
+      },
+      "x-custom-config": {
+        "methodNameCamel": "patchAudienceContact",
+        "methodNameSnake": "patch_audience_contact"
+      }
+    },
+    "/3.0/audiences/{audience_id}/contacts/{contact_id}/actions/archive": {
+      "post": {
+        "description": "Archives a Contact.",
+        "operationId": "postAudiencesContactsActionsArchive",
+        "parameters": [
+          {
+            "description": "The unique ID for the audience.",
+            "in": "path",
+            "name": "audience_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Audience ID"
+            },
+            "x-title": "Audience ID"
+          },
+          {
+            "description": "The unique id for the contact.",
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Contact ID"
+            },
+            "x-title": "Contact ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "content": {},
+            "description": "Empty Response"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "description": "An error generated by the Mailchimp API. The response conforms to [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).",
+                  "properties": {
+                    "detail": {
+                      "description": "A human-readable explanation specific to this occurrence of the problem. [Learn more about errors](/developer/guides/get-started-with-mailchimp-api-3/#Errors).",
+                      "examples": [
+                        "The requested resource could not be found."
+                      ],
+                      "title": "Error Message",
+                      "type": "string"
+                    },
+                    "instance": {
+                      "description": "A string that identifies this specific occurrence of the problem. Please provide this ID when contacting support.",
+                      "examples": [
+                        "995c5cb0-3280-4a6e-808b-3b096d0bb219"
+                      ],
+                      "title": "Instance ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The HTTP status code (RFC2616, Section 6) generated by the origin server for this occurrence of the problem.",
+                      "examples": [
+                        404
+                      ],
+                      "title": "HTTP Status Code",
+                      "type": "integer"
+                    },
+                    "title": {
+                      "description": "A short, human-readable summary of the problem type. It shouldn't change based on the occurrence of the problem, except for purposes of localization.",
+                      "examples": [
+                        "Resource Not Found"
+                      ],
+                      "title": "Error Title",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "An absolute URI that identifies the problem type. When dereferenced, it should provide human-readable documentation for the problem type.",
+                      "examples": [
+                        "https://mailchimp.com/developer/marketing/docs/errors/"
+                      ],
+                      "title": "Problem Type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "detail",
+                    "instance",
+                    "status",
+                    "title",
+                    "type"
+                  ],
+                  "title": "Problem Detail Document",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "An error generated by the Mailchimp API."
+          }
+        },
+        "summary": "Archive Contact",
+        "tags": [
+          "audiences"
+        ],
+        "x-custom-config": {
+          "methodNameCamel": "archiveContact",
+          "methodNameSnake": "archive_contact"
+        }
+      }
+    },
+    "/3.0/audiences/{audience_id}/contacts/{contact_id}/actions/forget": {
+      "post": {
+        "description": "Forgets a Contact.",
+        "operationId": "postAudiencesContactsActionsForget",
+        "parameters": [
+          {
+            "description": "The unique ID for the audience.",
+            "in": "path",
+            "name": "audience_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Audience ID"
+            },
+            "x-title": "Audience ID"
+          },
+          {
+            "description": "The unique id for the contact.",
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Contact ID"
+            },
+            "x-title": "Contact ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "content": {},
+            "description": "Empty Response"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "description": "An error generated by the Mailchimp API. The response conforms to [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).",
+                  "properties": {
+                    "detail": {
+                      "description": "A human-readable explanation specific to this occurrence of the problem. [Learn more about errors](/developer/guides/get-started-with-mailchimp-api-3/#Errors).",
+                      "examples": [
+                        "The requested resource could not be found."
+                      ],
+                      "title": "Error Message",
+                      "type": "string"
+                    },
+                    "instance": {
+                      "description": "A string that identifies this specific occurrence of the problem. Please provide this ID when contacting support.",
+                      "examples": [
+                        "995c5cb0-3280-4a6e-808b-3b096d0bb219"
+                      ],
+                      "title": "Instance ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The HTTP status code (RFC2616, Section 6) generated by the origin server for this occurrence of the problem.",
+                      "examples": [
+                        404
+                      ],
+                      "title": "HTTP Status Code",
+                      "type": "integer"
+                    },
+                    "title": {
+                      "description": "A short, human-readable summary of the problem type. It shouldn't change based on the occurrence of the problem, except for purposes of localization.",
+                      "examples": [
+                        "Resource Not Found"
+                      ],
+                      "title": "Error Title",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "An absolute URI that identifies the problem type. When dereferenced, it should provide human-readable documentation for the problem type.",
+                      "examples": [
+                        "https://mailchimp.com/developer/marketing/docs/errors/"
+                      ],
+                      "title": "Problem Type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "detail",
+                    "instance",
+                    "status",
+                    "title",
+                    "type"
+                  ],
+                  "title": "Problem Detail Document",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "An error generated by the Mailchimp API."
+          }
+        },
+        "summary": "Forget Contact",
+        "tags": [
+          "audiences"
+        ],
+        "x-custom-config": {
+          "methodNameCamel": "forgetContact",
+          "methodNameSnake": "forget_contact"
+        }
+      }
+    },
     "/3.0/audiences/{audience_id}/partners/segments": {},
     "/3.0/audiences/{audience_id}/partners/segments/{segment_id}": {},
     "/3.0/audiences/{audience_id}/partners/segments/{segment_id}/snapshots": {},
@@ -20018,7 +21653,22 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BatchWebhook"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BatchWebhook"
+                    },
+                    {
+                      "properties": {
+                        "signing_secret": {
+                          "description": "The HMAC signing secret. Returned exactly once at creation. This should be stored securely; if lost, delete and recreate the webhook to obtain a new secret.",
+                          "example": "zI3tsLziqBWhlz6V4PRlGg41u0gdhu7LhYXX4wa0ARM",
+                          "readOnly": true,
+                          "title": "Signing Secret",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             },
@@ -49626,12 +51276,7 @@
                   "qbo_payment_link",
                   "video_call_transcripts",
                   "whatsapp_bulk_sent",
-                  "whatsapp_delivered",
-                  "whatsapp_link_click",
-                  "whatsapp_subscribe",
-                  "whatsapp_subscription_phone_updated",
-                  "whatsapp_unsubscribe",
-                  "whatsapp_used_keyword"
+                  "whatsapp_delivered"
                 ],
                 "type": "string"
               },
@@ -56916,7 +58561,22 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListWebhooks"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ListWebhooks"
+                    },
+                    {
+                      "properties": {
+                        "signing_secret": {
+                          "description": "The HMAC signing secret. Returned exactly once at creation. This should be stored securely; if lost, delete and recreate the webhook to obtain a new secret.",
+                          "example": "zI3tsLziqBWhlz6V4PRlGg41u0gdhu7LhYXX4wa0ARM",
+                          "readOnly": true,
+                          "title": "Signing Secret",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             },
@@ -69401,11 +71061,7 @@
   ],
   "servers": [
     {
-      "description": "Mailchimp development environment",
-      "url": "https://dev.api.mailchimp.com"
-    },
-    {
-      "description": "Mailchimp public API",
+      "description": "Mailchimp API",
       "url": "https://api.mailchimp.com"
     }
   ]
