@@ -25,15 +25,6 @@ whitelabel:
 # pagination are configured in overrides.yml.
 # smart-casing keeps acronyms/initialisms/numbers idiomatic across all SDKs.
 groups:
-  cli:
-    generators:
-      - name: fern-cli-generator
-        version: 0.39.4
-        config:
-          binaryName: mcapi
-        github:
-          repository: mailchimp/mailchimp-marketing-cli
-          mode: release
   typescript-sdk:
     generators:
       - name: fernapi/fern-typescript-sdk

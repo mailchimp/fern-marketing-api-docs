@@ -1,10 +1,9 @@
 name: generate-clis
 
-# Manually generate the Mailchimp CLIs (fern-cli-generator). Each API's `cli`
-# group opens a pull request on its fern-demo/mailchimp-*cli repo
-# (mode: pull-request). Kept separate from the SDK workflows: the CLIs use
-# isolated API definitions (fern/apis/mailchimp-cli, mailchimp-transactional-cli)
-# that layer CLI-only method-name overrides on the shared specs.
+# Manually generate the Mailchimp CLIs (fern-cli-generator). Kept separate
+# from the SDK workflows: the CLIs use isolated API definitions
+# (fern/apis/mailchimp-cli, mailchimp-transactional-cli) that layer CLI-only
+# method-name overrides on the shared specs.
 on:
   workflow_dispatch:
     inputs:
