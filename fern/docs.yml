@@ -6,8 +6,8 @@ instances:
       - preview.developer.mailchimp.com
     edit-this-page:
       github:
-        owner: fern-support
-        repo: mailchimp
+        owner: mailchimp
+        repo: fern-marketing-api-docs
         branch: main
       launch: dashboard
 

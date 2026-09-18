@@ -55,7 +55,7 @@ run();
 `status` is required. `subscribed` opts the contact into email; use `transactional` for a contact you're only tracking, not marketing to. This call fails with a 400 if the email address is already in the audience, since it's a create, not an upsert; upserting is exactly what the next section covers.
 
 <Note>
-Send `subscribed` only on a single opt-in audience. On a double opt-in audience, `subscribed` skips the confirmation email, so you end up with a contact marked subscribed who never actually confirmed; send `pending` instead, and Mailchimp handles the confirmation email for you. Check `double_optin` on `GET /3.0/lists/{list_id}` to know which kind of audience you're working with. For the full model, see [Audiences](/marketing/concepts/audiences/overview).
+Send `subscribed` only on a single opt-in audience. On a double opt-in audience, `subscribed` skips the confirmation email, so you end up with a contact marked subscribed who never actually confirmed; send `pending` instead, and Mailchimp handles the confirmation email for you. Check `double_optin` on `GET /3.0/lists/{list_id}` to know which kind of audience you're working with. For the full model, see [Audiences](/marketing/concepts/audiences).
 </Note>
 
 ## Upsert to avoid duplicate-contact errors
