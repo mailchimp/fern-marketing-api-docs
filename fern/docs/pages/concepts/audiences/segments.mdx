@@ -1,30 +1,42 @@
 ---
 title: Segments
-description: Saved queries that select contacts from an audience by their attributes, activity, or tags.
+description: Subsets of contacts in an audience, defined by their attributes, activity, or tags.
 ---
-
-<Note>
-**Draft**: This page is a placeholder created during the docs reorganization.
-Content is not yet written.
-</Note>
 
 ## The basics
 
-A segment is a saved query over the contacts in an audience. It doesn't hold
-contacts — it selects them, and the selection changes as your contact data
-changes.
+A segment is a named subset of the contacts in an audience. Mailchimp
+distinguishes three kinds of segment:
 
-Outline:
+| Type | What it is |
+| --- | --- |
+| Saved segment | You define conditions—signup date, campaign engagement, merge field values, e-commerce activity, and more—and its membership is every contact who currently matches them. Membership isn't fixed; it's recalculated as your contact data changes. |
+| Static segment | You add contacts to it explicitly, with no conditions. Membership only changes when you add or remove someone. |
+| Fuzzy segment | A Mailchimp-generated segment, such as a "similar subscribers" segment. |
 
-- Segments live on the audience: `/3.0/lists/{list_id}/segments`
-- Segment conditions: signup date, campaign engagement, merge field values,
-  e-commerce activity, and tags
-- Static segments versus conditional segments
-- Reading the contacts a segment currently matches:
-  `GET /3.0/lists/{list_id}/segments/{segment_id}/members`
-- The condition schema is documented in
-  [Alternative schemas](/marketing/api-concepts/alternative-schemas)
+**Static segments are also tags.** When you [tag a contact](/marketing/concepts/audiences/contacts#tags), Mailchimp creates or reuses a static segment behind the scenes. A static segment and a tag are the same underlying object, just reached through different features. See [Contacts](/marketing/concepts/audiences/contacts#tags) for tagging.
 
-**Tags versus segments**: a tag is something you put on a contact; a segment is
-a question you ask about contacts. Tags are one of the conditions a segment can
-filter on. See [Contacts](/marketing/concepts/audiences/contacts#tags).
+## Segment conditions
+
+A saved segment's conditions are grouped under a match type, `any` or `all`,
+which determines whether a contact needs to satisfy just one condition or
+every condition to belong to the segment. Each condition targets a specific
+kind of data—a merge field, a campaign interaction, a purchase, a location—and
+each kind of data has its own condition shape, documented in
+[Alternative schemas](/marketing/api-concepts/alternative-schemas).
+
+<Note>
+The Marketing API supports regular segments only: a single match type applied
+across up to 10 conditions. The Mailchimp app also offers the advanced segment
+builder, which nests and/or logic across groups of conditions with no limit on
+count. Advanced segments aren't available through the API yet.
+</Note>
+
+## Working with segments through the API
+
+The [Segments endpoints](/marketing/api/lists/list-segments) let you create,
+update, and delete segments, and read back which contacts currently belong to
+one with [List members in segment](/marketing/api/lists/list-segment-members).
+For a saved segment, that membership list reflects the conditions evaluated
+against your contacts right now, not a snapshot from when the segment was
+created.
