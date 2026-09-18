@@ -22,11 +22,13 @@ groups:
         ir-version: v67
         smart-casing: true
         config:
-          binaryName: mailchimp
+          binaryName: mcapi
+          packageIdentity:
+            repository: https://github.com/mailchimp/mailchimp-marketing-cli
+            homepage: https://github.com/mailchimp/mailchimp-marketing-cli
         github:
           repository: mailchimp/mailchimp-marketing-cli
           mode: release
-
   local-cli:
     generators:
       - name: fern-cli-generator
@@ -34,7 +36,7 @@ groups:
         ir-version: v67
         smart-casing: true
         config:
-          binaryName: mailchimp
+          binaryName: mcapi
         output:
           location: local-file-system
           path: ../../../../mailchimp-cli
