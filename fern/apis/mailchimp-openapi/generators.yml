@@ -41,6 +41,11 @@ groups:
           allowCustomFetcher: true
           noSerdeLayer: false
           includeApiReference: true
+          packageJson:
+            license: Apache-2.0
+            repository:
+              type: git
+              url: https://github.com/mailchimp/mailchimp-marketing-typescript-sdk
 
   python-sdk:
     generators:
@@ -82,6 +87,8 @@ groups:
         config:
           client-class-name: MailchimpClient
           package-prefix: com.mailchimp.marketing
+          metadata:
+            license: Apache-2.0
 
   csharp-sdk:
     generators:
@@ -154,6 +161,8 @@ groups:
         config:
           crateName: mailchimp_marketing
           clientClassName: MailchimpClient
+          packageLicense: Apache-2.0
+          packageRepository: https://github.com/mailchimp/mailchimp-marketing-rust-sdk
 
   # ===========================================================================
   # RELEASE GROUPS — publish to package registries (mode: release).
@@ -181,6 +190,11 @@ groups:
           allowCustomFetcher: true
           noSerdeLayer: false
           includeApiReference: true
+          packageJson:
+            license: Apache-2.0
+            repository:
+              type: git
+              url: https://github.com/mailchimp/mailchimp-marketing-typescript-sdk
 
   python-sdk-release:
     generators:
@@ -230,6 +244,8 @@ groups:
           client-class-name: MailchimpClient
           package-prefix: com.mailchimp.marketing
           publish-to: central
+          metadata:
+            license: Apache-2.0
 
   csharp-sdk-release:
     generators:
@@ -303,3 +319,5 @@ groups:
         config:
           crateName: mailchimp_marketing
           clientClassName: MailchimpClient
+          packageLicense: Apache-2.0
+          packageRepository: https://github.com/mailchimp/mailchimp-marketing-rust-sdk
