@@ -1,0 +1,56 @@
+name: generate-clis
+
+# Manually generate the Mailchimp CLIs (fern-cli-generator). Each API's `cli`
+# group opens a pull request on its fern-demo/mailchimp-*cli repo
+# (mode: pull-request). Kept separate from the SDK workflows: the CLIs use
+# isolated API definitions (fern/apis/mailchimp-cli, mailchimp-transactional-cli)
+# that layer CLI-only method-name overrides on the shared specs.
+on:
+  workflow_dispatch:
+    inputs:
+      api:
+        description: "Which CLI to generate"
+        type: choice
+        default: all
+        options:
+          - all
+          - mailchimp-cli
+          - mailchimp-transactional-cli
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set.outputs.matrix }}
+    steps:
+      - id: set
+        run: |
+          if [ "${{ inputs.api }}" = "all" ]; then
+            echo 'matrix=["mailchimp-cli","mailchimp-transactional-cli"]' >> "$GITHUB_OUTPUT"
+          else
+            echo 'matrix=["${{ inputs.api }}"]' >> "$GITHUB_OUTPUT"
+          fi
+
+  generate:
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        api: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - name: Install Fern CLI tool
+        uses: fern-api/setup-fern-cli@v1
+
+      - name: Generate ${{ matrix.api }}
+        env:
+          FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
+        run: fern generate --api ${{ matrix.api }} --group cli --retry-rate-limited --log-level debug
