@@ -24,8 +24,8 @@ groups:
         config:
           binaryName: mailchimp
         github:
-          repository: fern-demo/mailchimp-cli
-          mode: pull-request
+          repository: mailchimp/mailchimp-marketing-cli
+          mode: release
 
   local-cli:
     generators:
