@@ -33,7 +33,7 @@ groups:
           binaryName: mcapi
         github:
           repository: mailchimp/mailchimp-marketing-cli
-          mode: pull-request
+          mode: release
   typescript-sdk:
     generators:
       - name: fernapi/fern-typescript-sdk
