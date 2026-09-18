@@ -165,9 +165,11 @@ navigation:
             path: ../docs/pages/building/start-developing/mobile-sdk.mdx
             slug: mobile-sdk
             hidden: true
+          # Hidden from the sidebar: not launching this page yet (2026-09-16).
           - page: Go-live checklist
             path: ../docs/pages/building/start-developing/go-live-checklist.mdx
             slug: go-live-checklist
+            hidden: true
           # Account exports is a live v3.0 endpoint (POST /3.0/account-exports).
           # Hidden from the sidebar because it is a reference/task page rather
           # than an onboarding step, not because it is legacy. The retired
