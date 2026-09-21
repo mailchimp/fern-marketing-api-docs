@@ -59,4 +59,5 @@ jobs:
         env:
           FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
           WHITELABEL_TOKEN: ${{ secrets.WHITELABEL_TOKEN }}
+          RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
         run: fern generate --api mailchimp-openapi --group ${{ matrix.group }} --retry-rate-limited --log-level debug
