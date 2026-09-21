@@ -126,6 +126,7 @@ groups:
         output:
           location: rubygems
           package-name: mailchimp-marketing
+          api-key: ${RUBYGEMS_API_KEY}
         github:
           repository: mailchimp/mailchimp-marketing-ruby-sdk
           mode: pull-request
