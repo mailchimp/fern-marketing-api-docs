@@ -64,6 +64,7 @@ jobs:
         group: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     env:
       FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
+      WHITELABEL_TOKEN: ${{ secrets.WHITELABEL_TOKEN }}
       # OIDC: npm/PyPI need no secret; NuGet needs the nuget.org account handle.
       NUGET_USER: ${{ secrets.NUGET_USER }}
       # token-only registries:
