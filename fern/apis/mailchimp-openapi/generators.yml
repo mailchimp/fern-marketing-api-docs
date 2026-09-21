@@ -153,7 +153,7 @@ groups:
   rust-sdk:
     generators:
       - name: fernapi/fern-rust-sdk
-        version: 0.46.4
+        version: 0.47.9
         smart-casing: true
         github:
           repository: mailchimp/mailchimp-marketing-rust-sdk
