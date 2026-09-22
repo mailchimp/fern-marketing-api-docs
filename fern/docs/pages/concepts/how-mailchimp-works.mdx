@@ -12,14 +12,14 @@ and SMS. Newsletters, product launches, order updates, a discount aimed at
 people who haven't bought anything since spring.
 
 The Marketing API is how you do that from code instead of from the Mailchimp
-app. You might be automating your own marketing, running Mailchimp for clients,
-or connecting a product your company sells to the Mailchimp accounts its users
-already have.
+app. You might be building an integration that connects another platform to the
+Mailchimp accounts its users already have, running Mailchimp for clients, or
+automating your own marketing.
 
 ## What people do with Mailchimp
 
-**Collect people.** Contacts arrive from signup forms, a storefront, an import,
-or an API call. They live in an
+**Collect contacts.** Contacts arrive from signup forms, a storefront, an
+import, or an API call. They live in an
 [audience](/marketing/concepts/audiences), which is Mailchimp's word for a
 list of contacts.
 
@@ -27,11 +27,12 @@ list of contacts.
 it. The results are usually better when the message matches who's receiving it,
 which is what tags and segments are for. Contacts get labeled with
 [tags](/marketing/concepts/audiences/contacts), and
-[segments](/marketing/concepts/audiences/segments) pick out groups like everyone
-who opened the last three emails or bought a specific product.
+[segments](/marketing/concepts/audiences/segments) group contacts based on
+traits and behaviors, like everyone who opened the last three emails, or
+customers who bought a specific product.
 
-**Send something.** Mailchimp sends in two ways, and what separates them is
-what decides that a message goes out.
+**Send something.** Mailchimp sends marketing in two basic ways, and what
+separates them is who or what starts the send.
 
 - **Campaigns** are sent by a person. A campaign is one message to a chosen set
   of contacts, sent once or scheduled for later: a monthly newsletter, a Black
@@ -41,8 +42,8 @@ what decides that a message goes out.
   a week after a purchase. You set the trigger once, and Mailchimp sends every
   time it matches.
 
-Automations are often the reason to reach for the API at all, because their
-triggers depend on data you send in.
+Automations are often the reason to reach for the API at all, because automation
+triggers depend on data and events sent over the API.
 
 **See what happened.** Reports record opens, clicks, unsubscribes, and revenue
 per campaign. Engagement is also something you can segment on, so who opened
@@ -60,7 +61,7 @@ recommendations inside the messages they get next.
 Most work with the Marketing API is some mix of four jobs.
 
 **Sending data in.** Contacts, purchases, and activity from another system land
-in an audience so that segments and automations have something to work with.
+in an audience, where the rest of Mailchimp can act on them.
 
 **Getting data back.** Campaign and engagement results come out of Mailchimp
 and into a database, a dashboard, or a spreadsheet, where they can sit
@@ -69,14 +70,13 @@ alongside the rest of what you know about the same people.
 happen; reporting endpoints let you ask.
 
 **Sending messages.** Campaigns can be built, filled with content, and sent
-from code, so a message can be assembled out of live data and go out the moment
-that data says it should. Automations are set up in Mailchimp and triggered by
-events you report through the API.
+from the API as well as from the Mailchimp app, so a message can be assembled
+out of live data and go out the moment that data says it should. Automations
+are set up in Mailchimp and triggered by events you report through the API.
 
-**Automating the work around all of it.** Imports on a schedule, contacts
-tagged by rules, a weekly campaign that builds itself from last week's numbers.
-Work that used to need someone at a keyboard runs on its own, and keeps working
-the same way whether the audience is 500 people or 500,000.
+**Automating routine work.** Imports can run on a schedule, contacts can
+be tagged by rules, and a weekly campaign can build itself from last week's
+numbers. Work that used to need someone at a keyboard can run on its own.
 
 ## What the Marketing API does not cover
 
