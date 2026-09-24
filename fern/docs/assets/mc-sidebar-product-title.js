@@ -6,9 +6,14 @@
   function productName() {
     var ps = document.querySelector(".fern-product-selector");
     if (!ps) return null;
+    // Prefer the dedicated title node; the button also contains a hidden
+    // list-item variant with the title and subtitle, so textContent alone
+    // concatenates all of them.
+    var title = ps.querySelector(".product-item-title, .fern-selection-item-title");
+    var raw = title ? title.textContent : ps.textContent;
     // textContent can include inline-SVG <style> junk (".fa-secondary{...}"),
     // so cut at the first "." / "{" and collapse whitespace.
-    var name = (ps.textContent || "").split(/\.fa-|\{/)[0].replace(/\s+/g, " ").trim();
+    var name = (raw || "").split(/\.fa-|\{/)[0].replace(/\s+/g, " ").trim();
     return name || null;
   }
 
