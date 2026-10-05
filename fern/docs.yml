@@ -4,6 +4,7 @@ instances:
   - url: mailchimp.docs.buildwithfern.com/developer
     custom-domain:
       - mailchimp.com/developer
+      - preview.developer.mailchimp.com/developer
     multi-source: true
     edit-this-page:
       github:
