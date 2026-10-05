@@ -100,7 +100,7 @@
     {
       name: "Mailchimp Marketing API", href: "/developer/marketing",
       desc: "Power timely, relevant marketing campaigns with custom data pulled directly from your app.",
-      links: [["Guides", "/developer/marketing/guides/quick-start"], ["Documentation", "/developer/marketing/docs/fundamentals"], ["API Reference", "/developer/marketing/api"]]
+      links: [["Mailchimp core concepts", "/developer/marketing/concepts"], ["API core concepts", "/developer/marketing/api-concepts"], ["Building with Mailchimp", "/developer/marketing/build"], ["API Reference", "/developer/marketing/api"]]
     },
     {
       name: "Mailchimp Transactional", href: "/developer/transactional",
