@@ -35,7 +35,7 @@ Ask it what you'd ask a person:
 
 ```bash
 claude mcp add --transport http fern_mcp_mailchimp-docs \
-  https://preview.developer.mailchimp.com/_mcp/server
+  https://mailchimp.com/developer/_mcp/server
 ```
 
 **Cursor**
@@ -43,7 +43,7 @@ claude mcp add --transport http fern_mcp_mailchimp-docs \
 Add the URL to your MCP server configuration:
 
 ```
-https://preview.developer.mailchimp.com/_mcp/server
+https://mailchimp.com/developer/_mcp/server
 ```
 
 **Claude Desktop**
@@ -56,7 +56,7 @@ under `mcpServers` in `claude_desktop_config.json`:
   "mcpServers": {
     "mailchimp-docs": {
       "type": "http",
-      "url": "https://preview.developer.mailchimp.com/_mcp/server"
+      "url": "https://mailchimp.com/developer/_mcp/server"
     }
   }
 }
@@ -71,7 +71,7 @@ Add the same server to `.vscode/mcp.json` in your project:
   "servers": {
     "mailchimp-docs": {
       "type": "http",
-      "url": "https://preview.developer.mailchimp.com/_mcp/server"
+      "url": "https://mailchimp.com/developer/_mcp/server"
     }
   }
 }
@@ -89,7 +89,7 @@ works the same way on authenticated documentation sites and public ones like
 this one.
 
 ```bash
-curl https://preview.developer.mailchimp.com/marketing/build/ai-tools/mcp-server.md
+curl https://mailchimp.com/developer/marketing/build/ai-tools/mcp-server.md
 ```
 
 Searching and fetching solve different problems: the docs-search tool finds

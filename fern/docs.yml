@@ -1,9 +1,11 @@
 # yaml-language-server: $schema=https://schema.buildwithfern.dev/docs-yml.json
 
 instances:
-  - url: mailchimp.docs.buildwithfern.com
+  - url: mailchimp.docs.buildwithfern.com/developer
     custom-domain:
-      - preview.developer.mailchimp.com
+      - mailchimp.com/developer
+      - preview.developer.mailchimp.com/developer
+    multi-source: true
     edit-this-page:
       github:
         owner: fern-support
@@ -21,29 +23,29 @@ page-actions:
         Agent skills that teach coding agents the parts of the Marketing API
         that are easy to get wrong. Install them into Claude Code, Cursor, or
         any agent that supports the Agent Skills specification.
-      install-command: npx skills add https://preview.developer.mailchimp.com
+      install-command: npx skills add https://mailchimp.com/developer
       skills:
         - name: run-bulk-jobs
           description: >-
             Choose between the bulk endpoints, poll a batch job without hitting
             the connection limit, and catch operations that failed inside a
             batch that reports itself finished.
-          url: https://preview.developer.mailchimp.com/.well-known/agent-skills/run-bulk-jobs/SKILL.md
+          url: https://mailchimp.com/developer/.well-known/agent-skills/run-bulk-jobs/SKILL.md
         - name: set-consent-correctly
           description: >-
             Record marketing consent from a signup form, checkout, or CRM sync
             without overwriting consent a contact already gave.
-          url: https://preview.developer.mailchimp.com/.well-known/agent-skills/set-consent-correctly/SKILL.md
+          url: https://mailchimp.com/developer/.well-known/agent-skills/set-consent-correctly/SKILL.md
         - name: set-up-oauth
           description: >-
             Implement the Mailchimp OAuth 2 flow, validate the state parameter,
             and store access tokens per connected account.
-          url: https://preview.developer.mailchimp.com/.well-known/agent-skills/set-up-oauth/SKILL.md
+          url: https://mailchimp.com/developer/.well-known/agent-skills/set-up-oauth/SKILL.md
         - name: subscribe-to-webhooks
           description: >-
             Create a webhook, verify delivery signatures, and keep a handler
             idempotent without echoing your own writes back into the audience.
-          url: https://preview.developer.mailchimp.com/.well-known/agent-skills/subscribe-to-webhooks/SKILL.md
+          url: https://mailchimp.com/developer/.well-known/agent-skills/subscribe-to-webhooks/SKILL.md
 metadata:
   og:site_name: Mailchimp Developer
   og:title: Mailchimp Developer Documentation
@@ -55,6 +57,7 @@ metadata:
   twitter:description: >-
     Find all the Mailchimp API documentation and tools developers need to send
     marketing and transactional emails.
+  canonical-host: https://mailchimp.com
 
 agents:
   robots-txt: ./robots.txt
@@ -211,7 +214,7 @@ logo:
   light: ./assets/mc-logo-mobile-dark.svg
   dark: ./assets/mailchimp-logo-twotone-dark.svg
   height: 40
-  href: /
+  href: /developer
 
 favicon: docs/assets/favicon.png
 
@@ -273,10 +276,10 @@ js:
 navbar-links:
   - type: minimal
     text: Tools
-    url: /tools
+    url: /developer/tools
   - type: minimal
     text: Release Notes
-    url: /release-notes
+    url: /developer/release-notes
   - type: filled
     text: Sign Up
     url: https://login.mailchimp.com/signup/

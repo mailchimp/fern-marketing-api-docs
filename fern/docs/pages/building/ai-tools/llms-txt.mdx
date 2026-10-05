@@ -31,7 +31,7 @@ Every section of our docs serves its own `llms.txt`, scoped to whatever sits ben
 Start with the Marketing API index for most work:
 
 ```
-https://preview.developer.mailchimp.com/marketing/llms.txt
+https://mailchimp.com/developer/marketing/llms.txt
 ```
 
 Narrow the scope when an agent only needs one area. Handing it `/marketing/concepts/audiences/llms.txt` while it works on contact syncing keeps campaigns, reports, and e-commerce out of its context entirely.
@@ -49,15 +49,15 @@ A section's index also carries that section's own page content ahead of the list
 
 ## Docs
 
-- [Contacts](https://preview.developer.mailchimp.com/marketing/concepts/audiences/contacts.md): The contact model, subscription status across channels, and how tags organize contacts.
+- [Contacts](https://mailchimp.com/developer/marketing/concepts/audiences/contacts.md): The contact model, subscription status across channels, and how tags organize contacts.
 
 ## API Docs
 
-- API Reference > Root [List API root resources](https://preview.developer.mailchimp.com/marketing/api/root/list.md)
+- API Reference > Root [List API root resources](https://mailchimp.com/developer/marketing/api/root/list.md)
 
 ## OpenAPI Specification
 
-- [OpenAPI JSON](https://preview.developer.mailchimp.com/marketing/openapi.json)
+- [OpenAPI JSON](https://mailchimp.com/developer/marketing/openapi.json)
 ```
 
 `## Docs` covers the guides and concept pages, each entry with a one-line summary of what the page explains. `## API Docs` covers the API reference, one entry per operation, grouped by the endpoint family it belongs to. Fetch an operation's page to get its full description along with its parameters and responses.
@@ -71,13 +71,13 @@ A narrower index carries only the `## Docs` list for its own pages. The API refe
 Append `.md` to any documentation URL to get that page as markdown. This page is its own example:
 
 ```bash
-curl https://preview.developer.mailchimp.com/marketing/build/ai-tools/llms-txt.md
+curl https://mailchimp.com/developer/marketing/build/ai-tools/llms-txt.md
 ```
 
 That returns everything you're reading now, as plain markdown. The section this page belongs to has an index of its own, listing this page alongside the other AI tools pages:
 
 ```
-https://preview.developer.mailchimp.com/marketing/build/ai-tools/llms.txt
+https://mailchimp.com/developer/marketing/build/ai-tools/llms.txt
 ```
 
 The suffix works for reference pages as well as prose pages, and it is the cheapest way to give a coding agent an exact endpoint's parameters and response shape without a browser or an HTML parser. An endpoint's `.md` page gives you the method and URL, the operation description, authentication, servers, and every parameter as a typed list with its constraints and default:
@@ -98,7 +98,7 @@ Every markdown page opens with a few directive lines pointing the agent back to 
 Reference pages carry an SDK example in each supported language. Add `lang` to get just one:
 
 ```bash
-curl 'https://preview.developer.mailchimp.com/marketing/api/account-exports/list.md?lang=python'
+curl 'https://mailchimp.com/developer/marketing/api/account-exports/list.md?lang=python'
 ```
 
 `lang` accepts `python`, `java`, `ruby`, `go`, `csharp`, `swift`, and `node` for the TypeScript sample. The JSON request and response examples stay either way; only the SDK samples are filtered. Use it when an agent is working in one language and the rest of the samples are wasted context.
@@ -110,7 +110,7 @@ For a one-off question, fetching a URL is enough; most coding agents can retriev
 For ongoing work against the Marketing API, record the index location in whatever file your agent reads for project context, so it can find its own way to the right page instead of relying on training data:
 
 ```markdown
-Mailchimp Marketing API docs: https://preview.developer.mailchimp.com/marketing/llms.txt
+Mailchimp Marketing API docs: https://mailchimp.com/developer/marketing/llms.txt
 Append `.md` to any docs URL for markdown.
 Add `?lang=python` to a reference page to get only the Python example.
 ```

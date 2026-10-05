@@ -48,7 +48,7 @@
     if (!header.querySelector(".mc-header-mark")) {
       mark = document.createElement("a");
       mark.className = "mc-header-mark";
-      mark.href = "/";
+      mark.href = "/developer";
       mark.setAttribute("aria-label", "Mailchimp Developer home");
       header.appendChild(mark);
     } else {
@@ -98,14 +98,14 @@
 (function () {
   var PRODUCTS = [
     {
-      name: "Mailchimp Marketing API", href: "/marketing",
+      name: "Mailchimp Marketing API", href: "/developer/marketing",
       desc: "Power timely, relevant marketing campaigns with custom data pulled directly from your app.",
-      links: [["Guides", "/marketing/guides/quick-start"], ["Documentation", "/marketing/docs/fundamentals"], ["API Reference", "/marketing/api"]]
+      links: [["Guides", "/developer/marketing/guides/quick-start"], ["Documentation", "/developer/marketing/docs/fundamentals"], ["API Reference", "/developer/marketing/api"]]
     },
     {
-      name: "Mailchimp Transactional", href: "/transactional",
+      name: "Mailchimp Transactional", href: "/developer/transactional",
       desc: "Send targeted and event-driven messages to anyone, fast—with best-in-class deliverability.",
-      links: [["Guides", "/transactional/guides/quick-start"], ["Documentation", "/transactional/docs/fundamentals"], ["API Reference", "/transactional/api"]]
+      links: [["Guides", "/developer/transactional/guides/quick-start"], ["Documentation", "/developer/transactional/docs/fundamentals"], ["API Reference", "/developer/transactional/api"]]
     }
   ];
 
