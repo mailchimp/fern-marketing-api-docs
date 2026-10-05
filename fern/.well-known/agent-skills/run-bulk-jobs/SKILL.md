@@ -9,8 +9,8 @@ Three things shape every large job on the Marketing API: calls time out at 120
 seconds, you can hold only 10 connections open at once, and `POST /3.0/batches`
 is asynchronous, so its response tells you a job started rather than that it
 worked.
-[Rate limits and timeouts](https://preview.developer.mailchimp.com/marketing/api-concepts/rate-limits-and-timeouts.md)
-and [Batch operations](https://preview.developer.mailchimp.com/marketing/api-concepts/batch-operations.md)
+[Rate limits and timeouts](https://mailchimp.com/developer/marketing/api-concepts/rate-limits-and-timeouts.md)
+and [Batch operations](https://mailchimp.com/developer/marketing/api-concepts/batch-operations.md)
 carry the numbers and the batch mechanism. This skill covers choosing the right
 endpoint, polling it, and reading the result.
 
@@ -30,7 +30,7 @@ endpoint. Ask what the operations look like instead.
 | Mixed methods or paths, or work you would rather hand off than hold a connection for | `POST /3.0/batches` | A batch ID to poll |
 | Few enough to finish well inside 120 seconds, and you need each result as it lands | A loop of single calls | Per-call responses |
 
-[`POST /3.0/lists/{list_id}`](https://preview.developer.mailchimp.com/marketing/api/lists/batch-subscribe-or-unsubscribe.md),
+[`POST /3.0/lists/{list_id}`](https://mailchimp.com/developer/marketing/api/lists/batch-subscribe-or-unsubscribe.md),
 batch subscribe or unsubscribe, is the one people miss, because the volume
 suggests the endpoint named "batch." For contact imports it returns
 `new_members`, `updated_members`, and `errors` synchronously, so an
@@ -54,7 +54,7 @@ shaped code:
 | Pending batch webhook events | Also throttles new batch creation |
 
 None of them caps operations inside a single batch. The worked example in
-[Batch operations](https://preview.developer.mailchimp.com/marketing/api-concepts/batch-operations.md)
+[Batch operations](https://mailchimp.com/developer/marketing/api-concepts/batch-operations.md)
 submits 1,000 in one call.
 
 ## The limit counts open connections, not queued work
@@ -63,7 +63,7 @@ The 10-connection limit counts requests you are holding open at this instant,
 and it is per user rather than per API key or per client. Issuing a second key
 or splitting work across processes does not raise it, because those connections
 count against the same limit, and the eleventh gets a
-[429](https://preview.developer.mailchimp.com/marketing/api-concepts/errors.md#error-glossary).
+[429](https://mailchimp.com/developer/marketing/api-concepts/errors.md#error-glossary).
 
 A submitted batch is not one of those connections. `POST /3.0/batches` returns
 as soon as the job is accepted, and the operations then run on Mailchimp's
@@ -116,7 +116,7 @@ to run in order, so position tells you nothing.
 ## Poll on a backoff, not a fixed interval
 
 `POST /3.0/batches` returns a batch ID. Poll
-[`GET /3.0/batches/{batch_id}`](https://preview.developer.mailchimp.com/marketing/api/batches/get.md)
+[`GET /3.0/batches/{batch_id}`](https://mailchimp.com/developer/marketing/api/batches/get.md)
 for `status`, which moves through `pending`, `preprocessing`, `started`,
 `finalizing`, and `finished`. Results are only available at `finished`.
 
@@ -131,7 +131,7 @@ polling each one hard.
 
 Polling suits a one-off run someone is watching. For a scheduled or recurring
 job, create a
-[batch webhook](https://preview.developer.mailchimp.com/marketing/api/batch-webhooks/create.md)
+[batch webhook](https://mailchimp.com/developer/marketing/api/batch-webhooks/create.md)
 and let Mailchimp tell you the batch finished. Two constraints come with them: the
 callback URL is validated with a GET before the webhook is accepted, so the
 endpoint has to answer GET as well as POST, and pending batch webhook events
