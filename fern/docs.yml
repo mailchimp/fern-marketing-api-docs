@@ -214,7 +214,7 @@ logo:
   light: ./assets/mc-logo-mobile-dark.svg
   dark: ./assets/mailchimp-logo-twotone-dark.svg
   height: 40
-  href: /
+  href: /developer
 
 favicon: docs/assets/favicon.png
 
@@ -276,10 +276,10 @@ js:
 navbar-links:
   - type: minimal
     text: Tools
-    url: /tools
+    url: /developer/tools
   - type: minimal
     text: Release Notes
-    url: /release-notes
+    url: /developer/release-notes
   - type: filled
     text: Sign Up
     url: https://login.mailchimp.com/signup/
