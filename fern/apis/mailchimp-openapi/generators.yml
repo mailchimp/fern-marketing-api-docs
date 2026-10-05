@@ -221,7 +221,7 @@ groups:
         version: 1.57.10
         smart-casing: true
         github:
-          repository: mailchimp/mailchimp-go-sdk
+          repository: mailchimp/mailchimp-marketing-go-sdk
           mode: release
         config:
           clientName: MailchimpClient
