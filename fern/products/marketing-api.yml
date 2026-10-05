@@ -214,3 +214,324 @@ navigation:
           csharp: Mailchimp.Marketing
           ruby: mailchimp-marketing
           php: mailchimp/marketing-sdk
+        # Custom sections (Audiences, Automations, Campaigns, E-commerce,
+        # File manager, Lists, Reports) replace their bare tag pass-through
+        # so they get subsections / availability tags. Every other tag
+        # stays a bare pass-through, in its original declared order, so
+        # position and default contents are untouched.
+        layout:
+          - root
+          - account-exports
+          - activity-feed
+          - section: Audiences
+            availability: beta
+            contents:
+              # SPIKE 3: `summary:` directly on this section hijacked the
+              # API Reference root view (see spike 2 notes). Testing whether
+              # nesting a single-item subsection instead keeps the
+              # disclaimer scoped to Audiences without the collision.
+              - section: Contacts
+                summary: ../docs/pages/concepts/audiences/contacts-overview.mdx
+                contents:
+                  - GET /3.0/audiences/{audience_id}/contacts
+                  - POST /3.0/audiences/{audience_id}/contacts
+                  - GET /3.0/audiences/{audience_id}/contacts/{contact_id}
+                  - PATCH /3.0/audiences/{audience_id}/contacts/{contact_id}
+                  - POST /3.0/audiences/{audience_id}/contacts/{contact_id}/actions/archive
+                  - POST /3.0/audiences/{audience_id}/contacts/{contact_id}/actions/forget
+          - authorized-apps
+          - section: Automations
+            contents:
+              - GET /3.0/automations
+              - POST /3.0/automations
+              - GET /3.0/automations/{workflow_id}
+              - POST /3.0/automations/{workflow_id}/actions/archive
+              - POST /3.0/automations/{workflow_id}/actions/pause-all-emails
+              - POST /3.0/automations/{workflow_id}/actions/start-all-emails
+              - section: Emails
+                contents:
+                  - GET /3.0/automations/{workflow_id}/emails
+                  - GET /3.0/automations/{workflow_id}/emails/{workflow_email_id}
+                  - PATCH /3.0/automations/{workflow_id}/emails/{workflow_email_id}
+                  - DELETE /3.0/automations/{workflow_id}/emails/{workflow_email_id}
+                  - POST /3.0/automations/{workflow_id}/emails/{workflow_email_id}/actions/pause
+                  - POST /3.0/automations/{workflow_id}/emails/{workflow_email_id}/actions/start
+                  - section: Queue
+                    contents:
+                      - GET /3.0/automations/{workflow_id}/emails/{workflow_email_id}/queue
+                      - POST /3.0/automations/{workflow_id}/emails/{workflow_email_id}/queue
+                      - GET /3.0/automations/{workflow_id}/emails/{workflow_email_id}/queue/{subscriber_hash}
+              - section: Removed subscribers
+                contents:
+                  - GET /3.0/automations/{workflow_id}/removed-subscribers
+                  - POST /3.0/automations/{workflow_id}/removed-subscribers
+                  - GET /3.0/automations/{workflow_id}/removed-subscribers/{subscriber_hash}
+          - batch-webhooks
+          - batches
+          - campaign-folders
+          - section: Campaigns
+            contents:
+              - GET /3.0/campaigns
+              - POST /3.0/campaigns
+              - GET /3.0/campaigns/{campaign_id}
+              - PATCH /3.0/campaigns/{campaign_id}
+              - DELETE /3.0/campaigns/{campaign_id}
+              - POST /3.0/campaigns/{campaign_id}/actions/cancel-send
+              - POST /3.0/campaigns/{campaign_id}/actions/create-resend
+              - POST /3.0/campaigns/{campaign_id}/actions/pause
+              - POST /3.0/campaigns/{campaign_id}/actions/replicate
+              - POST /3.0/campaigns/{campaign_id}/actions/resume
+              - POST /3.0/campaigns/{campaign_id}/actions/schedule
+              - POST /3.0/campaigns/{campaign_id}/actions/send
+              - POST /3.0/campaigns/{campaign_id}/actions/test
+              - POST /3.0/campaigns/{campaign_id}/actions/unschedule
+              - GET /3.0/campaigns/{campaign_id}/content
+              - PUT /3.0/campaigns/{campaign_id}/content
+              - GET /3.0/campaigns/{campaign_id}/send-checklist
+              - section: Feedback
+                contents:
+                  - GET /3.0/campaigns/{campaign_id}/feedback
+                  - POST /3.0/campaigns/{campaign_id}/feedback
+                  - GET /3.0/campaigns/{campaign_id}/feedback/{feedback_id}
+                  - PATCH /3.0/campaigns/{campaign_id}/feedback/{feedback_id}
+                  - DELETE /3.0/campaigns/{campaign_id}/feedback/{feedback_id}
+          - connected-sites
+          - conversations
+          - customer-journeys
+          - section: E-commerce
+            contents:
+              - GET /3.0/ecommerce
+              - GET /3.0/ecommerce/orders
+              - GET /3.0/ecommerce/stores
+              - POST /3.0/ecommerce/stores
+              - GET /3.0/ecommerce/stores/{store_id}
+              - PATCH /3.0/ecommerce/stores/{store_id}
+              - DELETE /3.0/ecommerce/stores/{store_id}
+              - section: Carts
+                contents:
+                  - GET /3.0/ecommerce/stores/{store_id}/carts
+                  - POST /3.0/ecommerce/stores/{store_id}/carts
+                  - GET /3.0/ecommerce/stores/{store_id}/carts/{cart_id}
+                  - PATCH /3.0/ecommerce/stores/{store_id}/carts/{cart_id}
+                  - DELETE /3.0/ecommerce/stores/{store_id}/carts/{cart_id}
+                  - GET /3.0/ecommerce/stores/{store_id}/carts/{cart_id}/lines
+                  - POST /3.0/ecommerce/stores/{store_id}/carts/{cart_id}/lines
+                  - GET /3.0/ecommerce/stores/{store_id}/carts/{cart_id}/lines/{line_id}
+                  - PATCH /3.0/ecommerce/stores/{store_id}/carts/{cart_id}/lines/{line_id}
+                  - DELETE /3.0/ecommerce/stores/{store_id}/carts/{cart_id}/lines/{line_id}
+              - section: Customers
+                contents:
+                  - GET /3.0/ecommerce/stores/{store_id}/customers
+                  - POST /3.0/ecommerce/stores/{store_id}/customers
+                  - GET /3.0/ecommerce/stores/{store_id}/customers/{customer_id}
+                  - PATCH /3.0/ecommerce/stores/{store_id}/customers/{customer_id}
+                  - PUT /3.0/ecommerce/stores/{store_id}/customers/{customer_id}
+                  - DELETE /3.0/ecommerce/stores/{store_id}/customers/{customer_id}
+              - section: Orders
+                contents:
+                  - GET /3.0/ecommerce/stores/{store_id}/orders
+                  - POST /3.0/ecommerce/stores/{store_id}/orders
+                  - GET /3.0/ecommerce/stores/{store_id}/orders/{order_id}
+                  - PATCH /3.0/ecommerce/stores/{store_id}/orders/{order_id}
+                  - DELETE /3.0/ecommerce/stores/{store_id}/orders/{order_id}
+                  - GET /3.0/ecommerce/stores/{store_id}/orders/{order_id}/lines
+                  - POST /3.0/ecommerce/stores/{store_id}/orders/{order_id}/lines
+                  - GET /3.0/ecommerce/stores/{store_id}/orders/{order_id}/lines/{line_id}
+                  - PATCH /3.0/ecommerce/stores/{store_id}/orders/{order_id}/lines/{line_id}
+                  - DELETE /3.0/ecommerce/stores/{store_id}/orders/{order_id}/lines/{line_id}
+              - section: Products
+                contents:
+                  - GET /3.0/ecommerce/stores/{store_id}/products
+                  - POST /3.0/ecommerce/stores/{store_id}/products
+                  - GET /3.0/ecommerce/stores/{store_id}/products/{product_id}
+                  - PATCH /3.0/ecommerce/stores/{store_id}/products/{product_id}
+                  - PUT /3.0/ecommerce/stores/{store_id}/products/{product_id}
+                  - DELETE /3.0/ecommerce/stores/{store_id}/products/{product_id}
+                  - GET /3.0/ecommerce/stores/{store_id}/products/{product_id}/images
+                  - POST /3.0/ecommerce/stores/{store_id}/products/{product_id}/images
+                  - GET /3.0/ecommerce/stores/{store_id}/products/{product_id}/images/{image_id}
+                  - PATCH /3.0/ecommerce/stores/{store_id}/products/{product_id}/images/{image_id}
+                  - DELETE /3.0/ecommerce/stores/{store_id}/products/{product_id}/images/{image_id}
+                  - GET /3.0/ecommerce/stores/{store_id}/products/{product_id}/variants
+                  - POST /3.0/ecommerce/stores/{store_id}/products/{product_id}/variants
+                  - GET /3.0/ecommerce/stores/{store_id}/products/{product_id}/variants/{variant_id}
+                  - PATCH /3.0/ecommerce/stores/{store_id}/products/{product_id}/variants/{variant_id}
+                  - PUT /3.0/ecommerce/stores/{store_id}/products/{product_id}/variants/{variant_id}
+                  - DELETE /3.0/ecommerce/stores/{store_id}/products/{product_id}/variants/{variant_id}
+              - section: Promo rules
+                contents:
+                  - GET /3.0/ecommerce/stores/{store_id}/promo-rules
+                  - POST /3.0/ecommerce/stores/{store_id}/promo-rules
+                  - GET /3.0/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}
+                  - PATCH /3.0/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}
+                  - DELETE /3.0/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}
+                  - GET /3.0/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes
+                  - POST /3.0/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes
+                  - GET /3.0/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes/{promo_code_id}
+                  - PATCH /3.0/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes/{promo_code_id}
+                  - DELETE /3.0/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes/{promo_code_id}
+          - facebook-ads
+          - section: File manager
+            contents:
+              - GET /3.0/file-manager
+              - section: Files
+                contents:
+                  - GET /3.0/file-manager/files
+                  - POST /3.0/file-manager/files
+                  - GET /3.0/file-manager/files/{file_id}
+                  - PATCH /3.0/file-manager/files/{file_id}
+                  - DELETE /3.0/file-manager/files/{file_id}
+              - section: Folders
+                contents:
+                  - GET /3.0/file-manager/folders
+                  - POST /3.0/file-manager/folders
+                  - GET /3.0/file-manager/folders/{folder_id}
+                  - PATCH /3.0/file-manager/folders/{folder_id}
+                  - DELETE /3.0/file-manager/folders/{folder_id}
+                  - GET /3.0/file-manager/folders/{folder_id}/files
+          - landing-pages
+          - section: Lists
+            contents:
+              - GET /3.0/lists
+              - POST /3.0/lists
+              - GET /3.0/lists/{list_id}
+              - PATCH /3.0/lists/{list_id}
+              - POST /3.0/lists/{list_id}
+              - DELETE /3.0/lists/{list_id}
+              - GET /3.0/lists/{list_id}/activity
+              - GET /3.0/lists/{list_id}/clients
+              - GET /3.0/lists/{list_id}/growth-history
+              - GET /3.0/lists/{list_id}/growth-history/{month}
+              - GET /3.0/lists/{list_id}/locations
+              - GET /3.0/lists/{list_id}/tag-search
+              - GET /3.0/lists/{list_id}/signup-forms
+              - POST /3.0/lists/{list_id}/signup-forms
+              - section: Abuse reports
+                contents:
+                  - GET /3.0/lists/{list_id}/abuse-reports
+                  - GET /3.0/lists/{list_id}/abuse-reports/{report_id}
+              - section: Interest categories
+                contents:
+                  - GET /3.0/lists/{list_id}/interest-categories
+                  - POST /3.0/lists/{list_id}/interest-categories
+                  - GET /3.0/lists/{list_id}/interest-categories/{interest_category_id}
+                  - PATCH /3.0/lists/{list_id}/interest-categories/{interest_category_id}
+                  - DELETE /3.0/lists/{list_id}/interest-categories/{interest_category_id}
+                  - GET /3.0/lists/{list_id}/interest-categories/{interest_category_id}/interests
+                  - POST /3.0/lists/{list_id}/interest-categories/{interest_category_id}/interests
+                  - GET /3.0/lists/{list_id}/interest-categories/{interest_category_id}/interests/{interest_id}
+                  - PATCH /3.0/lists/{list_id}/interest-categories/{interest_category_id}/interests/{interest_id}
+                  - DELETE /3.0/lists/{list_id}/interest-categories/{interest_category_id}/interests/{interest_id}
+              - section: Members
+                contents:
+                  - GET /3.0/lists/{list_id}/members
+                  - POST /3.0/lists/{list_id}/members
+                  - GET /3.0/lists/{list_id}/members/{subscriber_hash}
+                  - PATCH /3.0/lists/{list_id}/members/{subscriber_hash}
+                  - PUT /3.0/lists/{list_id}/members/{subscriber_hash}
+                  - DELETE /3.0/lists/{list_id}/members/{subscriber_hash}
+                  - POST /3.0/lists/{list_id}/members/{subscriber_hash}/actions/delete-permanent
+                  - GET /3.0/lists/{list_id}/members/{subscriber_hash}/activity
+                  - GET /3.0/lists/{list_id}/members/{subscriber_hash}/activity-feed
+                  - GET /3.0/lists/{list_id}/members/{subscriber_hash}/events
+                  - POST /3.0/lists/{list_id}/members/{subscriber_hash}/events
+                  - GET /3.0/lists/{list_id}/members/{subscriber_hash}/goals
+                  - GET /3.0/lists/{list_id}/members/{subscriber_hash}/notes
+                  - POST /3.0/lists/{list_id}/members/{subscriber_hash}/notes
+                  - GET /3.0/lists/{list_id}/members/{subscriber_hash}/notes/{note_id}
+                  - PATCH /3.0/lists/{list_id}/members/{subscriber_hash}/notes/{note_id}
+                  - DELETE /3.0/lists/{list_id}/members/{subscriber_hash}/notes/{note_id}
+                  - GET /3.0/lists/{list_id}/members/{subscriber_hash}/tags
+                  - POST /3.0/lists/{list_id}/members/{subscriber_hash}/tags
+              - section: Merge fields
+                contents:
+                  - GET /3.0/lists/{list_id}/merge-fields
+                  - POST /3.0/lists/{list_id}/merge-fields
+                  - GET /3.0/lists/{list_id}/merge-fields/{merge_id}
+                  - PATCH /3.0/lists/{list_id}/merge-fields/{merge_id}
+                  - DELETE /3.0/lists/{list_id}/merge-fields/{merge_id}
+              - section: Segments
+                contents:
+                  - GET /3.0/lists/{list_id}/segments
+                  - POST /3.0/lists/{list_id}/segments
+                  - GET /3.0/lists/{list_id}/segments/{segment_id}
+                  - PATCH /3.0/lists/{list_id}/segments/{segment_id}
+                  - POST /3.0/lists/{list_id}/segments/{segment_id}
+                  - DELETE /3.0/lists/{list_id}/segments/{segment_id}
+                  - GET /3.0/lists/{list_id}/segments/{segment_id}/members
+                  - POST /3.0/lists/{list_id}/segments/{segment_id}/members
+                  - DELETE /3.0/lists/{list_id}/segments/{segment_id}/members/{subscriber_hash}
+              - section: Surveys
+                contents:
+                  - GET /3.0/lists/{list_id}/surveys
+                  - POST /3.0/lists/{list_id}/surveys
+                  - GET /3.0/lists/{list_id}/surveys/{survey_id}
+                  - PATCH /3.0/lists/{list_id}/surveys/{survey_id}
+                  - DELETE /3.0/lists/{list_id}/surveys/{survey_id}
+                  - POST /3.0/lists/{list_id}/surveys/{survey_id}/actions/create-email
+                  - POST /3.0/lists/{list_id}/surveys/{survey_id}/actions/publish
+                  - POST /3.0/lists/{list_id}/surveys/{survey_id}/actions/replicate
+                  - POST /3.0/lists/{list_id}/surveys/{survey_id}/actions/unpublish
+              - section: Webhooks
+                contents:
+                  - GET /3.0/lists/{list_id}/webhooks
+                  - POST /3.0/lists/{list_id}/webhooks
+                  - GET /3.0/lists/{list_id}/webhooks/{webhook_id}
+                  - PATCH /3.0/lists/{list_id}/webhooks/{webhook_id}
+                  - DELETE /3.0/lists/{list_id}/webhooks/{webhook_id}
+          - ping
+          - reporting
+          - section: Reports
+            contents:
+              - GET /3.0/reports
+              - GET /3.0/reports/{campaign_id}
+              - section: Abuse reports
+                contents:
+                  - GET /3.0/reports/{campaign_id}/abuse-reports
+                  - GET /3.0/reports/{campaign_id}/abuse-reports/{report_id}
+              - section: Advice
+                contents:
+                  - GET /3.0/reports/{campaign_id}/advice
+              - section: Click details
+                contents:
+                  - GET /3.0/reports/{campaign_id}/click-details
+                  - GET /3.0/reports/{campaign_id}/click-details/{link_id}
+                  - GET /3.0/reports/{campaign_id}/click-details/{link_id}/members
+                  - GET /3.0/reports/{campaign_id}/click-details/{link_id}/members/{subscriber_hash}
+              - section: Domain performance
+                contents:
+                  - GET /3.0/reports/{campaign_id}/domain-performance
+              - section: Ecommerce product activity
+                contents:
+                  - GET /3.0/reports/{campaign_id}/ecommerce-product-activity
+              - section: EepURL
+                contents:
+                  - GET /3.0/reports/{campaign_id}/eepurl
+              - section: Email activity
+                contents:
+                  - GET /3.0/reports/{campaign_id}/email-activity
+                  - GET /3.0/reports/{campaign_id}/email-activity/{subscriber_hash}
+              - section: Locations
+                contents:
+                  - GET /3.0/reports/{campaign_id}/locations
+              - section: Open details
+                contents:
+                  - GET /3.0/reports/{campaign_id}/open-details
+                  - GET /3.0/reports/{campaign_id}/open-details/{subscriber_hash}
+              - section: Sent to
+                contents:
+                  - GET /3.0/reports/{campaign_id}/sent-to
+                  - GET /3.0/reports/{campaign_id}/sent-to/{subscriber_hash}
+              - section: Sub reports
+                contents:
+                  - GET /3.0/reports/{campaign_id}/sub-reports
+              - section: Unsubscribed
+                contents:
+                  - GET /3.0/reports/{campaign_id}/unsubscribed
+                  - GET /3.0/reports/{campaign_id}/unsubscribed/{subscriber_hash}
+          - search-campaigns
+          - sms-campaigns
+          - search-members
+          - template-folders
+          - templates
+          - verified-domains
