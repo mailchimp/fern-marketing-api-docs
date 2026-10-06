@@ -313,6 +313,8 @@ products:
 # Redirects for the 2026-08-21 Marketing API docs reorganization.
 # See notes/proposed-ia.md for the full mapping.
 redirects:
+  - source: /developers/changelog
+    destination: /developer/release-notes
   # fundamentals.mdx was split across five destinations; API structure is the
   # closest successor and both landing pages linked here as "Documentation".
   - source: /marketing/docs/fundamentals
