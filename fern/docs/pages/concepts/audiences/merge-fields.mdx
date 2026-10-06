@@ -33,7 +33,7 @@ Merge fields that are marked as public appear on the corresponding [audience sig
 
 Typically, you’ll create merge fields when you first start working with an audience and need to make it match the structure of an external data source. For example, say you’re syncing contact data from a CRM to Mailchimp; if the CRM has a “Company” field and your audience does not, you would need to create a merge field to store that information.  
 
-When you [create a new field](/marketing/api/lists/create-merge-field), you must specify its name and type; additionally, there are several optional parameters. Setting `public` to `true` means the merge field will appear on the audience’s signup form. The `display_order` and `help_text` parameters let you further customize the field’s appearance on the form. 
+When you [create a new field](/marketing/api/lists/create-merge-field), you must specify its name and type. For the full list of accepted `type` values (`text`, `number`, `address`, `date`, `birthday`, `radio`, `dropdown`, `zip`, `phone`, `url`, `imageurl`), see [Add merge data to contacts](#add-merge-data-to-contacts) below. Additionally, there are several optional parameters. Setting `public` to `true` means the merge field will appear on the audience’s signup form. The `display_order` and `help_text` parameters let you further customize the field’s appearance on the form. 
 
 Make sure to be careful when changing these properties, as they will change what is included on the signup form.
 

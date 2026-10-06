@@ -39,7 +39,7 @@ Every API call response includes headers and an optional JSON-formatted body. DE
 
 In an API URL, resource names and unique identifiers help you figure out how to structure your requests. Resource names are immutable, but resource identifiers need to be replaced with real values from your Mailchimp account. Resource identifier placeholders are indicated in curly brackets throughout this documentation.
 
-Resources can be nested several levels deep in a path, such as `https://api.mailchimp.com/3.0/lists/{list_id}/members/{subscriber_hash}/notes/{id}`. In this example, there is one primary resource, `lists`, and two subresources, `members` and `notes`. There are also three different path parameters that you need to replace with real values from your Mailchimp account: `list_id`, `email_id`, and `id`. When you replace those values with actual data, your final URL should look something like this:
+Resources can be nested several levels deep in a path, such as `https://api.mailchimp.com/3.0/lists/{list_id}/members/{subscriber_hash}/notes/{id}`. In this example, there is one primary resource, `lists`, and two subresources, `members` and `notes`. There are also three different path parameters that you need to replace with real values from your Mailchimp account: `list_id`, `subscriber_hash`, and `id`. When you replace those values with actual data, your final URL should look something like this:
 
 `https://api.mailchimp.com/3.0/lists/57afe96172/members/62eeb292278cc15f5817cb78f7790b08/notes`
 
