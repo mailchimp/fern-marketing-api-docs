@@ -1,0 +1,56 @@
+name: sync-openapi
+
+# Pulls the latest Marketing API export, normalizes it with
+# scripts/rehoist-inline-schemas.py, and opens (or updates) a PR when it changed.
+# fern-api/sync-openapi can't be used here: it commits the raw `fern api update`
+# output with no hook to run the rehoist step first, and the raw export breaks
+# the docs publish (see "Re-vendoring the Marketing OpenAPI spec" in CLAUDE.md).
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * *" # Daily at 03:00 UTC
+
+concurrency:
+  group: sync-openapi
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - name: Install Fern CLI tool
+        uses: fern-api/setup-fern-cli@v1
+
+      - name: Pull latest spec from origin
+        run: fern api update --api mailchimp-openapi
+
+      - name: Re-hoist inline schemas
+        run: python3 scripts/rehoist-inline-schemas.py fern/apis/mailchimp-openapi/openapi.json
+
+      - name: Check API is valid
+        run: fern check
+
+      - name: Open or update pull request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          # A PAT (Contents + Pull requests read/write) so the PR triggers
+          # fern-check and preview-docs; PRs opened with GITHUB_TOKEN do not.
+          token: ${{ secrets.OPENAPI_SYNC_TOKEN }}
+          branch: sync-openapi/marketing
+          delete-branch: true
+          add-paths: fern/apis/mailchimp-openapi/openapi.json
+          commit-message: "chore(marketing): sync Marketing OpenAPI spec"
+          title: "chore(marketing): sync Marketing OpenAPI spec"
+          body: |
+            Automated sync of `fern/apis/mailchimp-openapi/openapi.json` from the
+            `origin` in `fern/apis/mailchimp-openapi/generators.yml`, normalized
+            with `scripts/rehoist-inline-schemas.py`. `fern check` passed in the
+            workflow run that opened this PR.
