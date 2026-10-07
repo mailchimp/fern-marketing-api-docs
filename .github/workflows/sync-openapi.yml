@@ -8,7 +8,7 @@ name: sync-openapi
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 3 * * *" # Daily at 03:00 UTC
+    - cron: "0 10 * * 4" # Weekly on Thursday at 10:00 UTC
 
 concurrency:
   group: sync-openapi
