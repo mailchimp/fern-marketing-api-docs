@@ -13,6 +13,8 @@ The Marketing API has a limit of 10 simultaneous connections. The limit is per u
 
 We recommend that you cache frequently accessed values that do not change often in your application’s data store. This will prevent your application from bumping up against the throttling limitations and will likely provide faster access to that data.
 
+The Batch endpoint enforces an additional limit: a maximum of 500 pending batch webhook events per user. If you submit a new batch request while 500 or more batch webhook events are still outstanding, you will receive a 429 response. For the full error description, see the [Error glossary](/marketing/api-concepts/errors/#error-glossary).
+
 ## Stream timeouts
 
 The Marketing API has a 120-second timeout on API calls. You may see this type of timeout after you’ve made a network socket connection and are already sending and receiving data.
