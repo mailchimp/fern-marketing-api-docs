@@ -150,6 +150,12 @@ python3 scripts/rehoist-inline-schemas.py fern/apis/mailchimp-openapi/openapi.js
 fern check
 ```
 
+This runs on a schedule: `.github/workflows/sync-openapi.yml` runs
+`fern api update` (using the `origin` in `fern/apis/mailchimp-openapi/generators.yml`), then the
+script, then `fern check`, and opens a PR on `sync-openapi/marketing` when the
+spec changed. It needs an `OPENAPI_SYNC_TOKEN` repo secret. To re-vendor by hand,
+run `fern api update --api mailchimp-openapi` and then the two commands above.
+
 Mailchimp authors the spec with shared `$ref`s but their exporter dereferences
 everything, so the raw export inlines the same subschema dozens of times. This
 is not cosmetic — it breaks the docs build. `registerApiDefinition` returns

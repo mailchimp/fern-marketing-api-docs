@@ -3,6 +3,9 @@
 api:
   specs:
     - openapi: openapi.json
+      # Raw export pulled by `fern api update` (see .github/workflows/sync-openapi.yml).
+      # It must go through scripts/rehoist-inline-schemas.py before it is committed.
+      origin: https://api.mailchimp.com/schema/openapi/OpenAPI.json?expand
       overrides:
         # Base cleanup (tags, servers, auth, pagination) + the shared
         # method-name overrides (x-fern-sdk-method-name) so SDK methods read
