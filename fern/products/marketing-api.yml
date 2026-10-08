@@ -63,6 +63,9 @@ navigation:
           - page: Segments
             path: ../docs/pages/concepts/audiences/segments.mdx
             slug: segments
+          - page: Advanced segments
+            path: ../docs/pages/concepts/audiences/advanced-segments.mdx
+            slug: advanced-segments
       - page: E-commerce
         path: ../docs/pages/concepts/e-commerce.mdx
         slug: e-commerce

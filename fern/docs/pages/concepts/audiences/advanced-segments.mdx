@@ -1,0 +1,2186 @@
+---
+title: Advanced segments
+description: Create, read, and update advanced segments through the Marketing API, and write the definitions that decide who belongs in them.
+---
+
+An advanced segment's membership is set by its `definition`. You send a definition when you create or update a segment with `POST /3.0/segments` or `PATCH /3.0/segments/{segment_id}`, and `GET /3.0/segments/{segment_id}` returns it. Working with advanced segments requires a Mailchimp plan that includes advanced segmentation.
+
+A definition is a tree:
+- **Groups** combine their children with AND or OR.
+- **Conditions** each test one thing about a contact, such as an email address, a tag, a campaign they opened or a purchase they made.
+- The root of the tree is always a group. It may also say which contacts are in scope at all (the `contacts` object).
+
+```json
+{
+  "contacts": { "email": { "marketing": [ { "sendable": true } ] } },
+  "match": "all",
+  "conditions": [
+    { "field": "merge0", "op": "contains", "value": "@example.com" },
+    {
+      "match": "any",
+      "conditions": [
+        { "field": "static_segment", "op": "static_is", "value": 8662415 },
+        { "field": "rating", "op": "greater", "value": 3 }
+      ]
+    }
+  ]
+}
+```
+
+This selects subscribed email contacts whose address contains `@example.com` and who either carry tag 8662415 or have a contact rating above 3.
+
+## Read-only segments
+
+Every segment in a list or a read carries `read_only`:
+
+| | `"read_only": false` | `"read_only": true` |
+|---|---|---|
+| What it is | An advanced segment, built in Mailchimp or through this API | A segment another Mailchimp tool maintains, such as one built from Google Analytics data or by the AI segment builder |
+| `definition` in a read | Yes | No |
+| List, read, count, snapshot, page members | Yes | Yes |
+| Update (`PATCH`), delete (`DELETE`) | Yes | No: returns a 400 |
+
+When you create a segment, `definition` is required, and its root group must have `match` and `conditions`. When you read one, `definition` is present only if `read_only` is `false`. `read_only` can't be sent in a `PATCH`.
+
+Creating an advanced segment, or updating or taking a snapshot of one, requires an account whose plan includes advanced segmentation. Without it, those requests return a [403](#errors). Snapshots of read-only segments don't need it.
+
+The rest of this page describes definitions, so it applies to segments that aren't read-only.
+
+## Compatibility
+
+Within an API version, existing fields keep their names, types and meaning, and aren't removed. Mailchimp may add new fields, both to responses and to definitions, without a new version. Ignore fields you don't recognize rather than rejecting the response.
+
+## Groups
+
+| Key | Type | Required | Description |
+|---|---|---|---|
+| `match` | `"all"` or `"any"` | Yes | `all`: a contact must satisfy every child. `any`: a contact must satisfy at least one child. A node with `match` is a group. |
+| `conditions` | array | Yes | The group's children. In the root, each child is a condition or a group, in any mix and order. In a nested group, each child is a condition. Must be non-empty in a nested group; an empty root selects every contact in scope. |
+| `contacts` | object | No | **Root group only.** Which contacts are in scope. See [Contacts in scope](#contacts-in-scope). Omit it to include every contact. |
+| `schema_version` | integer | No | **Root group only.** Format version; responses always return `2`. |
+
+Groups nest up to 2 levels deep, counting the root: a root group can hold conditions and groups, and those groups hold only conditions. This is the deepest segment the segment builder can edit.
+
+```json
+{
+  "match": "all",
+  "conditions": [
+    { "field": "merge0", "op": "notcontain", "value": "@competitor.com" },
+    { "field": "static_segment", "op": "static_not", "value": 1234 }
+  ]
+}
+```
+
+This selects contacts whose address doesn't contain `@competitor.com` and who don't carry tag 1234.
+
+## Conditions
+
+A condition has a `field` naming what it tests, an `op` saying how, and usually a `value`. Which ops, values and filters a field accepts is listed per field in the [condition reference](#condition-reference).
+
+| Key | Type | Required | Description |
+|---|---|---|---|
+| `field` | string | Yes | What the condition tests, for example `merge0` (email address), `static_segment` (tag) or `email_campaign_activity`. A node with `field` is a condition. |
+| `op` | string | Yes | The comparison, for example `is`, `contains`, `greater`, `date_within`. Required on every condition and every filter. Some fields accept `any`, meaning no constraint. |
+| `value` | string, number, boolean or array | Depends on the field and op | What to compare against. |
+| `filters` | array of conditions | Depends on the field | Narrows the condition, for example to a specific campaign or a date range. Every filter must hold together with the condition. Filters are conditions, never groups. |
+| `value_op` | `"and"` or `"or"` | Depends on the field | How a list in `value` combines, on fields that accept several values. |
+| `extra` | string or array | Depends on the field | A second operand some fields need, for example the end of a date range. |
+| `location` | object | Depends on the field | `{region, city, country_code, lat, lng}` for location conditions. |
+| `namespace`, `event_name` | string | Custom events only | Identify the event on a [custom event](#events) condition. |
+| `type` | string | Custom event property filters only | The property's type: `string`, `integer`, `decimal`, `boolean` or `datetime`. |
+
+Any other key is rejected with a 400.
+
+```json
+{
+  "field": "email_campaign_activity",
+  "op": "open",
+  "filters": [
+    { "field": "campaign", "op": "is", "value": 17795293 }
+  ]
+}
+```
+
+This selects contacts who opened campaign 17795293 (its `web_id`).
+
+## Contacts in scope
+
+The root's `contacts` object limits the segment to contacts in particular subscription states, per channel, before any condition applies. Omit it to include every contact on every channel: email, SMS and WhatsApp. When present it must name at least one entry.
+
+```json
+{
+  "contacts": {
+    "email": {
+      "marketing": [ { "sendable": true } ],
+      "transactional": [ { "sendable": true } ]
+    },
+    "sms": { "marketing": [ { "sendable": true } ] }
+  },
+  "match": "all",
+  "conditions": []
+}
+```
+
+Each channel holds lists of entries. A contact is in scope if it matches **any** entry on any channel.
+
+| Channel and list | Entry | Contacts it covers |
+|---|---|---|
+| `email.marketing` | `{"sendable": true}` | Subscribed to email marketing. |
+| `email.marketing` | `{"sendable": false, "consent": "denied"}` | Unsubscribed from email marketing. Includes contacts an account user unsubscribed, not only contacts who opted out themselves. |
+| `email.marketing` | `{"sendable": false, "reason": "deliverability"}` | Cleaned: removed after bounces or other delivery problems. |
+| `email.marketing` | `{"sendable": false}` | Every email contact who can't receive marketing: unsubscribed, cleaned and transactional-only. |
+| `email.transactional` | `{"sendable": true}` | Transactional-only: can receive transactional email but never subscribed to marketing. |
+| `sms.marketing` | `{"sendable": true}` | Subscribed to SMS marketing. |
+| `sms.marketing` | `{"sendable": false, "consent": "denied"}` | Opted out of SMS marketing. |
+| `sms.marketing` | `{"sendable": false, "consent": "unknown"}` | Has an SMS number but never subscribed. |
+| `sms.marketing` | `{"sendable": false}` | Every SMS contact who can't receive marketing (both rows above). |
+| `whatsapp.marketing` | `{"sendable": true}` | Subscribed to WhatsApp marketing. |
+| `whatsapp.marketing` | `{"sendable": false, "consent": "denied"}` | Unsubscribed from WhatsApp marketing. |
+| `whatsapp.marketing` | `{"sendable": false, "consent": "unknown"}` | Never subscribed to WhatsApp marketing. |
+| `whatsapp.marketing` | `{"sendable": false}` | Every WhatsApp contact who can't receive marketing (both rows above). |
+
+Also accepted:
+- `"consent": "confirmed"` may accompany any entry. It covers the same contacts as the entry without it.
+- `email.marketing` `{"sendable": false, "consent": "unknown"}` is the same population as `email.transactional` `{"sendable": true}`.
+- `email.transactional` `{"sendable": false}` is valid but covers no contacts.
+
+Rejected with a 400:
+- `"sendable": true` with any `consent` other than `"confirmed"`, or with any `reason`.
+- `consent` and `reason` in the same entry.
+- `"consent": "consented"`.
+- `reason` on SMS or WhatsApp.
+- `sms.transactional` and `whatsapp.transactional`, which are reserved.
+
+## Ids in condition values
+
+Some conditions name another Mailchimp object.
+
+- **Campaigns:** use the campaign's `web_id`, the integer returned by `GET /3.0/campaigns`, not its `id`.
+- **Tags and static segments** (`static_segment`): use the tag's or segment's numeric `id` from `GET /3.0/lists/{list_id}/segments`.
+- **Beta: interest groups, marketing permissions and e-commerce stores.** These conditions take Mailchimp's internal id, which other API endpoints don't return. To find it:
+  1. Build an advanced segment in Mailchimp that uses the interest, permission or store.
+  2. Read that segment with `GET /3.0/segments/{segment_id}`.
+  3. Copy the value from its definition.
+
+  The format of these conditions may change.
+
+## Limits
+
+| Limit | Value | How it's counted |
+|---|---|---|
+| Conditions per definition | 100 | Every condition, including filters. |
+| Group nesting depth | 2 | Levels of groups, counting the root as 1. Filters don't add depth. |
+
+A definition over either limit is rejected with a 400 that names the limit. Limits apply when you write a definition. A segment built in Mailchimp that exceeds them still reads back normally, but writing that definition back returns a 400.
+
+## Errors
+
+Errors use the standard [Marketing API error format](/marketing/api-concepts/errors).
+
+**Plan without advanced segmentation.** Creating an advanced segment, updating one, or taking a snapshot of one returns HTTP 403 when the account's plan doesn't include advanced segmentation:
+
+```json
+{ "title": "Forbidden", "status": 403, "detail": "This account's plan doesn't include advanced segmentation." }
+```
+
+**Invalid definitions** return HTTP 400.
+
+- **Structural problems** put the reason in `detail`, for example an unknown key, a bad `match`, a misplaced `contacts` or an exceeded limit:
+
+  ```json
+  { "title": "Bad Request", "status": 400, "detail": "'match' must be \"all\" or \"any\"" }
+  ```
+
+- **Condition problems** set `detail` to `segment conditions failed validation`, with one `errors[]` entry per reason, for example an op a field doesn't support or a value out of range:
+
+  ```json
+  {
+    "title": "Invalid Resource",
+    "status": 400,
+    "detail": "segment conditions failed validation",
+    "errors": [ { "field": "definition", "message": "op must be one of is | not | contains | notcontain | starts | ends | greater | less | blank | blank_not" } ]
+  }
+  ```
+
+## Reading a definition back
+
+`GET /3.0/segments/{segment_id}` returns the definition in the same format, with a few normalizations. Each one selects the same contacts you wrote:
+
+- **`contacts` lists one entry per subscription state.** Broad spellings come back as the states they cover. For example, `email.marketing [{"sendable": false}]` reads back as three entries: unsubscribed, cleaned and transactional-only. A segment created without `contacts` reads back with every state listed. Writing the response back unchanged stores the same scope.
+- **A root that mixes conditions with groups** reads back with its conditions wrapped in one group of the same `match`. The groups stay where they were, beside that wrapper. A root that holds only conditions, or only groups, reads back unchanged.
+
+  ```json
+  { "match": "all", "conditions": [
+      { "field": "merge0", "op": "starts", "value": "a" },
+      { "field": "rating", "op": "greater", "value": 3 },
+      { "match": "any", "conditions": [ { "field": "static_segment", "op": "static_is", "value": 1234 } ] }
+  ] }
+  ```
+
+  reads back as
+
+  ```json
+  { "match": "all", "conditions": [
+      { "match": "all", "conditions": [
+          { "field": "merge0", "op": "starts", "value": "a" },
+          { "field": "rating", "op": "greater", "value": 3 }
+      ] },
+      { "match": "any", "conditions": [ { "field": "static_segment", "op": "static_is", "value": 1234 } ] }
+  ] }
+  ```
+- **Empty `extra` values are omitted**, and `schema_version` is always `2`.
+
+## Condition reference
+
+Fields are grouped by what they test. Each section lists the ops, the value format, the filters, and an example.
+
+**Availability**, per field:
+- **Generally available:** works for every audience.
+- **Requires …:** depends on data or an integration the audience must have, for example a connected store.
+- **Beta:** works, but its format may change.
+
+- [Contact data and audience membership](#contact-data-and-audience-membership)
+- [Email, SMS and WhatsApp engagement and status](#email-sms-and-whatsapp-engagement-and-status)
+- [E-commerce conditions](#e-commerce-conditions)
+- [Predictive insights and integrations](#predictive-insights-and-integrations)
+- [Events](#events)
+
+## Contact data and audience membership
+
+These conditions select contacts by what is stored on their profile: email address, merge fields, language, VIP status, rating, key dates, signup source, tags, groups, subscription status, marketing permissions, age gating and predicted location. None of them take `filters`. `ipgeo` is the only one that uses `location`.
+
+There is no `timezone` condition. Date conditions are evaluated in a fixed timezone, which each section below names.
+
+### `merge0` — Email address
+**Availability:** Generally available
+Compares the contact's email address with one or more strings.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | Email equals a value | String or array of strings |
+| `not` | Email does not equal the value(s) | String or array of strings |
+| `contains` | Email contains the substring | String or array of strings |
+| `notcontain` | Email does not contain the substring | String or array of strings |
+| `starts` | Email starts with the value | String or array of strings |
+| `ends` | Email ends with the value, for example a domain | String or array of strings |
+| `greater` | Email sorts alphabetically after the value | String |
+| `less` | Email sorts alphabetically before the value | String |
+| `blank` | Contact has no email address | Omit |
+| `blank_not` | Contact has an email address | Omit |
+
+**Example:**
+```json
+{ "field": "merge0", "op": "ends", "value": "@example.com" }
+```
+```json
+{ "field": "merge0", "op": "notcontain", "value": ["@gmail.com", "@yahoo.com"], "value_op": "and" }
+```
+**Notes:**
+- `value` is required for every op except `blank` and `blank_not`. Each entry is trimmed and must be at most 315 characters.
+- `value_op` defaults to `"or"`, so the condition matches if any value matches. With `not` or `notcontain`, `"or"` means "differs from at least one value", which matches almost everyone. Use `"value_op": "and"` to mean "matches none of these".
+- If `is` or `not` is sent with an empty value (`""`, `[]` or `[""]`), it is saved as `blank` or `blank_not`.
+
+### `merge<N>` — Merge fields
+**Availability:** Generally available
+Compares the contact's value in one audience merge field. `N` is the field's `merge_id` from `GET /3.0/lists/{list_id}/merge-fields`, an integer from 1 to 80 (for example `merge3`). The email address is `merge0`, documented above.
+
+Mailchimp looks up the merge field's type, and the type decides which ops and values are allowed. Don't send a type yourself.
+
+| Merge field type | Treated as | Allowed ops |
+|---|---|---|
+| text, address, zip, phone, website, image URL, dropdown, radio buttons | text | `is`, `not`, `contains`, `notcontain`, `starts`, `ends`, `greater`, `less`, `blank`, `blank_not`, `geoin` |
+| number | number | `is`, `not`, `greater`, `less`, `blank`, `blank_not` |
+| date | date | `is`, `not`, `greater`, `less`, `date_within`, `date_notwithin`, `blank`, `blank_not` |
+| birthday | birthday | `is`, `starts`, `ends`, `blank`, `blank_not` |
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | Text: exact match. Number: equal. Date: on that day. Birthday: on that month and day | Text, number or date: a value or array of values. Birthday: `"MM/DD"` |
+| `not` | Text, number or date: not equal or not on that day. Includes contacts with no value | Text or number: a value or array of values. Date: a date |
+| `contains` / `notcontain` | Text contains, or does not contain, the substring. `notcontain` includes contacts with no value | String or array of strings |
+| `starts` | Text: starts with. Birthday: month is | Text: a string or array of strings. Birthday: two-digit month, `"01"`–`"12"` |
+| `ends` | Text: ends with. Birthday: day is | Text: a string or array of strings. Birthday: two-digit day, `"01"`–`"31"` |
+| `greater` / `less` | Text: alphabetically after or before. Number: strictly greater or less. Date: after the end of that day, or before the start of it | A string, number or date |
+| `date_within` | Date in the last N days, from 00:00 N days ago through the end of today | Integer number of days, for example `"30"` |
+| `date_notwithin` | Date outside that window. Includes contacts with no value | Integer number of days |
+| `blank` | Text or birthday: empty or never set. Number or date: never set | Omit |
+| `blank_not` | Text or birthday: set and not empty. Number or date: set | Omit |
+| `geoin` | The ZIP code in this field is within `value` miles of the ZIP code in `extra` | Radius in miles, greater than 0 and no more than 3000. `extra` is required |
+
+**Example:**
+```json
+{ "field": "merge5", "op": "greater", "value": "100" }
+```
+```json
+{ "field": "merge4", "op": "geoin", "value": "25", "extra": "30303" }
+```
+**Notes:**
+- `value` is required for `is`, `not`, `contains`, `notcontain`, `starts`, `ends`, `date_within` and `date_notwithin`. Each entry must be at most 315 characters.
+- Number fields: every value must be numeric.
+- Date fields: send `YYYY-MM-DD`, or an ISO date-time with an offset (`YYYY-MM-DDThh:mm:ssZ`). Day boundaries are evaluated in **UTC**. `is` and `not` use only the first value.
+- Date `date_within` and `date_notwithin` take a whole number of days. Tokens like `7days` or `1month` are rejected, and decimals don't behave as expected.
+- Birthday values must be zero-padded (`"06"`, not `"6"`). Only the first value is used.
+- Dropdown and radio button values are the choice labels exactly as defined on the field.
+- `geoin` is for fields that hold US ZIP codes. `extra` must be a 5-digit US ZIP code.
+- `value_op` (`"and"` or `"or"`, default `"or"`) works as it does for `merge0`. Use `"and"` with `not` or `notcontain` to mean "matches none of these".
+- An op that isn't allowed for the field's type is rejected, with a message listing the ops that are valid.
+
+### `language` — Language
+**Availability:** Generally available
+The contact's language preference.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | Language equals the value | One language code |
+| `not` | Language is not the value | One language code |
+| `blank` | Language is unknown | Omit |
+| `blank_not` | Language is known | Omit |
+
+Language codes (case-insensitive): `en` English, `ar` Arabic, `af` Afrikaans, `be` Belarusian, `bg` Bulgarian, `ca` Catalan, `zh` Chinese (Simplified), `zh_CN` Chinese (Traditional), `hr` Croatian, `cs` Czech, `da` Danish, `nl` Dutch, `et` Estonian, `fa` Farsi, `fi` Finnish, `fr` French (France), `fr_CA` French (Canada), `de` German, `el` Greek, `he` Hebrew, `hi` Hindi, `hu` Hungarian, `is` Icelandic, `id` Indonesian, `ga` Irish, `it` Italian, `ja` Japanese, `km` Khmer, `ko` Korean, `lv` Latvian, `lt` Lithuanian, `mt` Maltese, `ms` Malay, `mk` Macedonian, `no` Norwegian, `pl` Polish, `pt` Portuguese (Brazil), `pt_PT` Portuguese (Portugal), `ro` Romanian, `ru` Russian, `sr` Serbian, `sk` Slovak, `sl` Slovenian, `es` Spanish (Mexico), `es_ES` Spanish (Spain), `sw` Swahili, `sv` Swedish, `ta` Tamil, `th` Thai, `tr` Turkish, `uk` Ukrainian, `vi` Vietnamese, `xxxxx` Custom.
+
+**Example:**
+```json
+{ "field": "language", "op": "is", "value": "fr_CA" }
+```
+**Notes:**
+- `value` is a single string and is required for `is` and `not`. Arrays are rejected. To match several languages, use a group with `"match": "any"`.
+
+### `gmonkey` — VIP status
+**Availability:** Generally available
+Whether the contact is marked as a VIP.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `member` | Contact is a VIP | Omit |
+| `notmember` | Contact is not a VIP | Omit |
+
+**Example:**
+```json
+{ "field": "gmonkey", "op": "member" }
+```
+
+### `rating` — Contact rating
+**Availability:** Generally available
+The contact's star rating, from 1 to 5.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | Rating equals the value | Integer 1–5 |
+| `not` | Rating is not the value. Includes contacts without a rating | Integer 1–5 |
+| `greater` | Rating is greater than the value | Integer 1–5 |
+| `less` | Rating is less than the value | Integer 1–5 |
+
+**Example:**
+```json
+{ "field": "rating", "op": "greater", "value": 3 }
+```
+**Notes:**
+- `value` is required and must be a single integer from 1 to 5, sent as a number or a numeric string.
+
+### `timestamp_opt`, `info_changed` — Subscription date and Info changed
+**Availability:** Generally available
+
+| Field | Selects by |
+|---|---|
+| `timestamp_opt` | Email subscription date: when the contact's email subscription record was created |
+| `info_changed` | Info changed: when the contact's profile information last changed |
+
+Both fields take the same ops and values. Dates are evaluated in the **account's timezone**.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | On that day | Date `YYYY-MM-DD` |
+| `not` | Not on that day | Date |
+| `greater` | After that day, meaning the next day or later | Date |
+| `less` | Before that day | Date |
+| `between` | From the start of the first day through the end of the second, inclusive | Array of exactly 2 dates |
+| `date_within` | From 00:00 N days ago through the end of today | Positive integer number of days |
+| `date_notwithin` | Outside that window | Positive integer number of days |
+| `campaign_is` | On the day the campaign was sent | Campaign `web_id`, or `"last"` |
+| `campaign_greater` | After the day the campaign was sent | Campaign `web_id`, or `"last"` |
+| `campaign_less` | Before the day the campaign was sent | Campaign `web_id`, or `"last"` |
+
+**Example:**
+```json
+{ "field": "timestamp_opt", "op": "between", "value": ["2026-01-01", "2026-03-31"] }
+```
+```json
+{ "field": "info_changed", "op": "campaign_greater", "value": "last" }
+```
+**Notes:**
+- `value` is required for every op.
+- Use plain `YYYY-MM-DD` dates. A date-time is accepted, but its offset is ignored. `is`, `not`, `greater` and `less` use only the first value.
+- `date_within` and `date_notwithin` take one whole number of days. Tokens like `7days` are rejected.
+- `campaign_*` ops take the `web_id` (an integer) of a sent campaign from `GET /3.0/campaigns`, or `"last"` for the audience's most recently sent campaign. Check that the campaign exists and has been sent: a bad campaign value may not be rejected when you save, but the segment will fail when it is counted or used.
+
+### `metadata_created` — Contact created date
+**Availability:** Generally available
+When the contact record was created in the audience, across all channels.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | On that day | Date `YYYY-MM-DD` |
+| `not` | Not on that day | Date |
+| `greater` | After that day | Date |
+| `less` | Before that day | Date |
+| `between` | From the start of the first day through the end of the second, inclusive | Array of exactly 2 dates |
+| `date_within` | From 00:00 N days ago through the end of today | Positive integer number of days |
+| `date_notwithin` | Outside that window | Positive integer number of days |
+| `campaign_is` | On the day the campaign was sent | Campaign `web_id`, or `"last"` |
+| `campaign_greater` | After the day the campaign was sent | Campaign `web_id`, or `"last"` |
+| `campaign_less` | Before the day the campaign was sent | Campaign `web_id`, or `"last"` |
+
+**Example:**
+```json
+{ "field": "metadata_created", "op": "date_within", "value": "7" }
+```
+**Notes:**
+- `value` is required for every op. Dates are `YYYY-MM-DD` or an ISO date-time with an offset.
+- Always send two dates for `between`. A single value is read as "within N days".
+- `date_within` and `date_notwithin` take a whole number of days. `1month` and similar tokens fail.
+- `campaign_*` values work as they do for `timestamp_opt`.
+
+### `original_signup_source`, `source` — Signup source
+**Availability:** Generally available
+How the contact originally joined the audience. `value` is the source type. The optional `extra` narrows the match to one specific source of that type, such as a particular import.
+
+| Field | Notes |
+|---|---|
+| `original_signup_source` | Signup source. Use this field. |
+| `source` | Signup activity. Accepted and treated the same as `original_signup_source`. |
+
+| Op | Meaning | Value |
+|---|---|---|
+| `source_is` | Contact joined through this source | Source type id |
+| `source_not` | Contact did not join through this source | Source type id |
+
+Source type ids:
+
+| Id | Source | Id | Source |
+|---|---|---|---|
+| `1` | Pre-existing | `13` | Inbox |
+| `2` | Unknown | `14` | Contact Form |
+| `3` | Admin Add | `50`–`53` | E-commerce (generic, PayPal, DPD, E-Junkie) |
+| `4` | Import | `500` | Mailchimp for Square |
+| `5` | Hosted Signup Form | `600` | ShopSync |
+| `6` | Facebook Signup Form | `700` | QuickBooks |
+| `7` | Embed Form | `1000` | API (generic) |
+| `8` | Twitter | `1001`–`1005`, `1008` | API plugins and SDKs |
+| `9` | Popup Form | `1006` | Website |
+| `10` | Landing Page | `1009`–`1014` | Mailchimp mobile app imports and scans |
+| `11` | Survey | `1015` | CRM |
+| `12` | Website Popup Form | `1019` | QuickBooks Online |
+
+Connected apps can also appear as sources, identified by large integer ids.
+
+**Example:**
+```json
+{ "field": "original_signup_source", "op": "source_is", "value": "7" }
+```
+```json
+{ "field": "original_signup_source", "op": "source_not", "value": "4", "extra": "987654" }
+```
+**Notes:**
+- `value` is required. Send it as a numeric string, for example `"10"`.
+- `extra` is optional. Omit it, or send `"any"`, to match any source of that type. Otherwise send the id of one specific source, for example an import id for type `4` or a landing page id for type `10`. **Beta:** the specific-source id takes Mailchimp's internal id, which other API endpoints don't return. To find it, build an advanced segment in Mailchimp that uses the source, read it with `GET /3.0/segments/{segment_id}`, and copy the value. The format may change. With `extra`, `source_is` means "this exact source" and `source_not` means "not this exact source".
+
+### `static_segment` — Tags
+**Availability:** Generally available
+Whether the contact has particular tags. Values are tag ids: the integer `id` of a tag from `GET /3.0/lists/{list_id}/tag-search` or of a static segment from `GET /3.0/lists/{list_id}/segments`.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `static_is` | Contact has the tag | One tag id |
+| `static_not` | Contact does not have the tag. Includes contacts with no tags | One tag id |
+| `is` | Contact has at least one of the tags | Array of 1–20 tag ids |
+| `is_every` | Contact has every tag listed | Array of 1–20 tag ids |
+| `not` | Contact has none of the tags. Includes contacts with no tags | Array of 1–20 tag ids |
+| `not_every` | Contact is missing at least one of the tags | Array of 1–20 tag ids |
+
+**Example:**
+```json
+{ "field": "static_segment", "op": "static_is", "value": 8662415 }
+```
+```json
+{ "field": "static_segment", "op": "is_every", "value": [8662415, 8661935] }
+```
+**Notes:**
+- `value` is required. Ids are integers, sent as numbers or numeric strings.
+- `static_is` and `static_not` take exactly one id. An array is rejected; use `is`, `is_every`, `not` or `not_every` for several tags.
+
+### `interests-<N>` — Groups
+**Availability:** Beta. Takes Mailchimp's internal id, which other API endpoints don't return. To find it, build an advanced segment in Mailchimp that uses the group, read it with `GET /3.0/segments/{segment_id}`, and copy the value. The format may change.
+Whether the contact belongs to particular groups (interests). `N` is the internal id of the group category, and the values are the internal ids of the groups in it. Copy both from a segment built in Mailchimp.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `interestcontains` | Contact is in at least one of the groups | Array of group ids, or one id |
+| `interestcontainsall` | Contact is in every group listed | Array of group ids, or one id |
+| `interestnotcontains` | Contact is in none of the groups. Includes contacts in no groups | Array of group ids, or one id |
+
+**Example:**
+```json
+{ "field": "interests-1234", "op": "interestcontains", "value": ["44401", "44405"] }
+```
+**Notes:**
+- `value` is required and must not be empty.
+- Matching uses only the group ids in `value`. Keep the field and the values from the same category, as Mailchimp writes them.
+
+### `list_email_status` — Email subscription status
+**Availability:** Generally available
+The contact's email subscription status.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | Status is one of the values | Status code or array of codes |
+| `not` | Status is none of the values | Status code or array of codes |
+
+| Code | Status |
+|---|---|
+| `Y` | Subscribed |
+| `N` | Unsubscribed |
+| `T` | Transactional (non-subscribed) |
+| `B` | Cleaned |
+
+**Example:**
+```json
+{ "field": "list_email_status", "op": "is", "value": ["Y", "T"] }
+```
+**Notes:**
+- `value` is required. Codes are case-insensitive. Other values, such as `"subscribed"`, are rejected.
+- This condition is combined with the segment's top-level contact scope. It can narrow that scope, but it can't add back contacts the scope excludes.
+
+### `marketing_preference` — Marketing permissions
+**Availability:** Beta. Takes Mailchimp's internal id, which other API endpoints don't return. To find it, build an advanced segment in Mailchimp that uses the marketing permission, read it with `GET /3.0/segments/{segment_id}`, and copy the value. The format may change.
+Whether the contact has granted a marketing permission (GDPR). Relevant only to audiences with GDPR fields enabled.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | Contact has granted the permission | One permission id |
+| `not` | Contact has not granted it. Includes contacts with no permissions | One permission id |
+
+**Example:**
+```json
+{ "field": "marketing_preference", "op": "is", "value": "301" }
+```
+**Notes:**
+- `value` is required and must be a single numeric id, not the permission's label.
+
+### `age_gating` — Age gating
+**Availability:** Generally available
+The contact's SMS age-verification outcome. Relevant only to audiences with SMS marketing.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | Outcome is one of the values | Array of strings from `"true"`, `"false"`, `"unknown"` |
+| `not` | Outcome is none of the values | Array of strings from `"true"`, `"false"`, `"unknown"` |
+| `any` | Contact has an age-verification record | Omit |
+| `not_any` | Contact has no age-verification record | Omit |
+
+Values: `"true"` means verified, `"false"` means excluded, and `"unknown"` means no record.
+
+**Example:**
+```json
+{ "field": "age_gating", "op": "is", "value": ["true"] }
+```
+```json
+{ "field": "age_gating", "op": "not_any" }
+```
+**Notes:**
+- `value` is required for `is` and `not`. Always send an array of strings, not JSON booleans. A bare `"unknown"` string, not in an array, matches no one.
+- `"unknown"` may be combined with `"true"` or `"false"`: `{"op": "is", "value": ["true", "unknown"]}` matches contacts who are verified or have no record, and `not` with the same values matches everyone else.
+
+### `ipgeo` — Predicted location
+**Availability:** Generally available
+The contact's predicted location, estimated from data such as IP address. This is the only condition in this family that uses `location`.
+
+| Op | Meaning | Value | Also needs |
+|---|---|---|---|
+| `ipgeoin` | Within `value` miles of a point | Radius in miles | `location.lat`, `location.lng` |
+| `ipgeonotin` | Not within `value` miles of a point | Radius in miles | `location.lat`, `location.lng` |
+| `ipgeoinzip` | Within `value` miles of a US ZIP code | Radius in miles | `location.lat`, `location.lng` of the ZIP code |
+| `ipgeocountry` | In the country | Two-letter country code | — |
+| `ipgeonotcountry` | Known country, other than this one | Two-letter country code | — |
+| `ipgeostate` | In the US state | Two-letter US state code, for example `"GA"` | — |
+| `ipgeonotstate` | In the US, in a known state other than this one | Two-letter US state code | — |
+| `ipgeocity` | In the city | Omit | `location.city` |
+| `ipgeonotcity` | Known city, other than this one | Omit | `location.city` |
+| `ipgeoiszip` | In the US ZIP code | ZIP code string | — |
+| `ipgeonotzip` | In the US, in a known ZIP code other than this one | ZIP code string | — |
+| `ipgeounknown` | No predicted location | Omit | — |
+
+**Example:**
+```json
+{ "field": "ipgeo", "op": "ipgeoin", "value": "50",
+  "location": { "city": "Atlanta", "region": "GA", "country_code": "US", "lat": 33.749, "lng": -84.388 } }
+```
+```json
+{ "field": "ipgeo", "op": "ipgeocountry", "value": "CA" }
+```
+**Notes:**
+- The radius is a number of miles. The Mailchimp app offers 25, 50, 75, 100, 150 and 200, but any positive number works.
+- `ipgeoinzip` doesn't look up the ZIP code. Send the ZIP code's latitude and longitude in `location.lat` and `location.lng`.
+- `ipgeocity` and `ipgeonotcity` match the city name in `location.city` only. They are not limited by region or country.
+- `location.region` and `location.country_code` are stored with the segment, but they don't affect matching.
+- The negative ops `ipgeonotcountry`, `ipgeonotstate`, `ipgeonotcity` and `ipgeonotzip` exclude contacts whose location is unknown. To include them, add an `ipgeounknown` condition in a group with `"match": "any"`.
+
+## Email, SMS and WhatsApp engagement and status
+
+These conditions select contacts by what they did with your email, SMS and WhatsApp messages (sends, opens, clicks, replies, bounces, keywords) and by their subscription status, subscription date and phone country on each channel.
+
+Shared filters used by the activity conditions (`email_campaign_activity`, `sms_campaign_activity`, `whatsapp_campaign_interaction`) are described once, in [Shared activity filters](#shared-activity-filters), at the end of this section.
+
+### `email_campaign_activity` — Email campaign interaction
+
+**Availability:** Generally available
+
+Selects contacts who did, or did not, receive, open, click, reply to, or bounce from your email campaigns. Filters narrow the match by campaign, time, link, click type, open type and number of events.
+
+With a positive op (`sent`, `open`, `click`, `reply`, `bounce`), a contact matches when **one** activity record satisfies **all** the filters together. With a `no_*` op, a contact matches when **no** activity record satisfies all the filters together. That includes contacts with no activity at all.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `sent` / `no_sent` | Was / was not sent the campaign | Omit |
+| `open` / `no_open` | Opened / did not open | Omit |
+| `click` / `no_click` | Clicked / did not click | Omit |
+| `reply` / `no_reply` | Replied / did not reply | Omit |
+| `bounce` | The send bounced (soft or hard bounce) | Omit |
+
+**Filters** (`filters` is required and must contain at least one filter):
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `campaign` | `any`, `is`, `not`, `anylast5`, `anylast10`, `anylast20`, `anylast50`, `alllast5`, `alllast10`, `alllast20`, `alllast50` | For `is` / `not`: one campaign `web_id` (integer). Omit for the others. | Allowed with every op. See below. |
+| `timeframe` | See [`timeframe`](#timeframe) | | Allowed with every op. |
+| `click_url` | `any`, `is`, `not`, `contains`, `notcontain`, `starts`, `ends` | A URL or text fragment (string) | `click` / `no_click` only. See below. |
+| `click_type` | `is` | `contact_clicks`, `bot_clicks`, or `all_clicks` | `click` / `no_click` only. See [`click_type`](#click-type-filters). |
+| `open_type` | `any`, `is`, `not` | `apple_mpp` | `open` only. See below. |
+| `number_events` | See [`number_events`](#number_events) | | `sent`, `open`, `click` only. |
+
+**`campaign` filter**
+
+| Op | Meaning |
+|---|---|
+| `any` | Any campaign. Send this when you don't want to narrow by campaign. |
+| `is` | Activity on this campaign. If the campaign is an A/B test, its test variants are included. |
+| `not` | Activity on some campaign **other than** this one. With a positive op this is not the same as "didn't": for "didn't open campaign X", use `no_open` with `campaign` `is` X. |
+| `anylast5` … `anylast50` | Positive op: activity on **any** of the list's N most recently sent campaigns. `no_*` op: missed **at least one** of them. |
+| `alllast5` … `alllast50` | Positive op: activity on **every** one of the list's N most recently sent campaigns. `no_*` op: activity on **none** of them. |
+
+**`click_url` filter**
+
+| Op | Meaning |
+|---|---|
+| `any` | Any link. |
+| `is` / `not` | The clicked URL starts with / does not start with the value. Clicked URLs can include tracking parameters, so `is` matches by prefix. |
+| `contains` / `notcontain` | The clicked URL contains / does not contain the value. |
+| `starts` / `ends` | The clicked URL starts / ends with the value. |
+
+**`open_type` filter** (Apple Mail Privacy Protection)
+
+| Op | Meaning |
+|---|---|
+| `any` | Any open. |
+| `is` `apple_mpp` | The contact's opens of the campaign are **only** machine opens by Apple Mail Privacy Protection, with no human open. |
+| `not` `apple_mpp` | The contact has at least one human (non-MPP) open of the campaign. |
+
+**Example:**
+
+Opened campaign 17795293 in the last month:
+
+```json
+{ "field": "email_campaign_activity", "op": "open",
+  "filters": [
+    { "field": "campaign", "op": "is", "value": 17795293 },
+    { "field": "timeframe", "op": "date_within", "value": "1month" }
+  ] }
+```
+
+Human clicks on a link containing "/sale" in any of the last 10 campaigns, more than twice:
+
+```json
+{ "field": "email_campaign_activity", "op": "click",
+  "filters": [
+    { "field": "campaign", "op": "anylast10" },
+    { "field": "click_url", "op": "contains", "value": "/sale" },
+    { "field": "click_type", "op": "is", "value": "contact_clicks" },
+    { "field": "number_events", "op": "greater", "value": 2 }
+  ] }
+```
+
+**Notes:**
+- Campaign ids are the campaign's `web_id` from `GET /3.0/campaigns` (an integer), not its `id`. A non-numeric value is rejected.
+- Send one `web_id` per `campaign` filter. To match several specific campaigns, use a group with `"match": "any"`.
+- "Most recently sent" campaigns for `anylastN` / `alllastN` are the list's sent, non-deleted campaigns that delivered at least one email, newest send time first. A/B test variants are expanded automatically.
+- Op spellings are `no_sent`, `no_open`, `no_click`, `no_reply`. The SMS spellings (`nosent`, `nodelivered`) are rejected here.
+- `value`, `value_op` and `extra` are not used on this condition.
+- `click_url`: every op except `any` needs a non-empty string. `greater` and `less` are rejected.
+- `open_type` `is` or `not` requires a `campaign` filter. If you combine `open_type` `is` with `campaign` `any`, the campaign filter is treated as `anylast50`. With an "all" campaign op (`alllastN`) every campaign must satisfy the open type; with any other campaign op, at least one must.
+- `open_type` `is` / `not` cannot be combined with `number_events` `is`, `greater` or `less` (`at_least_once` is allowed).
+- A filter that belongs to another channel (for example `sms_campaign`) is not valid here.
+
+### `email_marketing_engagement` — Email engagement
+
+**Availability:** Generally available
+
+Selects contacts by how often they engage with your email, based on Mailchimp's email activity score, or by being newly opted in.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | Engagement level is this value | One string: `new`, `low`, `medium`, `high` |
+| `not` | Engagement level is not this value (includes contacts with no score or no email opt-in date) | Same |
+
+| Value | Label in Mailchimp | Rule |
+|---|---|---|
+| `new` | New: not enough history to score yet | Opted in to email within the last 30 days |
+| `low` | Rarely | Lowest activity score, opted in more than 30 days ago |
+| `medium` | Sometimes | Middle activity score, opted in more than 30 days ago |
+| `high` | Often | Highest activity score, opted in more than 30 days ago |
+
+**Example:**
+
+```json
+{ "field": "email_marketing_engagement", "op": "is", "value": "high" }
+```
+
+**Notes:**
+- `value` is a single lowercase string; `"HIGH"` is rejected. An array is rejected; to match several levels use a group with `"match": "any"`.
+- `filters`, `value_op` and `extra` are not used.
+
+### `sms_campaign_activity` — SMS interaction
+
+**Availability:** Requires SMS marketing on the audience
+
+Selects contacts who were, or were not, sent or delivered SMS messages from your SMS campaigns or Customer Journeys, who clicked an SMS tracking link, or who texted a keyword.
+
+With a positive op, a contact matches when **one** message or click satisfies **all** the filters together. With a negated op (`nosent`, `nodelivered`, `no_click`), a contact matches when **no** record satisfies all the filters together, including contacts with no SMS activity.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `sent` / `nosent` | Was / was not sent a message (sent, delivered or failed) | Omit |
+| `delivered` / `nodelivered` | Was / was not delivered a message | Omit |
+| `click` / `no_click` | Clicked / did not click a tracking link | Omit |
+| `used_keyword` | Texted this keyword | The keyword (string, required) |
+
+**Filters** (`filters` is required and must contain at least one filter):
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `sms_campaign` | `any`, `is`, `not` | For `is` / `not`: one SMS campaign id (UUID string) or an array of them. Omit for `any`. | **Beta** for `is` / `not`: see note below. |
+| `timeframe` | See [`timeframe`](#timeframe) | | With `sent` / `delivered` it applies to the message's last status update; with `click` to the click time. Don't combine with `used_keyword`. |
+| `sms_click_type` | `is` | `contact_clicks`, `bot_clicks`, or `all_clicks` | `click` / `no_click` only. See [click type filters](#click-type-filters). |
+| `number_events` | See [`number_events`](#number_events) | | `sent` and `click` only. |
+
+**Example:**
+
+Human clicks in one SMS campaign in the last 30 days:
+
+```json
+{ "field": "sms_campaign_activity", "op": "click",
+  "filters": [
+    { "field": "sms_campaign", "op": "is", "value": "5e143a22-0aaf-41b1-b0b9-dac4ffa74a68" },
+    { "field": "timeframe", "op": "date_within_days", "value": 30 },
+    { "field": "sms_click_type", "op": "is", "value": "contact_clicks" }
+  ] }
+```
+
+Texted the keyword "JOIN":
+
+```json
+{ "field": "sms_campaign_activity", "op": "used_keyword", "value": "JOIN",
+  "filters": [ { "field": "sms_campaign", "op": "any" } ] }
+```
+
+**Notes:**
+- **Beta (`sms_campaign` ids):** Takes Mailchimp's internal id, which other API endpoints don't return. To find it, build an advanced segment in Mailchimp that uses the SMS campaign, read it with `GET /3.0/segments/{segment_id}`, and copy the value. The format may change.
+- Op spellings: `nosent` and `nodelivered` have no underscore; `no_click` has one. The email spelling `no_sent` is rejected.
+- There are no `open`, `reply` or `bounce` ops for SMS. For bounces, use `sms_bounce_reason`.
+- `value` is used only by `used_keyword` (a single string). `value_op` and `extra` are not used.
+- Use only the filters listed above. The email filters `campaign`, `click_url` and `click_type` are not valid here.
+- On some accounts `sent`, `delivered` and `click` also count WhatsApp messages. To target WhatsApp specifically, use `whatsapp_campaign_interaction`.
+
+### `sms_bounce_reason` — SMS bounce reason
+
+**Availability:** Requires SMS marketing on the audience
+
+Selects contacts with at least one SMS campaign or Customer Journey message that bounced, optionally with a specific error code. The error code, campaign and time filters all apply to the same message.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `any` | A message bounced for any reason | Omit |
+| `is` | A message bounced with one of these error codes | Code string or array of code strings (required) |
+
+| Code | Meaning |
+|---|---|
+| `4000` | Unknown error |
+| `4100` | Rejected by operator |
+| `4101` | MMS too large |
+| `4102` | Unexpected data value |
+| `4103` | Duplicate message |
+| `4104` | Message text too long |
+| `4105` | Carrier rate limit exceeded |
+| `4202` | Invalid source address |
+| `4203` | Mobile network congestion |
+| `4204` | Operator network or routing error |
+| `4205` | Operator provisioning issue |
+| `4301` | Suspended number |
+| `4302` | Handset or equipment error |
+| `5200` | Unrecognized carrier |
+| `5300` | Number not provisioned or blocked |
+| `5301` | Deactivated number |
+| `5302` | Number blocklisted |
+
+**Filters** (optional):
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `sms_campaign` | `any`, `is`, `not` | SMS campaign id (UUID string) or array | **Beta** for `is` / `not`, same as under `sms_campaign_activity`. |
+| `timeframe` | `any`, `is`, `not`, `greater`, `less`, `between`, `date_within`, `date_notwithin`, `campaign_is`, `campaign_greater`, `campaign_less` | Dates `YYYY-MM-DD`; `date_within` / `date_notwithin` take a number of days; `campaign_*` take a campaign `web_id` or `"last"` | Applies to the message's last status update. |
+
+**Example:**
+
+Deactivated or blocklisted number, in the last 30 days:
+
+```json
+{ "field": "sms_bounce_reason", "op": "is", "value": ["5301", "5302"],
+  "filters": [ { "field": "timeframe", "op": "date_within", "value": 30 } ] }
+```
+
+**Notes:**
+- Codes are not checked against the list above; an unknown code is accepted and matches nobody.
+- Every `timeframe` op except `any` needs a value. `between` takes `[start, end]`, inclusive.
+- `campaign_is` / `campaign_greater` / `campaign_less` compare with the send date of an email campaign on the same audience (`web_id`), or of the audience's most recently sent email campaign (`"last"`).
+- Only `sms_campaign` and `timeframe` filters are accepted. Any other filter is rejected with `Unsupported operation: <field>`.
+
+### `sms_contact_status` — SMS subscription status
+
+**Availability:** Requires SMS marketing on the audience
+
+Selects contacts by their SMS marketing subscription status.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `status_is` | Status is one of | String or array of codes |
+| `not` | Status is not one of | Same |
+
+| Code | Status |
+|---|---|
+| `Y` | Subscribed |
+| `N` | Unsubscribed |
+| `NON` | Non-subscribed |
+
+**Example:**
+
+```json
+{ "field": "sms_contact_status", "op": "not", "value": ["N", "NON"] }
+```
+
+**Notes:**
+- The op is `status_is`, not `is`.
+- Codes are case-insensitive. `P` (pending) and any other code are rejected. An empty array is rejected.
+- `filters`, `value_op` and `extra` are not used.
+
+### `sms_timestamp_opt` — SMS subscription date
+
+**Availability:** Requires SMS marketing on the audience
+
+Selects contacts by the date their SMS channel was added.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | On that day | One date |
+| `greater` | After that day | One date |
+| `less` | Before that day | One date |
+| `between` | Within the range, inclusive by whole days | `[start, end]` |
+| `date_within` | In the last N days | One integer (days) |
+| `campaign_is` | On the send date of a campaign | Campaign `web_id` or `"last"` |
+| `campaign_greater` | After the send date of a campaign | Same |
+| `campaign_less` | Before the send date of a campaign | Same |
+
+**Example:**
+
+```json
+{ "field": "sms_timestamp_opt", "op": "between", "value": ["2025-02-01", "2025-02-28"] }
+```
+
+```json
+{ "field": "sms_timestamp_opt", "op": "date_within", "value": 30 }
+```
+
+**Notes:**
+- Dates are `YYYY-MM-DD` or `YYYY-MM-DDTHH:MM:SS±HH:MM`.
+- `date_within` takes a number of days. `"1month"` and similar strings are rejected.
+- `"last"` means the audience's most recently sent email campaign. A campaign without a send date is rejected.
+- To select dates outside a range, use a group with `"match": "any"` that holds a `less` condition on the first day and a `greater` condition on the last day. Contacts without an SMS subscription date match neither.
+- `filters`, `value_op` and `extra` are not used.
+
+### `sms_country_code` — Mobile phone country
+
+**Availability:** Requires SMS marketing on the audience
+
+Selects contacts by the country of their SMS phone number. On some accounts it also matches the country of the contact's WhatsApp number: then `in` matches if either number is in one of the countries, and `not_in` matches only if neither number is.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `in` | Country is one of | Array of ISO 3166-1 alpha-2 codes (required, non-empty) |
+| `not_in` | Country is not one of | Same |
+
+**Example:**
+
+```json
+{ "field": "sms_country_code", "op": "in", "value": ["US", "CA"] }
+```
+
+**Notes:**
+- Send country codes in uppercase.
+- Codes are not checked against the countries Mailchimp SMS supports; an unsupported country matches nobody.
+- The ops are `in` / `not_in`, not `is` / `not`.
+- `filters`, `value_op` and `extra` are not used.
+
+### `whatsapp_campaign_interaction` — WhatsApp interaction
+
+**Availability:** Requires WhatsApp marketing on the audience
+
+Selects contacts who were, or were not, sent, read, or clicked WhatsApp messages from your campaigns or Customer Journeys. Filters combine the same way as for `sms_campaign_activity`.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `sent` / `nosent` | Was / was not sent a message (sent, delivered or failed) | Omit |
+| `opened` / `not_opened` | Read / did not read a message | Omit |
+| `click` / `no_click` | Clicked / did not click a tracking link | Omit |
+
+**Filters** (`filters` is required and must contain at least one filter):
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `whatsapp_campaign` | `any`, `is`, `not` | For `is` / `not`: WhatsApp campaign id (UUID string) or array. Omit for `any`. | **Beta** for `is` / `not`: see note below. |
+| `timeframe` | See [`timeframe`](#timeframe) | | Applies to the last status update (`sent`), the read time (`opened`), or the click time (`click`). |
+| `whatsapp_click_type` | `is` | `contact_clicks`, `bot_clicks`, or `all_clicks` (required) | `click` / `no_click` only. See [click type filters](#click-type-filters). |
+| `click_url` | `any`, `is`, `not`, `contains`, `notcontain`, `starts`, `ends` | A URL or text fragment | `click` / `no_click` only. Same meanings as for email. |
+| `number_events` | See [`number_events`](#number_events) | | `sent` and `click` only. |
+
+**Example:**
+
+```json
+{ "field": "whatsapp_campaign_interaction", "op": "opened",
+  "filters": [
+    { "field": "whatsapp_campaign", "op": "is", "value": "8c1f2b9e-3d4a-4b5c-9e6f-1a2b3c4d5e6f" },
+    { "field": "timeframe", "op": "date_within_days", "value": 14 }
+  ] }
+```
+
+**Notes:**
+- **Beta (`whatsapp_campaign` ids):** Takes Mailchimp's internal id, which other API endpoints don't return. To find it, build an advanced segment in Mailchimp that uses the WhatsApp campaign, read it with `GET /3.0/segments/{segment_id}`, and copy the value. The format may change.
+- Op spellings: `nosent` and `not_opened` (not `no_sent` / `no_open`).
+- There are no `delivered` or keyword ops for WhatsApp.
+- `value`, `value_op` and `extra` are not used.
+
+### `whatsapp_contact_status` — WhatsApp subscription status
+
+**Availability:** Requires WhatsApp marketing on the audience
+
+Selects contacts by their WhatsApp marketing subscription status.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | Status is one of | String or array: `SUBSCRIBED`, `UNSUBSCRIBED` |
+| `not` | Status is not one of | Same |
+
+**Example:**
+
+```json
+{ "field": "whatsapp_contact_status", "op": "is", "value": ["SUBSCRIBED"] }
+```
+
+**Notes:**
+- Values differ from SMS: use `SUBSCRIBED` / `UNSUBSCRIBED`, not `Y` / `N`, and the op is `is`, not `status_is`. Other values are accepted but match nobody.
+- Send values in uppercase.
+- `not` also matches contacts with no WhatsApp channel.
+- `filters`, `value_op` and `extra` are not used.
+
+### `whatsapp_timestamp_opt` — WhatsApp subscription date
+
+**Availability:** Requires WhatsApp marketing on the audience
+
+Selects contacts by the date their WhatsApp channel was added.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `any` | No date restriction | Omit |
+| `is` / `not` | On / not on that day | One date |
+| `greater` | After that day | One date |
+| `less` | Before that day | One date |
+| `between` | Within the range, inclusive | `[start, end]` |
+| `date_within` | In the last N days | One integer (days) |
+| `date_notwithin` | Not in the last N days | One integer (days) |
+
+**Example:**
+
+```json
+{ "field": "whatsapp_timestamp_opt", "op": "less", "value": "2025-06-01" }
+```
+
+**Notes:**
+- Dates are `YYYY-MM-DD`. Every op except `any` needs a non-empty value.
+- `filters`, `value_op` and `extra` are not used.
+
+### Shared activity filters
+
+#### `timeframe`
+
+Used by `email_campaign_activity`, `sms_campaign_activity` and `whatsapp_campaign_interaction`. (`sms_bounce_reason` has its own `timeframe` op list, above.)
+
+| Op | Meaning | Value |
+|---|---|---|
+| `any` | No time restriction | Omit |
+| `date_within` | From the start of the day N days/months ago through the end of today | `"7days"`, `"1month"`, `"3months"`, or an integer number of days |
+| `date_notwithin` | Outside that window | Same as `date_within` |
+| `date_within_days` | In the last N days | Integer 1–365 |
+| `date_within_months` | In the last N months | Integer 1–12 |
+| `between` | From the start of `start` through the end of `end`, inclusive | `[start, end]` |
+| `greater` | After the end of that day | One date |
+| `less` | Before the start of that day | One date |
+| `is` | Within that calendar day | One date |
+| `not` | Not within that calendar day | One date |
+
+Dates are `YYYY-MM-DD`, optionally followed by `THH:MM[:SS]` and a `Z` or `±HH:MM` offset.
+
+#### `number_events`
+
+Used by `email_campaign_activity` (with `sent`, `open`, `click`), `sms_campaign_activity` (with `sent`, `click`) and `whatsapp_campaign_interaction` (with `sent`, `click`). Counts the distinct activity records that match the condition's other filters.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `at_least_once` | At least one (same as omitting the filter) | Omit |
+| `is` | Exactly N | Integer 1–10 |
+| `greater` | More than N | Integer 1–10 |
+| `less` | Fewer than N | Integer 1–10 |
+
+At most one `number_events` filter per condition.
+
+#### Click type filters
+
+`click_type` (email), `sms_click_type` (SMS) and `whatsapp_click_type` (WhatsApp) take op `is` and one value:
+
+| Value | Meaning |
+|---|---|
+| `contact_clicks` | Human clicks only |
+| `bot_clicks` | Clicks identified as bots only |
+| `all_clicks` | All clicks, including older clicks recorded before bot detection |
+
+Values must be lowercase as listed. With `no_click`, `all_clicks` means "has not clicked at all". An empty value is treated as `contact_clicks` for `click_type` and `sms_click_type`; `whatsapp_click_type` requires a value.
+
+## E-commerce conditions
+
+E-commerce conditions select contacts by what they did in a connected store: orders and what was in them, lifetime spend and order counts, storefront activity (page views, searches, product and collection views, carts, checkouts), reviews, back-in-stock requests, and predicted churn risk. Unless a section says otherwise, they need a connected e-commerce store. On an audience with no store data, a condition still saves; positive ops match nobody and negative ops match everybody.
+
+### Shared values and filters
+
+These rules apply to every condition in this section.
+
+**Identifier formats**
+
+| Concept | What to send |
+|---|---|
+| Product | The product title, as text (the `title` of the product in the e-commerce API). |
+| Product variant | The variant title, as text. |
+| Category (`ecomm_category`) | The product **vendor**, as text (the product's `vendor` in the e-commerce API). Despite the name, it doesn't match category names. |
+| Collection (`ecomm_collection`) | With `is` / `not`: the collection's id in your store platform (for example a Shopify collection GID such as `gid://shopify/Collection/123456789`). With `contains`, `notcontain`, `starts`, `ends`: the collection name. |
+| Discount code | The promo code string. |
+| Campaign | The campaign's `web_id` from `GET /3.0/campaigns` (an integer), not its `id`. |
+| Store (`ecomm_store`, `ecomm_back_in_stock_request_store`) | **Beta.** Takes Mailchimp's internal id, which other API endpoints don't return. To find it, build an advanced segment in Mailchimp that uses the store, read it with `GET /3.0/segments/{segment_id}`, and copy the value. The format may change. It is not the `store_id` you use with `/3.0/ecommerce/stores`. Send it as a string. |
+
+**Text ops.** Filters on products, variants, categories, collections, page URLs and search text use the same ops:
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | Exactly matches one of the values | string or array of strings |
+| `not` | Matches none of the values | string or array of strings |
+| `contains` | Contains the text | string |
+| `notcontain` | Doesn't contain the text | string |
+| `starts` | Starts with the text | string |
+| `ends` | Ends with the text | string |
+
+**Money.** Send amounts as a decimal JSON number or numeric string (`100`, `"49.99"`), with no currency symbol or thousands separator. Amounts must be zero or greater.
+
+**`any` filters.** Every filter accepts `"op": "any"` with no `value`, meaning "no restriction". Leaving the filter out does the same thing and is preferred.
+
+**How filters combine.** On an activity condition (purchased, viewed, added to cart, and so on), the positive op matches contacts with **at least one** order or event that meets **all** the filters at once. The negative op (`no_purchased`, `no_viewed`, `not_submitted`, `requested_not`, ...) matches contacts with **no** such order or event, including contacts who have no orders or events at all.
+
+#### `ecomm_timeframe` filter
+
+Restricts an order or event by when it happened. Dates are evaluated in the account's timezone. Leave `extra` out; it is ignored.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `any` | No time restriction | omit |
+| `date_within` | In the last N days, from the start of the day N days ago through the end of today | whole number of days as a string, e.g. `"30"` |
+| `date_notwithin` | Not in the last N days | same as `date_within` |
+| `between` | On or between two dates (inclusive) | array of exactly 2 dates, `["2026-01-01", "2026-03-31"]` |
+| `greater` | After the given day | date |
+| `less` | Before the given day | date |
+| `is` | On the given day | date |
+| `not` | Not on the given day | date |
+| `campaign_greater` | After the day the campaign was sent | `"last"` (the audience's most recently sent campaign) or a campaign `web_id` |
+| `campaign_less` | Before the day the campaign was sent | same |
+| `campaign_is` | On the day the campaign was sent | same |
+
+- Dates are `YYYY-MM-DD` (a time and offset, `YYYY-MM-DDTHH:MM:SS+00:00`, is also accepted).
+- On `ecomm`, `total_spent`, `spent_avg` and `orders_count`, `date_within` / `date_notwithin` also accept `"7days"`, `"1month"` and `"3months"` (calendar months).
+- `date_within_days`, `date_within_months`, `blank` and `blank_not` are not supported here.
+- A `campaign_*` value that doesn't match a sent campaign in the audience is rejected with HTTP 400.
+
+#### `number_events` filter
+
+Counts how many matching orders the contact has. Allowed only under `ecomm` with `purchased`; the store event conditions below don't accept it. At most one per condition.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `at_least_once` | One or more (the same as leaving the filter out) | omit |
+| `is` | Exactly N | integer 1–10 |
+| `greater` | More than N | integer 1–10 |
+| `less` | Fewer than N | integer 1–10 |
+
+### `ecomm` — Purchase activity
+
+**Availability:** Requires a connected e-commerce store.
+Contacts who have, or have not, placed an order that meets every filter. With no filters, `purchased` means "has placed any order".
+
+| Op | Meaning | Value |
+|---|---|---|
+| `purchased` | At least one order meets all filters | omit |
+| `no_purchased` | No order meets all filters (includes contacts with no orders) | omit |
+
+**Filters**
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `ecomm_timeframe` | see [timeframe](#ecomm_timeframe-filter) | date or days | When the order was processed. |
+| `ecomm_campaign` | `any`, `is`, `not` | campaign `web_id` (integer) or array of them | The campaign the order is attributed to. |
+| `ecomm_store` | `any`, `is`, `not` | **Beta** store id (string) or array | See identifier formats. |
+| `ecomm_product` | `any` + text ops | product title(s) | |
+| `ecomm_product_variant` | `any` + text ops | variant title(s) | |
+| `ecomm_category` | `any` + text ops | vendor name(s) | Matches the product vendor. |
+| `ecomm_collection` | `any` + text ops | collection id(s) for `is`/`not`; name for the others | |
+| `ecomm_order_total` | `any`, `is`, `not`, `greater`, `less` | one money amount | The order total. |
+| `ecomm_discount_code` | `any`, `is`, `not`, `used`, `not_used`, `contains` | code string(s); omit for `used` / `not_used` | `is`: used one of these codes. `not`: didn't use any of them. `used`: used any code. `not_used`: used no code. |
+| `number_events` | see [number_events](#number_events-filter) | integer 1–10 | `purchased` only. |
+
+**Example:**
+```json
+{ "field": "ecomm", "op": "purchased",
+  "filters": [
+    { "field": "ecomm_timeframe", "op": "date_within", "value": "30" },
+    { "field": "ecomm_product", "op": "is", "value": ["Blue T-Shirt", "Red T-Shirt"] },
+    { "field": "number_events", "op": "greater", "value": 2 }
+  ] }
+```
+```json
+{ "field": "ecomm", "op": "no_purchased",
+  "filters": [
+    { "field": "ecomm_campaign", "op": "is", "value": 1234567 },
+    { "field": "ecomm_timeframe", "op": "between", "value": ["2026-01-01", "2026-03-31"] }
+  ] }
+```
+
+**Notes:**
+- The activity goes in `op`, not `value`. `{"field": "ecomm", "op": "is", "value": "purchased"}` is rejected.
+- With `no_purchased`, text filters support only `is`, `not`, `contains` and `notcontain`, and `ecomm_order_total` supports only `is` and `not`. Don't combine `no_purchased` with `starts` / `ends` or with order total `greater` / `less`.
+- With `no_purchased` and a single `ecomm_campaign` filter, orders with no attributed campaign count as "not from that campaign".
+- `ecomm_price`, `ecomm_quantity`, `ecomm_page_url`, `ecomm_search` and review filters aren't accepted here.
+
+### `total_spent` — Amount spent in total
+
+**Availability:** Requires a connected e-commerce store. Scoping filters are **Beta** (see below).
+Contacts by the sum of their order totals. Without scoping filters this is the contact's lifetime total.
+
+Two shapes are accepted.
+
+**Simple shape:** the comparison is on the condition.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `greater` | Total spent is more than the amount | money |
+| `less` | Total spent is less than the amount, including contacts who have never purchased | money |
+| `is` | Total spent equals the amount; `0` also matches contacts who have never purchased | money |
+| `not` | Total spent is not the amount, including contacts who have never purchased (except for `not 0`, which matches only contacts with a non-zero total) | money |
+
+**Filtered shape:** `op` is `is` or `not` (`not` excludes the contacts the filters describe), with no `value`. The comparison goes in a filter.
+
+**Filters** (filtered shape only)
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `ecomm_total_spent_amount` | `any`, `is`, `not`, `greater`, `less` | money | The comparison. With `any` or omitted, the condition means "has orders (in scope)". |
+| `ecomm_timeframe` | see [timeframe](#ecomm_timeframe-filter) | date or days | **Beta.** Sums only orders in the timeframe. |
+| `ecomm_store` | `any`, `is`, `not` | **Beta** store id | **Beta.** Sums only orders from the store. |
+| `ecomm_collection` | `any` + text ops | collection id or name | **Beta.** Sums only orders in the collection. |
+
+**Example:**
+```json
+{ "field": "total_spent", "op": "greater", "value": "250" }
+```
+```json
+{ "field": "total_spent", "op": "is",
+  "filters": [
+    { "field": "ecomm_total_spent_amount", "op": "greater", "value": "100.00" },
+    { "field": "ecomm_timeframe", "op": "date_within", "value": "90" }
+  ] }
+```
+
+**Notes:**
+- Scoping filters (`ecomm_timeframe`, `ecomm_store`, `ecomm_collection`) aren't available on every account yet. Where they aren't available, the segment saves, but requests for its count or members return an error.
+- With scoping filters, `is` and `not` compare to the cent.
+- Other filters (for example `ecomm_product`) are ignored. Don't send them.
+- `"$250"` is rejected; send `"250"`.
+
+### `spent_avg` — Average amount spent per order
+
+**Availability:** Requires a connected e-commerce store. Scoping filters are **Beta**.
+Contacts by their average order value. Same two shapes as `total_spent`.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `greater` | Average order value is more than the amount | money |
+| `less` | Average is less than the amount, including contacts who have never purchased | money |
+| `is` | Average equals the amount; `0` also matches contacts who have never purchased | money |
+| `not` | Average is not the amount, including contacts who have never purchased (except for `not 0`) | money |
+
+Filtered shape: `op` `is` / `not`, no `value`.
+
+**Filters** (filtered shape only)
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `ecomm_avg_spent` | `any`, `is`, `not`, `greater`, `less` | money | The comparison. |
+| `ecomm_timeframe` | see [timeframe](#ecomm_timeframe-filter) | date or days | **Beta.** |
+| `ecomm_store` | `any`, `is`, `not` | **Beta** store id | **Beta.** |
+| `ecomm_collection` | `any` + text ops | collection id or name | **Beta.** |
+
+**Example:**
+```json
+{ "field": "spent_avg", "op": "less", "value": 40 }
+```
+```json
+{ "field": "spent_avg", "op": "not",
+  "filters": [
+    { "field": "ecomm_avg_spent", "op": "greater", "value": "75" },
+    { "field": "ecomm_timeframe", "op": "date_within", "value": "180" }
+  ] }
+```
+
+**Notes:**
+- To match zero, send `0` (not `0.00`).
+- The scoping-filter rollout note on `total_spent` applies here too.
+- Only `greater`, `less`, `is` and `not` are accepted; `between` is rejected.
+
+### `orders_count` — Total number of orders
+
+**Availability:** Requires a connected e-commerce store. Scoping filters are **Beta**.
+Contacts by how many orders they've placed. Same two shapes as `total_spent`.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `greater` | More than N orders | whole number ≥ 0 |
+| `less` | Fewer than N orders, including contacts with no orders | whole number ≥ 0 |
+| `is` | Exactly N orders; `0` also matches contacts with no orders | whole number ≥ 0 |
+| `not` | Not N orders, including contacts with no orders (except for `not 0`) | whole number ≥ 0 |
+
+Filtered shape: `op` `is` / `not`, no `value`.
+
+**Filters** (filtered shape only)
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `ecomm_order_count` | `any`, `is`, `not`, `greater`, `less` | whole number | The comparison. |
+| `ecomm_timeframe` | see [timeframe](#ecomm_timeframe-filter) | date or days | **Beta.** |
+| `ecomm_store` | `any`, `is`, `not` | **Beta** store id | **Beta.** |
+
+**Example:**
+```json
+{ "field": "orders_count", "op": "greater", "value": 3 }
+```
+```json
+{ "field": "orders_count", "op": "is",
+  "filters": [
+    { "field": "ecomm_order_count", "op": "is", "value": 1 },
+    { "field": "ecomm_timeframe", "op": "greater", "value": "2026-06-30" }
+  ] }
+```
+
+**Notes:**
+- Counts must be whole numbers: `2.5` and `5.0` are rejected.
+- `ecomm_collection` isn't supported on a count of orders and is rejected.
+- The scoping-filter rollout note on `total_spent` applies here too.
+
+### `ecomm_page_viewed` — Page viewed
+
+**Availability:** Requires a connected e-commerce store.
+Contacts who did, or didn't, view a storefront page that meets every filter.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `page_viewed` | Viewed at least one matching page | omit |
+| `no_page_viewed` | Viewed no matching page | omit |
+
+**Filters**
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `ecomm_timeframe` | see [timeframe](#ecomm_timeframe-filter) | date or days | |
+| `ecomm_store` | `any`, `is`, `not` | **Beta** store id | |
+| `ecomm_page_url` | `any` + text ops | URL text | The page URL. |
+
+**Example:**
+```json
+{ "field": "ecomm_page_viewed", "op": "page_viewed",
+  "filters": [
+    { "field": "ecomm_page_url", "op": "contains", "value": "/collections/sale" },
+    { "field": "ecomm_timeframe", "op": "date_within", "value": "14" }
+  ] }
+```
+
+**Notes:**
+- The op is `page_viewed`, not `viewed`.
+
+### `ecomm_product_viewed` — Product viewed
+
+**Availability:** Requires a connected e-commerce store.
+Contacts who did, or didn't, view a product that meets every filter.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `viewed` | Viewed at least one matching product | omit |
+| `no_viewed` | Viewed no matching product | omit |
+
+**Filters**
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `ecomm_timeframe` | see [timeframe](#ecomm_timeframe-filter) | date or days | |
+| `ecomm_store` | `any`, `is`, `not` | **Beta** store id | |
+| `ecomm_product` | text ops | product title(s) | |
+| `ecomm_product_variant` | text ops | variant title(s) | |
+| `ecomm_category` | text ops | vendor name(s) | |
+| `ecomm_collection` | text ops | collection id(s) for `is`/`not`; name for the others | |
+
+**Example:**
+```json
+{ "field": "ecomm_product_viewed", "op": "viewed",
+  "filters": [
+    { "field": "ecomm_product", "op": "is", "value": "Trail Runner 2" },
+    { "field": "ecomm_timeframe", "op": "date_within", "value": "30" }
+  ] }
+```
+
+**Notes:**
+- There are no price, quantity or total filters on this condition.
+
+### `ecomm_collection_viewed` — Collection viewed
+
+**Availability:** Requires a connected e-commerce store.
+Contacts who did, or didn't, view a collection page that meets every filter.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `viewed` | Viewed at least one matching collection | omit |
+| `no_viewed` | Viewed no matching collection | omit |
+
+**Filters**
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `ecomm_timeframe` | see [timeframe](#ecomm_timeframe-filter) | date or days | |
+| `ecomm_store` | `any`, `is`, `not` | **Beta** store id | |
+| `ecomm_collection` | `any` + text ops | collection id(s) for `is`/`not`; name for the others | `any` means any collection. |
+
+**Example:**
+```json
+{ "field": "ecomm_collection_viewed", "op": "viewed",
+  "filters": [ { "field": "ecomm_collection", "op": "contains", "value": "Summer" } ] }
+```
+
+**Notes:**
+- Product, variant and category filters aren't accepted here.
+
+### `ecomm_search_submitted` — Search submitted
+
+**Availability:** Requires a connected e-commerce store.
+Contacts who did, or didn't, run a storefront search that meets every filter.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `searched` | Ran at least one matching search | omit |
+| `no_searched` | Ran no matching search | omit |
+
+**Filters**
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `ecomm_timeframe` | see [timeframe](#ecomm_timeframe-filter) | date or days | |
+| `ecomm_store` | `any`, `is`, `not` | **Beta** store id | |
+| `ecomm_search` | `any` + text ops | search text | What the contact searched for. |
+
+**Example:**
+```json
+{ "field": "ecomm_search_submitted", "op": "searched",
+  "filters": [ { "field": "ecomm_search", "op": "contains", "value": "boots" } ] }
+```
+
+**Notes:**
+- The op is `searched`, not `search_submitted`.
+
+### `ecomm_product_added_to_cart` — Product added to cart
+
+**Availability:** Requires a connected e-commerce store.
+Contacts who did, or didn't, add a product to their cart that meets every filter.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `product_added_to_cart` | Added at least one matching product | omit |
+| `no_product_added_to_cart` | Added no matching product | omit |
+
+**Filters**
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `ecomm_timeframe` | see [timeframe](#ecomm_timeframe-filter) | date or days | |
+| `ecomm_store` | `any`, `is`, `not` | **Beta** store id | |
+| `ecomm_product` | text ops | product title(s) | |
+| `ecomm_product_variant` | text ops | variant title(s) | |
+| `ecomm_category` | text ops | vendor name(s) | |
+| `ecomm_collection` | text ops | collection id(s) for `is`/`not`; name for the others | |
+| `ecomm_price` | `any`, `is`, `not`, `greater`, `less` | money | Unit price of the product added. |
+| `ecomm_quantity` | `any`, `is`, `not`, `greater`, `less` | whole number | Quantity added. |
+
+**Example:**
+```json
+{ "field": "ecomm_product_added_to_cart", "op": "product_added_to_cart",
+  "filters": [
+    { "field": "ecomm_collection", "op": "is", "value": "gid://shopify/Collection/123456789" },
+    { "field": "ecomm_quantity", "op": "greater", "value": 1 }
+  ] }
+```
+
+**Notes:**
+- `ecomm_order_total` isn't accepted here; use `ecomm_price`.
+
+### `ecomm_checkout_started` — Checkout started
+
+**Availability:** Requires a connected e-commerce store.
+Contacts who did, or didn't, start a checkout that meets every filter. Use `no_checkout_started` together with purchase activity to find abandoned checkouts.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `checkout_started` | Started at least one matching checkout | omit |
+| `no_checkout_started` | Started no matching checkout | omit |
+
+**Filters**
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `ecomm_timeframe` | see [timeframe](#ecomm_timeframe-filter) | date or days | |
+| `ecomm_store` | `any`, `is`, `not` | **Beta** store id | |
+| `ecomm_product` | text ops | product title(s) | |
+| `ecomm_product_variant` | text ops | variant title(s) | |
+| `ecomm_category` | text ops | vendor name(s) | |
+| `ecomm_collection` | text ops | collection id(s) for `is`/`not`; name for the others | |
+| `ecomm_quantity` | `any`, `is`, `not`, `greater`, `less` | whole number | Total quantity in the checkout. |
+
+**Example:**
+```json
+{ "field": "ecomm_checkout_started", "op": "checkout_started",
+  "filters": [
+    { "field": "ecomm_timeframe", "op": "date_within", "value": "3" },
+    { "field": "ecomm_quantity", "op": "greater", "value": "2" }
+  ] }
+```
+```json
+{ "match": "all", "conditions": [
+  { "field": "ecomm_checkout_started", "op": "checkout_started",
+    "filters": [ { "field": "ecomm_timeframe", "op": "date_within", "value": "7" } ] },
+  { "field": "ecomm", "op": "no_purchased",
+    "filters": [ { "field": "ecomm_timeframe", "op": "date_within", "value": "7" } ] }
+] }
+```
+
+### `ecomm_review_submitted` — Review submitted
+
+**Availability:** Requires a connected Judge.me or Yotpo reviews integration.
+Contacts who did, or didn't, submit a store or product review that meets every filter.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `submitted` | Submitted at least one matching review | omit |
+| `not_submitted` | Submitted no matching review | omit |
+
+**Filters**
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `ecomm_review_type` | `any`, `site_or_store_review`, `product_review` | omit | The review type is the op. |
+| `ecomm_timeframe` | see [timeframe](#ecomm_timeframe-filter) | date or days | When the review was submitted. |
+| `ecomm_store` | `any`, `is`, `not` | **Beta** store id | |
+| `ecomm_product` | text ops | product title(s) | The reviewed product. |
+| `ecomm_review_score` | `any`, `is`, `not`, `greater`, `less` | whole number, must be 1–5 | Star rating. |
+
+**Example:**
+```json
+{ "field": "ecomm_review_submitted", "op": "submitted",
+  "filters": [
+    { "field": "ecomm_review_type", "op": "product_review" },
+    { "field": "ecomm_review_score", "op": "less", "value": 3 }
+  ] }
+```
+
+**Notes:**
+- `{"field": "ecomm_review_type", "op": "is", "value": "product_review"}` is rejected; put the type in `op`.
+- `number_events` isn't supported on this condition.
+
+### `ecomm_back_in_stock_request` — Back in stock request
+
+**Availability:** Requires back-in-stock requests collected through Mailchimp signup forms.
+Contacts who did, or didn't, ask to be notified when a product is back in stock.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `requested` | Made at least one matching request | omit |
+| `requested_not` | Made no matching request | omit |
+
+**Filters**
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `ecomm_back_in_stock_request_store` | `is`, `not` | **Beta** store id | Same id format as `ecomm_store`. |
+| `ecomm_back_in_stock_request_product` | text ops | product title(s) | |
+| `ecomm_back_in_stock_request_product_variant` | text ops | variant title(s) | |
+
+**Example:**
+```json
+{ "field": "ecomm_back_in_stock_request", "op": "requested",
+  "filters": [ { "field": "ecomm_back_in_stock_request_product", "op": "is", "value": "Linen Shirt" } ] }
+```
+
+**Notes:**
+- This condition uses its own filter ids. `ecomm_store`, `ecomm_product`, `ecomm_timeframe` and `number_events` are rejected.
+- Leave out a filter you don't need rather than sending it with `any`.
+
+Churn risk and the legacy customer lifetime value predictions are documented under [Predictive insights and integrations](#predictive-insights-and-integrations).
+
+## Predictive insights and integrations
+
+These conditions select contacts by predictions Mailchimp computes from purchase and profile data (purchase likelihood, lifetime value, next order date, churn risk, age and gender), and by activity synced in from connected integrations (lead ads, bookings and QuickBooks Online). Predicted location (`ipgeo`) and age gating (`age_gating`) are documented with the contact data conditions.
+
+### Prediction freshness (applies to the first four conditions)
+
+`predicted_clv`, `likelihood_to_purchase`, `time_to_next_purchase` and `ecomm_churn_risk` only consider contacts whose prediction was refreshed in the last 60 days (UTC). A contact whose latest prediction is older than that never matches, whatever the op. You can't change this window.
+
+### `predicted_clv` — Predicted customer lifetime value
+
+**Availability:** Requires predictive insights (a connected e-commerce store with enough purchase history).
+
+Selects contacts whose predicted customer lifetime value is above or below an amount in US dollars.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `greater` | Predicted lifetime value is greater than the value | Number, required |
+| `less` | Predicted lifetime value is less than the value | Number, required |
+| `any` | Contact has a recent prediction. The amount is not checked | Omit |
+
+**Example:**
+
+```json
+{ "field": "predicted_clv", "op": "greater", "value": 250 }
+```
+
+**Notes:**
+- `value` must be a number 0 or greater, in US dollars. A JSON number or a numeric string (`"250"`) both work.
+- Any other op (for example `is`) is rejected with `Operation must be one of 'any', 'greater', 'less'.`
+
+### `likelihood_to_purchase` — Likelihood to purchase
+
+**Availability:** Requires predictive insights (a connected e-commerce store with enough purchase history).
+
+Selects contacts by a predicted purchase-likelihood score. A higher score means the contact is more likely to purchase.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `greater` | Score is greater than the value | Integer, required |
+| `less` | Score is less than the value | Integer, required |
+| `any` | Contact has a recent prediction. The score is not checked | Omit |
+
+**Example:**
+
+```json
+{ "field": "likelihood_to_purchase", "op": "greater", "value": 750 }
+```
+
+**Notes:**
+- `value` must be an integer from 0 to 1000.
+- The value is a score, not a label: `"high"` or `"low"` aren't valid. Any op other than the three above is rejected with `Operation must be one of 'greater', 'less', 'any'.`
+- Not the same as `clv_lifecycle` (the legacy "likelihood to purchase again" condition).
+
+### `time_to_next_purchase` — Predicted next order date
+
+**Availability:** Requires predictive insights (a connected e-commerce store with enough purchase history).
+
+Selects contacts by the date Mailchimp predicts they'll place their next order.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `any` | Contact has a predicted next order date | Omit |
+| `between` | Predicted date is on or between the two dates (both inclusive) | `["YYYY-MM-DD", "YYYY-MM-DD"]` |
+| `greater` | Predicted date is after the date | `"YYYY-MM-DD"` |
+| `less` | Predicted date is before the date | `"YYYY-MM-DD"` |
+| `date_within` | Predicted date is on or before today plus N days | Integer N, greater than 0 |
+| `date_notwithin` | Predicted date is after today plus N days | Integer N, greater than 0 |
+
+**Examples:**
+
+```json
+{ "field": "time_to_next_purchase", "op": "date_within", "value": 7 }
+```
+
+```json
+{ "field": "time_to_next_purchase", "op": "between", "value": ["2026-10-05", "2026-10-31"] }
+```
+
+**Notes:**
+- Dates and "today" are evaluated in UTC.
+- `date_within` has no lower bound, so it also matches contacts whose predicted date has already passed. To match only upcoming dates, use `between` with today's date as the start.
+- Dates must be `YYYY-MM-DD`. Any other format fails with `Invalid date format: <value>`. `between` takes exactly two dates.
+- A non-integer day count fails with `Value must be a valid number for 'within' and 'notwithin' operators`, and a count of 0 or less fails with `Value must be greater than 0 for 'within' and 'notwithin' operators`.
+- Any other op fails with `Operation must be any, between, greater, less, date_within, or date_notwithin`.
+
+### `ecomm_churn_risk` — Customer churn risk
+
+**Availability:** Requires predictive insights (a connected e-commerce store with enough purchase history).
+
+Selects contacts by their predicted churn-risk level.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | Churn risk is the value | `LOW`, `MEDIUM` or `HIGH` |
+| `not` | Churn risk is not the value | `LOW`, `MEDIUM` or `HIGH` |
+| `any` | Contact has a churn-risk level | Omit |
+
+| Value | Meaning |
+|---|---|
+| `HIGH` | Customer unlikely to purchase in the next year |
+| `MEDIUM` | Customer's predicted purchase date is later than is typical for your store |
+| `LOW` | Customer likely to purchase within the next year |
+
+**Example:**
+
+```json
+{ "field": "ecomm_churn_risk", "op": "is", "value": "HIGH" }
+```
+
+**Notes:**
+- Values must be uppercase; `"high"` is rejected.
+- `value` is a single string. Arrays are rejected with `Churn risk must be one of LOW, MEDIUM, HIGH`. To match two levels, put two conditions in a `"match": "any"` group.
+- Use `not` for "is not". `is_not` and `none` are rejected.
+
+### `clv_lifetime_value` — Customer lifetime value (legacy)
+
+**Availability:** Beta. Requires a connected e-commerce store with customer lifetime value predictions.
+
+Selects contacts whose lifetime-value level for one e-commerce store is, or is not, a given level. This is the older store-level prediction. For a dollar amount, use `predicted_clv`.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | Contact's level for the store is the value | `high`, `average` or `low` |
+| `not` | Contact's level for the store is not the value. Contacts with no prediction also match | `high`, `average` or `low` |
+
+| Value | Meaning |
+|---|---|
+| `high` | Your highest-valued customers, based on how often they buy and how much they've spent |
+| `average` | Customers whose predicted future spend is moderate |
+| `low` | Customers whose predicted future spend is low |
+
+**`extra`** (required): the e-commerce store id, as a string. Takes Mailchimp's internal id, which other API endpoints don't return. To find it, build an advanced segment in Mailchimp that uses the e-commerce store, read it with `GET /3.0/segments/{segment_id}`, and copy the value. The format may change.
+
+**Example:**
+
+```json
+{ "field": "clv_lifetime_value", "op": "is", "value": "high", "extra": "123456" }
+```
+
+**Notes:**
+- Send values in lowercase. `moderate` and `medium` are not valid; use `average`.
+- A missing `extra` is rejected with a 400. An empty string is accepted but matches nobody.
+
+### `clv_lifecycle` — Likelihood to purchase again (legacy)
+
+**Availability:** Beta. Requires a connected e-commerce store with customer lifetime value predictions.
+
+Selects contacts whose repeat-purchase likelihood level for one e-commerce store is, or is not, a given level. For a numeric score, use `likelihood_to_purchase`.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | Contact's level for the store is the value | See below |
+| `not` | Contact's level for the store is not the value. Contacts with no prediction also match | See below |
+
+| Value | Shown in Mailchimp as | Meaning |
+|---|---|---|
+| `alive` | High | Highly likely to buy from you again |
+| `risk` | Moderate | Moderately likely to buy from you again |
+| `lapsed` | Low | Unlikely to buy from you again |
+| `new` | New | Shown as "New" in Mailchimp |
+
+**`extra`** (required): the e-commerce store id, as a string. Takes Mailchimp's internal id, which other API endpoints don't return. To find it, build an advanced segment in Mailchimp that uses the e-commerce store, read it with `GET /3.0/segments/{segment_id}`, and copy the value. The format may change.
+
+**Example:**
+
+```json
+{ "field": "clv_lifecycle", "op": "not", "value": "lapsed", "extra": "123456" }
+```
+
+**Notes:**
+- Send values in lowercase. `high`, `moderate` and `low` are not valid values for this field and are rejected with a 400.
+- A missing `extra` is rejected with a 400.
+
+### `age_range` — Predicted age range
+
+**Availability:** Requires predicted demographics to be turned on for the account.
+
+Selects contacts by their predicted age bracket.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | Predicted age range is the value | Required, see below |
+| `not` | Predicted age range is not the value | Required, see below |
+| `blank` | Contact has no predicted age range | Omit |
+| `blank_not` | Contact has a predicted age range | Omit |
+
+**Example:**
+
+```json
+{ "field": "age_range", "op": "is", "value": "25-34" }
+```
+
+**Notes:**
+- `value` must be one of `18-24`, `25-34`, `35-44`, `45-54`, `55-64`, `65+`, as a single string. Other strings are accepted but match nobody, so check the spelling.
+- `is` or `not` without a value is rejected with a 400.
+
+### `gender` — Predicted gender
+
+**Availability:** Requires predicted demographics to be turned on for the account.
+
+Selects contacts by their predicted gender.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | Predicted gender is the value | `female`, `male`, `other` or `unknown` |
+| `not` | Predicted gender is not the value | `female`, `male`, `other` or `unknown` |
+| `blank` | Predicted gender is `unknown` | `""` |
+| `blank_not` | Predicted gender is anything other than `unknown` | `""` |
+
+**Examples:**
+
+```json
+{ "field": "gender", "op": "is", "value": "female" }
+```
+
+```json
+{ "field": "gender", "op": "blank_not", "value": "" }
+```
+
+**Notes:**
+- Values are case-insensitive. `other` is shown as "Another identity" in Mailchimp; `another_identity` is not a valid value.
+- `blank` means the prediction is `unknown`, not that the contact has no prediction. Contacts that were never scored don't match `blank`.
+- With `blank` and `blank_not`, send `"value": ""`.
+
+### `lead_ad` — Lead ad activity
+
+**Availability:** Requires a connected lead ads integration.
+
+Selects contacts who did (`is`) or did not (`not`) come in through a lead ad matching the filters.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | Contact has a lead ad response matching all the filters | Omit |
+| `not` | Contact has no lead ad response matching all the filters | Omit |
+
+**Filters** (all optional; a contact matches when a single lead ad response satisfies every filter):
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `form_name` | `any`, `is`, `not`, `contains`, `notcontain`, `starts`, `ends` | String | Name of the lead ad form |
+| `integration_name` | `any`, `is`, `not`, `contains`, `notcontain`, `starts`, `ends` | String | Name of the lead ads integration the response came from |
+| `lead_ad_timeframe` | `any`, `is`, `not`, `greater`, `less`, `between`, `date_within`, `date_notwithin`, `campaign_is`, `campaign_greater`, `campaign_less` | See below | Date of the response |
+
+`lead_ad_timeframe` values:
+- `is`, `not`, `greater`, `less`: a date, `"YYYY-MM-DD"`.
+- `between`: `["YYYY-MM-DD", "YYYY-MM-DD"]`.
+- `date_within`, `date_notwithin`: an integer number of days back from today.
+- `campaign_is`, `campaign_greater`, `campaign_less`: on, after or before the send date of a campaign. The value is the campaign's `web_id` from `GET /3.0/campaigns` (an integer), or `"last"` for the most recent campaign sent to this audience.
+
+**Example:**
+
+```json
+{
+  "field": "lead_ad",
+  "op": "is",
+  "filters": [
+    { "field": "form_name", "op": "contains", "value": "Spring promo" },
+    { "field": "lead_ad_timeframe", "op": "date_within", "value": 30 }
+  ]
+}
+```
+
+**Notes:**
+- `contains`, `notcontain`, `starts` and `ends` on `form_name` and `integration_name` are case-insensitive.
+- `any` on a filter is not a no-op: it requires the response to have a value for that attribute. To leave an attribute unconstrained, omit the filter.
+- `lead_ad_timeframe` dates are evaluated in the account's timezone. Any `extra` you send on it is replaced.
+- A campaign op fails with `No valid campaigns found` if the campaign hasn't been sent to this audience.
+- The filter is `lead_ad_timeframe`, not `timeframe`. Unknown filter fields fail with `Unsupported operation: <field>`.
+
+### `booking_activity` — Booking activity
+
+**Availability:** Requires a connected booking integration that syncs bookings to Mailchimp.
+
+Selects contacts who have (or have no) booking matching the filters.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `booking_activity` | Contact has a booking matching all the filters | Omit |
+| `no_booking_activity` | Contact has no booking matching all the filters | Omit |
+
+**Filters** (all optional; a single booking must satisfy every filter):
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `booking_created_date` | `any`, `is`, `not`, `greater`, `less`, `between`, `date_within`, `date_notwithin`, `campaign_is`, `campaign_greater`, `campaign_less` | Same as `lead_ad_timeframe` | When the booking was made. `any` adds no constraint |
+| `booking_start_date` | Same as `booking_created_date` | Same as `lead_ad_timeframe` | When the booked service starts. `any` adds no constraint |
+| `booking_service_type` | `any`, `is`, `not` | One of `APPOINTMENT`, `CLASS`, `COURSE`, `SERVICE`, `SERIES`, `GROUP`, `SOLO` | Uppercase, single value |
+| `booking_service_name` | `any`, `is`, `not`, `contains`, `notcontain`, `starts`, `ends` | String | Name of the booked service |
+| `booking_service_category` | `any`, `is`, `not`, `contains`, `notcontain`, `starts`, `ends` | String | Category of the booked service |
+
+**Examples:**
+
+```json
+{
+  "field": "booking_activity",
+  "op": "booking_activity",
+  "filters": [
+    { "field": "booking_service_type", "op": "is", "value": "APPOINTMENT" },
+    { "field": "booking_start_date", "op": "date_within", "value": 30 }
+  ]
+}
+```
+
+```json
+{ "field": "booking_activity", "op": "no_booking_activity",
+  "filters": [ { "field": "booking_created_date", "op": "date_within", "value": 90 } ] }
+```
+
+**Notes:**
+- `booking_service_type` values must be uppercase and a single string; `"appointment"` is rejected.
+- `any` on `booking_service_type`, `booking_service_name` or `booking_service_category` requires the booking to have a value for that attribute. To leave it unconstrained, omit the filter.
+- Campaign ops take the campaign's `web_id` from `GET /3.0/campaigns` (an integer), or `"last"`.
+- `no_booking_activity` needs at least one filter; without one it is rejected.
+- Any other top-level op fails with `Operation must be booking_activity or no_booking_activity.`
+
+### `qbo_invoice_activity` — QuickBooks Online invoice activity
+
+**Availability:** Requires the QuickBooks Online integration, with contact sync turned on for the audience.
+
+Selects contacts who have (or don't have) a QuickBooks Online invoice matching the filters.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `qbo_has_invoice` | Contact has an invoice matching all the filters | Omit |
+| `qbo_no_invoice` | Contact has no invoice matching all the filters | Omit |
+
+**Filters** (all optional; a single invoice must satisfy every filter):
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `qbo_timeframe` | `any`, `is`, `not`, `greater`, `less`, `between`, `date_within`, `date_notwithin`, `campaign_is`, `campaign_greater`, `campaign_less` | Same as `lead_ad_timeframe` | Invoice transaction date |
+| `qbo_product` | `any`, `is`, `not`, `contains`, `notcontain`, `starts`, `ends` | String | Name of a line item on the invoice. `any` adds no constraint |
+| `qbo_order_total` | `any`, `is`, `not`, `greater`, `less` | Number | Invoice total in your home currency. `any` adds no constraint |
+| `qbo_payment_status` | `any`, `is` | Array of statuses (see below) | `is` means "is one of". `any` adds no constraint |
+
+| Payment status | Meaning |
+|---|---|
+| `paid` | Paid |
+| `partially_paid` | Partially paid |
+| `not_paid_no_reminder` | Not paid and hasn't received a reminder |
+| `not_paid_with_reminder` | Not paid and has received a reminder |
+| `overdue` | Due date has passed and a balance is still outstanding |
+
+**Examples:**
+
+```json
+{
+  "field": "qbo_invoice_activity",
+  "op": "qbo_has_invoice",
+  "filters": [
+    { "field": "qbo_timeframe", "op": "date_within", "value": 90 },
+    { "field": "qbo_order_total", "op": "greater", "value": 100 },
+    { "field": "qbo_payment_status", "op": "is", "value": ["paid", "partially_paid"] }
+  ]
+}
+```
+
+```json
+{
+  "field": "qbo_invoice_activity",
+  "op": "qbo_has_invoice",
+  "filters": [ { "field": "qbo_payment_status", "op": "is", "value": ["overdue"] } ]
+}
+```
+
+**Notes:**
+- Always send `qbo_payment_status` as an array, even for one status. Status values are lowercase.
+- `overdue` may be combined with other statuses in one filter, for example `["paid", "overdue"]`; the condition matches invoices in any of them.
+- An unknown status is rejected with a 400 that lists the valid statuses.
+- Campaign ops take the campaign's `web_id` from `GET /3.0/campaigns` (an integer), or `"last"`.
+- Any other top-level op fails with `Operation must be qbo_has_invoice or qbo_no_invoice.`
+
+### `qbo_sales_receipt_activity` — QuickBooks Online sales receipt activity
+
+**Availability:** Requires the QuickBooks Online integration, with contact sync turned on for the audience.
+
+Selects contacts who have (or haven't) purchased through a QuickBooks Online sales receipt matching the filters.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `qbo_purchased` | Contact has a sales receipt matching all the filters | Omit |
+| `qbo_notpurchased` | Contact has no sales receipt matching all the filters | Omit |
+
+**Filters** (all optional; a single sales receipt must satisfy every filter): `qbo_timeframe`, `qbo_product` and `qbo_order_total`, with the same ops and values as on `qbo_invoice_activity`, applied to the sales receipt. `qbo_payment_status` isn't available here.
+
+**Example:**
+
+```json
+{
+  "field": "qbo_sales_receipt_activity",
+  "op": "qbo_purchased",
+  "filters": [
+    { "field": "qbo_product", "op": "is", "value": "Gift Card" },
+    { "field": "qbo_timeframe", "op": "between", "value": ["2026-01-01", "2026-03-31"] }
+  ]
+}
+```
+
+**Notes:**
+- The ops differ from invoices: `qbo_has_invoice` is rejected here with `Operator must be qbo_purchased or qbo_notpurchased.`
+
+## Events
+
+Event conditions select contacts by the events recorded for them: contact events you post to a member with the Events API (`contact_event`), and custom events that have a namespace, an event name and typed properties (`custom_event_*`). This section also covers `number_events`, the filter that turns "did this at least once" into "did this exactly, more than, or fewer than N times" on activity conditions.
+
+### `contact_event` — Custom engagement
+
+**Availability:** Generally available
+
+Selects contacts who have, or have not, had at least one contact event that matches **all** of the condition's filters. Contact events are the events you post with `POST /3.0/lists/{list_id}/members/{subscriber_hash}/events`. Every filter must match the **same** event: name, time and properties are checked together on one event, not across several.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | The contact has at least one event that matches every filter. | Omit |
+| `not` | The contact has no event that matches every filter. Contacts with no events at all match. | Omit |
+
+**Filters**
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `contact_event_name` | `is`, `not`, `contains`, `notcontain` | Non-empty string: the event name exactly as you posted it (for example `"signed_up"`). | `contains` and `notcontain` match a substring and ignore case. `not` means "an event with a different name", not "never had this event"; see Notes. `any` is not accepted on this filter; leave the filter out instead. |
+| `contact_event_timeframe` | `any`, `is`, `not`, `greater`, `less`, `between`, `date_within` | Depends on op; see the table below. | When the event happened. Leave out `extra`. |
+| `contact_event_property` | `any`, `is`, `not`, `contains`, `notcontain` | `value`: the property **key** (string, exact match). `extra`: the property **value**, as a string or an array of strings. | `extra` is required for every op except `any`. See the table below. |
+
+You can include a filter field more than once. For example, two `contact_event_property` filters require one event to have both key/value pairs.
+
+`contact_event_timeframe` ops:
+
+| Op | Meaning | Value |
+|---|---|---|
+| `any` | No time restriction. | Omit |
+| `is` | The event happened on that calendar day (00:00:00 to 23:59:59). | Date string |
+| `not` | The event did not happen on that day. | Date string |
+| `greater` | The event happened after that day (after 23:59:59 on the date). | Date string |
+| `less` | The event happened before that day (before 00:00:00 on the date). | Date string |
+| `between` | The event happened from the start of the first date through the end of the second date, inclusive. | Array of exactly 2 date strings: `["start", "end"]` |
+| `date_within` | The event happened in the last N days, from the start of the day N days ago through the end of today. | Integer number of days (a number or a numeric string), or one of the tokens `7days`, `1month`, `3months`, `last18month` |
+
+`contact_event_property` ops (`value` is always the key, matched exactly):
+
+| Op | Meaning | `extra` |
+|---|---|---|
+| `any` | No property restriction. | Omit |
+| `is` | The event has property `value`, and that property's value equals `extra`. With an array, it equals any of the items. | String or array of strings |
+| `not` | The event has property `value`, and that property's value is not `extra`. With an array, it is none of the items. | String or array of strings |
+| `contains` | The property's value contains `extra`, ignoring case. With an array, it contains any of the items. | String or array of strings |
+| `notcontain` | The property's value contains none of the items in `extra`. | String or array of strings |
+
+**Example:** contacts who had a `signed_up` event on the pricing page in the last 30 days.
+
+```json
+{
+  "field": "contact_event",
+  "op": "is",
+  "filters": [
+    { "field": "contact_event_name", "op": "is", "value": "signed_up" },
+    { "field": "contact_event_timeframe", "op": "date_within", "value": 30 },
+    { "field": "contact_event_property", "op": "is", "value": "page", "extra": "pricing" }
+  ]
+}
+```
+
+**Example:** contacts who had no `trial_started` event during 2025.
+
+```json
+{
+  "field": "contact_event",
+  "op": "not",
+  "filters": [
+    { "field": "contact_event_name", "op": "is", "value": "trial_started" },
+    { "field": "contact_event_timeframe", "op": "between", "value": ["2025-01-01", "2025-12-31"] }
+  ]
+}
+```
+
+**Notes:**
+- Put the property **value** in `extra`, not in `value`. `{"field": "contact_event_property", "op": "is", "value": "plan=gold"}` is rejected because `extra` is missing. Write `"value": "plan", "extra": "gold"` instead.
+- To find contacts who never had an event, use `"op": "not"` on the `contact_event` condition with `contact_event_name` `is`. Putting `not` on `contact_event_name` with `"op": "is"` on the condition selects contacts who had some *other* event.
+- Dates must be `YYYY-MM-DD` or `YYYY-MM-DDTHH:MM:SS±HH:MM`. Any other format is rejected. Dates are interpreted in UTC.
+- `between` needs exactly two dates.
+- Don't send `value`, `value_op` or `extra` on the `contact_event` condition itself.
+- `contact_event_name`, `contact_event_timeframe` and `contact_event_property` work only as filters of `contact_event`. Used as a top-level `field`, they are rejected.
+- `number_events` is not supported on `contact_event`.
+
+### `custom_event_*` — Custom event
+
+**Availability:** Requires custom events in the audience
+
+Selects contacts who have, or have not, had at least one custom event with a given namespace and event name. Property filters can narrow the match by the event's typed properties. The namespace, the event name and every property filter must match the **same** event.
+
+- **Namespace:** the group the event belongs to, usually the integration or system that sends it (for example `loyalty`).
+- **Event name:** the event type within that namespace (for example `rewards-redeemed`).
+
+**Field id:** `custom_event_` + the namespace in lowercase with spaces replaced by `-` + `_` + the event name. For namespace `Loyalty` and event `rewards-redeemed`, the field id is `custom_event_loyalty_rewards-redeemed`. Mailchimp uses the field id to look up the event's property schema. The event to match is the one named by `namespace` and `event_name`.
+
+| Op | Meaning | Value |
+|---|---|---|
+| `is` | The contact has had at least one matching event. | Omit |
+| `not` | The contact has had no matching event. | Omit |
+
+**Condition keys**
+
+| Key | Value | Notes |
+|---|---|---|
+| `namespace` | String: the event's namespace, as sent with the event (for example `"loyalty"`). | Required in the canonical form. |
+| `event_name` | String: the event name (for example `"rewards-redeemed"`). | Required in the canonical form. |
+
+**Filters**
+
+| Filter field | Ops | Value | Notes |
+|---|---|---|---|
+| `custom_event_property_<property>` | Depends on `type`; see the table below. | Depends on `type`. | `<property>` is the property name from the event's schema. Each property filter **must** include `type`. |
+| `custom_event_namespace` | `is` | Non-empty string | Alternative to the `namespace` key. |
+| `custom_event_name` | `is` | Non-empty string | Alternative to the `event_name` key. |
+
+Property filter types and ops:
+
+| `type` | Ops | Value |
+|---|---|---|
+| `string` | `any`, `is`, `not`, `contains`, `starts` | String. `is` and `not` also take an array of strings (matches any of them / none of them). `contains` and `starts` take a single string and ignore case. |
+| `integer` | `any`, `is`, `not`, `greater`, `less` | Number. Must be numeric. |
+| `decimal` | `any`, `is`, `not`, `greater`, `less` | Number. |
+| `boolean` | `any`, `is`, `not` | `"true"` or `"false"`. |
+| `datetime` | `any`, `is`, `not`, `greater`, `less`, `between`, `date_within` | Same formats as `contact_event_timeframe`: a date string; `between` takes an array of exactly 2 dates; `date_within` takes a number of days or a token (`7days`, `1month`, `3months`). Evaluated in UTC. |
+
+`greater` and `less` are strict (greater than / less than). `any` means no restriction on that property.
+
+**Example:** contacts who redeemed a loyalty reward worth more than 500 points.
+
+```json
+{
+  "field": "custom_event_loyalty_rewards-redeemed",
+  "op": "is",
+  "namespace": "loyalty",
+  "event_name": "rewards-redeemed",
+  "filters": [
+    { "field": "custom_event_property_points", "op": "greater", "value": 500, "type": "integer" }
+  ]
+}
+```
+
+**Example:** contacts who have never redeemed a loyalty reward, using the identity filters instead of the condition keys.
+
+```json
+{
+  "field": "custom_event_loyalty_rewards-redeemed",
+  "op": "not",
+  "filters": [
+    { "field": "custom_event_namespace", "op": "is", "value": "loyalty" },
+    { "field": "custom_event_name", "op": "is", "value": "rewards-redeemed" }
+  ]
+}
+```
+
+**Notes:**
+- Always identify the event. Either set `namespace` and `event_name` on the condition (the canonical form, which is how segments are read back), or add both the `custom_event_namespace` and `custom_event_name` filters. Use one form, not both.
+- A property filter without `type`, or with a `type` other than the five listed, is rejected.
+- Property values must also meet the constraints in the event's schema, such as allowed values, minimum and maximum, and length or pattern.
+- Custom events have no separate timeframe filter. To filter by time, use a `datetime` property.
+- `number_events` is not supported on custom events.
+- Don't send `value`, `value_op` or `extra` on the condition itself.
+
+### `number_events` — Number of times (filter)
+
+**Availability:** Generally available
+
+A filter, not a top-level condition. Add it to the `filters` of a supported activity condition to require that the contact performed the activity exactly, more than, or fewer than N times. Without it, those conditions mean "at least once".
+
+| Op | Meaning | Value |
+|---|---|---|
+| `at_least_once` | 1 or more times. This is the same as leaving the filter out. | Omit |
+| `is` | Exactly N times. | Integer from 1 to 10 |
+| `greater` | More than N times (strict: `greater` 3 means 4 or more). | Integer from 1 to 10 |
+| `less` | Fewer than N times (strict: `less` 3 means 1 or 2, because the activity condition still requires at least one). | Integer from 1 to 10 |
+
+Supported parent conditions:
+
+| Parent `field` | Parent ops that accept `number_events` | Counts |
+|---|---|---|
+| `email_campaign_activity` | `sent`, `open`, `click` | Emails sent, opens, or clicks |
+| `sms_campaign_activity` | `sent`, `click` | SMS messages sent, or link clicks |
+| `whatsapp_campaign_interaction` | `sent`, `click` | WhatsApp messages sent, or link clicks |
+| `ecomm` | `purchased` | Orders |
+
+**Example:** contacts who purchased exactly twice.
+
+```json
+{
+  "field": "ecomm",
+  "op": "purchased",
+  "filters": [
+    { "field": "number_events", "op": "is", "value": 2 }
+  ]
+}
+```
+
+**Example:** contacts who opened emails at least 5 times (written as more than 4).
+
+```json
+{
+  "field": "email_campaign_activity",
+  "op": "open",
+  "filters": [
+    { "field": "number_events", "op": "greater", "value": 4 }
+  ]
+}
+```
+
+**Notes:**
+- `value` must be a single integer from 1 to 10. Arrays, decimals, and numbers outside that range are rejected. For "at least N", use `greater` with N − 1.
+- Use at most one `number_events` filter per condition. A segment can still contain several conditions that each have their own `number_events`.
+- `number_events` is rejected on negative parent ops (for example `no_open`, `no_purchased`, `no_page_viewed`, `no_viewed`), on `email_campaign_activity` op `reply`, and on `sms_campaign_activity` ops `delivered` and `used_keyword`.
+- On `email_campaign_activity` with op `open`, you can't combine a counting `number_events` (`is`, `greater` or `less`) with an `open_type` filter other than `any`.
+- `number_events` is not supported on `contact_event` or `custom_event_*`, and it is rejected as a top-level `field`.
+- The count is the number of times the contact performed the activity.
+
+---
