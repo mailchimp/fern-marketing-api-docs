@@ -396,6 +396,810 @@ redirects:
   - source: /marketing/build/build-with-ai-tools/llms-txt
     destination: /marketing/build/ai-tools/llms-txt
 
+  # Imported from the dev-url-redirects-recommended sheet (2026-10-09 crawl),
+  # verified live against mailchimp.com before import.
+  - source: /404
+    destination: /
+
+  # Pre-reorg guide/docs stragglers not yet covered above.
+  - source: /guides/create-your-first-audience
+    destination: /marketing/build/quickstarts/import-and-export-contacts
+  - source: /guides/marketing-api-quick-start
+    destination: /marketing/build/start-developing/send-your-first-api-request
+  - source: /guides/send-your-first-transactional-email
+    destination: /transactional/guides/send-first-email
+  - source: /marketing/docs
+    destination: /marketing/api-concepts/api-structure
+  - source: /marketing/docs/export-api
+    destination: /marketing/build/quickstarts/import-and-export-contacts
+  - source: /marketing/docs/tracking-pixel
+    destination: /marketing/concepts/how-mailchimp-works
+  - source: /marketing/guides
+    destination: /marketing/build/start-developing/send-your-first-api-request
+
+  # API reference reorg: old flat/legacy endpoint slugs -> new grouped
+  # structure under /marketing/api/*.
+  - source: /marketing/api
+    destination: /marketing/api/root/list
+  - source: /marketing/api/abuse-reports
+    destination: /marketing/api/lists/abuse-reports/get-abuse-report
+  - source: /marketing/api/abuse-reports/get-abuse-report
+    destination: /marketing/api/lists/abuse-reports/get-abuse-report
+  - source: /marketing/api/abuse-reports/list-abuse-reports
+    destination: /marketing/api/lists/abuse-reports/list-abuse-reports
+  - source: /marketing/api/account-exports
+    destination: /marketing/api/account-exports/list
+  - source: /marketing/api/account-exports/add-export
+    destination: /marketing/api/account-exports/create
+  - source: /marketing/api/account-exports/get-account-export-info
+    destination: /marketing/api/account-exports/get
+  - source: /marketing/api/account-exports/list-account-exports
+    destination: /marketing/api/account-exports/list
+  - source: /marketing/api/audiences
+    destination: /marketing/api/audiences/contacts
+  - source: /marketing/api/audiences-contacts
+    destination: /marketing/api/audiences/contacts
+  - source: /marketing/api/audiences-contacts/a-collection-of-audience-contacts
+    destination: /marketing/api/audiences/contacts/get-audience-contact-list
+  - source: /marketing/api/audiences-contacts/add-contact
+    destination: /marketing/api/audiences/contacts/create-audience-contact
+  - source: /marketing/api/audiences-contacts/archive-contact
+    destination: /marketing/api/audiences/contacts/post-audiences-contacts-actions-archive
+  - source: /marketing/api/audiences-contacts/forget-contact
+    destination: /marketing/api/audiences/contacts/post-audiences-contacts-actions-forget
+  - source: /marketing/api/audiences-contacts/get-contact
+    destination: /marketing/api/audiences/contacts/get-audience-contact
+  - source: /marketing/api/audiences-contacts/get-contacts
+    destination: /marketing/api/audiences/contacts/get-audience-contact-list
+  - source: /marketing/api/audiences-contacts/update-contact
+    destination: /marketing/api/audiences/contacts/patch-audience-contact
+  - source: /marketing/api/audiences/get-a-list-of-audiences
+    destination: /marketing/api/audiences/contacts/get-audience-contact-list
+  - source: /marketing/api/audiences/get-audience-info
+    destination: /marketing/api/audiences/contacts/get-audience-contact
+  - source: /marketing/api/authorized-apps
+    destination: /marketing/api/authorized-apps/list
+  - source: /marketing/api/authorized-apps/get-authorized-app-info
+    destination: /marketing/api/authorized-apps/get
+  - source: /marketing/api/authorized-apps/list-authorized-apps
+    destination: /marketing/api/authorized-apps/list
+  - source: /marketing/api/automation
+    destination: /marketing/api/automations/list
+  - source: /marketing/api/automation-email
+    destination: /marketing/api/automations/emails/create-email-action-pause
+  - source: /marketing/api/automation-email-queue
+    destination: /marketing/api/automations/emails/queue/create-email-queue
+  - source: /marketing/api/automation-email-queue/add-subscriber-to-workflow-email
+    destination: /marketing/api/automations/emails/queue/create-email-queue
+  - source: /marketing/api/automation-email-queue/get-automated-email-subscriber
+    destination: /marketing/api/automations/emails/queue/get-email-queue
+  - source: /marketing/api/automation-email-queue/list-automated-email-subscribers
+    destination: /marketing/api/automations/emails/queue/list-email-queue
+  - source: /marketing/api/automation-email/delete-workflow-email
+    destination: /marketing/api/automations/emails/delete-email
+  - source: /marketing/api/automation-email/get-workflow-email-info
+    destination: /marketing/api/automations/emails/get-email
+  - source: /marketing/api/automation-email/list-automated-emails
+    destination: /marketing/api/automations/emails/list-emails
+  - source: /marketing/api/automation-email/pause-automated-email
+    destination: /marketing/api/automations/emails/create-email-action-pause
+  - source: /marketing/api/automation-email/start-automated-email
+    destination: /marketing/api/automations/emails/create-email-action-start
+  - source: /marketing/api/automation-email/update-workflow-email
+    destination: /marketing/api/automations/emails/update-email
+  - source: /marketing/api/automation-removed-subscribers
+    destination: /marketing/api/automations/removed-subscribers/create-removed-subscriber
+  - source: /marketing/api/automation-removed-subscribers/get-subscriber-removed-from-workflow
+    destination: /marketing/api/automations/removed-subscribers/get-removed-subscriber
+  - source: /marketing/api/automation-removed-subscribers/list-subscribers-removed-from-workflow
+    destination: /marketing/api/automations/removed-subscribers/list-removed-subscribers
+  - source: /marketing/api/automation-removed-subscribers/remove-subscriber-from-workflow
+    destination: /marketing/api/automations/removed-subscribers/create-removed-subscriber
+  - source: /marketing/api/automation/add-automation
+    destination: /marketing/api/automations/create
+  - source: /marketing/api/automation/archive-automation
+    destination: /marketing/api/automations/create-action-archive
+  - source: /marketing/api/automation/get-automation-info
+    destination: /marketing/api/automations/get
+  - source: /marketing/api/automation/list-automations
+    destination: /marketing/api/automations/list
+  - source: /marketing/api/automation/pause-automation-emails
+    destination: /marketing/api/automations/create-action-pause-all-email
+  - source: /marketing/api/automation/start-automation-emails
+    destination: /marketing/api/automations/create-action-start-all-email
+  - source: /marketing/api/batch-operations
+    destination: /marketing/api/batches/list
+  - source: /marketing/api/batch-operations/delete-batch-request
+    destination: /marketing/api/batches/delete
+  - source: /marketing/api/batch-operations/get-batch-operation-status
+    destination: /marketing/api/batches/get
+  - source: /marketing/api/batch-operations/list-batch-requests
+    destination: /marketing/api/batches/list
+  - source: /marketing/api/batch-operations/start-batch-operation
+    destination: /marketing/api/batches/create
+  - source: /marketing/api/batch-webhooks
+    destination: /marketing/api/batch-webhooks/list
+  - source: /marketing/api/batch-webhooks/add-batch-webhook
+    destination: /marketing/api/batch-webhooks/create
+  - source: /marketing/api/batch-webhooks/delete-batch-webhook
+    destination: /marketing/api/batch-webhooks/delete
+  - source: /marketing/api/batch-webhooks/get-batch-webhook-info
+    destination: /marketing/api/batch-webhooks/get
+  - source: /marketing/api/batch-webhooks/list-batch-webhooks
+    destination: /marketing/api/batch-webhooks/list
+  - source: /marketing/api/batch-webhooks/update-batch-webhook
+    destination: /marketing/api/batch-webhooks/update
+  - source: /marketing/api/campaign-abuse
+    destination: /marketing/api/reports/abuse-reports/get-abuse-report
+  - source: /marketing/api/campaign-abuse/get-abuse-report
+    destination: /marketing/api/reports/abuse-reports/get-abuse-report
+  - source: /marketing/api/campaign-abuse/list-abuse-reports
+    destination: /marketing/api/reports/abuse-reports/list-abuse-reports
+  - source: /marketing/api/campaign-advice
+    destination: /marketing/api/reports/advice/list-advice
+  - source: /marketing/api/campaign-advice/list-campaign-feedback
+    destination: /marketing/api/reports/advice/list-advice
+  - source: /marketing/api/campaign-checklist
+    destination: /marketing/api/campaigns/list
+  - source: /marketing/api/campaign-checklist/get-campaign-send-checklist
+    destination: /marketing/api/campaigns/list-send-checklist
+  - source: /marketing/api/campaign-content
+    destination: /marketing/api/campaigns/list
+  - source: /marketing/api/campaign-content/get-campaign-content
+    destination: /marketing/api/campaigns/get-content
+  - source: /marketing/api/campaign-content/set-campaign-content
+    destination: /marketing/api/campaigns/upsert-content
+  - source: /marketing/api/campaign-ecommerce-product-activity
+    destination: /marketing/api/reports/ecommerce-product-activity/list-ecommerce-product-activity
+  - source: /marketing/api/campaign-ecommerce-product-activity/list-campaign-product-activity
+    destination: /marketing/api/reports/ecommerce-product-activity/list-ecommerce-product-activity
+  - source: /marketing/api/campaign-feedback
+    destination: /marketing/api/campaigns/feedback/create-feedback
+  - source: /marketing/api/campaign-feedback/add-campaign-feedback
+    destination: /marketing/api/campaigns/feedback/create-feedback
+  - source: /marketing/api/campaign-feedback/delete-campaign-feedback-message
+    destination: /marketing/api/campaigns/feedback/delete-feedback
+  - source: /marketing/api/campaign-feedback/get-campaign-feedback-message
+    destination: /marketing/api/campaigns/feedback/get-feedback
+  - source: /marketing/api/campaign-feedback/list-campaign-feedback
+    destination: /marketing/api/campaigns/feedback/list-feedback
+  - source: /marketing/api/campaign-feedback/update-campaign-feedback-message
+    destination: /marketing/api/campaigns/feedback/update-feedback
+  - source: /marketing/api/campaign-folders
+    destination: /marketing/api/campaign-folders/list
+  - source: /marketing/api/campaign-folders/add-campaign-folder
+    destination: /marketing/api/campaign-folders/create
+  - source: /marketing/api/campaign-folders/delete-campaign-folder
+    destination: /marketing/api/campaign-folders/delete
+  - source: /marketing/api/campaign-folders/get-campaign-folder
+    destination: /marketing/api/campaign-folders/get
+  - source: /marketing/api/campaign-folders/list-campaign-folders
+    destination: /marketing/api/campaign-folders/list
+  - source: /marketing/api/campaign-folders/update-campaign-folder
+    destination: /marketing/api/campaign-folders/update
+  - source: /marketing/api/campaigns
+    destination: /marketing/api/campaigns/list
+  - source: /marketing/api/campaigns/add-campaign
+    destination: /marketing/api/campaigns/create
+  - source: /marketing/api/campaigns/cancel-campaign
+    destination: /marketing/api/campaigns/create-action-cancel-send
+  - source: /marketing/api/campaigns/delete-campaign
+    destination: /marketing/api/campaigns/delete
+  - source: /marketing/api/campaigns/get-campaign-info
+    destination: /marketing/api/campaigns/get
+  - source: /marketing/api/campaigns/list-campaigns
+    destination: /marketing/api/campaigns/list
+  - source: /marketing/api/campaigns/pause-rss-campaign
+    destination: /marketing/api/campaigns/create-action-pause
+  - source: /marketing/api/campaigns/replicate-campaign
+    destination: /marketing/api/campaigns/create-action-replicate
+  - source: /marketing/api/campaigns/resend-campaign
+    destination: /marketing/api/campaigns/create-action-create-resend
+  - source: /marketing/api/campaigns/resume-rss-campaign
+    destination: /marketing/api/campaigns/create-action-resume
+  - source: /marketing/api/campaigns/schedule-campaign
+    destination: /marketing/api/campaigns/create-action-schedule
+  - source: /marketing/api/campaigns/send-campaign
+    destination: /marketing/api/campaigns/create-action-send
+  - source: /marketing/api/campaigns/send-test-email
+    destination: /marketing/api/campaigns/create-action-test
+  - source: /marketing/api/campaigns/unschedule-campaign
+    destination: /marketing/api/campaigns/create-action-unschedule
+  - source: /marketing/api/campaigns/update-campaign-settings
+    destination: /marketing/api/campaigns/update
+  - source: /marketing/api/chimp-chatter
+    destination: /marketing/api/activity-feed/list
+  - source: /marketing/api/chimp-chatter/get-latest-chimp-chatter
+    destination: /marketing/api/activity-feed/list-chimp-chatter
+  - source: /marketing/api/click-reports
+    destination: /marketing/api/reports/click-details/get-click-detail
+  - source: /marketing/api/click-reports/get-campaign-link-details
+    destination: /marketing/api/reports/click-details/get-click-detail
+  - source: /marketing/api/click-reports/list-campaign-details
+    destination: /marketing/api/reports/click-details/list-click-details
+  - source: /marketing/api/connected-sites
+    destination: /marketing/api/connected-sites/list
+  - source: /marketing/api/connected-sites/add-connected-site
+    destination: /marketing/api/connected-sites/create
+  - source: /marketing/api/connected-sites/delete-connected-site
+    destination: /marketing/api/connected-sites/delete
+  - source: /marketing/api/connected-sites/disable-pixel-for-connected-site
+    destination: /marketing/api/connected-sites/get
+  - source: /marketing/api/connected-sites/enable-pixel-for-connected-site
+    destination: /marketing/api/connected-sites/get
+  - source: /marketing/api/connected-sites/get-connected-site
+    destination: /marketing/api/connected-sites/get
+  - source: /marketing/api/connected-sites/list-connected-sites
+    destination: /marketing/api/connected-sites/list
+  - source: /marketing/api/connected-sites/verify-connected-site-script
+    destination: /marketing/api/connected-sites/create-action-verify-script-installation
+  - source: /marketing/api/conversation-messages
+    destination: /marketing/api/conversations/list-messages
+  - source: /marketing/api/conversation-messages/get-message
+    destination: /marketing/api/conversations/get-message
+  - source: /marketing/api/conversation-messages/list-messages
+    destination: /marketing/api/conversations/list-messages
+  - source: /marketing/api/conversations
+    destination: /marketing/api/conversations/list
+  - source: /marketing/api/conversations/get-conversation
+    destination: /marketing/api/conversations/get
+  - source: /marketing/api/conversations/list-conversations
+    destination: /marketing/api/conversations/list
+  - source: /marketing/api/customer-journeys-journeys-steps-actions
+    destination: /marketing/api/customer-journeys/create-journey-step-action-trigger
+  - source: /marketing/api/customer-journeys-journeys-steps-actions/customer-journeys-api-trigger-for-a-contact
+    destination: /marketing/api/customer-journeys/create-journey-step-action-trigger
+  - source: /marketing/api/domain-performance-reports
+    destination: /marketing/api/reports/domain-performance/list-domain-performance
+  - source: /marketing/api/domain-performance-reports/list-domain-performance-stats
+    destination: /marketing/api/reports/domain-performance/list-domain-performance
+  - source: /marketing/api/ecommerce-cart-lines
+    destination: /marketing/api/e-commerce/carts/list-store-cart-lines
+  - source: /marketing/api/ecommerce-cart-lines/add-cart-line-item
+    destination: /marketing/api/e-commerce/carts/create-store-cart-line
+  - source: /marketing/api/ecommerce-cart-lines/delete-cart-line-item
+    destination: /marketing/api/e-commerce/carts/delete-store-cart-line
+  - source: /marketing/api/ecommerce-cart-lines/get-cart-line-item
+    destination: /marketing/api/e-commerce/carts/get-store-cart-line
+  - source: /marketing/api/ecommerce-cart-lines/list-cart-line-items
+    destination: /marketing/api/e-commerce/carts/list-store-cart-lines
+  - source: /marketing/api/ecommerce-cart-lines/update-cart-line-item
+    destination: /marketing/api/e-commerce/carts/update-store-cart-line
+  - source: /marketing/api/ecommerce-carts
+    destination: /marketing/api/e-commerce/carts/list-store-carts
+  - source: /marketing/api/ecommerce-carts/add-cart
+    destination: /marketing/api/e-commerce/carts/create-store-cart-line
+  - source: /marketing/api/ecommerce-carts/delete-cart
+    destination: /marketing/api/e-commerce/carts/delete-store-cart
+  - source: /marketing/api/ecommerce-carts/get-cart-info
+    destination: /marketing/api/e-commerce/carts/get-store-cart
+  - source: /marketing/api/ecommerce-carts/list-carts
+    destination: /marketing/api/e-commerce/carts/list-store-carts
+  - source: /marketing/api/ecommerce-carts/update-cart
+    destination: /marketing/api/e-commerce/carts/update-store-cart-line
+  - source: /marketing/api/ecommerce-customers
+    destination: /marketing/api/e-commerce/customers/create-store-customer
+  - source: /marketing/api/ecommerce-customers/add-customer
+    destination: /marketing/api/e-commerce/customers/create-store-customer
+  - source: /marketing/api/ecommerce-customers/add-or-update-customer
+    destination: /marketing/api/e-commerce/customers/upsert-store-customer
+  - source: /marketing/api/ecommerce-customers/delete-customer
+    destination: /marketing/api/e-commerce/customers/delete-store-customer
+  - source: /marketing/api/ecommerce-customers/get-customer-info
+    destination: /marketing/api/e-commerce/customers/get-store-customer
+  - source: /marketing/api/ecommerce-customers/list-customers
+    destination: /marketing/api/e-commerce/customers/list-store-customers
+  - source: /marketing/api/ecommerce-customers/update-customer
+    destination: /marketing/api/e-commerce/customers/update-store-customer
+  - source: /marketing/api/ecommerce-order-lines
+    destination: /marketing/api/e-commerce/orders/create-store-order
+  - source: /marketing/api/ecommerce-order-lines/add-order-line-item
+    destination: /marketing/api/e-commerce/orders/create-store-order-line
+  - source: /marketing/api/ecommerce-order-lines/delete-order-line-item
+    destination: /marketing/api/e-commerce/orders/delete-store-order-line
+  - source: /marketing/api/ecommerce-order-lines/get-order-line-item
+    destination: /marketing/api/e-commerce/orders/get-store-order-line
+  - source: /marketing/api/ecommerce-order-lines/list-order-line-items
+    destination: /marketing/api/e-commerce/orders/list-store-order-lines
+  - source: /marketing/api/ecommerce-order-lines/update-order-line-item
+    destination: /marketing/api/e-commerce/orders/update-store-order-line
+  - source: /marketing/api/ecommerce-orders
+    destination: /marketing/api/e-commerce/orders/create-store-order
+  - source: /marketing/api/ecommerce-orders/add-or-update-order
+    destination: /marketing/api/e-commerce/orders/create-store-order-line
+  - source: /marketing/api/ecommerce-orders/add-order
+    destination: /marketing/api/e-commerce/orders/create-store-order-line
+  - source: /marketing/api/ecommerce-orders/delete-order
+    destination: /marketing/api/e-commerce/orders/delete-store-order
+  - source: /marketing/api/ecommerce-orders/get-order-info
+    destination: /marketing/api/e-commerce/orders/get-store-order
+  - source: /marketing/api/ecommerce-orders/list-account-orders
+    destination: /marketing/api/e-commerce/orders/list-store-orders
+  - source: /marketing/api/ecommerce-orders/list-orders
+    destination: /marketing/api/e-commerce/orders/list-store-orders
+  - source: /marketing/api/ecommerce-orders/update-order
+    destination: /marketing/api/e-commerce/orders/update-store-order-line
+  - source: /marketing/api/ecommerce-product-images
+    destination: /marketing/api/e-commerce/products/create-store-product
+  - source: /marketing/api/ecommerce-product-images/add-product-image
+    destination: /marketing/api/e-commerce/products/create-store-product-image
+  - source: /marketing/api/ecommerce-product-images/delete-product-image
+    destination: /marketing/api/e-commerce/products/delete-store-product-image
+  - source: /marketing/api/ecommerce-product-images/get-product-image-info
+    destination: /marketing/api/e-commerce/products/get-store-product-image
+  - source: /marketing/api/ecommerce-product-images/list-product-images
+    destination: /marketing/api/e-commerce/products/list-store-product-images
+  - source: /marketing/api/ecommerce-product-images/update-product-image
+    destination: /marketing/api/e-commerce/products/update-store-product-image
+  - source: /marketing/api/ecommerce-product-variants
+    destination: /marketing/api/e-commerce/products/create-store-product
+  - source: /marketing/api/ecommerce-product-variants/add-or-update-product-variant
+    destination: /marketing/api/e-commerce/products/upsert-store-product-variant
+  - source: /marketing/api/ecommerce-product-variants/add-product-variant
+    destination: /marketing/api/e-commerce/products/create-store-product-variant
+  - source: /marketing/api/ecommerce-product-variants/delete-product-variant
+    destination: /marketing/api/e-commerce/products/delete-store-product-variant
+  - source: /marketing/api/ecommerce-product-variants/get-product-variant-info
+    destination: /marketing/api/e-commerce/products/get-store-product-variant
+  - source: /marketing/api/ecommerce-product-variants/list-product-variants
+    destination: /marketing/api/e-commerce/products/list-store-product-variants
+  - source: /marketing/api/ecommerce-product-variants/update-product-variant
+    destination: /marketing/api/e-commerce/products/update-store-product-variant
+  - source: /marketing/api/ecommerce-products
+    destination: /marketing/api/e-commerce/products/create-store-product
+  - source: /marketing/api/ecommerce-products/add-product
+    destination: /marketing/api/e-commerce/products/create-store-product-variant
+  - source: /marketing/api/ecommerce-products/create-or-update-product
+    destination: /marketing/api/e-commerce/products/upsert-store-product
+  - source: /marketing/api/ecommerce-products/delete-product
+    destination: /marketing/api/e-commerce/products/delete-store-product-image
+  - source: /marketing/api/ecommerce-products/get-product-info
+    destination: /marketing/api/e-commerce/products/get-store-product
+  - source: /marketing/api/ecommerce-products/list-product
+    destination: /marketing/api/e-commerce/products/list-store-product-images
+  - source: /marketing/api/ecommerce-products/update-product
+    destination: /marketing/api/e-commerce/products/update-store-product-variant
+  - source: /marketing/api/ecommerce-promo-codes
+    destination: /marketing/api/e-commerce/promo-rules/create-store-promo-rule
+  - source: /marketing/api/ecommerce-promo-codes/add-promo-code
+    destination: /marketing/api/e-commerce/promo-rules/create-store-promo-rule-promo-code
+  - source: /marketing/api/ecommerce-promo-codes/delete-promo-code
+    destination: /marketing/api/e-commerce/promo-rules/delete-store-promo-rule-promo-code
+  - source: /marketing/api/ecommerce-promo-codes/get-promo-code
+    destination: /marketing/api/e-commerce/promo-rules/get-store-promo-rule-promo-code
+  - source: /marketing/api/ecommerce-promo-codes/list-promo-codes
+    destination: /marketing/api/e-commerce/promo-rules/list-store-promo-rule-promo-codes
+  - source: /marketing/api/ecommerce-promo-codes/update-promo-code
+    destination: /marketing/api/e-commerce/promo-rules/update-store-promo-rule-promo-code
+  - source: /marketing/api/ecommerce-promo-rules
+    destination: /marketing/api/e-commerce/promo-rules/create-store-promo-rule
+  - source: /marketing/api/ecommerce-promo-rules/add-promo-rule
+    destination: /marketing/api/e-commerce/promo-rules/create-store-promo-rule
+  - source: /marketing/api/ecommerce-promo-rules/delete-promo-rule
+    destination: /marketing/api/e-commerce/promo-rules/delete-store-promo-rule
+  - source: /marketing/api/ecommerce-promo-rules/get-promo-rule
+    destination: /marketing/api/e-commerce/promo-rules/get-store-promo-rule
+  - source: /marketing/api/ecommerce-promo-rules/list-promo-rules
+    destination: /marketing/api/e-commerce/promo-rules/list-store-promo-rules
+  - source: /marketing/api/ecommerce-promo-rules/update-promo-rule
+    destination: /marketing/api/e-commerce/promo-rules/update-store-promo-rule
+  - source: /marketing/api/ecommerce-stores
+    destination: /marketing/api/e-commerce/list
+  - source: /marketing/api/ecommerce-stores/add-store
+    destination: /marketing/api/e-commerce/create-store
+  - source: /marketing/api/ecommerce-stores/delete-store
+    destination: /marketing/api/e-commerce/delete-store
+  - source: /marketing/api/ecommerce-stores/get-store-info
+    destination: /marketing/api/e-commerce/get-store
+  - source: /marketing/api/ecommerce-stores/list-stores
+    destination: /marketing/api/e-commerce/list-stores
+  - source: /marketing/api/ecommerce-stores/update-store
+    destination: /marketing/api/e-commerce/update-store
+  - source: /marketing/api/eepurl-reports
+    destination: /marketing/api/reports/eep-url/list-eepurl
+  - source: /marketing/api/eepurl-reports/list-eep-url-activity
+    destination: /marketing/api/reports/eep-url/list-eepurl
+  - source: /marketing/api/email-activity-reports
+    destination: /marketing/api/reports/email-activity/get-email-activity
+  - source: /marketing/api/email-activity-reports/get-subscriber-email-activity
+    destination: /marketing/api/reports/email-activity/get-email-activity
+  - source: /marketing/api/email-activity-reports/list-email-activity
+    destination: /marketing/api/reports/email-activity/list-email-activity
+  - source: /marketing/api/facebook-ads
+    destination: /marketing/api/facebook-ads/list
+  - source: /marketing/api/facebook-ads/get-facebook-ad-info
+    destination: /marketing/api/facebook-ads/get
+  - source: /marketing/api/facebook-ads/list-facebook-ads
+    destination: /marketing/api/facebook-ads/list
+  - source: /marketing/api/file-manager
+    destination: /marketing/api/file-manager/list
+  - source: /marketing/api/file-manager-files
+    destination: /marketing/api/file-manager/files/create-file
+  - source: /marketing/api/file-manager-files/add-file
+    destination: /marketing/api/file-manager/files/create-file
+  - source: /marketing/api/file-manager-files/delete-file
+    destination: /marketing/api/file-manager/files/delete-file
+  - source: /marketing/api/file-manager-files/get-file
+    destination: /marketing/api/file-manager/files/get-file
+  - source: /marketing/api/file-manager-files/list-stored-files
+    destination: /marketing/api/file-manager/files/list-files
+  - source: /marketing/api/file-manager-files/update-file
+    destination: /marketing/api/file-manager/files/update-file
+  - source: /marketing/api/file-manager-folders
+    destination: /marketing/api/file-manager/folders/create-folder
+  - source: /marketing/api/file-manager-folders-files
+    destination: /marketing/api/file-manager/folders/create-folder
+  - source: /marketing/api/file-manager-folders-files/list-stored-files
+    destination: /marketing/api/file-manager/folders/list-folder-files
+  - source: /marketing/api/file-manager-folders/add-folder
+    destination: /marketing/api/file-manager/folders/create-folder
+  - source: /marketing/api/file-manager-folders/delete-folder
+    destination: /marketing/api/file-manager/folders/delete-folder
+  - source: /marketing/api/file-manager-folders/get-folder
+    destination: /marketing/api/file-manager/folders/get-folder
+  - source: /marketing/api/file-manager-folders/list-folders
+    destination: /marketing/api/file-manager/folders/list-folders
+  - source: /marketing/api/file-manager-folders/update-folder
+    destination: /marketing/api/file-manager/folders/update-folder
+  - source: /marketing/api/interest-categories
+    destination: /marketing/api/lists/interest-categories/create-interest-category
+  - source: /marketing/api/interest-categories/add-interest-category
+    destination: /marketing/api/lists/interest-categories/create-interest-category
+  - source: /marketing/api/interest-categories/delete-interest-category
+    destination: /marketing/api/lists/interest-categories/delete-interest-category
+  - source: /marketing/api/interest-categories/get-interest-category-info
+    destination: /marketing/api/lists/interest-categories/get-interest-category
+  - source: /marketing/api/interest-categories/list-interest-categories
+    destination: /marketing/api/lists/interest-categories/list-interest-categories
+  - source: /marketing/api/interest-categories/update-interest-category
+    destination: /marketing/api/lists/interest-categories/update-interest-category-interest
+  - source: /marketing/api/interests
+    destination: /marketing/api/lists/interest-categories/create-interest-category
+  - source: /marketing/api/interests/add-interest-in-category
+    destination: /marketing/api/lists/interest-categories/create-interest-category
+  - source: /marketing/api/interests/delete-interest-in-category
+    destination: /marketing/api/lists/interest-categories/delete-interest-category
+  - source: /marketing/api/interests/get-interest-in-category
+    destination: /marketing/api/lists/interest-categories/get-interest-category-interest
+  - source: /marketing/api/interests/list-interests-in-category
+    destination: /marketing/api/lists/interest-categories/list-interest-category-interests
+  - source: /marketing/api/interests/update-interest-in-category
+    destination: /marketing/api/lists/interest-categories/update-interest-category-interest
+  - source: /marketing/api/landing-pages
+    destination: /marketing/api/landing-pages/list
+  - source: /marketing/api/landing-pages-content
+    destination: /marketing/api/landing-pages/list
+  - source: /marketing/api/landing-pages-content/get-landing-page-content
+    destination: /marketing/api/landing-pages/list-content
+  - source: /marketing/api/landing-pages/add-landing-page
+    destination: /marketing/api/landing-pages/create
+  - source: /marketing/api/landing-pages/delete-landing-page
+    destination: /marketing/api/landing-pages/delete
+  - source: /marketing/api/landing-pages/get-landing-page-info
+    destination: /marketing/api/landing-pages/get
+  - source: /marketing/api/landing-pages/list-landing-pages
+    destination: /marketing/api/landing-pages/list
+  - source: /marketing/api/landing-pages/publish-landing-page
+    destination: /marketing/api/landing-pages/create-action-publish
+  - source: /marketing/api/landing-pages/unpublish-landing-page
+    destination: /marketing/api/landing-pages/create-action-unpublish
+  - source: /marketing/api/landing-pages/update-landing-page
+    destination: /marketing/api/landing-pages/update
+  - source: /marketing/api/link-clickers
+    destination: /marketing/api/reports/click-details/get-click-detail
+  - source: /marketing/api/link-clickers/get-clicked-link-subscriber
+    destination: /marketing/api/reports/click-details/get-click-detail-member
+  - source: /marketing/api/link-clickers/list-clicked-link-subscribers
+    destination: /marketing/api/reports/click-details/list-click-detail-members
+  - source: /marketing/api/list-activity
+    destination: /marketing/api/lists/list
+  - source: /marketing/api/list-activity/list-recent-activity
+    destination: /marketing/api/lists/list-activity
+  - source: /marketing/api/list-clients
+    destination: /marketing/api/lists/list
+  - source: /marketing/api/list-clients/list-top-email-clients
+    destination: /marketing/api/lists/list-clients
+  - source: /marketing/api/list-growth-history
+    destination: /marketing/api/lists/list
+  - source: /marketing/api/list-growth-history/get-growth-history-by-month
+    destination: /marketing/api/lists/get-growth-history
+  - source: /marketing/api/list-growth-history/list-growth-history-data
+    destination: /marketing/api/lists/list-growth-history
+  - source: /marketing/api/list-locations
+    destination: /marketing/api/lists/list
+  - source: /marketing/api/list-locations/list-locations
+    destination: /marketing/api/lists/list-locations
+  - source: /marketing/api/list-member-activity
+    destination: /marketing/api/lists/members/create-member
+  - source: /marketing/api/list-member-activity-feed
+    destination: /marketing/api/lists/members/create-member
+  - source: /marketing/api/list-member-activity-feed/view-recent-activity
+    destination: /marketing/api/lists/members/list-member-activity-feed
+  - source: /marketing/api/list-member-activity/view-recent-activity-50
+    destination: /marketing/api/lists/members/list-member-activity
+  - source: /marketing/api/list-member-events
+    destination: /marketing/api/lists/members/create-member
+  - source: /marketing/api/list-member-events/add-event
+    destination: /marketing/api/lists/members/create-member-event
+  - source: /marketing/api/list-member-events/list-member-events
+    destination: /marketing/api/lists/members/list-member-events
+  - source: /marketing/api/list-member-goal
+    destination: /marketing/api/lists/members/create-member
+  - source: /marketing/api/list-member-goal/list-member-goal-events
+    destination: /marketing/api/lists/members/list-member-goals
+  - source: /marketing/api/list-member-notes
+    destination: /marketing/api/lists/members/create-member
+  - source: /marketing/api/list-member-notes/add-member-note
+    destination: /marketing/api/lists/members/create-member-note
+  - source: /marketing/api/list-member-notes/delete-note
+    destination: /marketing/api/lists/members/delete-member-note
+  - source: /marketing/api/list-member-notes/get-member-note
+    destination: /marketing/api/lists/members/get-member-note
+  - source: /marketing/api/list-member-notes/list-recent-member-notes
+    destination: /marketing/api/lists/members/list-member-notes
+  - source: /marketing/api/list-member-notes/update-note
+    destination: /marketing/api/lists/members/update-member-note
+  - source: /marketing/api/list-member-tags
+    destination: /marketing/api/lists/members/create-member
+  - source: /marketing/api/list-member-tags/add-or-remove-member-tags
+    destination: /marketing/api/lists/members/create-member-tag
+  - source: /marketing/api/list-member-tags/list-member-tags
+    destination: /marketing/api/lists/members/list-member-tags
+  - source: /marketing/api/list-members
+    destination: /marketing/api/lists/members/create-member
+  - source: /marketing/api/list-members/add-member-to-list
+    destination: /marketing/api/lists/members/create-member
+  - source: /marketing/api/list-members/add-or-update-list-member
+    destination: /marketing/api/lists/members/upsert-member
+  - source: /marketing/api/list-members/archive-list-member
+    destination: /marketing/api/lists/members/delete-member
+  - source: /marketing/api/list-members/delete-list-member
+    destination: /marketing/api/lists/members/create-member-action-delete-permanent
+  - source: /marketing/api/list-members/get-member-info
+    destination: /marketing/api/lists/members/get-member
+  - source: /marketing/api/list-members/list-members-info
+    destination: /marketing/api/lists/members/list-members
+  - source: /marketing/api/list-members/update-list-member
+    destination: /marketing/api/lists/members/update-member
+  - source: /marketing/api/list-merges
+    destination: /marketing/api/lists/merge-fields/create-merge-field
+  - source: /marketing/api/list-merges/add-merge-field
+    destination: /marketing/api/lists/merge-fields/create-merge-field
+  - source: /marketing/api/list-merges/delete-merge-field
+    destination: /marketing/api/lists/merge-fields/delete-merge-field
+  - source: /marketing/api/list-merges/get-merge-field
+    destination: /marketing/api/lists/merge-fields/get-merge-field
+  - source: /marketing/api/list-merges/list-merge-fields
+    destination: /marketing/api/lists/merge-fields/list-merge-fields
+  - source: /marketing/api/list-merges/update-merge-field
+    destination: /marketing/api/lists/merge-fields/update-merge-field
+  - source: /marketing/api/list-segment-members
+    destination: /marketing/api/lists/segments/batch-add-or-remove-members
+  - source: /marketing/api/list-segment-members/add-member-to-segment
+    destination: /marketing/api/lists/segments/create-segment-member
+  - source: /marketing/api/list-segment-members/list-members-in-segment
+    destination: /marketing/api/lists/segments/list-segment-members
+  - source: /marketing/api/list-segment-members/remove-list-member-from-segment
+    destination: /marketing/api/lists/segments/delete-segment-member
+  - source: /marketing/api/list-segments
+    destination: /marketing/api/lists/segments/list-segments
+  - source: /marketing/api/list-segments/add-segment
+    destination: /marketing/api/lists/segments/create-segment
+  - source: /marketing/api/list-segments/batch-add-or-remove-members
+    destination: /marketing/api/lists/segments/batch-add-or-remove-members
+  - source: /marketing/api/list-segments/delete-segment
+    destination: /marketing/api/lists/segments/delete-segment
+  - source: /marketing/api/list-segments/get-segment-info
+    destination: /marketing/api/lists/segments/get-segment
+  - source: /marketing/api/list-segments/list-segments
+    destination: /marketing/api/lists/segments/list-segments
+  - source: /marketing/api/list-segments/update-segment
+    destination: /marketing/api/lists/segments/update-segment
+  - source: /marketing/api/list-signup-forms
+    destination: /marketing/api/lists/list
+  - source: /marketing/api/list-signup-forms/customize-signup-form
+    destination: /marketing/api/lists/create-signup-form
+  - source: /marketing/api/list-signup-forms/list-signup-forms
+    destination: /marketing/api/lists/list-signup-forms
+  - source: /marketing/api/list-surveys
+    destination: /marketing/api/lists/surveys/create-list-survey-action-create-email
+  - source: /marketing/api/list-surveys/create-a-survey-campaign
+    destination: /marketing/api/lists/surveys/create-list-survey-action-create-email
+  - source: /marketing/api/list-surveys/create-survey
+    destination: /marketing/api/lists/surveys/create-list-survey-action-create-email
+  - source: /marketing/api/list-surveys/delete-survey
+    destination: /marketing/api/lists/surveys/delete-survey
+  - source: /marketing/api/list-surveys/get-information-about-all-surveys-for-a-list
+    destination: /marketing/api/lists/surveys/list-surveys
+  - source: /marketing/api/list-surveys/get-survey
+    destination: /marketing/api/lists/surveys/get-survey
+  - source: /marketing/api/list-surveys/publish-a-survey
+    destination: /marketing/api/lists/surveys/create-list-survey-action-publish
+  - source: /marketing/api/list-surveys/replicate-survey
+    destination: /marketing/api/lists/surveys/create-list-survey-action-replicate
+  - source: /marketing/api/list-surveys/unpublish-a-survey
+    destination: /marketing/api/lists/surveys/create-list-survey-action-unpublish
+  - source: /marketing/api/list-surveys/update-survey
+    destination: /marketing/api/lists/surveys/update-survey
+  - source: /marketing/api/list-webhooks
+    destination: /marketing/api/lists/webhooks/create-webhook
+  - source: /marketing/api/list-webhooks/add-webhook
+    destination: /marketing/api/lists/webhooks/create-webhook
+  - source: /marketing/api/list-webhooks/delete-webhook
+    destination: /marketing/api/lists/webhooks/delete-webhook
+  - source: /marketing/api/list-webhooks/get-webhook-info
+    destination: /marketing/api/lists/webhooks/get-webhook
+  - source: /marketing/api/list-webhooks/list-webhooks
+    destination: /marketing/api/lists/webhooks/list-webhooks
+  - source: /marketing/api/list-webhooks/update-webhook
+    destination: /marketing/api/lists/webhooks/update-webhook
+  - source: /marketing/api/lists
+    destination: /marketing/api/lists/list
+  - source: /marketing/api/lists-tags-search
+    destination: /marketing/api/lists/list
+  - source: /marketing/api/lists-tags-search/search-for-tags-on-a-list-by-name
+    destination: /marketing/api/lists/list-tag-search
+  - source: /marketing/api/lists/add-list
+    destination: /marketing/api/lists/create
+  - source: /marketing/api/lists/delete-list
+    destination: /marketing/api/lists/delete
+  - source: /marketing/api/lists/get-list-info
+    destination: /marketing/api/lists/get
+  - source: /marketing/api/lists/get-lists-info
+    destination: /marketing/api/lists/get
+  - source: /marketing/api/lists/update-lists
+    destination: /marketing/api/lists/members/update-member
+  - source: /marketing/api/location-reports
+    destination: /marketing/api/reports/locations/list-locations
+  - source: /marketing/api/location-reports/list-top-open-activities
+    destination: /marketing/api/reports/locations/list-locations
+  - source: /marketing/api/open-reports
+    destination: /marketing/api/reports/open-details/get-open-detail
+  - source: /marketing/api/open-reports/get-opened-campaign-subscriber
+    destination: /marketing/api/reports/open-details/get-open-detail
+  - source: /marketing/api/open-reports/list-campaign-open-details
+    destination: /marketing/api/reports/open-details/list-open-details
+  - source: /marketing/api/ping
+    destination: /marketing/api/ping/list
+  - source: /marketing/api/ping/ping
+    destination: /marketing/api/ping/list
+  - source: /marketing/api/reporting
+    destination: /marketing/api/reporting/list
+  - source: /marketing/api/reporting-facebook-ads
+    destination: /marketing/api/reporting/list
+  - source: /marketing/api/reporting-facebook-ads/get-facebook-ad-report
+    destination: /marketing/api/reporting/get-facebook-ad
+  - source: /marketing/api/reporting-facebook-ads/list-facebook-ads-reports
+    destination: /marketing/api/reporting/list-facebook-ads
+  - source: /marketing/api/reporting-facebook-ads/list-facebook-ecommerce-report
+    destination: /marketing/api/reporting/list-facebook-ad-ecommerce-product-activity
+  - source: /marketing/api/reporting-landing-pages
+    destination: /marketing/api/reporting/list
+  - source: /marketing/api/reporting-landing-pages/get-landing-page-report
+    destination: /marketing/api/reporting/get-landing-page
+  - source: /marketing/api/reporting-landing-pages/list-landing-pages-reports
+    destination: /marketing/api/reporting/list-landing-pages
+  - source: /marketing/api/reporting-surveys
+    destination: /marketing/api/reporting/list
+  - source: /marketing/api/reporting-surveys-questions
+    destination: /marketing/api/reporting/list
+  - source: /marketing/api/reporting-surveys-questions-answers
+    destination: /marketing/api/reporting/list
+  - source: /marketing/api/reporting-surveys-questions-answers/list-answers-for-question
+    destination: /marketing/api/reporting/list-survey-question-answers
+  - source: /marketing/api/reporting-surveys-questions/get-survey-question-report
+    destination: /marketing/api/reporting/get-survey-question
+  - source: /marketing/api/reporting-surveys-questions/list-survey-question-reports
+    destination: /marketing/api/reporting/list-survey-questions
+  - source: /marketing/api/reporting-surveys-responses
+    destination: /marketing/api/reporting/list
+  - source: /marketing/api/reporting-surveys-responses/get-survey-response
+    destination: /marketing/api/reporting/get-survey-respons
+  - source: /marketing/api/reporting-surveys-responses/list-survey-responses
+    destination: /marketing/api/reporting/list-survey-responses
+  - source: /marketing/api/reporting-surveys/get-survey-report
+    destination: /marketing/api/reporting/get-survey-question
+  - source: /marketing/api/reporting-surveys/list-survey-reports
+    destination: /marketing/api/reporting/list-survey-questions
+  - source: /marketing/api/reports
+    destination: /marketing/api/reports/list
+  - source: /marketing/api/reports/get-campaign-report
+    destination: /marketing/api/reports/get
+  - source: /marketing/api/reports/list-campaign-reports
+    destination: /marketing/api/reports/sub-reports/list-sub-reports
+  - source: /marketing/api/root
+    destination: /marketing/api/root/list
+  - source: /marketing/api/root/list-api-root-resources
+    destination: /marketing/api/root/list
+  - source: /marketing/api/search-campaigns
+    destination: /marketing/api/search-campaigns/list
+  - source: /marketing/api/search-campaigns/search-campaigns
+    destination: /marketing/api/search-campaigns/list
+  - source: /marketing/api/search-members
+    destination: /marketing/api/search-members/list
+  - source: /marketing/api/search-members/search-members
+    destination: /marketing/api/search-members/list
+  - source: /marketing/api/sent-to-reports
+    destination: /marketing/api/reports/sent-to/get-sent-to
+  - source: /marketing/api/sent-to-reports/get-campaign-recipient-info
+    destination: /marketing/api/reports/sent-to/get-sent-to
+  - source: /marketing/api/sent-to-reports/list-campaign-recipients
+    destination: /marketing/api/reports/sent-to/list-sent-to
+  - source: /marketing/api/sms-campaign-content
+    destination: /marketing/api/sms-campaigns/list
+  - source: /marketing/api/sms-campaign-content/get-sms-campaign-content
+    destination: /marketing/api/sms-campaigns/get-content
+  - source: /marketing/api/sms-campaign-content/set-sms-campaign-content
+    destination: /marketing/api/sms-campaigns/upsert-content
+  - source: /marketing/api/sms-campaigns
+    destination: /marketing/api/sms-campaigns/list
+  - source: /marketing/api/sms-campaigns/add-sms-campaign
+    destination: /marketing/api/sms-campaigns/create
+  - source: /marketing/api/sms-campaigns/cancel-sms-campaign-send
+    destination: /marketing/api/sms-campaigns/create-action-cancel-send
+  - source: /marketing/api/sms-campaigns/delete-sms-campaign
+    destination: /marketing/api/sms-campaigns/delete
+  - source: /marketing/api/sms-campaigns/get-sms-campaign-info
+    destination: /marketing/api/sms-campaigns/get
+  - source: /marketing/api/sms-campaigns/list-sms-campaigns
+    destination: /marketing/api/sms-campaigns/list
+  - source: /marketing/api/sms-campaigns/schedule-sms-campaign
+    destination: /marketing/api/sms-campaigns/create-action-schedule
+  - source: /marketing/api/sms-campaigns/send-sms-campaign
+    destination: /marketing/api/sms-campaigns/create-action-send
+  - source: /marketing/api/sms-campaigns/update-sms-campaign-settings
+    destination: /marketing/api/sms-campaigns/update
+  - source: /marketing/api/sub-reports
+    destination: /marketing/api/reports/sub-reports/list-sub-reports
+  - source: /marketing/api/sub-reports/list-child-campaign-reports
+    destination: /marketing/api/reports/sub-reports/list-sub-reports
+  - source: /marketing/api/template-default-content
+    destination: /marketing/api/templates/list
+  - source: /marketing/api/template-default-content/view-default-content
+    destination: /marketing/api/templates/list-default-content
+  - source: /marketing/api/template-folders
+    destination: /marketing/api/template-folders/list
+  - source: /marketing/api/template-folders/add-template-folder
+    destination: /marketing/api/template-folders/create
+  - source: /marketing/api/template-folders/delete-template-folder
+    destination: /marketing/api/template-folders/delete
+  - source: /marketing/api/template-folders/get-template-folder
+    destination: /marketing/api/template-folders/get
+  - source: /marketing/api/template-folders/list-template-folders
+    destination: /marketing/api/template-folders/list
+  - source: /marketing/api/template-folders/update-template-folder
+    destination: /marketing/api/template-folders/update
+  - source: /marketing/api/templates
+    destination: /marketing/api/templates/list
+  - source: /marketing/api/templates/add-template
+    destination: /marketing/api/templates/create
+  - source: /marketing/api/templates/delete-template
+    destination: /marketing/api/templates/delete
+  - source: /marketing/api/templates/get-template-info
+    destination: /marketing/api/templates/get
+  - source: /marketing/api/templates/list-templates
+    destination: /marketing/api/templates/list
+  - source: /marketing/api/templates/update-template
+    destination: /marketing/api/templates/update
+  - source: /marketing/api/unsub-reports
+    destination: /marketing/api/reports/unsubscribed/get-unsubscribed
+  - source: /marketing/api/unsub-reports/get-unsubscribed-member
+    destination: /marketing/api/reports/unsubscribed/get-unsubscribed
+  - source: /marketing/api/unsub-reports/list-unsubscribed-members
+    destination: /marketing/api/reports/unsubscribed/list-unsubscribed
+  - source: /marketing/api/verified-domains
+    destination: /marketing/api/verified-domains/list
+  - source: /marketing/api/verified-domains/add-domain-to-account
+    destination: /marketing/api/verified-domains/create
+  - source: /marketing/api/verified-domains/delete-domain
+    destination: /marketing/api/verified-domains/delete
+  - source: /marketing/api/verified-domains/get-domain-info
+    destination: /marketing/api/verified-domains/get
+  - source: /marketing/api/verified-domains/list-sending-domains
+    destination: /marketing/api/verified-domains/list
+  - source: /marketing/api/verified-domains/verify-domain
+    destination: /marketing/api/verified-domains/create-action-verify
+
 footer: ./components/Footer.tsx
 
 theme:
