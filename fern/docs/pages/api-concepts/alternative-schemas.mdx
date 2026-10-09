@@ -202,6 +202,10 @@ The [Member Activity Feed endpoint](/marketing/api/lists/list-member-activity-fe
 
 A variety of endpoints accept or return segment condition data, from the [Segments endpoints](/marketing/api/lists/list-segments) themselves to others like automation, list, and campaign endpoints. Because there are many ways to define a segment, there are many alternative schemas for segment conditions. 
 
+<Note>
+These schemas describe regular segment conditions. Advanced segments use a different definition format, without `condition_type`; see [Advanced segments](/marketing/concepts/audiences/advanced-segments).
+</Note>
+
 The `x-discriminator` for segment conditions is `condition_type`. The request parameter `conditions` accepts an array of objects that indicate the desired segment condition (`field`), operator, value, and optional extra information. Multiple segment conditions can be combined like so:
 
 ```json
