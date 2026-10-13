@@ -35,7 +35,8 @@ groups:
         smart-casing: true
         output:
           location: npm
-          package-name: "@mailchimp/mailchimp-marketing"
+          package-name: "@intuit-mailchimp/mailchimp-marketing"
+          token: ${NPM_TOKEN}
         github:
           repository: mailchimp/mailchimp-marketing-typescript-sdk
           mode: pull-request
