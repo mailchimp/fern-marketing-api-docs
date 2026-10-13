@@ -12,6 +12,7 @@ api:
     - openapi: ../mailchimp-openapi/openapi.json
       overrides:
         - ../mailchimp-openapi/overrides.yml
+        - ../mailchimp-openapi/group-names.yml
         - method-names.yml
 
 groups:
