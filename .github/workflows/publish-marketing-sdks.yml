@@ -76,7 +76,7 @@ jobs:
       RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
       CRATES_IO_API_KEY: ${{ secrets.CRATES_IO_API_KEY }}
       # Token fallbacks — only if you switch the OIDC groups back to tokens:
-      # NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       # PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
       # NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
     steps:
