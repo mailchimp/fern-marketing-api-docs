@@ -8904,6 +8904,498 @@
         "title": "Landing Page",
         "type": "object"
       },
+      "SegmentDefinition": {
+        "description": "A node in a segment definition. A node is a group or a condition. A group contains the `match` property and combines the nodes in its `conditions` array. A condition contains the `field` property and tests one contact attribute. A node cannot contain both `match` and `field`. The root node of a definition is always a group. In a request, the root group must contain `match` and `conditions`. This schema shows the properties of both node types together. Limits: A definition can contain a maximum of 100 conditions, including the conditions in `filters`. A definition can contain a maximum of 2 levels of groups. The root group is level 1. The Mailchimp segment builder uses the same group limit. If a definition is more than a limit, the API returns a 400 error. In this API version, Mailchimp does not change or remove existing fields, but Mailchimp can add new fields. Make sure that your client ignores fields that it does not know.",
+        "required": [
+          "match",
+          "conditions"
+        ],
+        "properties": {
+          "conditions": {
+            "type": "array",
+            "title": "Conditions",
+            "description": "Only for groups. The nodes in the group. Each item is a condition or a group, and one array can contain both. Each item has the same properties as this node. A definition can contain a maximum of 100 conditions, including the conditions in `filters`. A definition can contain a maximum of 2 levels of groups. The root group is level 1.",
+            "items": {
+              "type": "object"
+            }
+          },
+          "contacts": {
+            "description": "The contacts that the segment can include, by channel and subscription status. Use this object only in the root group. If you do not include it, the segment can include all contacts on all channels: email, SMS, and WhatsApp. In a request, one entry can select more than one subscription status. For example, `{\"sendable\": false}` selects all statuses that cannot receive marketing on that channel. In a response, each entry selects exactly one subscription status. If you send a response object in a request, it selects the same contacts.",
+            "properties": {
+              "email": {
+                "properties": {
+                  "marketing": {
+                    "items": {
+                      "properties": {
+                        "consent": {
+                          "description": "Selects a subset of the contacts that cannot receive marketing. `confirmed`, or no value, selects all of these contacts. `denied` selects only the contacts that unsubscribed. `unknown` selects only the contacts that never subscribed. On email, these are the contacts that can receive only transactional email. If `sendable` is true, the only permitted value is `confirmed`. Do not use `consent` with `reason`. If a request breaks one of these rules, the API returns a 400 error. On email, `denied` also selects the contacts that an account admin unsubscribed.",
+                          "enum": [
+                            "unknown",
+                            "confirmed",
+                            "denied"
+                          ],
+                          "title": "Consent",
+                          "type": "string"
+                        },
+                        "reason": {
+                          "description": "Selects the contacts that Mailchimp removed because of delivery problems (cleaned contacts). Use it only on email, and only when `sendable` is false. Do not use it with `consent`. If a request breaks one of these rules, the API returns a 400 error.",
+                          "enum": [
+                            "deliverability"
+                          ],
+                          "title": "Reason",
+                          "type": "string"
+                        },
+                        "sendable": {
+                          "description": "Shows if the contacts can receive marketing on this channel now. Use it with `consent` and `reason` to select subscription statuses.",
+                          "title": "Sendable",
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "sendable"
+                      ],
+                      "title": "Marketing",
+                      "type": "object"
+                    },
+                    "title": "Marketing",
+                    "description": "The marketing subscription statuses that the segment includes on this channel. Each entry selects one or more statuses. The segment includes the contacts of all entries.",
+                    "type": "array"
+                  },
+                  "transactional": {
+                    "items": {
+                      "properties": {
+                        "sendable": {
+                          "description": "If true, the segment includes the contacts that can receive only transactional email. The API accepts false, but false selects no contacts.",
+                          "title": "Sendable",
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "sendable"
+                      ],
+                      "title": "Transactional",
+                      "type": "object"
+                    },
+                    "title": "Transactional",
+                    "description": "The transactional email statuses that the segment includes. This is an array, the same as `marketing`. Only one entry has an effect.",
+                    "type": "array"
+                  }
+                },
+                "title": "Email",
+                "type": "object"
+              },
+              "sms": {
+                "properties": {
+                  "marketing": {
+                    "items": {
+                      "properties": {
+                        "consent": {
+                          "description": "Selects a subset of the contacts that cannot receive marketing. `confirmed`, or no value, selects all of these contacts. `denied` selects only the contacts that unsubscribed. `unknown` selects only the contacts that never subscribed. On email, these are the contacts that can receive only transactional email. If `sendable` is true, the only permitted value is `confirmed`. Do not use `consent` with `reason`. If a request breaks one of these rules, the API returns a 400 error. On email, `denied` also selects the contacts that an account admin unsubscribed.",
+                          "enum": [
+                            "unknown",
+                            "confirmed",
+                            "denied"
+                          ],
+                          "title": "Consent",
+                          "type": "string"
+                        },
+                        "reason": {
+                          "description": "Selects the contacts that Mailchimp removed because of delivery problems (cleaned contacts). Use it only on email, and only when `sendable` is false. Do not use it with `consent`. If a request breaks one of these rules, the API returns a 400 error.",
+                          "enum": [
+                            "deliverability"
+                          ],
+                          "title": "Reason",
+                          "type": "string"
+                        },
+                        "sendable": {
+                          "description": "Shows if the contacts can receive marketing on this channel now. Use it with `consent` and `reason` to select subscription statuses.",
+                          "title": "Sendable",
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "sendable"
+                      ],
+                      "title": "Marketing",
+                      "type": "object"
+                    },
+                    "title": "Marketing",
+                    "description": "The marketing subscription statuses that the segment includes on this channel. Each entry selects one or more statuses. The segment includes the contacts of all entries.",
+                    "type": "array"
+                  },
+                  "transactional": {
+                    "type": "array",
+                    "title": "Transactional",
+                    "description": "Reserved. Do not use this property. If a request includes it, the API returns a 400 error.",
+                    "items": {
+                      "properties": {
+                        "sendable": {
+                          "description": "If true, the segment includes the contacts that can receive only transactional email. The API accepts false, but false selects no contacts.",
+                          "title": "Sendable",
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "sendable"
+                      ],
+                      "title": "Transactional",
+                      "type": "object"
+                    }
+                  }
+                },
+                "title": "SMS",
+                "type": "object"
+              },
+              "whatsapp": {
+                "properties": {
+                  "marketing": {
+                    "items": {
+                      "properties": {
+                        "consent": {
+                          "description": "Selects a subset of the contacts that cannot receive marketing. `confirmed`, or no value, selects all of these contacts. `denied` selects only the contacts that unsubscribed. `unknown` selects only the contacts that never subscribed. On email, these are the contacts that can receive only transactional email. If `sendable` is true, the only permitted value is `confirmed`. Do not use `consent` with `reason`. If a request breaks one of these rules, the API returns a 400 error. On email, `denied` also selects the contacts that an account admin unsubscribed.",
+                          "enum": [
+                            "unknown",
+                            "confirmed",
+                            "denied"
+                          ],
+                          "title": "Consent",
+                          "type": "string"
+                        },
+                        "reason": {
+                          "description": "Selects the contacts that Mailchimp removed because of delivery problems (cleaned contacts). Use it only on email, and only when `sendable` is false. Do not use it with `consent`. If a request breaks one of these rules, the API returns a 400 error.",
+                          "enum": [
+                            "deliverability"
+                          ],
+                          "title": "Reason",
+                          "type": "string"
+                        },
+                        "sendable": {
+                          "description": "Shows if the contacts can receive marketing on this channel now. Use it with `consent` and `reason` to select subscription statuses.",
+                          "title": "Sendable",
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "sendable"
+                      ],
+                      "title": "Marketing",
+                      "type": "object"
+                    },
+                    "title": "Marketing",
+                    "description": "The marketing subscription statuses that the segment includes on this channel. Each entry selects one or more statuses. The segment includes the contacts of all entries.",
+                    "type": "array"
+                  },
+                  "transactional": {
+                    "type": "array",
+                    "title": "Transactional",
+                    "description": "Reserved. Do not use this property. If a request includes it, the API returns a 400 error.",
+                    "items": {
+                      "properties": {
+                        "sendable": {
+                          "description": "If true, the segment includes the contacts that can receive only transactional email. The API accepts false, but false selects no contacts.",
+                          "title": "Sendable",
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "sendable"
+                      ],
+                      "title": "Transactional",
+                      "type": "object"
+                    }
+                  }
+                },
+                "title": "WhatsApp",
+                "type": "object"
+              }
+            },
+            "title": "Contacts",
+            "type": "object"
+          },
+          "extra": {
+            "description": "Only for conditions. More data for some conditions (a string or an array). Its meaning changes with the field.",
+            "title": "Extra"
+          },
+          "field": {
+            "description": "Only for conditions. The contact attribute that the condition tests. The `field` property identifies a node as a condition. Each field has its own operators, values, and filters. Contact data: `merge0` (email address), `merge<N>` (merge field by `merge_id`; its operators change with its type), `language`, `gmonkey` (VIP), `rating` (1-5), `timestamp_opt` (subscription date), `info_changed`, `metadata_created` (date the contact was added), `original_signup_source`, `static_segment` (tags, by tag ID), `interests-<N>` (groups; beta), `list_email_status`, `marketing_preference` (beta), `age_gating`, `ipgeo` (predicted location; uses `location`). Messages: `email_campaign_activity` (sent, opened, clicked, bounced; filter by campaign `web_id` and time period), `email_marketing_engagement`, `sms_campaign_activity`, `sms_bounce_reason`, `sms_contact_status`, `sms_timestamp_opt`, `sms_country_code`, `whatsapp_campaign_interaction`, `whatsapp_contact_status`, `whatsapp_timestamp_opt`. E-commerce (connected store): `ecomm` (purchases; filter by date, campaign, store, product, variant, vendor, collection, total, and count), `total_spent`, `spent_avg`, `orders_count`, `ecomm_page_viewed`, `ecomm_product_viewed`, `ecomm_collection_viewed`, `ecomm_search_submitted`, `ecomm_product_added_to_cart`, `ecomm_checkout_started`, `ecomm_review_submitted`, `ecomm_back_in_stock_request`. Predictions and integrations: `predicted_clv`, `likelihood_to_purchase` (0-1000), `time_to_next_purchase`, `ecomm_churn_risk`, `clv_lifetime_value` and `clv_lifecycle` (earlier customer lifetime value fields), `age_range`, `gender`, `lead_ad`, `booking_activity`, `qbo_invoice_activity`, `qbo_sales_receipt_activity`. Events: `contact_event` (events from the Events API; filter by name, time period, and property), `custom_event_<namespace>_<event>` (with `namespace`, `event_name`, and typed `custom_event_property_*` filters). To count how many times an event occurred, use the `number_events` filter.",
+            "title": "Field",
+            "type": "string"
+          },
+          "filters": {
+            "type": "array",
+            "title": "Filters",
+            "description": "Only for conditions. Filters that limit what the condition selects, for example the campaign and time period filters of `email_campaign_activity`. A filter can contain more filters. A filter cannot contain a group. Each filter has the same properties as a condition.",
+            "items": {
+              "type": "object"
+            }
+          },
+          "location": {
+            "description": "The geographic limits of a predicted location (`ipgeo`) condition.",
+            "properties": {
+              "city": {
+                "title": "City",
+                "type": "string"
+              },
+              "country_code": {
+                "description": "The two-letter country code.",
+                "title": "Country Code",
+                "type": "string"
+              },
+              "lat": {
+                "title": "Latitude",
+                "type": "number"
+              },
+              "lng": {
+                "title": "Longitude",
+                "type": "number"
+              },
+              "region": {
+                "title": "Region",
+                "type": "string"
+              }
+            },
+            "title": "Location",
+            "type": "object"
+          },
+          "match": {
+            "description": "Only for groups. How the group combines its nodes. `all` selects contacts that agree with all nodes. `any` selects contacts that agree with one or more nodes. The `match` property identifies a node as a group.",
+            "enum": [
+              "all",
+              "any"
+            ],
+            "title": "Match",
+            "type": "string"
+          },
+          "op": {
+            "description": "Only for conditions. The comparison that the condition uses. Each condition and each filter must have an operator. Each field has its own operators, for example `is`, `contains`, `greater`, or `date_within`. On some fields, the operator `any` applies no limit.",
+            "title": "Op",
+            "type": "string"
+          },
+          "schema_version": {
+            "description": "Reserved for later versions of this format. Use it only in the root group. The API accepts all values. Responses always show the current version, 2.",
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "value": {
+            "description": "Only for conditions. The value that the condition compares with. Its type (string, number, boolean, or array) changes with the field and the operator. For a campaign, use its `web_id` from `/campaigns`. For a tag, use its integer tag ID. Interest groups, marketing permissions, and e-commerce stores use Mailchimp's own ID values (beta). To get one of these IDs, make a segment in Mailchimp. Then read the segment through this API and copy the ID.",
+            "title": "Value"
+          },
+          "value_op": {
+            "description": "Only for conditions. How the condition combines the items in `value`, for merge field conditions that accept more than one value. `or` selects contacts that agree with one or more items. `and` selects contacts that agree with all items.",
+            "enum": [
+              "and",
+              "or"
+            ],
+            "title": "Value Op",
+            "type": "string"
+          }
+        },
+        "title": "Segment Definition",
+        "type": "object",
+        "example": {
+          "schema_version": 2,
+          "contacts": {
+            "email": {
+              "marketing": [
+                {
+                  "sendable": true
+                }
+              ]
+            }
+          },
+          "match": "all",
+          "conditions": [
+            {
+              "field": "merge0",
+              "op": "contains",
+              "value": [
+                "yahoo.com"
+              ]
+            }
+          ]
+        }
+      },
+      "SmsCampaign": {
+        "type": "object",
+        "title": "SMS Campaign",
+        "description": "A single SMS campaign.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "A string that uniquely identifies this campaign.",
+            "readOnly": true
+          },
+          "web_id": {
+            "type": "string",
+            "description": "The ID used in the Mailchimp web application.",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the campaign."
+          },
+          "status": {
+            "type": "string",
+            "description": "The current status of the campaign.",
+            "readOnly": true
+          },
+          "channel": {
+            "type": "string",
+            "description": "The channel for this campaign (sms or whatsapp).",
+            "readOnly": true
+          },
+          "list_id": {
+            "type": "integer",
+            "description": "The numeric ID of the list associated with this campaign.",
+            "readOnly": true
+          },
+          "recipient_count": {
+            "type": "integer",
+            "description": "The number of recipients for this campaign.",
+            "readOnly": true
+          },
+          "create_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date and time the campaign was created.",
+            "readOnly": true
+          },
+          "send_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date and time the campaign is scheduled to send.",
+            "readOnly": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date and time the campaign was last updated.",
+            "readOnly": true
+          },
+          "expire_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date and time the campaign will stop sending in ISO 8601 format.",
+            "readOnly": true
+          },
+          "is_send_now": {
+            "type": "boolean",
+            "description": "Whether the campaign is configured to send immediately.",
+            "readOnly": true
+          },
+          "folder_id": {
+            "type": "string",
+            "description": "The ID of the folder this campaign is in."
+          },
+          "segments": {
+            "type": "array",
+            "description": "The segment IDs used to target recipients for this campaign.",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "excluded_segments": {
+            "type": "array",
+            "description": "The segment IDs excluded from receiving this campaign.",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "campaign_segments": {
+            "type": "object",
+            "description": "The campaign's targeting with each segment's type. `regular` covers tags and saved segments; `advanced` covers advanced segments. Segment IDs alone cannot distinguish the two. Returned when you get or update a single campaign. Omitted from list and create responses, for campaigns that send to the whole audience, and for older campaigns saved before segment types were recorded. Read-only: `PATCH` takes `segments` and `excluded_segments`, keeps the type of IDs already on the campaign, and adds new IDs (and IDs on older campaigns) as `regular`.",
+            "readOnly": true,
+            "properties": {
+              "inclusions": {
+                "type": "array",
+                "description": "The segments this campaign sends to.",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "The segment ID."
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "`regular` or `advanced`."
+                    }
+                  }
+                }
+              },
+              "exclusions": {
+                "type": "array",
+                "description": "The segments excluded from this campaign.",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "The segment ID."
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "`regular` or `advanced`."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "_links": {
+            "description": "A list of link types and descriptions for the API schema documents.",
+            "items": {
+              "description": "This object represents a link from the resource where it is found to another resource or action that may be performed.",
+              "properties": {
+                "href": {
+                  "description": "This property contains a fully-qualified URL that can be called to retrieve the linked resource or perform the linked action.",
+                  "readOnly": true,
+                  "title": "Href",
+                  "type": "string"
+                },
+                "method": {
+                  "description": "The HTTP method that should be used when accessing the URL defined in 'href'.",
+                  "enum": [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "PATCH",
+                    "DELETE",
+                    "OPTIONS",
+                    "HEAD"
+                  ],
+                  "readOnly": true,
+                  "title": "Method",
+                  "type": "string"
+                },
+                "rel": {
+                  "description": "As with an HTML 'rel' attribute, this describes the type of link.",
+                  "readOnly": true,
+                  "title": "Rel",
+                  "type": "string"
+                },
+                "schema": {
+                  "description": "For HTTP methods that can receive bodies (POST and PUT), this is a URL representing the schema that the body should conform to.",
+                  "readOnly": true,
+                  "title": "Schema",
+                  "type": "string"
+                },
+                "targetSchema": {
+                  "description": "For GETs, this is a URL representing the schema that the response should conform to.",
+                  "readOnly": true,
+                  "title": "Target Schema",
+                  "type": "string"
+                }
+              },
+              "title": "Resource Link",
+              "type": "object"
+            },
+            "readOnly": true,
+            "title": "Links",
+            "type": "array"
+          }
+        }
+      },
       "GalleryFile": {
         "description": "An individual file listed in the File Manager.",
         "properties": {
@@ -9320,146 +9812,6 @@
         },
         "title": "E-commerce Promo Rule",
         "type": "object"
-      },
-      "SmsCampaign": {
-        "type": "object",
-        "title": "SMS Campaign",
-        "description": "A single SMS campaign.",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "A string that uniquely identifies this campaign.",
-            "readOnly": true
-          },
-          "web_id": {
-            "type": "string",
-            "description": "The ID used in the Mailchimp web application.",
-            "readOnly": true
-          },
-          "name": {
-            "type": "string",
-            "description": "The name of the campaign."
-          },
-          "status": {
-            "type": "string",
-            "description": "The current status of the campaign.",
-            "readOnly": true
-          },
-          "channel": {
-            "type": "string",
-            "description": "The channel for this campaign (sms or whatsapp).",
-            "readOnly": true
-          },
-          "list_id": {
-            "type": "integer",
-            "description": "The numeric ID of the list associated with this campaign.",
-            "readOnly": true
-          },
-          "recipient_count": {
-            "type": "integer",
-            "description": "The number of recipients for this campaign.",
-            "readOnly": true
-          },
-          "create_time": {
-            "type": "string",
-            "format": "date-time",
-            "description": "The date and time the campaign was created.",
-            "readOnly": true
-          },
-          "send_time": {
-            "type": "string",
-            "format": "date-time",
-            "description": "The date and time the campaign is scheduled to send.",
-            "readOnly": true
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time",
-            "description": "The date and time the campaign was last updated.",
-            "readOnly": true
-          },
-          "expire_time": {
-            "type": "string",
-            "format": "date-time",
-            "description": "The date and time the campaign will stop sending in ISO 8601 format.",
-            "readOnly": true
-          },
-          "is_send_now": {
-            "type": "boolean",
-            "description": "Whether the campaign is configured to send immediately.",
-            "readOnly": true
-          },
-          "folder_id": {
-            "type": "string",
-            "description": "The ID of the folder this campaign is in."
-          },
-          "segments": {
-            "type": "array",
-            "description": "The segment IDs used to target recipients for this campaign.",
-            "items": {
-              "type": "integer"
-            }
-          },
-          "excluded_segments": {
-            "type": "array",
-            "description": "The segment IDs excluded from receiving this campaign.",
-            "items": {
-              "type": "integer"
-            }
-          },
-          "_links": {
-            "description": "A list of link types and descriptions for the API schema documents.",
-            "items": {
-              "description": "This object represents a link from the resource where it is found to another resource or action that may be performed.",
-              "properties": {
-                "href": {
-                  "description": "This property contains a fully-qualified URL that can be called to retrieve the linked resource or perform the linked action.",
-                  "readOnly": true,
-                  "title": "Href",
-                  "type": "string"
-                },
-                "method": {
-                  "description": "The HTTP method that should be used when accessing the URL defined in 'href'.",
-                  "enum": [
-                    "GET",
-                    "POST",
-                    "PUT",
-                    "PATCH",
-                    "DELETE",
-                    "OPTIONS",
-                    "HEAD"
-                  ],
-                  "readOnly": true,
-                  "title": "Method",
-                  "type": "string"
-                },
-                "rel": {
-                  "description": "As with an HTML 'rel' attribute, this describes the type of link.",
-                  "readOnly": true,
-                  "title": "Rel",
-                  "type": "string"
-                },
-                "schema": {
-                  "description": "For HTTP methods that can receive bodies (POST and PUT), this is a URL representing the schema that the body should conform to.",
-                  "readOnly": true,
-                  "title": "Schema",
-                  "type": "string"
-                },
-                "targetSchema": {
-                  "description": "For GETs, this is a URL representing the schema that the response should conform to.",
-                  "readOnly": true,
-                  "title": "Target Schema",
-                  "type": "string"
-                }
-              },
-              "title": "Resource Link",
-              "type": "object"
-            },
-            "readOnly": true,
-            "title": "Links",
-            "type": "array"
-          }
-        }
       },
       "ECommerceCart": {
         "description": "Information about a specific cart.",
@@ -18344,6 +18696,1565 @@
     "/3.0/audiences/{audience_id}/partners/segments/{segment_id}/snapshots/{snapshot_id}": {},
     "/3.0/audiences/{audience_id}/partners/segments/{segment_id}/snapshots/{snapshot_id}/email-members": {},
     "/3.0/audiences/{audience_id}/partners/segments/{segment_id}/snapshots/{snapshot_id}/members": {},
+    "/3.0/segments": {
+      "get": {
+        "deprecated": false,
+        "description": "Get the segments of a list. The response contains only metadata. It includes advanced segments and read-only segments that other Mailchimp tools made, for example Google Analytics segments and segments from the AI segment builder. The `read_only` property of each segment shows if you can update it.",
+        "operationId": "getSegmentList",
+        "parameters": [
+          {
+            "description": "A comma-separated list of fields to return. Reference parameters of sub-objects with dot notation.",
+            "explode": false,
+            "in": "query",
+            "name": "fields",
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "x-title": "Fields"
+            },
+            "style": "form",
+            "x-title": "Fields"
+          },
+          {
+            "description": "A comma-separated list of fields to exclude. Reference parameters of sub-objects with dot notation.",
+            "explode": false,
+            "in": "query",
+            "name": "exclude_fields",
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "x-title": "Exclude Fields"
+            },
+            "style": "form",
+            "x-title": "Exclude Fields"
+          },
+          {
+            "description": "The number of segments to return. The default is 10. Use a whole number from 1 to 1000. If you use a different value, the API returns a 400 error. The API does not change the value.",
+            "in": "query",
+            "name": "count",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "maximum": 1000,
+              "minimum": 1,
+              "type": "integer",
+              "x-title": "Count"
+            },
+            "x-title": "Count"
+          },
+          {
+            "description": "To get the next page of segments, set `cursor` to the `next_cursor` value from the previous response. Do not make or change a cursor value. If you do, pagination can stop without notice. To get the first page, do not include `cursor`. If a response does not contain `next_cursor`, there are no more pages. If segments are created or deleted while you get the pages, the response can skip or repeat a segment.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "x-title": "cursor"
+            },
+            "x-title": "cursor"
+          },
+          {
+            "description": "The unique ID of the list to get segments from.",
+            "in": "query",
+            "name": "list_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "The field to sort the segments by.",
+            "in": "query",
+            "name": "sort_field",
+            "schema": {
+              "enum": [
+                "created_at",
+                "name"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "The sort direction. The default is DESC. Use ASC or DESC. The value is not case-sensitive. If you use a different value, the API returns a 400 error.",
+            "in": "query",
+            "name": "sort_dir",
+            "required": false,
+            "schema": {
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ],
+              "type": "string",
+              "x-title": "Sort Direction"
+            },
+            "x-title": "Sort Direction"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "A list of segments. Each segment contains only its metadata.",
+                  "properties": {
+                    "_links": {
+                      "description": "A list of link types and descriptions for the API schema documents.",
+                      "items": {
+                        "description": "This object represents a link from the resource where it is found to another resource or action that may be performed.",
+                        "properties": {
+                          "href": {
+                            "description": "This property contains a fully-qualified URL that can be called to retrieve the linked resource or perform the linked action.",
+                            "readOnly": true,
+                            "title": "Href",
+                            "type": "string"
+                          },
+                          "method": {
+                            "description": "The HTTP method that should be used when accessing the URL defined in 'href'.",
+                            "enum": [
+                              "GET",
+                              "POST",
+                              "PUT",
+                              "PATCH",
+                              "DELETE",
+                              "OPTIONS",
+                              "HEAD"
+                            ],
+                            "readOnly": true,
+                            "title": "Method",
+                            "type": "string"
+                          },
+                          "rel": {
+                            "description": "As with an HTML 'rel' attribute, this describes the type of link.",
+                            "readOnly": true,
+                            "title": "Rel",
+                            "type": "string"
+                          },
+                          "schema": {
+                            "description": "For HTTP methods that can receive bodies (POST and PUT), this is a URL representing the schema that the body should conform to.",
+                            "readOnly": true,
+                            "title": "Schema",
+                            "type": "string"
+                          },
+                          "targetSchema": {
+                            "description": "For GETs, this is a URL representing the schema that the response should conform to.",
+                            "readOnly": true,
+                            "title": "Target Schema",
+                            "type": "string"
+                          }
+                        },
+                        "title": "Resource Link",
+                        "type": "object"
+                      },
+                      "readOnly": true,
+                      "title": "Links",
+                      "type": "array"
+                    },
+                    "next_cursor": {
+                      "description": "A cursor pointing to the last item on this page of the collection. Paginate through a collection of records by setting the `cursor` parameter on a subsequent request to this value.",
+                      "readOnly": true,
+                      "title": "Next Cursor",
+                      "type": "string"
+                    },
+                    "segments": {
+                      "description": "The segments of the list. The `read_only` property of each segment shows if you can update it.",
+                      "items": {
+                        "description": "The metadata of a segment in the segment list. It does not include the `definition` or a member count. In this API version, Mailchimp does not change or remove existing fields, but Mailchimp can add new fields. Make sure that your client ignores fields that it does not know.",
+                        "properties": {
+                          "created_at": {
+                            "description": "The date and time when Mailchimp created the segment, in ISO 8601 format.",
+                            "example": "2025-01-15T10:30:00+00:00",
+                            "format": "date-time",
+                            "readOnly": true,
+                            "title": "Created At",
+                            "type": "string"
+                          },
+                          "id": {
+                            "description": "The unique ID of the segment. Do not parse or change this value. Use it exactly as you received it.",
+                            "example": "0dbaba26-0003-8000-8000-000000000919",
+                            "readOnly": true,
+                            "title": "Segment ID",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "list_id": {
+                            "description": "The unique ID of the list that contains the segment.",
+                            "example": "a1b2c3d4e5",
+                            "title": "List ID",
+                            "type": "string",
+                            "readOnly": true
+                          },
+                          "read_only": {
+                            "type": "boolean",
+                            "title": "Read Only",
+                            "description": "If true, you can read, count, and snapshot the segment, but you cannot update or delete it. Segments that other Mailchimp tools made, for example Google Analytics segments, are read-only. A read-only segment does not have a definition.",
+                            "readOnly": true
+                          },
+                          "name": {
+                            "description": "The name of the segment.",
+                            "example": "Example Segment",
+                            "title": "Segment Name",
+                            "type": "string"
+                          }
+                        },
+                        "title": "Segment (List Item)",
+                        "type": "object"
+                      },
+                      "title": "Segments",
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "description": "An error generated by the Mailchimp API. The response conforms to [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).",
+                  "properties": {
+                    "detail": {
+                      "description": "A human-readable explanation specific to this occurrence of the problem. [Learn more about errors](/developer/guides/get-started-with-mailchimp-api-3/#Errors).",
+                      "examples": [
+                        "The requested resource could not be found."
+                      ],
+                      "title": "Error Message",
+                      "type": "string"
+                    },
+                    "instance": {
+                      "description": "A string that identifies this specific occurrence of the problem. Please provide this ID when contacting support.",
+                      "examples": [
+                        "995c5cb0-3280-4a6e-808b-3b096d0bb219"
+                      ],
+                      "title": "Instance ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The HTTP status code (RFC2616, Section 6) generated by the origin server for this occurrence of the problem.",
+                      "examples": [
+                        404
+                      ],
+                      "title": "HTTP Status Code",
+                      "type": "integer"
+                    },
+                    "title": {
+                      "description": "A short, human-readable summary of the problem type. It shouldn't change based on the occurrence of the problem, except for purposes of localization.",
+                      "examples": [
+                        "Resource Not Found"
+                      ],
+                      "title": "Error Title",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "An absolute URI that identifies the problem type. When dereferenced, it should provide human-readable documentation for the problem type.",
+                      "examples": [
+                        "https://mailchimp.com/developer/marketing/docs/errors/"
+                      ],
+                      "title": "Problem Type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "detail",
+                    "instance",
+                    "status",
+                    "title",
+                    "type"
+                  ],
+                  "title": "Problem Detail Document",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "An error generated by the Mailchimp API."
+          }
+        },
+        "summary": "List Segments",
+        "tags": [
+          "segments"
+        ],
+        "x-custom-config": {
+          "methodNameCamel": "listSegmentList",
+          "methodNameSnake": "list_segment_list"
+        }
+      },
+      "post": {
+        "description": "Create an advanced segment from a segment definition. The account's plan must include advanced segmentation. If it does not, the API returns a 403 error.",
+        "operationId": "createSegment",
+        "requestBody": {
+          "description": "The advanced segment to create.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "description": "The advanced segment to create.",
+                "properties": {
+                  "definition": {
+                    "$ref": "#/components/schemas/SegmentDefinition"
+                  },
+                  "list_id": {
+                    "description": "The unique ID of the list that contains the segment.",
+                    "example": "a1b2c3d4e5",
+                    "title": "List ID",
+                    "type": "string"
+                  },
+                  "name": {
+                    "description": "The name of the segment.",
+                    "example": "Example Segment",
+                    "title": "Segment Name",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "list_id",
+                  "definition"
+                ],
+                "title": "Segment",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "A segment. It is an advanced segment, or a read-only segment that a different Mailchimp tool made. In this API version, Mailchimp does not change or remove existing fields, but Mailchimp can add new fields. Make sure that your client ignores fields that it does not know.",
+                  "properties": {
+                    "created_at": {
+                      "description": "The date and time when Mailchimp created the segment, in ISO 8601 format.",
+                      "example": "2025-01-15T10:30:00+00:00",
+                      "format": "date-time",
+                      "readOnly": true,
+                      "title": "Created At",
+                      "type": "string"
+                    },
+                    "definition": {
+                      "type": "object",
+                      "title": "Segment Definition",
+                      "description": "The segment definition. Read-only segments do not have a definition, so the response does not include this property for them. It contains the `match` and `conditions` that you sent, the current `schema_version`, and the `contacts` object. In the `contacts` object, each entry selects exactly one subscription status. The request body of Add Segment shows all properties of a definition.",
+                      "additionalProperties": {
+                        "description": "The properties of the definition: `schema_version`, `contacts`, `match`, and `conditions`."
+                      }
+                    },
+                    "id": {
+                      "description": "The unique ID of the segment. Do not parse or change this value. Use it exactly as you received it.",
+                      "example": "0dbaba26-0003-8000-8000-000000000919",
+                      "readOnly": true,
+                      "title": "Segment ID",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "list_id": {
+                      "description": "The unique ID of the list that contains the segment.",
+                      "example": "a1b2c3d4e5",
+                      "title": "List ID",
+                      "type": "string",
+                      "readOnly": true
+                    },
+                    "read_only": {
+                      "type": "boolean",
+                      "title": "Read Only",
+                      "description": "If true, you can read, count, and snapshot the segment, but you cannot update or delete it. Segments that other Mailchimp tools made, for example Google Analytics segments, are read-only. A read-only segment does not have a definition.",
+                      "readOnly": true
+                    },
+                    "name": {
+                      "description": "The name of the segment.",
+                      "example": "Example Segment",
+                      "title": "Segment Name",
+                      "type": "string"
+                    }
+                  },
+                  "title": "Segment",
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "description": "An error generated by the Mailchimp API. The response conforms to [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).",
+                  "properties": {
+                    "detail": {
+                      "description": "A human-readable explanation specific to this occurrence of the problem. [Learn more about errors](/developer/guides/get-started-with-mailchimp-api-3/#Errors).",
+                      "examples": [
+                        "The requested resource could not be found."
+                      ],
+                      "title": "Error Message",
+                      "type": "string"
+                    },
+                    "instance": {
+                      "description": "A string that identifies this specific occurrence of the problem. Please provide this ID when contacting support.",
+                      "examples": [
+                        "995c5cb0-3280-4a6e-808b-3b096d0bb219"
+                      ],
+                      "title": "Instance ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The HTTP status code (RFC2616, Section 6) generated by the origin server for this occurrence of the problem.",
+                      "examples": [
+                        404
+                      ],
+                      "title": "HTTP Status Code",
+                      "type": "integer"
+                    },
+                    "title": {
+                      "description": "A short, human-readable summary of the problem type. It shouldn't change based on the occurrence of the problem, except for purposes of localization.",
+                      "examples": [
+                        "Resource Not Found"
+                      ],
+                      "title": "Error Title",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "An absolute URI that identifies the problem type. When dereferenced, it should provide human-readable documentation for the problem type.",
+                      "examples": [
+                        "https://mailchimp.com/developer/marketing/docs/errors/"
+                      ],
+                      "title": "Problem Type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "detail",
+                    "instance",
+                    "status",
+                    "title",
+                    "type"
+                  ],
+                  "title": "Problem Detail Document",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "An error generated by the Mailchimp API."
+          }
+        },
+        "summary": "Add Segment",
+        "tags": [
+          "segments"
+        ],
+        "x-custom-config": {
+          "methodNameCamel": "createSegment",
+          "methodNameSnake": "create_segment"
+        }
+      }
+    },
+    "/3.0/segments/{segment_id}": {
+      "delete": {
+        "description": "Delete an advanced segment. You cannot delete a read-only segment.",
+        "operationId": "deleteSegment",
+        "parameters": [
+          {
+            "description": "The unique id for the segment.",
+            "in": "path",
+            "name": "segment_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Segment ID"
+            },
+            "x-title": "Segment ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "content": {},
+            "description": "Empty Response"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "description": "An error generated by the Mailchimp API. The response conforms to [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).",
+                  "properties": {
+                    "detail": {
+                      "description": "A human-readable explanation specific to this occurrence of the problem. [Learn more about errors](/developer/guides/get-started-with-mailchimp-api-3/#Errors).",
+                      "examples": [
+                        "The requested resource could not be found."
+                      ],
+                      "title": "Error Message",
+                      "type": "string"
+                    },
+                    "instance": {
+                      "description": "A string that identifies this specific occurrence of the problem. Please provide this ID when contacting support.",
+                      "examples": [
+                        "995c5cb0-3280-4a6e-808b-3b096d0bb219"
+                      ],
+                      "title": "Instance ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The HTTP status code (RFC2616, Section 6) generated by the origin server for this occurrence of the problem.",
+                      "examples": [
+                        404
+                      ],
+                      "title": "HTTP Status Code",
+                      "type": "integer"
+                    },
+                    "title": {
+                      "description": "A short, human-readable summary of the problem type. It shouldn't change based on the occurrence of the problem, except for purposes of localization.",
+                      "examples": [
+                        "Resource Not Found"
+                      ],
+                      "title": "Error Title",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "An absolute URI that identifies the problem type. When dereferenced, it should provide human-readable documentation for the problem type.",
+                      "examples": [
+                        "https://mailchimp.com/developer/marketing/docs/errors/"
+                      ],
+                      "title": "Problem Type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "detail",
+                    "instance",
+                    "status",
+                    "title",
+                    "type"
+                  ],
+                  "title": "Problem Detail Document",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "An error generated by the Mailchimp API."
+          }
+        },
+        "summary": "Delete Segment",
+        "tags": [
+          "segments"
+        ],
+        "x-custom-config": {
+          "methodNameCamel": "deleteSegment",
+          "methodNameSnake": "delete_segment"
+        }
+      },
+      "get": {
+        "description": "Get the metadata of a segment. If the segment is not read-only, the response also contains its definition. Read-only segments do not have a definition.",
+        "operationId": "getSegment",
+        "parameters": [
+          {
+            "description": "A comma-separated list of fields to return. Reference parameters of sub-objects with dot notation.",
+            "explode": false,
+            "in": "query",
+            "name": "fields",
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "x-title": "Fields"
+            },
+            "style": "form",
+            "x-title": "Fields"
+          },
+          {
+            "description": "A comma-separated list of fields to exclude. Reference parameters of sub-objects with dot notation.",
+            "explode": false,
+            "in": "query",
+            "name": "exclude_fields",
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "x-title": "Exclude Fields"
+            },
+            "style": "form",
+            "x-title": "Exclude Fields"
+          },
+          {
+            "description": "The unique id for the segment.",
+            "in": "path",
+            "name": "segment_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Segment ID"
+            },
+            "x-title": "Segment ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "A segment. It is an advanced segment, or a read-only segment that a different Mailchimp tool made. In this API version, Mailchimp does not change or remove existing fields, but Mailchimp can add new fields. Make sure that your client ignores fields that it does not know.",
+                  "properties": {
+                    "created_at": {
+                      "description": "The date and time when Mailchimp created the segment, in ISO 8601 format.",
+                      "example": "2025-01-15T10:30:00+00:00",
+                      "format": "date-time",
+                      "readOnly": true,
+                      "title": "Created At",
+                      "type": "string"
+                    },
+                    "definition": {
+                      "type": "object",
+                      "title": "Segment Definition",
+                      "description": "The segment definition. Read-only segments do not have a definition, so the response does not include this property for them. It contains the `match` and `conditions` that you sent, the current `schema_version`, and the `contacts` object. In the `contacts` object, each entry selects exactly one subscription status. The request body of Add Segment shows all properties of a definition.",
+                      "additionalProperties": {
+                        "description": "The properties of the definition: `schema_version`, `contacts`, `match`, and `conditions`."
+                      }
+                    },
+                    "id": {
+                      "description": "The unique ID of the segment. Do not parse or change this value. Use it exactly as you received it.",
+                      "example": "0dbaba26-0003-8000-8000-000000000919",
+                      "readOnly": true,
+                      "title": "Segment ID",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "list_id": {
+                      "description": "The unique ID of the list that contains the segment.",
+                      "example": "a1b2c3d4e5",
+                      "title": "List ID",
+                      "type": "string",
+                      "readOnly": true
+                    },
+                    "read_only": {
+                      "type": "boolean",
+                      "title": "Read Only",
+                      "description": "If true, you can read, count, and snapshot the segment, but you cannot update or delete it. Segments that other Mailchimp tools made, for example Google Analytics segments, are read-only. A read-only segment does not have a definition.",
+                      "readOnly": true
+                    },
+                    "name": {
+                      "description": "The name of the segment.",
+                      "example": "Example Segment",
+                      "title": "Segment Name",
+                      "type": "string"
+                    }
+                  },
+                  "title": "Segment",
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "description": "An error generated by the Mailchimp API. The response conforms to [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).",
+                  "properties": {
+                    "detail": {
+                      "description": "A human-readable explanation specific to this occurrence of the problem. [Learn more about errors](/developer/guides/get-started-with-mailchimp-api-3/#Errors).",
+                      "examples": [
+                        "The requested resource could not be found."
+                      ],
+                      "title": "Error Message",
+                      "type": "string"
+                    },
+                    "instance": {
+                      "description": "A string that identifies this specific occurrence of the problem. Please provide this ID when contacting support.",
+                      "examples": [
+                        "995c5cb0-3280-4a6e-808b-3b096d0bb219"
+                      ],
+                      "title": "Instance ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The HTTP status code (RFC2616, Section 6) generated by the origin server for this occurrence of the problem.",
+                      "examples": [
+                        404
+                      ],
+                      "title": "HTTP Status Code",
+                      "type": "integer"
+                    },
+                    "title": {
+                      "description": "A short, human-readable summary of the problem type. It shouldn't change based on the occurrence of the problem, except for purposes of localization.",
+                      "examples": [
+                        "Resource Not Found"
+                      ],
+                      "title": "Error Title",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "An absolute URI that identifies the problem type. When dereferenced, it should provide human-readable documentation for the problem type.",
+                      "examples": [
+                        "https://mailchimp.com/developer/marketing/docs/errors/"
+                      ],
+                      "title": "Problem Type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "detail",
+                    "instance",
+                    "status",
+                    "title",
+                    "type"
+                  ],
+                  "title": "Problem Detail Document",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "An error generated by the Mailchimp API."
+          }
+        },
+        "summary": "Get Segment",
+        "tags": [
+          "segments"
+        ],
+        "x-custom-config": {
+          "methodNameCamel": "getSegment",
+          "methodNameSnake": "get_segment"
+        }
+      },
+      "patch": {
+        "description": "Update the name, the definition, or both of an advanced segment. You cannot update a read-only segment. The account's plan must include advanced segmentation. If it does not, the API returns a 403 error. You cannot change `list_id` or `read_only`. If a request includes one of them, the API returns a 400 error.",
+        "operationId": "updateSegment",
+        "parameters": [
+          {
+            "description": "The unique id for the segment.",
+            "in": "path",
+            "name": "segment_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Segment ID"
+            },
+            "x-title": "Segment ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "description": "The changes to an advanced segment. You must include `name`, `definition`, or both.",
+                "properties": {
+                  "definition": {
+                    "$ref": "#/components/schemas/SegmentDefinition"
+                  },
+                  "name": {
+                    "description": "The name of the segment.",
+                    "example": "Example Segment",
+                    "title": "Segment Name",
+                    "type": "string"
+                  }
+                },
+                "title": "Segment",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "A segment. It is an advanced segment, or a read-only segment that a different Mailchimp tool made. In this API version, Mailchimp does not change or remove existing fields, but Mailchimp can add new fields. Make sure that your client ignores fields that it does not know.",
+                  "properties": {
+                    "created_at": {
+                      "description": "The date and time when Mailchimp created the segment, in ISO 8601 format.",
+                      "example": "2025-01-15T10:30:00+00:00",
+                      "format": "date-time",
+                      "readOnly": true,
+                      "title": "Created At",
+                      "type": "string"
+                    },
+                    "definition": {
+                      "type": "object",
+                      "title": "Segment Definition",
+                      "description": "The segment definition. Read-only segments do not have a definition, so the response does not include this property for them. It contains the `match` and `conditions` that you sent, the current `schema_version`, and the `contacts` object. In the `contacts` object, each entry selects exactly one subscription status. The request body of Add Segment shows all properties of a definition.",
+                      "additionalProperties": {
+                        "description": "The properties of the definition: `schema_version`, `contacts`, `match`, and `conditions`."
+                      }
+                    },
+                    "id": {
+                      "description": "The unique ID of the segment. Do not parse or change this value. Use it exactly as you received it.",
+                      "example": "0dbaba26-0003-8000-8000-000000000919",
+                      "readOnly": true,
+                      "title": "Segment ID",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "list_id": {
+                      "description": "The unique ID of the list that contains the segment.",
+                      "example": "a1b2c3d4e5",
+                      "title": "List ID",
+                      "type": "string",
+                      "readOnly": true
+                    },
+                    "read_only": {
+                      "type": "boolean",
+                      "title": "Read Only",
+                      "description": "If true, you can read, count, and snapshot the segment, but you cannot update or delete it. Segments that other Mailchimp tools made, for example Google Analytics segments, are read-only. A read-only segment does not have a definition.",
+                      "readOnly": true
+                    },
+                    "name": {
+                      "description": "The name of the segment.",
+                      "example": "Example Segment",
+                      "title": "Segment Name",
+                      "type": "string"
+                    }
+                  },
+                  "title": "Segment",
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "description": "An error generated by the Mailchimp API. The response conforms to [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).",
+                  "properties": {
+                    "detail": {
+                      "description": "A human-readable explanation specific to this occurrence of the problem. [Learn more about errors](/developer/guides/get-started-with-mailchimp-api-3/#Errors).",
+                      "examples": [
+                        "The requested resource could not be found."
+                      ],
+                      "title": "Error Message",
+                      "type": "string"
+                    },
+                    "instance": {
+                      "description": "A string that identifies this specific occurrence of the problem. Please provide this ID when contacting support.",
+                      "examples": [
+                        "995c5cb0-3280-4a6e-808b-3b096d0bb219"
+                      ],
+                      "title": "Instance ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The HTTP status code (RFC2616, Section 6) generated by the origin server for this occurrence of the problem.",
+                      "examples": [
+                        404
+                      ],
+                      "title": "HTTP Status Code",
+                      "type": "integer"
+                    },
+                    "title": {
+                      "description": "A short, human-readable summary of the problem type. It shouldn't change based on the occurrence of the problem, except for purposes of localization.",
+                      "examples": [
+                        "Resource Not Found"
+                      ],
+                      "title": "Error Title",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "An absolute URI that identifies the problem type. When dereferenced, it should provide human-readable documentation for the problem type.",
+                      "examples": [
+                        "https://mailchimp.com/developer/marketing/docs/errors/"
+                      ],
+                      "title": "Problem Type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "detail",
+                    "instance",
+                    "status",
+                    "title",
+                    "type"
+                  ],
+                  "title": "Problem Detail Document",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "An error generated by the Mailchimp API."
+          }
+        },
+        "summary": "Update Segment",
+        "tags": [
+          "segments"
+        ],
+        "x-custom-config": {
+          "methodNameCamel": "updateSegment",
+          "methodNameSnake": "update_segment"
+        }
+      }
+    },
+    "/3.0/segments/{segment_id}/snapshots": {
+      "post": {
+        "description": "Start a snapshot of the members of a segment. The API makes the snapshot in the background. Use Get Segment Snapshot to see its status. To snapshot an advanced segment, the account's plan must include advanced segmentation. If it does not, the API returns a 403 error. Other types of segment do not need advanced segmentation.",
+        "operationId": "createSegmentSnapshot",
+        "parameters": [
+          {
+            "description": "The unique id for the segment.",
+            "in": "path",
+            "name": "segment_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Segment ID"
+            },
+            "x-title": "Segment ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "A segment snapshot.",
+                  "properties": {
+                    "id": {
+                      "description": "The unique ID of the snapshot.",
+                      "example": "b1b49562-5a44-4ebd-822c-5e215f66f679",
+                      "readOnly": true,
+                      "title": "Snapshot ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The status of the snapshot.",
+                      "enum": [
+                        "pending",
+                        "running",
+                        "completed",
+                        "failed",
+                        "canceled"
+                      ],
+                      "example": "pending",
+                      "readOnly": true,
+                      "title": "Snapshot status",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "The snapshot request that the API accepted."
+          },
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "A segment snapshot.",
+                  "properties": {
+                    "id": {
+                      "description": "The unique ID of the snapshot.",
+                      "example": "b1b49562-5a44-4ebd-822c-5e215f66f679",
+                      "readOnly": true,
+                      "title": "Snapshot ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The status of the snapshot.",
+                      "enum": [
+                        "pending",
+                        "running",
+                        "completed",
+                        "failed",
+                        "canceled"
+                      ],
+                      "example": "pending",
+                      "readOnly": true,
+                      "title": "Snapshot status",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "The API accepted the snapshot request."
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "description": "An error generated by the Mailchimp API. The response conforms to [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).",
+                  "properties": {
+                    "detail": {
+                      "description": "A human-readable explanation specific to this occurrence of the problem. [Learn more about errors](/developer/guides/get-started-with-mailchimp-api-3/#Errors).",
+                      "examples": [
+                        "The requested resource could not be found."
+                      ],
+                      "title": "Error Message",
+                      "type": "string"
+                    },
+                    "instance": {
+                      "description": "A string that identifies this specific occurrence of the problem. Please provide this ID when contacting support.",
+                      "examples": [
+                        "995c5cb0-3280-4a6e-808b-3b096d0bb219"
+                      ],
+                      "title": "Instance ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The HTTP status code (RFC2616, Section 6) generated by the origin server for this occurrence of the problem.",
+                      "examples": [
+                        404
+                      ],
+                      "title": "HTTP Status Code",
+                      "type": "integer"
+                    },
+                    "title": {
+                      "description": "A short, human-readable summary of the problem type. It shouldn't change based on the occurrence of the problem, except for purposes of localization.",
+                      "examples": [
+                        "Resource Not Found"
+                      ],
+                      "title": "Error Title",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "An absolute URI that identifies the problem type. When dereferenced, it should provide human-readable documentation for the problem type.",
+                      "examples": [
+                        "https://mailchimp.com/developer/marketing/docs/errors/"
+                      ],
+                      "title": "Problem Type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "detail",
+                    "instance",
+                    "status",
+                    "title",
+                    "type"
+                  ],
+                  "title": "Problem Detail Document",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "An error generated by the Mailchimp API."
+          }
+        },
+        "summary": "Snapshot a Segment",
+        "tags": [
+          "segments",
+          "snapshots"
+        ],
+        "x-custom-config": {
+          "methodNameCamel": "createSegmentSnapshot",
+          "methodNameSnake": "create_segment_snapshot"
+        }
+      }
+    },
+    "/3.0/segments/{segment_id}/snapshots/{snapshot_id}": {
+      "get": {
+        "description": "Get the status of a segment snapshot.",
+        "operationId": "getSegmentSnapshot",
+        "parameters": [
+          {
+            "description": "The unique id for the segment.",
+            "in": "path",
+            "name": "segment_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Segment ID"
+            },
+            "x-title": "Segment ID"
+          },
+          {
+            "description": "The unique id for the snapshot.",
+            "in": "path",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Snapshot ID"
+            },
+            "x-title": "Snapshot ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "A segment snapshot.",
+                  "properties": {
+                    "id": {
+                      "description": "The unique ID of the snapshot.",
+                      "example": "b1b49562-5a44-4ebd-822c-5e215f66f679",
+                      "readOnly": true,
+                      "title": "Snapshot ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The status of the snapshot.",
+                      "enum": [
+                        "pending",
+                        "running",
+                        "completed",
+                        "failed",
+                        "canceled"
+                      ],
+                      "example": "pending",
+                      "readOnly": true,
+                      "title": "Snapshot status",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "description": "An error generated by the Mailchimp API. The response conforms to [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).",
+                  "properties": {
+                    "detail": {
+                      "description": "A human-readable explanation specific to this occurrence of the problem. [Learn more about errors](/developer/guides/get-started-with-mailchimp-api-3/#Errors).",
+                      "examples": [
+                        "The requested resource could not be found."
+                      ],
+                      "title": "Error Message",
+                      "type": "string"
+                    },
+                    "instance": {
+                      "description": "A string that identifies this specific occurrence of the problem. Please provide this ID when contacting support.",
+                      "examples": [
+                        "995c5cb0-3280-4a6e-808b-3b096d0bb219"
+                      ],
+                      "title": "Instance ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The HTTP status code (RFC2616, Section 6) generated by the origin server for this occurrence of the problem.",
+                      "examples": [
+                        404
+                      ],
+                      "title": "HTTP Status Code",
+                      "type": "integer"
+                    },
+                    "title": {
+                      "description": "A short, human-readable summary of the problem type. It shouldn't change based on the occurrence of the problem, except for purposes of localization.",
+                      "examples": [
+                        "Resource Not Found"
+                      ],
+                      "title": "Error Title",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "An absolute URI that identifies the problem type. When dereferenced, it should provide human-readable documentation for the problem type.",
+                      "examples": [
+                        "https://mailchimp.com/developer/marketing/docs/errors/"
+                      ],
+                      "title": "Problem Type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "detail",
+                    "instance",
+                    "status",
+                    "title",
+                    "type"
+                  ],
+                  "title": "Problem Detail Document",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "An error generated by the Mailchimp API."
+          }
+        },
+        "summary": "Get Segment Snapshot",
+        "tags": [
+          "segments",
+          "snapshots"
+        ],
+        "x-custom-config": {
+          "methodNameCamel": "getSegmentSnapshot",
+          "methodNameSnake": "get_segment_snapshot"
+        }
+      }
+    },
+    "/3.0/segments/{segment_id}/snapshots/{snapshot_id}/members": {
+      "get": {
+        "deprecated": false,
+        "description": "Get the contact IDs of the members in a segment snapshot, one page at a time.",
+        "operationId": "getSegmentSnapshotContactIdList",
+        "parameters": [
+          {
+            "description": "A comma-separated list of fields to return. Reference parameters of sub-objects with dot notation.",
+            "explode": false,
+            "in": "query",
+            "name": "fields",
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "x-title": "Fields"
+            },
+            "style": "form",
+            "x-title": "Fields"
+          },
+          {
+            "description": "A comma-separated list of fields to exclude. Reference parameters of sub-objects with dot notation.",
+            "explode": false,
+            "in": "query",
+            "name": "exclude_fields",
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "x-title": "Exclude Fields"
+            },
+            "style": "form",
+            "x-title": "Exclude Fields"
+          },
+          {
+            "description": "The number of records to return. Default value is 10. Maximum value is 1000",
+            "in": "query",
+            "name": "count",
+            "schema": {
+              "default": 10,
+              "maximum": 1000,
+              "type": "integer",
+              "x-title": "Count"
+            },
+            "x-title": "Count"
+          },
+          {
+            "description": "The number of members to return in one page. The default is 100000. The maximum is 500000.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100000,
+              "maximum": 500000,
+              "type": "integer",
+              "x-title": "Limit"
+            },
+            "x-title": "Limit"
+          },
+          {
+            "description": "Paginate through a collection of records by setting the `cursor` parameter to a `next_cursor` attribute returned by a previous request. Default value fetches the first \"page\" of results.",
+            "in": "query",
+            "name": "cursor",
+            "schema": {
+              "type": "string",
+              "x-title": "cursor"
+            },
+            "x-title": "cursor"
+          },
+          {
+            "description": "The unique id for the segment.",
+            "in": "path",
+            "name": "segment_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Segment ID"
+            },
+            "x-title": "Segment ID"
+          },
+          {
+            "description": "The unique id for the snapshot.",
+            "in": "path",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Snapshot ID"
+            },
+            "x-title": "Snapshot ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "A list of the members in a segment snapshot.",
+                  "properties": {
+                    "_links": {
+                      "description": "A list of link types and descriptions for the API schema documents.",
+                      "items": {
+                        "description": "This object represents a link from the resource where it is found to another resource or action that may be performed.",
+                        "properties": {
+                          "href": {
+                            "description": "This property contains a fully-qualified URL that can be called to retrieve the linked resource or perform the linked action.",
+                            "readOnly": true,
+                            "title": "Href",
+                            "type": "string"
+                          },
+                          "method": {
+                            "description": "The HTTP method that should be used when accessing the URL defined in 'href'.",
+                            "enum": [
+                              "GET",
+                              "POST",
+                              "PUT",
+                              "PATCH",
+                              "DELETE",
+                              "OPTIONS",
+                              "HEAD"
+                            ],
+                            "readOnly": true,
+                            "title": "Method",
+                            "type": "string"
+                          },
+                          "rel": {
+                            "description": "As with an HTML 'rel' attribute, this describes the type of link.",
+                            "readOnly": true,
+                            "title": "Rel",
+                            "type": "string"
+                          },
+                          "schema": {
+                            "description": "For HTTP methods that can receive bodies (POST and PUT), this is a URL representing the schema that the body should conform to.",
+                            "readOnly": true,
+                            "title": "Schema",
+                            "type": "string"
+                          },
+                          "targetSchema": {
+                            "description": "For GETs, this is a URL representing the schema that the response should conform to.",
+                            "readOnly": true,
+                            "title": "Target Schema",
+                            "type": "string"
+                          }
+                        },
+                        "title": "Resource Link",
+                        "type": "object"
+                      },
+                      "readOnly": true,
+                      "title": "Links",
+                      "type": "array"
+                    },
+                    "members": {
+                      "description": "A list of the members in a segment snapshot.",
+                      "items": {
+                        "description": "A member of a segment snapshot. The contact ID identifies the member.",
+                        "properties": {
+                          "contact_id": {
+                            "description": "The contact ID of the segment member.",
+                            "example": "abc123def456",
+                            "title": "Contact ID",
+                            "type": "string"
+                          }
+                        },
+                        "title": "Segment Member",
+                        "type": "object"
+                      },
+                      "title": "Segment Members",
+                      "type": "array"
+                    },
+                    "next_cursor": {
+                      "description": "A cursor pointing to the last item on this page of the collection. Paginate through a collection of records by setting the `cursor` parameter on a subsequent request to this value.",
+                      "readOnly": true,
+                      "title": "Next Cursor",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "The API returns this when the snapshot is complete."
+          },
+          "202": {
+            "description": "The API returns this when the snapshot is not complete."
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "description": "An error generated by the Mailchimp API. The response conforms to [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).",
+                  "properties": {
+                    "detail": {
+                      "description": "A human-readable explanation specific to this occurrence of the problem. [Learn more about errors](/developer/guides/get-started-with-mailchimp-api-3/#Errors).",
+                      "examples": [
+                        "The requested resource could not be found."
+                      ],
+                      "title": "Error Message",
+                      "type": "string"
+                    },
+                    "instance": {
+                      "description": "A string that identifies this specific occurrence of the problem. Please provide this ID when contacting support.",
+                      "examples": [
+                        "995c5cb0-3280-4a6e-808b-3b096d0bb219"
+                      ],
+                      "title": "Instance ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The HTTP status code (RFC2616, Section 6) generated by the origin server for this occurrence of the problem.",
+                      "examples": [
+                        404
+                      ],
+                      "title": "HTTP Status Code",
+                      "type": "integer"
+                    },
+                    "title": {
+                      "description": "A short, human-readable summary of the problem type. It shouldn't change based on the occurrence of the problem, except for purposes of localization.",
+                      "examples": [
+                        "Resource Not Found"
+                      ],
+                      "title": "Error Title",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "An absolute URI that identifies the problem type. When dereferenced, it should provide human-readable documentation for the problem type.",
+                      "examples": [
+                        "https://mailchimp.com/developer/marketing/docs/errors/"
+                      ],
+                      "title": "Problem Type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "detail",
+                    "instance",
+                    "status",
+                    "title",
+                    "type"
+                  ],
+                  "title": "Problem Detail Document",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "An error generated by the Mailchimp API."
+          }
+        },
+        "summary": "Get Snapshot Member Contact IDs",
+        "tags": [
+          "segments",
+          "snapshots"
+        ],
+        "x-custom-config": {
+          "methodNameCamel": "listSegmentSnapshotContactIdList",
+          "methodNameSnake": "list_segment_snapshot_contact_id_list"
+        }
+      }
+    },
+    "/3.0/segments/{segment_id}/count": {
+      "get": {
+        "description": "Get the current number of members in a segment. If there is no recent count, the API calculates a new count. The request waits until the count is complete.",
+        "operationId": "getSegmentCount",
+        "parameters": [
+          {
+            "description": "The unique id for the segment.",
+            "in": "path",
+            "name": "segment_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-title": "Segment ID"
+            },
+            "x-title": "Segment ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "The current number of members in a segment.",
+                  "properties": {
+                    "count": {
+                      "description": "The number of members that are in the segment now.",
+                      "example": 4213,
+                      "readOnly": true,
+                      "title": "Count",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "description": "An error generated by the Mailchimp API. The response conforms to [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).",
+                  "properties": {
+                    "detail": {
+                      "description": "A human-readable explanation specific to this occurrence of the problem. [Learn more about errors](/developer/guides/get-started-with-mailchimp-api-3/#Errors).",
+                      "examples": [
+                        "The requested resource could not be found."
+                      ],
+                      "title": "Error Message",
+                      "type": "string"
+                    },
+                    "instance": {
+                      "description": "A string that identifies this specific occurrence of the problem. Please provide this ID when contacting support.",
+                      "examples": [
+                        "995c5cb0-3280-4a6e-808b-3b096d0bb219"
+                      ],
+                      "title": "Instance ID",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "The HTTP status code (RFC2616, Section 6) generated by the origin server for this occurrence of the problem.",
+                      "examples": [
+                        404
+                      ],
+                      "title": "HTTP Status Code",
+                      "type": "integer"
+                    },
+                    "title": {
+                      "description": "A short, human-readable summary of the problem type. It shouldn't change based on the occurrence of the problem, except for purposes of localization.",
+                      "examples": [
+                        "Resource Not Found"
+                      ],
+                      "title": "Error Title",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "An absolute URI that identifies the problem type. When dereferenced, it should provide human-readable documentation for the problem type.",
+                      "examples": [
+                        "https://mailchimp.com/developer/marketing/docs/errors/"
+                      ],
+                      "title": "Problem Type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "detail",
+                    "instance",
+                    "status",
+                    "title",
+                    "type"
+                  ],
+                  "title": "Problem Detail Document",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "An error generated by the Mailchimp API."
+          }
+        },
+        "summary": "Get Segment Member Count",
+        "tags": [
+          "segments"
+        ],
+        "x-custom-config": {
+          "methodNameCamel": "getSegmentCount",
+          "methodNameSnake": "get_segment_count"
+        }
+      }
+    },
     "/3.0/authorized-apps": {
       "get": {
         "description": "Get a list of an account's registered, connected applications.",
@@ -53248,6 +55159,9 @@
                     "type": "string"
                   }
                 },
+                "required": [
+                  "note"
+                ],
                 "title": "Member Notes",
                 "type": "object"
               }
