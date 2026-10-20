@@ -33,17 +33,30 @@ With everything set up, we can start sending SMS messages.
 
 Using the [send-sms API endpoint](/transactional/api/messages/send-sms), the minimum **required** fields to make an SMS send are:
 
-- `key` (string field): valid Mailchimp Transactional API key
-- `message` (object field): body of the message that must include the following parameters: `to` (string field): valid phone # of recipient. Required format: E.164 `from` (string field): valid phone # of approved SMS program. Required format: alphanumeric. Must be one of three: 1) E.164 phone number, 2) short code, 3) alphanumeric sender string in EU`text` (string field): SMS content to be sent`consent` (string field): consent type for the message. Possible values: "`onetime`", "`recurring`", or "`recurring-no-confirm`"
+- `key` (string): A valid Mailchimp Transactional API key.
+- `message` (object): The message body. Must include:
+  - `to` (string): Phone number of the recipient. Required format: E.164 (e.g. `+15551234567`).
+  - `from` (string): Phone number or sender ID of the approved SMS program. Must be one of: an E.164 phone number, a short code, or an alphanumeric sender string (EU only).
+  - `text` (string): The SMS content to send.
+  - `consent` (string): Consent type. Accepted values: `onetime`, `recurring`, or `recurring-no-confirm`.
 
 An example SMS send may look like this:
 
 ```bash
-MESSAGE='{"key": "$YOUR_API_KEY","message": {"sms": {"text": "Hello from Mandrill SMS! Visit https://example.com for more info.","to": "+0000000000", "from": "+0000000000", "consent": "onetime","track_clicks": true}}}' 
-  
 curl -X POST https://mandrillapp.com/api/1.1/messages/send-sms \
   -H "Content-Type: application/json" \
-  -d "$MESSAGE"
+  -d '{
+    "key": "YOUR_API_KEY",
+    "message": {
+      "sms": {
+        "text": "Hello from Mailchimp Transactional SMS! Visit https://example.com for more info.",
+        "to": "+15550000000",
+        "from": "+15550000001",
+        "consent": "onetime",
+        "track_clicks": true
+      }
+    }
+  }'
 ```
 
 
