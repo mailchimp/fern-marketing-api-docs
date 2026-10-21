@@ -3,12 +3,6 @@ title: Contacts
 description: The contact model, subscription status across channels, and how tags organize contacts.
 ---
 
-<Note>
-**Draft**: This page was assembled during the docs reorganization. The tags
-section is complete; the contact model and subscription status sections need
-expansion.
-</Note>
-
 ## The basics
 
 A contact is a person in an audience, identified by their email address. In the
@@ -21,16 +15,37 @@ records.
 
 ## Contact status and channel subscription
 
-Outline — expand:
+Two separate fields describe a contact's reachability, and they operate at different levels.
 
-- Contact-level `status` (`active`, `archived`) describes the contact overall.
-- Channel-level subscription status describes whether they can be reached on a
-  specific channel (email, SMS), and is computed rather than set directly.
-- Inputs to that computation: the audience's opt-in configuration (single or
-  double opt-in), the marketing consent you supply, and deliverability.
-- Consent values and the full mapping table live in
-  [Audiences endpoints (beta)](/marketing/api-concepts/audiences-endpoints-beta)
-  while that work is in beta.
+**Contact-level `status`** (`active` or `archived`) describes the contact overall. It is not a subscription status. An active contact is one that exists and is not archived; it says nothing about whether you can send to them on any channel.
+
+**Channel-level `effective_subscription_status`** describes whether a contact can be reached on a specific channel—email or SMS. This field is read-only. You cannot set it directly; Mailchimp computes it from three inputs:
+
+1. **Audience opt-in configuration** — whether the audience uses single opt-in or double opt-in.
+2. **Marketing consent** — the value you supply when creating or updating a contact: `unknown`, `consented`, `confirmed`, or `denied`.
+3. **Deliverability** — whether the contact is reachable on that channel. Mailchimp manages this internally; for example, if a phone number becomes unregistered, the deliverability status changes and the effective subscription status may change with it, even if the consent value you supplied has not changed.
+
+The consent value you send is a statement about what the contact actually did—it is not a direct instruction to subscribe or unsubscribe them. Mailchimp maps that value, together with the audience's opt-in setting and deliverability, to the resulting subscription status.
+
+### SMS consent and the double opt-in flow
+
+For SMS specifically, the consent value you send determines whether Mailchimp initiates the double opt-in confirmation or treats the contact as already confirmed.
+
+**On a double opt-in audience:**
+
+- Send `consented` when the contact has interacted with you but has not yet confirmed via SMS. Mailchimp puts the contact in `pending` and sends the confirmation message. The contact's effective subscription status becomes `subscribed` or `unsubscribed` depending on whether they confirm.
+- Send `confirmed` when you already have verified consent from a prior system and want to skip the double opt-in flow. The contact is subscribed directly without receiving a confirmation message.
+
+**On a single opt-in audience:**
+
+- Send `confirmed` to subscribe the contact directly.
+- `consented` is not supported for SMS single opt-in.
+
+<Warning>
+`denied` for SMS is not yet supported in this beta. Unsubscribed SMS contacts must be managed manually. Do not send `denied` for an SMS channel; the value is not accepted.
+</Warning>
+
+For the complete mapping of consent value to effective subscription status across all channel and opt-in combinations, see [Audiences endpoints (beta)](/marketing/api-concepts/audiences-endpoints-beta#contact-status-vs-channel-level-subscription-status). For a practical walkthrough of adding contacts with consent values, see [Import and export contacts](/marketing/build/quickstarts/import-and-export-contacts).
 
 ## Tags
 
