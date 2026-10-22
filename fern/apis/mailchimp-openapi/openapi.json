@@ -20061,6 +20061,13 @@
                       "readOnly": true,
                       "title": "Next Cursor",
                       "type": "string"
+                    },
+                    "total_items": {
+                      "description": "The total number of members in the snapshot. It is the same on each page.",
+                      "example": 4213,
+                      "readOnly": true,
+                      "title": "Total Members",
+                      "type": "integer"
                     }
                   },
                   "type": "object"
