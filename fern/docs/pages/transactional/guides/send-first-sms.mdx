@@ -33,8 +33,15 @@ With everything set up, we can start sending SMS messages.
 
 Using the [send-sms API endpoint](/transactional/api/messages/send-sms), the minimum **required** fields to make an SMS send are:
 
-- `key` (string field): valid Mailchimp Transactional API key
-- `message` (object field): body of the message that must include the following parameters: `to` (string field): valid phone # of recipient. Required format: E.164 `from` (string field): valid phone # of approved SMS program. Required format: alphanumeric. Must be one of three: 1) E.164 phone number, 2) short code, 3) alphanumeric sender string in EU`text` (string field): SMS content to be sent`consent` (string field): consent type for the message. Possible values: "`onetime`", "`recurring`", or "`recurring-no-confirm`"
+- `key` (string): Valid Mailchimp Transactional API key.
+- `message` (object): Body of the message. Must include the following parameters:
+  - `to` (string): Valid phone number of the recipient. Required format: E.164.
+  - `from` (string): Valid phone number of an approved SMS program. Required format: alphanumeric. Must be one of:
+    1. E.164 phone number
+    2. Short code
+    3. Alphanumeric sender string in the EU
+  - `text` (string): SMS content to be sent.
+  - `consent` (string): Consent type for the message. Possible values: `onetime`, `recurring`, or `recurring-no-confirm`.
 
 An example SMS send may look like this:
 

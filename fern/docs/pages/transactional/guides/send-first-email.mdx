@@ -53,14 +53,12 @@ Navigate to [**Sending Domains**](https://mandrillapp.com/settings/sending-domai
 
 ## Configure your DNS
 
-Now, let’s set up DKIM. Next to your domain, click **View DKIM** settings. A modal will appear with instructions to set up DKIM on your DNS provider. You’ll need to set up two new [CNAME](https://en.wikipedia.org/wiki/CNAME_record) records with your DNS provider for your domain with the provided values.
+First, let’s set up DKIM. Next to your domain, click **View DKIM settings**. A modal will appear with instructions to set up DKIM on your DNS provider. You’ll need to set up a new [TXT](https://en.wikipedia.org/wiki/TXT_record) record with your DNS provider for your domain with the provided values. The domain name will look something like `mandrill._domainkey.example.com`, and the value will contain a long string that you’ll want to copy and paste.
 
-Once you’ve set up the CNAME records for DKIM, you can verify that you configured everything correctly by clicking **Test DNS Settings**. Your DKIM settings should now indicate that it’s valid.
-
-First, let’s set up DKIM: Next to your domain, click **View DKIM settings**. A modal will appear with instructions to set up DKIM on your DNS provider. You’ll need to set up a new TXT record with your DNS provider for your domain with the provided values. The domain name will look something like `mandrill._domainkey.example.com`, and the value will contain a long string that you’ll want to copy and paste.
+Once you’ve set up the TXT record for DKIM, you can verify that you configured everything correctly by clicking **Test DNS Settings**. Your DKIM settings should now indicate that it’s valid.
 
 <Note>
-**Note**: Adding CNAME records varies by DNS provider, so if you don’t know how to do this with your provider, search their documentation or contact their support.
+**Note**: Adding TXT records varies by DNS provider, so if you don’t know how to do this with your provider, search their documentation or contact their support.
 </Note>
 
 In addition to DKIM, you are required to set up a DMARC policy. Like DKIM, this process will vary depending on your domain’s hosting provider. Your DMARC policy can be set to `p=none. `As long as a policy exists, it will pass authentication.
