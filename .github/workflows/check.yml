@@ -23,3 +23,6 @@ jobs:
 
       - name: Check API is valid
         run: fern check
+
+      - name: Check scope descriptions are up to date
+        run: python3 scripts/add-scope-descriptions.py --check fern/apis/mailchimp-openapi/openapi.json
