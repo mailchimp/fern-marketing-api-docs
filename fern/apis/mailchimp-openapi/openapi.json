@@ -18906,6 +18906,13 @@
                       },
                       "title": "Segments",
                       "type": "array"
+                    },
+                    "total_items": {
+                      "description": "The total number of segments that match the request. It does not change with `count` or `cursor`.",
+                      "example": 12,
+                      "readOnly": true,
+                      "title": "Total Segments",
+                      "type": "integer"
                     }
                   },
                   "type": "object"
@@ -20181,7 +20188,10 @@
                       "example": 4213,
                       "readOnly": true,
                       "title": "Count",
-                      "type": "integer"
+                      "type": [
+                        "null",
+                        "integer"
+                      ]
                     }
                   },
                   "type": "object"
