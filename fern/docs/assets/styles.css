@@ -346,6 +346,22 @@
   text-decoration: none;
 }
 .mc-hero-button:hover { background-color: #006570; color: #efeeea !important; }
+.mc-hero-button-secondary {
+  background-color: transparent;
+  color: #007c89 !important;
+  display: inline-block;
+  font-family: 'Graphik Web', 'Helvetica Neue', Helvetica, Arial, Verdana, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  margin-top: 32px;
+  margin-left: 16px;
+  padding: 12px 14px;
+  border: 2px solid #007c89;
+  border-radius: 8px;
+  text-decoration: none;
+}
+.mc-hero-button-secondary:hover { background-color: #007c89; color: #efeeea !important; }
 .mc-hero-image {
   max-width: 430px;
   width: 100%;
