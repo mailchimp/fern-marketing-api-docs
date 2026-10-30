@@ -59,7 +59,7 @@ groups:
   java-sdk:
     generators:
       - name: fernapi/fern-java-sdk
-        version: 4.19.2
+        version: 4.22.2
         smart-casing: true
         output:
           location: maven
@@ -74,7 +74,7 @@ groups:
   csharp-sdk:
     generators:
       - name: fernapi/fern-csharp-sdk
-        version: 2.83.2
+        version: 2.84.3
         smart-casing: true
         output:
           location: nuget
@@ -194,7 +194,7 @@ groups:
   java-sdk-release:
     generators:
       - name: fernapi/fern-java-sdk
-        version: 4.19.2
+        version: 4.22.2
         smart-casing: true
         output:
           location: maven
@@ -216,7 +216,7 @@ groups:
   csharp-sdk-release:
     generators:
       - name: fernapi/fern-csharp-sdk
-        version: 2.83.2
+        version: 2.84.3
         smart-casing: true
         output:
           location: nuget

@@ -11005,10 +11005,8 @@
                     "publish_from_email",
                     "publish_from_name",
                     "publish_text",
-                    "published_at",
                     "created_at",
                     "updated_at",
-                    "draft_updated_at",
                     "is_broken_template"
                 ],
                 "properties": {
@@ -11120,7 +11118,7 @@
                         "example": "test"
                     },
                     "published_at": {
-                        "description": "Date and time when template was last published in UTC YYYY-MM-DD HH:MM:SS format",
+                        "description": "Date and time when template was last published in UTC YYYY-MM-DD HH:MM:SS format, or null if the template has never been published",
                         "type": [
                             "string",
                             "null"
@@ -11141,8 +11139,11 @@
                         "example": "2025-08-29 18:47:40.26277"
                     },
                     "draft_updated_at": {
-                        "description": "Date and time when template draft was last updated in UTC YYYY-MM-DD HH:MM:SS format",
-                        "type": "string",
+                        "description": "Date and time when template draft was last updated in UTC YYYY-MM-DD HH:MM:SS format, or null if no draft timestamp has been stored",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "date-time",
                         "example": "2025-08-29 18:47:40"
                     },
