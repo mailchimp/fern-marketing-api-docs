@@ -1,4 +1,50 @@
+import { useEffect, useRef } from "react";
+
+const SIGNUP_URL = "https://login.mailchimp.com/signup/";
+const TRANSACTIONAL_SIGNUP_URL = "https://login.mailchimp.com/signup/?entrypoint=mandrill";
+const TRANSACTIONAL_PATH = /\/developer\/transactional(\/|$)/;
+
 export default function Footer() {
+  const signupLinkRef = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    function updateHref() {
+      const link = signupLinkRef.current;
+      if (!link) return;
+      link.href = TRANSACTIONAL_PATH.test(window.location.pathname)
+        ? TRANSACTIONAL_SIGNUP_URL
+        : SIGNUP_URL;
+    }
+
+    function onNavigate() {
+      // The URL is already updated; let the router finish its own work first.
+      setTimeout(updateHref, 0);
+    }
+
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+
+    history.pushState = function (...args: Parameters<History["pushState"]>) {
+      const result = originalPushState.apply(this, args);
+      onNavigate();
+      return result;
+    };
+    history.replaceState = function (...args: Parameters<History["replaceState"]>) {
+      const result = originalReplaceState.apply(this, args);
+      onNavigate();
+      return result;
+    };
+    window.addEventListener("popstate", onNavigate);
+
+    updateHref();
+
+    return () => {
+      history.pushState = originalPushState;
+      history.replaceState = originalReplaceState;
+      window.removeEventListener("popstate", onNavigate);
+    };
+  }, []);
+
   return (
     <footer className="mc-site-footer">
       <div className="mc-container-outer">
@@ -28,7 +74,7 @@ export default function Footer() {
             <div className="mc-footer-signup">
               <h2>Join Mailchimp</h2>
               <p>Explore how Mailchimp can bring together your customer data, marketing channels, and audience insights in a single platform.</p>
-              <p><a href="https://login.mailchimp.com/signup/?entrypoint=mandrill" target="_blank" rel="noopener noreferrer">Create Account</a></p>
+              <p><a ref={signupLinkRef} href={SIGNUP_URL} target="_blank" rel="noopener noreferrer">Create Account</a></p>
             </div>
 
             <div className="mc-footer-image-list">
