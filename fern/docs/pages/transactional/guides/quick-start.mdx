@@ -32,6 +32,10 @@ To generate one: 
 **Note**: It’s important to remember that your Mailchimp Transactional API key provides full account access, so you should keep it secure, as you would a password.
 </Note>
 
+<Note>
+**Note**: Store your API key in an environment variable, such as `MANDRILL_API_KEY`, and read it at runtime instead of hardcoding it in your application code. The examples in this guide use the `YOUR_API_KEY` placeholder for readability.
+</Note>
+
 ## Install the client library for your language
 
 You can make calls to the Transactional API with whichever method you usually use to make HTTP requests, but Mailchimp offers [client libraries](/tools) that make interacting with the API even simpler. 
@@ -108,7 +112,7 @@ run();
 require 'MailchimpTransactional'
 
 begin
-  client = MailchimpTransactional::Client.new(ENV[‘YOUR_API_KEY’])
+  client = MailchimpTransactional::Client.new('YOUR_API_KEY')
   result = client.users.ping() # => 'PONG!'
   p result
 rescue MailchimpTransactional::ApiError => e
