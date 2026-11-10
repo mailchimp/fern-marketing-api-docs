@@ -113,6 +113,22 @@ To support [tracking campaign revenue](https://mailchimp.com/help/view-revenue-f
 **Note**: Bringing over historical purchase data and customers depends on how your platform stores data. This data will help target customers and make product recommendations more accurate. We recommend bringing over at least six months of purchase/subscriber data, which should be done by [making calls through the batch endpoint](/marketing/api-concepts/batch-operations).
 </Note>
 
+### Order and cart totals
+
+Orders (and carts) carry several monetary total fields that work together to describe the full financial picture of a transaction. Understanding how they relate to each other prevents common mistakes when syncing order data.
+
+| Field | What it represents |
+| --- | --- |
+| `order_total` | The grand total the customer pays — the authoritative amount for the order, typically the sum of line-item prices plus tax and shipping, minus discounts. |
+| `tax_total` | Taxes applied to the order. |
+| `shipping_total` | The cost of shipping. If your store charges a handling fee, roll it into this field (or into `order_total`) — there is no separate `handling_total` field on orders or carts. |
+| `discount_total` | The total value of discounts or promo codes applied to the order. Stored as a **positive number** and subtracted from the order total; do not send a negative value. |
+| `payment_total` | The amount actually collected so far. This may differ from `order_total` for orders that are partially paid, have been refunded, or are still pending payment. |
+
+<Note>
+**No `handling_total` field**: Orders and carts do not have a dedicated handling-fee field. Roll any handling costs into `shipping_total` or `order_total` as appropriate for your store.
+</Note>
+
 ## Order notifications
 
 [Order notifications](https://mailchimp.com/help/create-order-notifications/) are triggered by a change in a contact’s order status. After designing and enabling order notifications in your Mailchimp account, you can trigger those emails by [adding](/marketing/api/ecommerce/create-store-order) or [updating](/marketing/api/ecommerce/update-store-order) an e-commerce order with `financial_status` or `fulfillment_status` values.
