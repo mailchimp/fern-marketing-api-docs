@@ -91,11 +91,11 @@ const client = new MailchimpClient({
 });
 
 const response = await client.lists.createMember({
-  list_id: "YOUR_LIST_ID",
-  email_address: "Elinore.Grady9@gmail.com",
+  listId: "YOUR_LIST_ID",
+  emailAddress: "Elinore.Grady9@gmail.com",
   status: "pending",
-  skip_merge_validation: false,
-  merge_fields: {
+  skipMergeValidation: false,
+  mergeFields: {
     FNAME: "Elinore",
     LNAME: "Grady",
     BIRTHDAY: "01/22",

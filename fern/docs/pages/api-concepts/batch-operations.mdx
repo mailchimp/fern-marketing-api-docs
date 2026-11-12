@@ -117,7 +117,7 @@ const myUsers = [
 const operations = myUsers.map((user) => ({
   method: "POST" as const,
   path: `/lists/${listId}/members`,
-  operation_id: user.id,
+  operationId: user.id,
   body: JSON.stringify({
     email_address: user.email,
     status: "subscribed",
@@ -441,7 +441,7 @@ curl -sS \
 ```typescript title="TypeScript"
 const batchId = "YOUR_BATCH_OPERATION_ID";
 
-const response = await client.batches.get({ batch_id: batchId });
+const response = await client.batches.get({ batchId });
 console.log(response.status);
 ```
 
