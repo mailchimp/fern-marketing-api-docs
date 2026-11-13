@@ -40,7 +40,7 @@ const client = new MailchimpClient({
 });
 
 const response = await client.accountExports.create({
-  include_stages: ["audiences", "gallery_files"],
+  includeStages: ["audiences", "gallery_files"],
 });
 console.log(response);
 ```
@@ -227,8 +227,8 @@ const client = new MailchimpClient({
 });
 
 const response = await client.accountExports.create({
-  include_stages: ["audiences", "gallery_files"],
-  since_timestamp: "2000-04-04T00:00:01+00:00",
+  includeStages: ["audiences", "gallery_files"],
+  sinceTimestamp: new Date("2000-04-04T00:00:01+00:00"),
 });
 console.log(response);
 ```
