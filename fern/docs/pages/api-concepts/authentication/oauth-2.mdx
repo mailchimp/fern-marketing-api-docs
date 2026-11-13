@@ -85,6 +85,10 @@ them for the access token it returns, but never add to them, so asking for more
 access means sending the user through authorization again. See
 [Change scopes after users connect](/marketing/build/start-developing/set-up-an-oauth-app#change-scopes-after-users-connect).
 
+If you remove a scope from your app's registration, existing tokens aren't
+revoked, but Mailchimp stops honoring that scope and no longer offers it on new
+authorizations. Adding it back restores it for connections that still hold it.
+
 ## Tokens and lifetimes
 
 | Token | Lifetime |
@@ -161,9 +165,8 @@ app needs a backend that makes its token requests and holds its refresh tokens.
 PKCE-only public client type for apps with no backend may be added later (Arun,
 #tmp-mc-oauth-refresh, 2026-11-12); document it if it ships. */}
 
-A `client_secret` is shown only once, when it's created. Secrets expire 1 year
-after creation, and an app can hold up to 2 active secrets at once so you can
-deploy a new one before retiring the old one. See
+A `client_secret` is shown only once, when it's created. An app can hold up to
+2 active secrets; see
 [Rotate a client secret](/marketing/build/start-developing/set-up-an-oauth-app#rotate-a-client-secret).
 
 ## Security practices
@@ -201,7 +204,7 @@ the user an error page and never sends them back to your app.
 | `invalid_request` | `code_challenge` or `code_challenge_method` is missing, or the method isn't `S256`. On the authorize endpoint, also a missing `redirect_uri` when your app has more than 1 registered. | Send both PKCE parameters, with `code_challenge_method=S256`, and always send `redirect_uri`. |
 | `invalid_scope` | A requested scope doesn't exist or isn't in your app's registration, or a refresh asked for more scopes than were approved. | Request only registered scopes. On refresh, request the same scopes or fewer. |
 | `invalid_grant` | The code expired or was already used, the `code_verifier` doesn't match, the refresh token is expired, revoked, or replayed, or the connection is [suspended](#suspended-connections). | Send the user through authorization again. Don't retry with the same code or refresh token. |
-| `invalid_client` (401) | Wrong `client_id` or `client_secret`, an expired secret, or a legacy `client_id`. | Check the credentials your server sends. Rotate the secret if it expired. A legacy app uses the [legacy flow](/marketing/api-concepts/authentication/legacy-oauth-2). |
+| `invalid_client` (401) | Wrong `client_id` or `client_secret`, a revoked secret, or a legacy `client_id`. | Check the credentials your server sends. A legacy app uses the [legacy flow](/marketing/api-concepts/authentication/legacy-oauth-2). |
 | `unauthorized_client` | A grant type other than `authorization_code` or `refresh_token`. | Use one of those 2 grant types. |
 
 ## Standards
