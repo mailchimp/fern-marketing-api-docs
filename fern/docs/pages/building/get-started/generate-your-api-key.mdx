@@ -8,11 +8,15 @@ to create one:
 
 1. Navigate to the [API Keys section](https://us1.admin.mailchimp.com/account/api/) of your Mailchimp account.
 2. Click **Create New Key** and give it a descriptive name that tells you which application it's used for.
-3. Copy the generated key immediately and store it in a secure location. You won't be able to see or copy the key once you finish generating it.
+3. Select only the scopes your application needs, such as `campaigns:read`. The [API reference](/marketing/api) lists the scopes each endpoint requires.
+4. Copy the generated key immediately and store it in a secure location. You won't be able to see or copy the key once you finish generating it.
+
+The key expires 1 year after you create it, and requests made with it then fail
+with `401`. Create a replacement and switch your application to it before then.
 
 <Note>
-**Note**: An API key grants full access to your account. Keep it as secure as
-you would a password, and don't use one in a browser or a mobile app; see
+**Note**: Keep an API key as secure as you would a password, and don't use one
+in a browser or a mobile app; see
 [API keys](/marketing/api-concepts/authentication/api-keys) for why.
 </Note>
 

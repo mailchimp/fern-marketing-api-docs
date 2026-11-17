@@ -1,6 +1,6 @@
 ---
 title: API keys
-description: How Mailchimp API keys behave, and where they can and cannot be used.
+description: How Mailchimp API keys behave, including their scopes and 1-year lifetime, and where they can and cannot be used.
 ---
 
 An [API key](https://mailchimp.com/help/about-api-keys/) authenticates requests
@@ -10,17 +10,34 @@ application works with your own Mailchimp data. To create one, see
 
 ## What a key grants
 
-A key carries full access to the account it belongs to. There is no way to
-issue a read-only key or restrict one to particular endpoints, so treat a key
-the way you'd treat a password.
+You select a key's scopes, such as `campaigns:read`, when you create the key.
+They're the same scopes OAuth 2 apps use, and the
+[API reference](/marketing/api) lists the scopes each endpoint requires.
 
-Keys don't expire. A key stays valid until you delete it, or until the user who
-created it is removed from the account; see
+A key can only do what both its scopes and the
+[role](/marketing/api-concepts/authentication#user-access-and-revocation) of the
+user who created it allow.
+
+Select only the scopes your application needs. If a key leaks, its scopes limit
+what someone else can do with it, so treat it the way you'd treat a password.
+
+## Expiration
+
+A key expires 1 year after it's created. Expiration limits how long a leaked key
+stays useful. After a key expires, requests made with it fail with `401`, and
+the key can't be renewed. Create a new key and switch your application to it
+before the old one expires.
+
+{/* Expiry shipped 2026-06-25. Unconfirmed: whether keys created before that
+date also expire 1 year after creation, and when scoping shipped. */}
+
+A key also stops working if you delete it, or if the user who created it is
+removed from the account; see
 [User access and revocation](/marketing/api-concepts/authentication#user-access-and-revocation).
 
 ## Where keys can't be used
 
-Because a key grants full account access, two environments are ruled out:
+Anyone who holds a key can use it, so two environments are ruled out:
 
 - **Browsers.** Mailchimp does not support client-side calls to the Marketing
   API using CORS requests. A key in front-end code is readable by anyone who
