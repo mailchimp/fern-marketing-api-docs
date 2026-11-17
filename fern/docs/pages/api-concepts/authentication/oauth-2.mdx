@@ -41,10 +41,15 @@ is relative to `https://oauth.mailchimp.com`.
 5. Your application calls the Marketing API with the access token. When it
    expires, your application uses its refresh token to get a new one.
 
-The token response includes `account_id`, which identifies the Mailchimp account
-the user connected. Your application persists one refresh token per connected
-account, keyed on `account_id`. Access tokens last 1 hour, so a short-lived
-server-side cache or memory is enough for them.
+The token response doesn't say which Mailchimp account the user connected. To
+find out, call the [API Root endpoint](/marketing/api/root/list) with the new
+access token; its `account_id` identifies the account. Your application
+persists one refresh token per connected account, keyed on that `account_id`.
+Access tokens last 1 hour, so a short-lived server-side cache or memory is
+enough for them.
+
+{/* account_id was planned for the token response (agreed 2026-11-09) but isn't
+in the spec. Arun, 2026-11-17: it arrives with OIDC; until then, use /3.0/. */}
 
 Send PKCE with every authorization request. Your `client_secret` doesn't
 replace it: the `code_verifier` proves that the server exchanging the code is
@@ -54,6 +59,36 @@ method; Mailchimp rejects `plain` with `invalid_request`.
 Reject any callback whose `iss` isn't `https://oauth.mailchimp.com`. The check
 matters most if your app connects to more than one OAuth provider, where it
 stops a code from one provider being replayed against another.
+
+## Endpoints
+
+| Endpoint | Method | Client authentication | Used for |
+| --- | --- | --- | --- |
+| `/oauth2/authorize` | GET, as a browser redirect | None. `client_id` goes in the query string. | Starting authorization |
+| `/oauth2/token` | POST, form-encoded | HTTP Basic, `client_id:client_secret` | Exchanging a code, and refreshing |
+| `/oauth2/revoke` | POST, form-encoded | HTTP Basic, `client_id:client_secret` | Revoking a token |
+| `/.well-known/oauth-authorization-server` | GET | None | Server metadata, per [RFC 8414](https://datatracker.ietf.org/doc/html/rfc8414) |
+
+Use HTTP Basic for client authentication. It's the method the server metadata
+advertises.
+
+{/* The token endpoint also accepts client_secret_post for static clients, but
+the metadata advertises only client_secret_basic (Arun, 2026-11-17), so it's
+undocumented on purpose. */}
+
+The token endpoint takes different parameters for each grant:
+
+| Parameter | `authorization_code` | `refresh_token` |
+| --- | --- | --- |
+| `grant_type` | `authorization_code` | `refresh_token` |
+| `code` | Required | Not sent |
+| `redirect_uri` | Required. The same value you sent to `/oauth2/authorize`. | Not sent |
+| `code_verifier` | Required | Not sent |
+| `refresh_token` | Not sent | Required |
+| `scope` | Not sent | Optional. The same scopes or fewer. |
+
+[Set up an OAuth app](/marketing/build/start-developing/set-up-an-oauth-app#the-flow-step-by-step)
+has a sample authorize URL and a request for each grant.
 
 ## Scopes
 
@@ -93,13 +128,19 @@ authorizations. Adding it back restores it for connections that still hold it.
 
 | Token | Lifetime |
 | --- | --- |
-| Authorization code | 60 seconds, single use |
+| Authorization code | 5 minutes, single use |
 | Access token | 1 hour |
 | Refresh token | 30 days without use. Each refresh returns a new refresh token and restarts the 30 days. |
+| Connection | 180 days from authorization, however often your app refreshes it |
 
-A connection stays alive as long as your app refreshes it at least once every
-30 days. If it goes 30 days without a refresh, the refresh token fails with
-`invalid_grant` and the user must authorize your app again.
+Every connection ends 180 days after the user authorizes, and the user must
+authorize your app again. It ends sooner if it goes 30 days without a refresh.
+Either way, the next refresh fails with `invalid_grant`.
+
+The token response doesn't include either limit, so you can't read when a
+refresh token will stop working. Handle `invalid_grant` instead. To avoid a
+surprise disconnect, record when each user authorized and ask them to authorize
+again before 180 days pass.
 
 ### Refresh tokens rotate on every use
 
@@ -129,6 +170,13 @@ A connection ends when any of the following happens:
   replaces the old one, and the earlier access and refresh tokens stop working.
 - The user is removed from the Mailchimp account.
 - The refresh token goes 30 days without use, or is replayed.
+- The connection reaches 180 days.
+- Your app exchanges the same authorization code a second time. The second
+  exchange fails, and the connection the first one created is revoked.
+
+Revoking tokens at `/oauth2/revoke` doesn't remove your app from the user's
+**Connected Apps**, because the grant itself isn't revoked there. If the user
+authorizes your app again, Mailchimp creates a new grant.
 
 When a user disconnects or uninstalls your application, revoke their refresh
 token and delete what you stored for them, along with any syncing configuration
@@ -203,9 +251,9 @@ the user an error page and never sends them back to your app.
 | `access_denied` | The user denied consent, cancelled after Mailchimp refused a scope beyond their role, or the connection is [suspended](#suspended-connections). Arrives on your redirect URI. | Show the user a message, and don't call `/oauth2/token`. |
 | `invalid_request` | `code_challenge` or `code_challenge_method` is missing, or the method isn't `S256`. On the authorize endpoint, also a missing `redirect_uri` when your app has more than 1 registered. | Send both PKCE parameters, with `code_challenge_method=S256`, and always send `redirect_uri`. |
 | `invalid_scope` | A requested scope doesn't exist or isn't in your app's registration, or a refresh asked for more scopes than were approved. | Request only registered scopes. On refresh, request the same scopes or fewer. |
-| `invalid_grant` | The code expired or was already used, the `code_verifier` doesn't match, the refresh token is expired, revoked, or replayed, or the connection is [suspended](#suspended-connections). | Send the user through authorization again. Don't retry with the same code or refresh token. |
+| `invalid_grant` | The code is more than 5 minutes old or was already used, the `code_verifier` doesn't match, the refresh token is expired, revoked, or replayed, the connection reached 180 days, or the connection is [suspended](#suspended-connections). | Send the user through authorization again. Don't retry with the same code or refresh token. |
 | `invalid_client` (401) | Wrong `client_id` or `client_secret`, a revoked secret, or a legacy `client_id`. | Check the credentials your server sends. A legacy app uses the [legacy flow](/marketing/api-concepts/authentication/legacy-oauth-2). |
-| `unauthorized_client` | A grant type other than `authorization_code` or `refresh_token`. | Use one of those 2 grant types. |
+| `unsupported_grant_type` | A grant type other than `authorization_code` or `refresh_token`. | Use one of those 2 grant types. |
 
 ## Standards
 
@@ -218,3 +266,4 @@ The flow follows these specifications.
 | [RFC 9207](https://datatracker.ietf.org/doc/html/rfc9207) | The `iss` parameter on the callback |
 | [RFC 9700](https://datatracker.ietf.org/doc/html/rfc9700) | OAuth 2.0 Security Best Current Practice: PKCE for every client, and refresh token rotation with replay detection ([§4.14](https://datatracker.ietf.org/doc/html/rfc9700#section-4.14)) |
 | [RFC 7009](https://datatracker.ietf.org/doc/html/rfc7009) | Token revocation |
+| [RFC 8414](https://datatracker.ietf.org/doc/html/rfc8414) | The server metadata document |

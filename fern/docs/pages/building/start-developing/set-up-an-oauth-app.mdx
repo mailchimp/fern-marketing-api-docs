@@ -41,7 +41,7 @@ Registering gives you a `client_id` and a `client_secret`.
 | Field | What to enter |
 | --- | --- |
 | App name | Shown to users on the login and consent screens. Up to 128 characters. |
-| Redirect URIs | At least 1. All of them must share one registrable domain. Subdomains of that domain are allowed, but each URI must match exactly; wildcards aren't supported. |
+| Redirect URIs | At least 1. All of them must share one registrable domain. Subdomains of that domain are allowed, but each URI must match exactly; wildcards aren't supported. Each URI can be up to 1,024 characters. |
 | Scopes | Select every scope your app might request. Your app can never request a scope that isn't selected here. |
 
 You'll see the `client_id` and `client_secret` at the bottom of the page. Store
@@ -286,15 +286,31 @@ what the samples above do.
    `https://oauth.mailchimp.com`. Reject the callback if either differs.
 5. POST to `/oauth2/token`, form-encoded, with `grant_type=authorization_code`,
    `code`, `redirect_uri`, and the original `code_verifier`. Authenticate with
-   HTTP Basic (`client_id:client_secret`). Do this within 60 seconds; the code
-   expires after that.
+   HTTP Basic (`client_id:client_secret`). Do this within 5 minutes; the code
+   expires after that, and it works only once.
 
-```http
-POST https://oauth.mailchimp.com/oauth2/token
-Authorization: Basic base64(client_id:client_secret)
-Content-Type: application/x-www-form-urlencoded
+The authorize redirect, with line breaks added for reading:
 
-grant_type=authorization_code&code=AUTH_CODE&redirect_uri=REDIRECT_URI&code_verifier=CODE_VERIFIER
+```
+https://oauth.mailchimp.com/oauth2/authorize
+  ?response_type=code
+  &client_id=CLIENT_ID
+  &redirect_uri=http%3A%2F%2F127.0.0.1%3A3000%2Foauth%2Fcallback
+  &scope=campaigns%3Aread
+  &state=STATE
+  &code_challenge=CODE_CHALLENGE
+  &code_challenge_method=S256
+```
+
+The code exchange:
+
+```bash
+curl https://oauth.mailchimp.com/oauth2/token \
+  --user "CLIENT_ID:CLIENT_SECRET" \
+  --data grant_type=authorization_code \
+  --data code=AUTH_CODE \
+  --data-urlencode redirect_uri=http://127.0.0.1:3000/oauth/callback \
+  --data code_verifier=CODE_VERIFIER
 ```
 
 | Authorize parameter | Required | Value |
@@ -315,36 +331,36 @@ grant_type=authorization_code&code=AUTH_CODE&redirect_uri=REDIRECT_URI&code_veri
   "token_type": "Bearer",
   "expires_in": 3600,
   "refresh_token": "prd_rt_8b1c0f6e2a4d4f1b9c3e7a5d2f6b8c01",
-  "scope": "campaigns:read",
-  "account_id": "8d3a3db4d97663a9074efcc16"
+  "scope": "campaigns:read"
 }
 ```
 
 `expires_in` is the access token's lifetime in seconds. `scope` is what the user
-approved, which can be less than you requested. `account_id` identifies the
-Mailchimp account the user connected.
+approved, which can be less than you requested. The response doesn't say which
+Mailchimp account the user connected; your first call finds that out.
 
 ### Store the connection and make your first call
 
-Key what you store on `account_id`. If the same Mailchimp account authorizes
-your app again, update the existing record rather than creating a second one;
-otherwise you end up with 2 connections refreshing tokens for one account. For
-each connection, store:
-
-- `account_id`
-- The refresh token, encrypted at rest
-- The access token and when it expires, which you can work out from
-  `expires_in`
-- The `scope` the user approved
-
-Then call the Marketing API with the access token in the `Authorization`
-header. The [API Root endpoint](/marketing/api/root/list) is a good first call:
-it describes the account and the role of the user who authorized your app.
+Call the [API Root endpoint](/marketing/api/root/list) with the new access
+token in the `Authorization` header:
 
 ```bash
 curl https://api.mailchimp.com/3.0/ \
   --header "Authorization: Bearer ACCESS_TOKEN"
 ```
+
+The response's `account_id` identifies the Mailchimp account the user
+connected. Key what you store on it. If the same Mailchimp account authorizes
+your app again, update the existing record rather than creating a second one;
+otherwise you end up with 2 connections refreshing tokens for one account. For
+each connection, store:
+
+- `account_id`, from the API Root response
+- The refresh token, encrypted at rest
+- The access token and when it expires, which you can work out from
+  `expires_in`
+- The `scope` the user approved
+- When the user authorized, because every connection ends after 180 days
 
 Use `account_name` from the response to show which account is connected, and
 check `role` before you rely on actions a lower
@@ -355,24 +371,27 @@ can't perform.
 
 Access tokens last 1 hour. To get a new one, exchange the refresh token:
 
-```http
-POST https://oauth.mailchimp.com/oauth2/token
-Authorization: Basic base64(client_id:client_secret)
-Content-Type: application/x-www-form-urlencoded
-
-grant_type=refresh_token&refresh_token=prd_rt_8b1c0f6e2a4d4f1b9c3e7a5d2f6b8c01
+```bash
+curl https://oauth.mailchimp.com/oauth2/token \
+  --user "CLIENT_ID:CLIENT_SECRET" \
+  --data grant_type=refresh_token \
+  --data refresh_token=prd_rt_8b1c0f6e2a4d4f1b9c3e7a5d2f6b8c01
 ```
 
 The response has the same shape as the code exchange, including a **new**
-`refresh_token`, but without `account_id`; keep the one you stored. The refresh
-token you sent won't work again, so save the new one before you do anything
-else with the response.
+`refresh_token`. The refresh token you sent won't work again, so save the new
+one before you do anything else with the response.
 
 - To keep the scopes the user approved, leave out `scope`. To reduce access,
   pass a smaller `scope` on every refresh; Mailchimp doesn't remember it. A
   refresh can't add scopes. See
   [Scopes](/marketing/api-concepts/authentication/oauth-2#scopes).
-- Refresh requests don't use PKCE.
+- Don't send `redirect_uri` or `code_verifier`. A refresh takes only
+  `grant_type`, `refresh_token`, and optionally `scope`.
+- Every connection ends 180 days after the user authorized, however often you
+  refresh it. It also ends after 30 days without a refresh. The response
+  doesn't include either limit, so handle `invalid_grant` rather than
+  calculating an expiry, and ask users to authorize again before 180 days pass.
 - If the refresh fails with `invalid_grant`, the connection has ended. Send the
   user through authorization again.
 
@@ -438,7 +457,7 @@ production one.
 
 After your first authorization, make the
 [first call](#store-the-connection-and-make-your-first-call) and check that
-`account_id` in the API Root response matches the one from the token response.
+`account_name` in the response is your test account.
 
 Then work through the cases your users will hit:
 
@@ -446,9 +465,9 @@ Then work through the cases your users will hit:
 | --- | --- | --- |
 | User denies access | Deny access on the consent screen. | The callback has an `error` parameter and no `code`. Show the user a message, and don't call `/oauth2/token`. |
 | User approves fewer scopes | Deselect scopes on the consent screen. | Read `scope` from the token response, and turn off features that need what wasn't granted. |
-| Same account connects twice | Authorize the same test account a second time. | Update the existing connection for that `account_id` rather than adding a second one. The earlier tokens stop working, so nothing should still be using them. |
+| Same account connects twice | Authorize the same test account a second time. | Update the existing connection for the `account_id` the API Root returns, rather than adding a second one. The earlier tokens stop working, so nothing should still be using them. |
 | Forged callback | Change the `state` value in the callback URL before loading it. | Reject the callback with a `400`. |
-| Callback loaded twice | Reload the callback page after a successful exchange. | Reject it, because its `state` was already used. If a reused `code` does reach `/oauth2/token`, the exchange fails with `invalid_grant`; start authorization again rather than showing a server error. |
+| Callback loaded twice | Reload the callback page after a successful exchange. | Reject it, because its `state` was already used. If a reused `code` does reach `/oauth2/token`, the exchange fails with `invalid_grant` and Mailchimp revokes the connection the first exchange created, so the user must authorize again. Blocking the second exchange keeps a working connection alive. |
 | Access token expires | Set `REFRESH_MARGIN_MS` in `getAccessToken` above 1 hour, so every call refreshes. | Save the new refresh token before using the new access token. |
 | 2 refreshes at once | Send 2 API requests in parallel for one connection, with `REFRESH_MARGIN_MS` still raised. | The refreshes run one after the other, each sending the newest refresh token, and the connection survives. If both send the same refresh token, Mailchimp revokes the connection; that's the bug the lock in [Prevent duplicate refreshes](#prevent-duplicate-refreshes) prevents. |
 | User revokes access in Mailchimp | Revoke your app from **Connected Apps** in the test account. | The next refresh fails with `invalid_grant`. Mark the connection as disconnected and ask the user to authorize again. |
@@ -488,18 +507,20 @@ If Mailchimp has suspended the connection, re-authorization ends with
 When a user disconnects your app, revoke their refresh token and delete what you
 stored for them:
 
-```http
-POST https://oauth.mailchimp.com/oauth2/revoke
-Authorization: Basic base64(client_id:client_secret)
-Content-Type: application/x-www-form-urlencoded
-
-token=prd_rt_8b1c0f6e2a4d4f1b9c3e7a5d2f6b8c01&token_type_hint=refresh_token
+```bash
+curl https://oauth.mailchimp.com/oauth2/revoke \
+  --user "CLIENT_ID:CLIENT_SECRET" \
+  --data token=prd_rt_8b1c0f6e2a4d4f1b9c3e7a5d2f6b8c01 \
+  --data token_type_hint=refresh_token
 ```
 
-Revoking the refresh token ends the connection; see
-[Revocation](/marketing/api-concepts/authentication/oauth-2#revocation). You can
-revoke only tokens issued to your own app. The endpoint returns `200`
-even for an unknown or already-revoked token, per
+Revoking the refresh token invalidates it and every access token issued from
+it, but your app still appears in the user's **Connected Apps**. If the user
+authorizes your app again, Mailchimp creates a new grant. See
+[Revocation](/marketing/api-concepts/authentication/oauth-2#revocation).
+
+You can revoke only tokens issued to your own app. The endpoint returns an
+empty `200` even for an unknown or already-revoked token, per
 [RFC 7009](https://datatracker.ietf.org/doc/html/rfc7009), so a `200` doesn't
 confirm the token existed.
 
