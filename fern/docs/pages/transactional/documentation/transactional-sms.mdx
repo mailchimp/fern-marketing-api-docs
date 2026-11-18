@@ -58,6 +58,31 @@ To start, you’ll need to navigate to the [**Settings**](https://mandrillapp.co
 
 All API URLs listed in this documentation for SMS messages are referring to  the Mailchimp Transactional API, v1.1 and the [send-sms endpoint](/transactional/api/messages/send-sms).
 
+## MMS messages
+
+MMS lets you include an image, short video, audio clip, or document with a transactional text message, such as a receipt or a photo of a delivered package. To send an MMS, add a `media_url` field to the `sms` object of a [send-sms](/transactional/api/messages/send-sms) request using API v1.5. The `text` field is still required and is delivered with the media. Each message can include 1 file.
+
+The following file types are supported:
+
+- Images: JPEG, PNG, and GIF
+- Video: MP4 and MPEG
+- Audio: MP3 and M4A
+- Documents: PDF, plain text, and vCard contact cards
+
+Files must be 500KB or smaller. Some carriers reject larger files, so we check the size before sending rather than letting the message fail on delivery.
+
+Our SMS provider downloads the file from your `media_url` when it delivers the message, so the file needs to be reachable from the public internet:
+
+- Use a URL that starts with `http://` or `https://` and is 255 characters or fewer.
+- Host the file somewhere anyone can open it without a login. We don't accept links to private networks. Most web hosts and content delivery networks work with no extra setup.
+- Keep the file at the same URL until the message is delivered.
+
+Before sending, we check that the file can be reached and is a supported type and size. If it isn't, the API returns a validation error and doesn't send the message.
+
+API versions earlier than v1.5 ignore `media_url` and send the message as a text-only SMS. Use `/api/1.5/messages/send-sms` to send MMS.
+
+MMS sends appear in Outbound Activity and webhooks alongside your other SMS sends.
+
 ## Unsubscribes
 
 There are 3 ways to unsubscribe a phone number:

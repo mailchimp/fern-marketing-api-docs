@@ -46,5 +46,18 @@ curl -X POST https://mandrillapp.com/api/1.1/messages/send-sms \
   -d "$MESSAGE"
 ```
 
+## Add an image or other media (MMS)
+
+To send a picture, short video, or other media with your message, add a `media_url` field to the `sms` object. Set it to a link to a publicly accessible file that is 500KB or smaller. The `text` field is still required and is delivered with the media. MMS requires API v1.5, so use `/api/1.5/` in the request URL:
+
+```bash
+MESSAGE='{"key": "$YOUR_API_KEY","message": {"sms": {"text": "Your order has shipped! Here is your receipt.","media_url": "https://example.com/receipt.png","to": "+0000000000", "from": "+0000000000", "consent": "onetime"}}}'
+
+curl -X POST https://mandrillapp.com/api/1.5/messages/send-sms \
+  -H "Content-Type: application/json" \
+  -d "$MESSAGE"
+```
+
+For supported file types and other requirements, see [MMS messages](/transactional/docs/transactional-sms#mms-messages).
 
 For more information about this endpoint and accepted parameters, review the [API reference documentation](/transactional/api/messages/send-sms).
