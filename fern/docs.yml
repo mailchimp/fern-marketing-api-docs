@@ -293,6 +293,10 @@ products:
     path: ./products/transactional.yml
     slug: transactional
     subtitle: Send targeted and event-driven messages to anyone, fast—with best-in-class deliverability.
+  - display-name: Mailchimp MCP
+    path: ./products/mcp.yml
+    slug: mcp
+    subtitle: Connect AI agents and assistants to your audience data and campaigns with the Model Context Protocol.
   - display-name: Tools
     path: ./products/tools.yml
     slug: tools

@@ -106,6 +106,11 @@
       name: "Mailchimp Transactional", href: "/developer/transactional",
       desc: "Send targeted and event-driven messages to anyone, fast—with best-in-class deliverability.",
       links: [["Guides", "/developer/transactional/guides/quick-start"], ["Documentation", "/developer/transactional/docs/fundamentals"], ["API Reference", "/developer/transactional/api"]]
+    },
+    {
+      name: "Mailchimp MCP", href: "/developer/mcp",
+      desc: "Connect AI agents and assistants to your audience data and campaigns with the Model Context Protocol.",
+      links: [["Guides", "/developer/mcp/guides/getting-started"], ["Available tools", "/developer/mcp/available-tools/overview"]]
     }
   ];
 

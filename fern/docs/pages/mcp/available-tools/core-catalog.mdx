@@ -1,0 +1,57 @@
+---
+title: Core catalog
+description: The 30 tools that load when a client connects to the Mailchimp MCP server, grouped by job.
+---
+
+The core catalog has 30 tools, grouped by the job they do. It loads when a
+client connects, filtered to the permissions you granted.
+
+## Get performance answers
+
+| Tool | Description | Permission |
+|---|---|---|
+| `mailchimp_get_search_campaigns` | Finds campaigns by words in the title, subject, or content. | Read |
+| `mailchimp_get_campaigns` | Lists campaigns with status and send time. | Read |
+| `mailchimp_get_campaigns_id` | Returns one campaign's settings and status. | Read |
+| `mailchimp_get_campaigns_id_content` | Returns a campaign's HTML and plain-text content. | Read |
+| `mailchimp_get_reports_id` | Returns the report for a sent campaign: opens, clicks, bounces, and unsubscribes. | Read |
+| `mailchimp_get_reports_id_click_details` | Returns clicks per link in a sent campaign. | Read |
+| `mailchimp_get_reports_id_open_details` | Returns who opened a sent campaign, and when. | Read |
+| `mailchimp_get_reports_id_domain_performance` | Returns open and click rates by recipient email provider. | Read |
+| `mailchimp_get_lists_id_growth_history` | Returns audience growth by month. | Read |
+| `mailchimp_get_lists_id_activity` | Returns daily sends, opens, clicks, subscribes, and unsubscribes for an audience. Maximum 180 days. | Read |
+
+## Find and act on your audience
+
+| Tool | Description | Permission |
+|---|---|---|
+| `mailchimp_get_lists` | Lists audiences with contact counts. | Read |
+| `mailchimp_get_lists_id` | Returns an audience's details, defaults, and stats. | Read |
+| `mailchimp_preview_a_segment` | Lists the segments in an audience. | Read |
+| `mailchimp_get_lists_id_segments_id` | Returns one segment, including its member count. | Read |
+| `mailchimp_get_search_members` | Finds a contact across audiences by email or name. | Read |
+| `mailchimp_get_list_member_tags` | Returns the tags on one contact. | Read |
+| `mailchimp_search_tags_by_name` | Finds a tag in an audience by name. | Read |
+| `mailchimp_post_lists_id_segments` | Creates a segment. The preview shows the conditions and how many contacts match. | Write |
+| `mailchimp_patch_lists_id_segments_id` | Updates or renames a segment. The preview shows the affected contacts. | Write |
+
+## Draft a campaign and make it send-ready
+
+| Tool | Description | Permission |
+|---|---|---|
+| `mailchimp_get_templates` | Lists saved templates. | Read |
+| `mailchimp_get_templates_id` | Returns one template's details. | Read |
+| `mailchimp_get_campaigns_id_send_checklist` | Runs the send checklist for a campaign and lists what is missing. | Read |
+| `mailchimp_post_campaigns` | Creates a campaign draft for an audience. | Write |
+| `mailchimp_patch_campaigns_id` | Changes a draft's settings, such as subject line, from name, or audience. | Write |
+| `mailchimp_put_campaigns_id_content` | Sets a draft's content from HTML or a template. | Write |
+| `mailchimp_post_campaigns_id_actions_unschedule` | Unschedules a scheduled campaign. | Write |
+| `mailchimp_post_campaigns_id_actions_test` | Sends a test email to the addresses you name. | Send |
+| `mailchimp_post_campaigns_id_actions_schedule` | Schedules a campaign for a future time. Requires lead time. | Send |
+
+## See what your customers buy
+
+| Tool | Description | Permission |
+|---|---|---|
+| `mailchimp_get_ecommerce_stores_id_products` | Lists products in a connected store. | Read |
+| `mailchimp_get_reports_id_ecommerce_product_activity` | Returns products sold from a campaign. | Read |

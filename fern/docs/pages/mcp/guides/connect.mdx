@@ -1,0 +1,192 @@
+---
+title: Connect to the server
+description: Add the Mailchimp MCP server to your client, sign in with your Mailchimp login, and choose what the tool can read, write, and send.
+---
+
+One hosted URL works for every MCP client. Add it to your client, sign in with
+your Mailchimp login, and choose what the tool can read, write, and send.
+
+## Server URL
+
+Use this URL in any MCP client:
+
+```
+https://mcp.mailchimp.com/mcp
+```
+
+Connection details:
+
+| Setting | Value |
+|---|---|
+| Transport | Streamable HTTP |
+| Authentication | OAuth with your Mailchimp login. MCP clients handle sign-in on their own, with no client ID or secret to set up and no API key. |
+| Permissions | Read is on by default. Write and Send are off until you turn them on at sign-in. |
+
+## Before you start
+
+Three things to check before you add the server:
+
+- Know which Mailchimp account you want to connect. If you belong to several,
+  you pick one at sign-in.
+- Check your [user level](https://mailchimp.com/help/manage-user-levels-in-your-account/).
+  The AI tool can never do more than your role allows, so a Viewer gets
+  read-only access even if Write is granted.
+- For store data, make sure an e-commerce store is
+  [connected to Mailchimp](https://mailchimp.com/help/connect-your-online-store-to-mailchimp/).
+
+## Claude Code
+
+Run this once in your terminal:
+
+```bash
+claude mcp add --transport http mailchimp https://mcp.mailchimp.com/mcp
+```
+
+Start `claude`, run `/mcp`, select **mailchimp**, and choose **Authenticate**.
+A browser window opens for the Mailchimp sign-in and permissions. When it
+finishes, the terminal shows the server as connected with the number of tools
+loaded.
+
+## Cursor
+
+Add the server to `~/.cursor/mcp.json`, creating the file if it doesn't exist:
+
+```json
+{
+  "mcpServers": {
+    "mailchimp": {
+      "url": "https://mcp.mailchimp.com/mcp"
+    }
+  }
+}
+```
+
+You can also open **Settings**, select **MCP**, choose **Add new MCP server**,
+and paste the URL.
+
+Cursor prompts you to sign in the first time the server is used. If it
+doesn't, select the server in the MCP settings and choose **Login**.
+
+## VS Code
+
+VS Code needs version 1.102 or later with MCP enabled.
+
+Add the server to `.vscode/mcp.json` in your project, or to your user settings
+to make it available everywhere:
+
+```json
+{
+  "servers": {
+    "mailchimp": {
+      "type": "http",
+      "url": "https://mcp.mailchimp.com/mcp"
+    }
+  }
+}
+```
+
+VS Code asks you to allow the server, then opens the Mailchimp sign-in.
+
+## Any other MCP client
+
+Any client that supports remote MCP servers can connect. When asked, enter:
+
+| Setting | Value |
+|---|---|
+| Server URL | `https://mcp.mailchimp.com/mcp` |
+| Transport | Streamable HTTP. SSE and stdio aren't supported. |
+| Authentication | OAuth. Leave the client ID and secret blank if the client offers dynamic client registration. If your client requires a pre-registered client ID, [set up an OAuth app](/marketing/build/start-developing/set-up-an-oauth-app) and use its credentials. |
+| Headers | None |
+
+If you use Claude, ChatGPT, Gemini, or Perplexity, install the Mailchimp connector
+listed in
+[Getting started](/mcp/guides/getting-started#already-using-claude-chatgpt-gemini-or-perplexity)
+instead.
+
+## What happens at sign-in
+
+The first time your client uses the server, it walks you through a short
+sign-in flow:
+
+1. Your client opens the Mailchimp login page. Sign in and, if you have
+   several accounts, pick the one you want to connect.
+2. The permissions screen shows the AI tool's name and three groups. Read is
+   on; Write and Send are off. Expand a group to see what it covers, turn on
+   what you need, and choose **Allow**.
+3. Mailchimp sends you back to your client, which loads the tools your
+   permissions cover.
+4. Try a first prompt, such as "Which audiences do I have, and how many
+   contacts are in each?"
+
+Whenever a tool wants to change something, it returns a preview of the change
+in the chat. A segment preview shows the conditions and the estimated contact
+count; a schedule preview shows the campaign and the send time. Nothing runs
+until you confirm.
+
+<Note>
+**Signing in again.** Some MCP clients ask you to sign in again about once an
+hour. You see the permissions screen each time and your choices aren't
+carried over, so check them before you choose **Allow**.
+</Note>
+
+<Note>
+**Changing what a client can do.** Permissions are set at sign-in. To change
+them, disconnect the client in Mailchimp and connect it again, choosing new
+permissions on the way in. To remove access, disconnect it.
+</Note>
+
+## Troubleshooting
+
+If something isn't working, start here.
+
+### The server connects but shows no tools
+
+Sign in again and allow at least the Read group. If your Mailchimp role is
+Viewer, Write and Send tools are hidden even when granted.
+
+### Authentication failed, or a 401 after it used to work
+
+The connection was disconnected in Mailchimp or the token expired.
+Re-authenticate from the client. In Claude Code, run `/mcp` and choose
+**Authenticate**. In Cursor and VS Code, use the server's **Login** action.
+
+### The tool returns "not available through this connection"
+
+Some Mailchimp features aren't available through AI tools yet. The response
+tells you where to do the task in Mailchimp.
+
+### A change didn't happen
+
+Writes run only after you confirm the preview. Check the chat for a pending
+preview, and check that Write or Send is on for this connection.
+
+### Trailing slash
+
+Use the URL exactly as shown, without a trailing slash.
+
+### Client-specific setup
+
+Each client documents its own MCP setup:
+[Claude Code](https://code.claude.com/docs/en/mcp),
+[Cursor](https://cursor.com/docs/mcp), and
+[VS Code](https://code.visualstudio.com/docs/agent-customization/mcp-servers).
+
+## Example prompts
+
+Once connected, try one of these to see what the server can do:
+
+| Goal | Prompt |
+|---|---|
+| Check the connection | "Which Mailchimp account am I connected to, and what plan is it on?" |
+| Review performance | "Compare opens and clicks for my last 3 campaigns and tell me which links did best." |
+| Look up a contact | "Is jane@example.com in any of my audiences, and what tags does she have?" |
+| Draft and schedule | "Create a draft called Summer News for my main audience with this content, run the checklist, and schedule it for next Tuesday at 10am." |
+
+The schedule step in the last prompt shows a preview and waits for your
+confirmation.
+
+## Next steps
+
+- [Permissions and access](/mcp/guides/permissions) explains what each
+  permission group allows.
+- [Available tools](/mcp/available-tools/overview) lists everything your AI tool can call.

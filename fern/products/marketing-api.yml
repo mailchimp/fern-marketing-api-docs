@@ -193,7 +193,7 @@ navigation:
         collapsible: true
         collapsed-by-default: true
         contents:
-          - page: MCP server
+          - page: Docs MCP server
             path: ../docs/pages/building/ai-tools/mcp-server.mdx
             slug: mcp-server
           - page: Agent skills

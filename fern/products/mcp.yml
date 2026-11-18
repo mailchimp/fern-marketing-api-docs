@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/product-yml.schema.json
+
+# Header tabs (docs.yml layout.tabs-placement: header): Overview / Guides /
+# Available tools. Slugs on tab definitions set the URLs
+# (/mcp, /mcp/guides/*, /mcp/available-tools/*).
+tabs:
+  overview:
+    # Leftmost tab, same shape as the Marketing API's and Transactional's: its
+    # page is the full-bleed landing page and serves /mcp.
+    display-name: Overview
+    skip-slug: true
+  guides:
+    display-name: Guides
+    slug: guides
+  tools:
+    # Three pages, because Fern renders no sidebar for a tab with one page.
+    # Keep the slug `available-tools`: mc-blog.js treats any path with a bare
+    # /tools segment as the Tools product and hides the sidebar.
+    display-name: Available tools
+    slug: available-tools
+
+navigation:
+  - tab: overview
+    layout:
+      - page: Overview
+        path: ../docs/pages/mcp/landing.mdx
+        slug: ""
+  - tab: guides
+    layout:
+      - page: Getting started with the MCP server
+        path: ../docs/pages/mcp/guides/getting-started.mdx
+        slug: getting-started
+      - page: Connect to the server
+        path: ../docs/pages/mcp/guides/connect.mdx
+        slug: connect
+      - page: Permissions and access
+        path: ../docs/pages/mcp/guides/permissions.mdx
+        slug: permissions
+  - tab: tools
+    layout:
+      - page: Available tools
+        path: ../docs/pages/mcp/available-tools/overview.mdx
+        slug: overview
+      - page: Core catalog
+        path: ../docs/pages/mcp/available-tools/core-catalog.mdx
+        slug: core-catalog
+      - page: Full catalog
+        path: ../docs/pages/mcp/available-tools/full-catalog.mdx
+        slug: full-catalog
