@@ -1,0 +1,35 @@
+---
+title: Available tools
+description: The tools the Mailchimp MCP server exposes, with the permission each one needs.
+---
+
+The tools the Mailchimp MCP server exposes, with the permission each one needs.
+The core catalog loads when a client connects; the full catalog is available
+on request.
+
+## How the catalog works
+
+The server organizes its tools in two catalogs:
+
+- **[Core catalog](/mcp/available-tools/core-catalog).** Loaded when a client
+  connects, filtered to the permissions you granted. Covers the four jobs on
+  the product overview.
+- **[Full catalog](/mcp/available-tools/full-catalog).** Every other Marketing
+  API operation the server serves, grouped by family. Available on request:
+  the AI tool searches the catalog with `core_list_capabilities` and runs the
+  matching tool with `core_call`. You don't need to know a tool's name; ask
+  for what you want.
+
+A tool is available only if you've granted its permission group and your
+Mailchimp role allows it.
+
+## Permissions
+
+Every tool needs one of three permissions:
+
+- **Read.** Returns data. Available with the default permission.
+- **Write.** Changes something in your account. Preview, then confirm.
+- **Send.** Sends a test or schedules a campaign. Preview, then confirm, every
+  time.
+
+[Permissions and access](/mcp/guides/permissions) describes each group.

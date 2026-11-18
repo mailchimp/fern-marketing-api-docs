@@ -922,7 +922,7 @@ header.fern-background-image { border-bottom: none !important; }
 .mc-switcher-panel.is-open { opacity: 1; visibility: visible; transform: none; }
 .mc-switcher-inner {
   max-width: 88rem; margin: 0 auto; padding: 48px 80px 56px;
-  display: grid; grid-template-columns: repeat(2, minmax(280px, 420px)); gap: 56px;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 420px)); gap: 56px;
 }
 .mc-switcher-name {
   display: block; text-decoration: none !important;
@@ -2153,4 +2153,23 @@ body:has(.fern-layout-changelog) .fern-footer-nav {
   .mc-ipp-build-right { border-left: 0; padding-left: 0; margin-top: 40px; }
   .mc-ipp-hero-title { font-size: 44px !important; }
   .mc-ipp-mkt-title { font-size: 36px !important; }
+}
+
+/* ---------------------------------------------------------------
+   Compact tables. Fern gives every table cell a 12rem min-width, so a
+   four-column table overflows the content column and clips its last column.
+   Wrap a markdown table in <div className="mc-table-compact"> to drop that
+   floor and size narrow numeric columns to their content. Cells stay
+   left-aligned, like every other table on the site.
+   --------------------------------------------------------------- */
+.mc-table-compact .fern-table th,
+.mc-table-compact .fern-table td { min-width: 0; }
+.mc-table-compact .fern-table th { white-space: nowrap; }
+.mc-table-compact .fern-table td:first-child { white-space: nowrap; }
+.mc-table-compact .fern-table th:nth-child(2),
+.mc-table-compact .fern-table th:nth-child(3),
+.mc-table-compact .fern-table td:nth-child(2),
+.mc-table-compact .fern-table td:nth-child(3) { width: 1%; }
+@media (max-width: 640px) {
+  .mc-table-compact .fern-table td:first-child { white-space: normal; }
 }

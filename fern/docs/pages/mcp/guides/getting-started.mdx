@@ -1,0 +1,82 @@
+---
+title: Getting started with the MCP server
+description: What the Mailchimp MCP server is, what an AI tool can do once it's connected, and what you need before you start.
+---
+
+What the Mailchimp MCP server is, what an AI tool can do once it's connected,
+and what you need before you start.
+
+## What is MCP?
+
+[Model Context Protocol](https://modelcontextprotocol.io/introduction) (MCP)
+is an open protocol that lets AI tools call external services in a controlled
+way. You connect the Mailchimp MCP server to an MCP client such as Claude Code,
+Cursor, or VS Code, and sign in with your Mailchimp login. The client can then
+read your account data and, if you allow it, make changes on your behalf.
+
+Mailchimp hosts the server. There's nothing to install or run locally, and no
+API key to manage.
+
+## What you can do
+
+The server is built around four jobs:
+
+- Get performance answers
+- Find and act on your audience
+- Draft a campaign and make it send-ready
+- See what your customers buy
+
+Each job is covered by a set of tools your AI tool can call.
+[Available tools](/mcp/available-tools/overview) lists every one.
+
+## How access works
+
+Connecting is a standard OAuth sign-in with your Mailchimp login. You choose
+what the AI tool can do in three permission groups. Read is on by default;
+Write and Send are off until you turn them on.
+
+Every write returns a preview and runs only after you confirm in the chat. An
+AI tool can never do more than your own Mailchimp user role allows, and you
+can disconnect at any time.
+[Permissions and access](/mcp/guides/permissions) covers each group in detail.
+
+## How tools are organized
+
+When an AI tool connects, it loads the core catalog: the tools for the four
+jobs above. The rest of the Mailchimp Marketing API is in the full catalog,
+which the AI tool searches and calls on request.
+
+You ask for what you want in plain words, and the right tool is found either
+way. Both catalogs use the same permissions and the same preview-and-confirm
+rule for writes.
+
+## Requirements
+
+You need three things to use the server:
+
+- A Mailchimp account on any plan. The MCP server is free to use.
+- An MCP client that supports remote servers over Streamable HTTP and OAuth
+  sign-in. The client must send the server URL as the OAuth resource.
+- An e-commerce store connected to Mailchimp, if you want store and sales
+  data.
+
+## Already using Claude, ChatGPT, Gemini, or Perplexity?
+
+Mailchimp has a ready-made app for each. Install it from the tool's own
+directory instead of setting up the server:
+
+- [Claude](https://claude.com/marketplace/connectors/intuit-mailchimp)
+- [ChatGPT](https://chatgpt.com/plugins/plugin_asdk_app_693b20fccbac8191bdc178bb493de3e5)
+- [Gemini, through the Google Workspace Marketplace](https://workspace.google.com/marketplace/app/intuit_mailchimp_connector/47883168141)
+- [Perplexity](https://mailchimp.com/solutions/ai-tools/)
+
+For transactional email and SMS, use the
+[Transactional Messaging MCP](/transactional/guides/how-to-use-mailchimps-transactional-messaging-mcp).
+It's a separate server with its own setup.
+
+## Next steps
+
+- [Connect to the server](/mcp/guides/connect) has the URL and setup steps for
+  each client.
+- [Available tools](/mcp/available-tools/overview) shows what an AI tool can do once it's
+  connected.

@@ -1,0 +1,78 @@
+---
+title: Permissions and access
+description: Decide what each connected AI tool can read, write, and send, and how your Mailchimp user role limits it.
+---
+
+You decide what each connected AI tool can read, write, and send. Permissions
+are set at sign-in and are always capped by your own Mailchimp user role.
+
+## The three permission groups
+
+Every connection has three permission groups. You set them on the permissions
+screen at sign-in.
+
+| Permission | Default | What it allows |
+|---|---|---|
+| Read | On | Read audiences, contacts, segments, campaigns, reports, templates, and store data. |
+| Write | Off | Create and edit segments, campaign drafts, content, and audience settings. Every write returns a preview and runs only after you confirm in the chat. |
+| Send | Off | Send a test email and schedule a campaign for a later time. Both preview and confirm every time. An AI tool can't send a campaign immediately. |
+
+Expand a group on the permissions screen to see the exact data and actions it
+covers. The tools your client sees are filtered to the groups you allow, so a
+read-only connection never shows a write tool.
+
+## Preview and confirm
+
+A Write or Send tool never changes anything on its first call. It returns a
+preview in the chat that describes the change in plain words:
+
+- For a segment, the conditions and how many contacts match.
+- For a draft, the subject and audience.
+- For a scheduled campaign, the campaign and the time it goes out.
+
+The change runs only when you confirm. The confirmation is tied to that
+preview, so a changed request produces a new preview.
+
+Test sends and scheduling confirm every time. No setting skips the preview.
+
+## Your Mailchimp role sets the ceiling
+
+An AI tool acts as you, with the same limits your
+[user level](https://mailchimp.com/help/manage-user-levels-in-your-account/)
+has in Mailchimp. A Viewer gets read access only, whatever was granted at
+sign-in. Account billing and user management aren't available to AI tools at
+any level.
+
+## Manage and revoke connections
+
+Every connected AI tool shows up in your Mailchimp account, where you can
+review or remove it.
+
+To see what's connected, open **Integrations** in Mailchimp and choose
+**Manage**. Each connected AI tool is listed with the account it uses, when it
+was connected, and its permissions.
+
+To remove a tool's access, choose **Disconnect**. Access is revoked
+immediately, and the client asks you to sign in again the next time it's used.
+
+Each client is its own connection with its own permissions. You can give a
+coding tool Read only and a chat tool Write on the same account.
+
+## Data handling
+
+A few things worth knowing about how your data moves:
+
+- Data flows from Mailchimp to your AI tool only when a tool is called, and
+  only the fields that tool returns. Nothing is pushed or synced in the
+  background.
+- How your AI tool stores or uses what it receives is governed by that tool's
+  own terms. Review them before you connect.
+- AI tools can make mistakes. Review previews and results before you confirm a
+  change.
+
+## Next steps
+
+- [Available tools](/mcp/available-tools/overview) shows which tools each permission group
+  covers.
+- [Connect to the server](/mcp/guides/connect) has the setup steps for
+  connecting another client.
