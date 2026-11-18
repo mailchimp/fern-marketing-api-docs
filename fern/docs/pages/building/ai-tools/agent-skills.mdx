@@ -26,7 +26,7 @@ For the skill format itself, and the agents that support it, see
 | Skill | Use it when |
 |---|---|
 | `set-consent-correctly` | Adding or updating contacts from a signup form, checkout, or CRM sync, and the write has to record what the person chose without overwriting consent they already gave. |
-| `set-up-oauth` | Implementing OAuth 2 to connect other people's Mailchimp accounts: the authorize redirect, the callback and code exchange, and token storage per account. |
+| `set-up-oauth` | Implementing OAuth 2 to connect other people's Mailchimp accounts: telling the current and legacy flows apart, PKCE and the callback checks, refreshing tokens without revoking the connection, and token storage per account. |
 | `subscribe-to-webhooks` | Creating a webhook, verifying delivery signatures, and keeping a handler that survives duplicate deliveries without echoing its own writes back into the audience. |
 | `run-bulk-jobs` | A job is too large for one request, and you need to choose between the bulk endpoints, poll a batch without hitting the connection limit, and tell a partial failure from a success. |
 
