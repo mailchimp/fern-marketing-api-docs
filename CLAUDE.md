@@ -147,14 +147,15 @@ export, run this before anything else:**
 
 ```bash
 python3 scripts/rehoist-inline-schemas.py fern/apis/mailchimp-openapi/openapi.json
+python3 scripts/add-scope-descriptions.py fern/apis/mailchimp-openapi/openapi.json
 fern check
 ```
 
 This runs on a schedule: `.github/workflows/sync-openapi.yml` runs
 `fern api update` (using the `origin` in `fern/apis/mailchimp-openapi/generators.yml`), then the
-script, then `fern check`, and opens a PR on `sync-openapi/marketing` when the
+scripts, then `fern check`, and opens a PR on `sync-openapi/marketing` when the
 spec changed. It needs an `OPENAPI_SYNC_TOKEN` repo secret. To re-vendor by hand,
-run `fern api update --api mailchimp-openapi` and then the two commands above.
+run `fern api update --api mailchimp-openapi` and then the three commands above.
 
 Mailchimp authors the spec with shared `$ref`s but their exporter dereferences
 everything, so the raw export inlines the same subschema dozens of times. This
@@ -189,6 +190,21 @@ Deliberately not automated: promoting `x-discriminator` to a standard
 `condition_type` required, and OpenAPI needs it required in every branch.
 That is a semantic change we cannot verify without a live account, and
 required-but-sometimes-absent fields are what broke the Transactional SDKs.
+
+### OAuth scopes in the API reference
+
+Each operation's `security` lists the OAuth scopes it needs, e.g.
+`[{"bearerToken": []}, {"oauth2": ["campaigns:send"]}]`. Fern's API reference
+does not render per-operation scopes, so `scripts/add-scope-descriptions.py`
+appends `` **Scopes required:** `campaigns:send` `` to the operation description.
+It is idempotent and rewrites or removes the line when the scopes change. The
+`fern-check` workflow runs it with `--check` and fails if it was skipped.
+
+Keep `bearerToken` in an operation-level `security`: it replaces the
+document-level `[{bearerToken}, {oauth2}]` rather than merging with it, so
+`[{"oauth2": [...]}]` alone drops API-key auth from that endpoint in the docs,
+SDKs, and CLI. Declare every scope under
+`components.securitySchemes.oauth2.flows.authorizationCode.scopes`.
 
 ## Gotchas
 

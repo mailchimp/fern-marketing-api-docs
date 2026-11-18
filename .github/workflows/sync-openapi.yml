@@ -35,6 +35,9 @@ jobs:
       - name: Re-hoist inline schemas
         run: python3 scripts/rehoist-inline-schemas.py fern/apis/mailchimp-openapi/openapi.json
 
+      - name: Add required OAuth scopes to descriptions
+        run: python3 scripts/add-scope-descriptions.py fern/apis/mailchimp-openapi/openapi.json
+
       - name: Check API is valid
         run: fern check
 
@@ -52,5 +55,6 @@ jobs:
           body: |
             Automated sync of `fern/apis/mailchimp-openapi/openapi.json` from the
             `origin` in `fern/apis/mailchimp-openapi/generators.yml`, normalized
-            with `scripts/rehoist-inline-schemas.py`. `fern check` passed in the
+            with `scripts/rehoist-inline-schemas.py` and
+            `scripts/add-scope-descriptions.py`. `fern check` passed in the
             workflow run that opened this PR.
