@@ -1,5 +1,5 @@
 # OpenAPI overrides for Mailchimp Marketing API
-# Fixes authentication, pagination, and server configuration
+# Tag display names, the API description, and pagination
 
 tags:
   - name: root
@@ -107,31 +107,6 @@ info:
     ## Rate Limits
 
     The API enforces rate limits of 10 simultaneous connections. If you exceed this limit, you'll receive a `429 Too Many Requests` response.
-
-# Auth schemes are declared in openapi.json directly (`basicAuth`, `oauth2`).
-#
-# Earlier the spec declared `bearerToken` + an override security block that
-# Fern merged with the spec's `security` by array index. The result —
-# `[{bearerToken, basicAuth}, {oauth2}]` — was an AND requirement no client
-# could satisfy, and the generated CLI dropped the Authorization header
-# entirely. Spec-level declaration of `security: [{basicAuth}, {oauth2}]`
-# avoids the array-merge pitfall and matches Mailchimp's documented method
-# (HTTP Basic with any username + API key as password).
-
-# Replaces the raw export's `servers` array wholesale, which is deliberate and
-# load-bearing for two reasons:
-#
-#   1. Every account uses the same host. The export has carried a templated
-#      `https://{serverPrefix}.api.mailchimp.com` (us1..us22); there is no
-#      per-datacenter host to select, so the single plain URL below is correct.
-#   2. The export also ships an internal `https://dev.api.mailchimp.com`
-#      labeled "Mailchimp development environment". Replacing the array is what
-#      keeps that host out of the published docs and the generated SDKs. It
-#      reappears in openapi.json on every re-vendor, so do not narrow this to a
-#      merge or drop it — the dev host would become public.
-servers:
-  - description: Mailchimp public API
-    url: https://api.mailchimp.com
 
 paths:
   /3.0/account-exports:
