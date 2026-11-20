@@ -452,6 +452,8 @@ redirects:
     destination: /developer/marketing/api/audiences/contacts/get-audience-contact-list
   - source: /marketing/api/audiences-contacts/update-contact
     destination: /developer/marketing/api/audiences/contacts/patch-audience-contact
+  - source: /marketing/api/audiences/delete-audience-contact
+    destination: /developer/marketing/api/audiences/contacts/delete-audience-contact
   - source: /marketing/api/audiences/get-a-list-of-audiences
     destination: /developer/marketing/api/audiences/contacts/get-audience-contact-list
   - source: /marketing/api/audiences/get-audience-info
@@ -1118,6 +1120,26 @@ redirects:
     destination: /developer/marketing/api/search-members/list
   - source: /marketing/api/search-members/search-members
     destination: /developer/marketing/api/search-members/list
+  - source: /marketing/api/segments
+    destination: /developer/marketing/api/audiences/segments/get-segment-list
+  - source: /marketing/api/segments/create-segment
+    destination: /developer/marketing/api/audiences/segments/create-segment
+  - source: /marketing/api/segments/create-segment-snapshot
+    destination: /developer/marketing/api/audiences/segments/snapshots/create-segment-snapshot
+  - source: /marketing/api/segments/delete-segment
+    destination: /developer/marketing/api/audiences/segments/delete-segment
+  - source: /marketing/api/segments/get-segment
+    destination: /developer/marketing/api/audiences/segments/get-segment
+  - source: /marketing/api/segments/get-segment-count
+    destination: /developer/marketing/api/audiences/segments/get-segment-count
+  - source: /marketing/api/segments/get-segment-list
+    destination: /developer/marketing/api/audiences/segments/get-segment-list
+  - source: /marketing/api/segments/get-segment-snapshot
+    destination: /developer/marketing/api/audiences/segments/snapshots/get-segment-snapshot
+  - source: /marketing/api/segments/get-segment-snapshot-contact-id-list
+    destination: /developer/marketing/api/audiences/segments/snapshots/get-segment-snapshot-contact-id-list
+  - source: /marketing/api/segments/update-segment
+    destination: /developer/marketing/api/audiences/segments/update-segment
   - source: /marketing/api/sent-to-reports
     destination: /developer/marketing/api/reports/sent-to/get-sent-to
   - source: /marketing/api/sent-to-reports/get-campaign-recipient-info

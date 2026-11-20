@@ -240,8 +240,25 @@ navigation:
                   - POST /3.0/audiences/{audience_id}/contacts
                   - GET /3.0/audiences/{audience_id}/contacts/{contact_id}
                   - PATCH /3.0/audiences/{audience_id}/contacts/{contact_id}
+                  - DELETE /3.0/audiences/{audience_id}/contacts/{contact_id}
                   - POST /3.0/audiences/{audience_id}/contacts/{contact_id}/actions/archive
                   - POST /3.0/audiences/{audience_id}/contacts/{contact_id}/actions/forget
+              # The `segments` tag (/3.0/segments...) is the Audiences (beta)
+              # segments API. It is distinct from Lists > Segments below,
+              # which holds the legacy /3.0/lists/{list_id}/segments endpoints.
+              - section: Segments
+                contents:
+                  - GET /3.0/segments
+                  - POST /3.0/segments
+                  - GET /3.0/segments/{segment_id}
+                  - PATCH /3.0/segments/{segment_id}
+                  - DELETE /3.0/segments/{segment_id}
+                  - GET /3.0/segments/{segment_id}/count
+                  - section: Snapshots
+                    contents:
+                      - POST /3.0/segments/{segment_id}/snapshots
+                      - GET /3.0/segments/{segment_id}/snapshots/{snapshot_id}
+                      - GET /3.0/segments/{segment_id}/snapshots/{snapshot_id}/members
           - authorized-apps
           - section: Automations
             contents:
