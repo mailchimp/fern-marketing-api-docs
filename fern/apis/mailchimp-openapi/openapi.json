@@ -16107,7 +16107,7 @@
       "email": "apihelp@mailchimp.com",
       "name": "Mailchimp API Support"
     },
-    "description": "Whether you’re managing your own campaigns, providing Mailchimp services to your customers or clients, or writing a mobile app, the Mailchimp API has features to manage and sync your contact data.\n\nAudiences are at the core of sending campaigns with Mailchimp. You can use the API to [set up an audience](https://mailchimp.com/developer/marketing/guides/create-your-first-audience/) and add contacts to that audience; you can then organize those contacts with [tags](https://mailchimp.com/developer/marketing/guides/organize-contacts-with-tags/) or segment them by activity with [events](https://mailchimp.com/developer/marketing/guides/track-outside-activity-events/).\n\nThe API can also be a source of data for your application. [Webhooks](https://mailchimp.com/developer/marketing/guides/sync-audience-data-webhooks/) collect and transmit information about your audience to you in near real time. And if you’re selling products on an external store, you can integrate your audience behavior using Mailchimp’s  [E-commerce features](https://mailchimp.com/developer/marketing/docs/e-commerce/).\n\nYou can also use the API to handle data in different ways for different purposes. If you are syncing a large amount of data with Mailchimp, you can use [batches](https://mailchimp.com/developer/marketing/guides/run-async-requests-batch-endpoint/) to avoid hitting the API request limits. For building integrations that let other users access data from their own Mailchimp accounts, you should [authenticate with OAuth 2](https://mailchimp.com/developer/marketing/guides/access-user-data-oauth-2/). And if you’re developing an app for iOS or Android, the [Mobile SDK](https://mailchimp.com/developer/marketing/docs/mobile-sdk/) provides an easy way to work with a mobile-focused subset of the API’s functionality.",
+    "description": "The Mailchimp Marketing API provides programmatic access to Mailchimp data and functionality.\nUse this API to manage audiences, campaigns, automations, and more.\n\n## Authentication\n\nThe API supports two authentication methods:\n\n- **API Key**: Use HTTP Basic authentication with any string as the username and your API key as the password. Alternatively, pass the API key as a Bearer token in the Authorization header.\n- **OAuth 2**: Use the OAuth 2 authorization code flow for integrations that access other users' accounts.\n\n## Base URL\n\nAll API requests use the format `https://api.mailchimp.com/3.0/`.\n\n## Pagination\n\nList endpoints use offset-based or cursor-based pagination. Check each endpoint's parameters to see which method it supports. Either way, `count` sets the page size, up to 1000.\n\n- **Offset-based**: Use `count` and `offset` to choose a page. Responses include `total_items` to indicate the full result set size.\n- **Cursor-based**: Endpoints such as `GET /3.0/segments` return a `next_cursor` value. To get the next page, set the `cursor` query parameter to that value. If a response has no `next_cursor`, there are no more pages.\n\n## Rate Limits\n\nThe API enforces rate limits of 10 simultaneous connections. If you exceed this limit, you'll receive a `429 Too Many Requests` response.",
     "summary": "Manage audiences, integrate your data, and send timely, relevant email campaigns.",
     "termsOfService": "https://mailchimp.com/legal/api_use/",
     "title": "Mailchimp API",
@@ -35603,7 +35603,82 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ECommerceOrder"
+                  "description": "A collection of orders in a store.",
+                  "properties": {
+                    "_links": {
+                      "description": "A list of link types and descriptions for the API schema documents.",
+                      "items": {
+                        "description": "This object represents a link from the resource where it is found to another resource or action that may be performed.",
+                        "properties": {
+                          "href": {
+                            "description": "This property contains a fully-qualified URL that can be called to retrieve the linked resource or perform the linked action.",
+                            "readOnly": true,
+                            "title": "Href",
+                            "type": "string"
+                          },
+                          "method": {
+                            "description": "The HTTP method that should be used when accessing the URL defined in 'href'.",
+                            "enum": [
+                              "GET",
+                              "POST",
+                              "PUT",
+                              "PATCH",
+                              "DELETE",
+                              "OPTIONS",
+                              "HEAD"
+                            ],
+                            "readOnly": true,
+                            "title": "Method",
+                            "type": "string"
+                          },
+                          "rel": {
+                            "description": "As with an HTML 'rel' attribute, this describes the type of link.",
+                            "readOnly": true,
+                            "title": "Rel",
+                            "type": "string"
+                          },
+                          "schema": {
+                            "description": "For HTTP methods that can receive bodies (POST and PUT), this is a URL representing the schema that the body should conform to.",
+                            "readOnly": true,
+                            "title": "Schema",
+                            "type": "string"
+                          },
+                          "targetSchema": {
+                            "description": "For GETs, this is a URL representing the schema that the response should conform to.",
+                            "readOnly": true,
+                            "title": "Target Schema",
+                            "type": "string"
+                          }
+                        },
+                        "title": "Resource Link",
+                        "type": "object"
+                      },
+                      "readOnly": true,
+                      "title": "Links",
+                      "type": "array"
+                    },
+                    "orders": {
+                      "description": "An array of objects, each representing an order in a store.",
+                      "items": {
+                        "$ref": "#/components/schemas/ECommerceOrder"
+                      },
+                      "title": "Orders",
+                      "type": "array"
+                    },
+                    "store_id": {
+                      "description": "The unique identifier for the store.",
+                      "title": "Store ID",
+                      "type": "string"
+                    },
+                    "total_items": {
+                      "description": "The total number of items matching the query regardless of pagination.",
+                      "readOnly": true,
+                      "title": "Item Count",
+                      "type": "integer"
+                    }
+                  },
+                  "title": "Orders",
+                  "type": "object"
                 }
               }
             },
