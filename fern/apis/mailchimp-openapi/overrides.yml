@@ -1,5 +1,5 @@
 # OpenAPI overrides for Mailchimp Marketing API
-# Fixes authentication, pagination, and server configuration
+# Tag display names and pagination
 
 tags:
   - name: root
@@ -84,55 +84,6 @@ tags:
     x-displayName: Verified Domains
     description: "Sending domains and their verification state."
 
-info:
-  description: |
-    The Mailchimp Marketing API provides programmatic access to Mailchimp data and functionality.
-    Use this API to manage audiences, campaigns, automations, and more.
-
-    ## Authentication
-
-    The API supports two authentication methods:
-
-    - **API Key**: Use HTTP Basic authentication with any string as the username and your API key as the password. Alternatively, pass the API key as a Bearer token in the Authorization header.
-    - **OAuth 2**: Use the OAuth 2 authorization code flow for integrations that access other users' accounts.
-
-    ## Base URL
-
-    All API requests use the format `https://api.mailchimp.com/3.0/`.
-
-    ## Pagination
-
-    List endpoints support offset-based pagination with `count` (max 1000) and `offset` query parameters. Responses include `total_items` to indicate the full result set size.
-
-    ## Rate Limits
-
-    The API enforces rate limits of 10 simultaneous connections. If you exceed this limit, you'll receive a `429 Too Many Requests` response.
-
-# Auth schemes are declared in openapi.json directly (`basicAuth`, `oauth2`).
-#
-# Earlier the spec declared `bearerToken` + an override security block that
-# Fern merged with the spec's `security` by array index. The result —
-# `[{bearerToken, basicAuth}, {oauth2}]` — was an AND requirement no client
-# could satisfy, and the generated CLI dropped the Authorization header
-# entirely. Spec-level declaration of `security: [{basicAuth}, {oauth2}]`
-# avoids the array-merge pitfall and matches Mailchimp's documented method
-# (HTTP Basic with any username + API key as password).
-
-# Replaces the raw export's `servers` array wholesale, which is deliberate and
-# load-bearing for two reasons:
-#
-#   1. Every account uses the same host. The export has carried a templated
-#      `https://{serverPrefix}.api.mailchimp.com` (us1..us22); there is no
-#      per-datacenter host to select, so the single plain URL below is correct.
-#   2. The export also ships an internal `https://dev.api.mailchimp.com`
-#      labeled "Mailchimp development environment". Replacing the array is what
-#      keeps that host out of the published docs and the generated SDKs. It
-#      reappears in openapi.json on every re-vendor, so do not narrow this to a
-#      merge or drop it — the dev host would become public.
-servers:
-  - description: Mailchimp public API
-    url: https://api.mailchimp.com
-
 paths:
   /3.0/account-exports:
     get:
@@ -209,89 +160,11 @@ paths:
       x-fern-pagination:
         offset: $request.offset
         results: $response.customers
-  # The list endpoint was typed as a single ECommerceOrder rather than a
-  # collection, so there was no array for pagination to point at. Every
-  # sibling store-scoped collection (carts, products, customers) returns
-  # {_links, <plural>, store_id, total_items} - mirror that. `_links` is
-  # reused verbatim from the carts response so the shapes stay identical.
-  # `$ref: null` clears the incorrect single-item ref (Fern's override merge
-  # is a deep merge, so a key present upstream must be explicitly nulled).
   /3.0/ecommerce/stores/{store_id}/orders:
     get:
       x-fern-pagination:
         offset: $request.offset
         results: $response.orders
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: null
-                type: object
-                description: A collection of orders in a store.
-                properties:
-                  store_id:
-                    description: The store id.
-                    title: Store ID
-                    type: string
-                  orders:
-                    type: array
-                    description: An array of objects, each representing an order in a store.
-                    items:
-                      $ref: '#/components/schemas/ECommerceOrder'
-                  total_items:
-                    description: The total number of items matching the query regardless of pagination.
-                    readOnly: true
-                    title: Item Count
-                    type: integer
-                  _links:
-                    description: A list of link types and descriptions for the API schema documents.
-                    items:
-                      description: This object represents a link from the resource where it is found to
-                        another resource or action that may be performed.
-                      properties:
-                        href:
-                          description: This property contains a fully-qualified URL that can be called
-                            to retrieve the linked resource or perform the linked action.
-                          readOnly: true
-                          title: Href
-                          type: string
-                        method:
-                          description: The HTTP method that should be used when accessing the URL defined
-                            in 'href'.
-                          enum:
-                          - GET
-                          - POST
-                          - PUT
-                          - PATCH
-                          - DELETE
-                          - OPTIONS
-                          - HEAD
-                          readOnly: true
-                          title: Method
-                          type: string
-                        rel:
-                          description: As with an HTML 'rel' attribute, this describes the type of link.
-                          readOnly: true
-                          title: Rel
-                          type: string
-                        schema:
-                          description: For HTTP methods that can receive bodies (POST and PUT), this is
-                            a URL representing the schema that the body should conform to.
-                          readOnly: true
-                          title: Schema
-                          type: string
-                        targetSchema:
-                          description: For GETs, this is a URL representing the schema that the response
-                            should conform to.
-                          readOnly: true
-                          title: Target Schema
-                          type: string
-                      title: Resource Link
-                      type: object
-                    readOnly: true
-                    title: Links
-                    type: array
   /3.0/ecommerce/stores/{store_id}/orders/{order_id}/lines:
     get:
       x-fern-pagination:
