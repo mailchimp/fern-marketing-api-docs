@@ -15,6 +15,7 @@ import pathlib
 import re
 import sys
 
+SCHEMA = "https://schemas.agentskills.io/discovery/0.2.0/schema.json"
 SKILLS_DIR = pathlib.Path(__file__).resolve().parent.parent / "fern/.well-known/agent-skills"
 
 
@@ -41,6 +42,7 @@ def main():
             sys.exit(f"{skill_md}: name '{meta['name']}' != directory '{directory}'")
         skills.append({
             "name": meta["name"],
+            "type": "skill-md",
             "description": meta["description"],
             "url": f"/.well-known/agent-skills/{directory}/SKILL.md",
             "digest": "sha256:" + hashlib.sha256(raw).hexdigest(),
@@ -50,7 +52,10 @@ def main():
         sys.exit(f"No SKILL.md files found under {SKILLS_DIR}")
 
     out = SKILLS_DIR / "index.json"
-    out.write_text(json.dumps({"version": "0.2.0", "skills": skills}, indent=2) + "\n")
+    manifest = {"$schema": SCHEMA, "skills": skills}
+    out.write_text(
+        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
     print(f"Wrote {out} ({len(skills)} skill{'s' if len(skills) != 1 else ''})")
     for s in skills:
         print(f"  {s['name']}  {s['digest']}")
