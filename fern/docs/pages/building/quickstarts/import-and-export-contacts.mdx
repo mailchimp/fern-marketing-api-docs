@@ -30,25 +30,20 @@ curl -s --request POST \
   --data '{"email_address": "ada.lovelace@example.com", "status": "subscribed"}'
 ```
 
-```javascript title="Node"
-const mailchimp = require("@mailchimp/mailchimp_marketing");
+```typescript title="TypeScript"
+import { MailchimpClient } from "@mailchimp/mailchimp-marketing";
 
-mailchimp.setConfig({
-  apiKey: "YOUR_API_KEY",
+const client = new MailchimpClient({
+  token: "YOUR_API_KEY",
 });
 
-const listId = "YOUR_LIST_ID";
+const response = await client.lists.createMember({
+  listId: "YOUR_LIST_ID",
+  emailAddress: "ada.lovelace@example.com",
+  status: "subscribed",
+});
 
-async function run() {
-  const response = await mailchimp.lists.addListMember(listId, {
-    email_address: "ada.lovelace@example.com",
-    status: "subscribed",
-  });
-
-  console.log(`Added contact with id ${response.id}`);
-}
-
-run();
+console.log(`Added contact with id ${response.id}`);
 ```
 </CodeBlocks>
 
@@ -76,28 +71,28 @@ curl -s --request PUT \
   --data '{"email_address": "'"$subscriber_email"'", "status_if_new": "subscribed"}'
 ```
 
-```javascript title="Node"
-const mailchimp = require("@mailchimp/mailchimp_marketing");
-const md5 = require("md5");
+```typescript title="TypeScript"
+import { MailchimpClient } from "@mailchimp/mailchimp-marketing";
+import crypto from "crypto";
 
-mailchimp.setConfig({
-  apiKey: "YOUR_API_KEY",
+const client = new MailchimpClient({
+  token: "YOUR_API_KEY",
 });
 
-const listId = "YOUR_LIST_ID";
 const email = "ada.lovelace@example.com";
-const subscriberHash = md5(email.toLowerCase());
+const subscriberHash = crypto
+  .createHash("md5")
+  .update(email.toLowerCase())
+  .digest("hex");
 
-async function run() {
-  const response = await mailchimp.lists.setListMember(listId, subscriberHash, {
-    email_address: email,
-    status_if_new: "subscribed",
-  });
+const response = await client.lists.upsertMember({
+  listId: "YOUR_LIST_ID",
+  subscriberHash,
+  emailAddress: email,
+  statusIfNew: "subscribed",
+});
 
-  console.log(`Upserted contact with id ${response.id}`);
-}
-
-run();
+console.log(`Upserted contact with id ${response.id}`);
 ```
 </CodeBlocks>
 
@@ -157,25 +152,25 @@ curl -s --request GET \
   --user "anystring:${apikey}"
 ```
 
-```javascript title="Node"
-const mailchimp = require("@mailchimp/mailchimp_marketing");
+```typescript title="TypeScript"
+import { MailchimpClient } from "@mailchimp/mailchimp-marketing";
 
-mailchimp.setConfig({
-  apiKey: "YOUR_API_KEY",
+const client = new MailchimpClient({
+  token: "YOUR_API_KEY",
 });
 
-const listId = "YOUR_LIST_ID";
+const page = await client.lists.listMembers({
+  listId: "YOUR_LIST_ID",
+  count: 10,
+  status: "subscribed",
+});
 
-async function run() {
-  const response = await mailchimp.lists.getListMembersInfo(listId, {
-    count: 10,
-    status: "subscribed",
-  });
+console.log(`${page.response.totalItems} subscribed contacts in this audience`);
 
-  console.log(`${response.total_items} subscribed contacts in this audience`);
+// The SDK pages through the rest with offset for you
+for await (const member of page) {
+  console.log(member.emailAddress);
 }
-
-run();
 ```
 </CodeBlocks>
 

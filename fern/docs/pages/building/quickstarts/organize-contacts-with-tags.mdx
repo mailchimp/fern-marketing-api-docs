@@ -59,9 +59,9 @@ const subscriberHash = crypto
   .update(email.toLowerCase())
   .digest("hex");
 
-const response = await client.lists.createMemberTag({
-  list_id: listId,
-  subscriber_hash: subscriberHash,
+await client.lists.createMemberTag({
+  listId,
+  subscriberHash,
   tags: [
     {
       name: "Influencer",
@@ -70,11 +70,7 @@ const response = await client.lists.createMemberTag({
   ],
 });
 
-console.log(
-  `The return type for this endpoint is null, so this should be true: ${
-    response === null
-  }`
-);
+console.log("Tags updated. This endpoint returns no content.");
 ```
 
 ```python title="Python"
@@ -332,12 +328,12 @@ const subscriberHash = crypto
   .update(email.toLowerCase())
   .digest("hex");
 
-const response = await client.lists.listMemberTags({
-  list_id: listId,
-  subscriber_hash: subscriberHash,
+const page = await client.lists.listMemberTags({
+  listId,
+  subscriberHash,
 });
 
-console.log(`Urist has been tagged ${response.response.total_items} times.`);
+console.log(`Urist has been tagged ${page.response.totalItems} times.`);
 ```
 
 ```python title="Python"
@@ -510,9 +506,9 @@ const subscriberHash = crypto
   .update(email.toLowerCase())
   .digest("hex");
 
-const response = await client.lists.createMemberTag({
-  list_id: listId,
-  subscriber_hash: subscriberHash,
+await client.lists.createMemberTag({
+  listId,
+  subscriberHash,
   tags: [
     {
       name: "Influencer",
@@ -521,11 +517,7 @@ const response = await client.lists.createMemberTag({
   ],
 });
 
-console.log(
-  `The return type for this endpoint is null, so this should be true: ${
-    response === null
-  }`
-);
+console.log("Tags updated. This endpoint returns no content.");
 ```
 
 ```python title="Python"
@@ -710,12 +702,12 @@ const listId = "YOUR_LIST_ID";
 const tagId = "YOUR_TAG_ID";
 
 const response = await client.lists.batchAddOrRemoveMembers({
-  list_id: listId,
-  segment_id: tagId,
-  members_to_add: ["dolly.parton@example.com", "rihanna@example.com"],
+  listId,
+  segmentId: tagId,
+  membersToAdd: ["dolly.parton@example.com", "rihanna@example.com"],
 });
 
-console.log(`Successfully tagged ${response.total_added} contacts`);
+console.log(`Successfully tagged ${response.totalAdded} contacts`);
 ```
 
 ```python title="Python"
@@ -870,12 +862,12 @@ const listId = "YOUR_LIST_ID";
 const tagId = "YOUR_TAG_ID";
 
 const response = await client.lists.batchAddOrRemoveMembers({
-  list_id: listId,
-  segment_id: tagId,
-  members_to_remove: ["john.smith@example.com", "brad.hudson@example.com"],
+  listId,
+  segmentId: tagId,
+  membersToRemove: ["john.smith@example.com", "brad.hudson@example.com"],
 });
 
-console.log(`Successfully untagged ${response.total_removed} contacts`);
+console.log(`Successfully untagged ${response.totalRemoved} contacts`);
 ```
 
 ```python title="Python"
@@ -1029,9 +1021,9 @@ echo “Tag successfully created! Your tag id is ${tagid}”
 const listId = "YOUR_LIST_ID";
 
 const response = await client.lists.createSegment({
-  list_id: listId,
+  listId,
   name: "MegaInfluencer",
-  static_segment: ["dolly.parton@example.com", "rihanna@example.com"],
+  staticSegment: ["dolly.parton@example.com", "rihanna@example.com"],
 });
 
 console.log(`Tag successfully created! Your tag id is ${response.id}`);

@@ -92,6 +92,12 @@ navigation:
           - page: OAuth 2
             path: ../docs/pages/api-concepts/authentication/oauth-2.mdx
             slug: oauth-2
+          # Apps registered before the new authorization server launched.
+          # Concept and implementation on one page: these developers maintain
+          # existing integrations, so they don't need the concept/task split.
+          - page: Legacy OAuth 2 apps
+            path: ../docs/pages/api-concepts/authentication/legacy-oauth-2.mdx
+            slug: legacy-oauth-2
       - page: Methods and parameters
         path: ../docs/pages/api-concepts/methods-and-parameters.mdx
         slug: methods-and-parameters
