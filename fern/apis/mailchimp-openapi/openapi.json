@@ -1,102 +1,18 @@
 {
   "components": {
     "securitySchemes": {
-      "mcApiKey": {
-        "description": "A scoped Mailchimp API key, as described in our developer documentation at [API keys](https://mailchimp.com/developer/marketing/api-concepts/authentication/api-keys).",
-        "scheme": "bearer",
+      "bearerToken": {
+        "description": "Authorization using a Mailchimp API key (a.k.a. Bearer token)",
+        "scheme": "Bearer",
         "type": "http"
       },
-      "mcLegacyApiKey": {
-        "description": "A legacy Mailchimp API key, as described in our developer documentation at [API keys](https://mailchimp.com/developer/marketing/api-concepts/authentication/api-keys).",
-        "scheme": "bearer",
-        "type": "http"
-      },
-      "mcLegacyOauth2": {
-        "description": "The legacy Mailchimp OAuth 2.0 provider, as described in our developer documentation at [Legacy OAuth 2 apps](https://mailchimp.com/developer/marketing/api-concepts/authentication/legacy-oauth-2).",
+      "oauth2": {
+        "description": "Authorization using OAuth",
         "flows": {
           "authorizationCode": {
             "authorizationUrl": "https://login.mailchimp.com/oauth2/authorize",
             "scopes": {},
             "tokenUrl": "https://login.mailchimp.com/oauth2/token"
-          }
-        },
-        "type": "oauth2"
-      },
-      "mcOauth2": {
-        "description": "The Mailchimp OAuth 2.0 provider, as described in our developer documentation at [OAuth 2](https://mailchimp.com/developer/marketing/api-concepts/authentication/oauth-2). This OAuth 2.0 provider requires [PKCE](https://www.rfc-editor.org/info/rfc7636/).",
-        "flows": {
-          "authorizationCode": {
-            "authorizationUrl": "https://oauth.mailchimp.com/oauth2/authorize",
-            "refreshUrl": "https://oauth.mailchimp.com/oauth2/token",
-            "scopes": {
-              "account_exports:create": "Start a full export of your account data, including audiences, campaigns, events, files, reports and templates.",
-              "account_exports:read": "See your account exports and their download links. An export can include every contact in your audiences, along with your campaigns, reports and templates.",
-              "accounts:create": "Add sending domains and link accounts to external platforms.",
-              "accounts:delete": "Close your Mailchimp account and delete sending domains and integration connections.",
-              "accounts:read": "See account information, the activity feed, connected apps and sending domains.",
-              "accounts:update": "Change integration connections and accept terms of service.",
-              "ads:create": "Create and publish ads, and pause, end or copy them.",
-              "ads:delete": "Delete ads.",
-              "ads:read": "See your ads, including Facebook and Google ads.",
-              "ads:update": "Change ads.",
-              "audiences:create": "Create audiences, merge fields, segments and webhooks, and publish surveys.",
-              "audiences:delete": "Delete audiences and their segments, merge fields, surveys and webhooks.",
-              "audiences:read": "See your audiences, their settings, segments and partner segments.",
-              "audiences:update": "Change audiences, their segments, surveys and audience webhooks.",
-              "automations:create": "Create, start, pause, archive or copy automations, and trigger a flow step for a contact. Starting an automation sends its emails to your contacts, and an archived automation can't be restarted.",
-              "automations:delete": "Delete classic automation emails and automation flows. Deleting a flow permanently deletes it and its stats.",
-              "automations:read": "See classic automations, automation flows and their queued subscribers.",
-              "automations:update": "Change classic automation emails and automation flows, including flows that are already running.",
-              "batches:create": "Run many API requests in one batch. A batch can include any API request, including sending campaigns and deleting contacts.",
-              "batches:delete": "Stop batch operations that have not finished and delete their results.",
-              "batches:read": "See the status of batch operations and download their results. Results can include any data the batch read, such as contact details.",
-              "campaigns:create": "Create email campaigns, campaign folders, feedback and social posts.",
-              "campaigns:delete": "Delete email campaigns, campaign folders and feedback. You can't restore a deleted campaign.",
-              "campaigns:read": "See and search your email campaigns, postcards and social posts.",
-              "campaigns:send": "Send, schedule or test email campaigns, and publish or schedule social posts.",
-              "campaigns:update": "Change campaign content and settings, campaign folders and feedback, including campaigns already scheduled to send.",
-              "contacts:create": "Add, import, or batch subscribe or unsubscribe contacts.",
-              "contacts:delete": "Archive or forget contacts, or permanently remove them for privacy compliance.",
-              "contacts:read": "See and search the contacts in your audiences.",
-              "contacts:update": "Change contacts, or add or update a list member.",
-              "content:create": "Create brands and templates, and upload images and files to your File Manager.",
-              "content:delete": "Delete brands and templates, and remove files from your File Manager.",
-              "content:read": "See your brands, templates, and the images and files in your File Manager.",
-              "content:update": "Change brands, templates, and files and folders in your File Manager. A new brand logo can show when someone shares a page from your published website.",
-              "ecommerce:create": "Connect stores and add customers, orders, carts, products and promo codes to them. New orders and carts can email your customers through your active automations, such as order confirmations and abandoned-cart reminders.",
-              "ecommerce:delete": "Permanently delete stores and their customers, orders, carts, products and promo codes. Deleting a store deletes all of its data.",
-              "ecommerce:read": "See your connected stores and their customers, orders, carts, products and promo codes, including customer names, email addresses and purchase history.",
-              "ecommerce:update": "Change your stores and their customers, orders, carts, products and promo codes. Changing an order's status can email your customer through your active automations, for example a shipping confirmation.",
-              "inbox:create": "Send messages to contacts, and change the status and labels of inbox threads.",
-              "inbox:read": "See your inboxes, threads, messages and past conversations.",
-              "mobile:create": "Add push notification preferences for a device or store.",
-              "mobile:delete": "Delete push notification preferences for a device or store.",
-              "mobile:read": "See the Mailchimp mobile app and its user, and push notification preferences.",
-              "mobile:update": "Register mobile devices, change push notification preferences, and like or save suggested content.",
-              "outreaches:read": "See your outreaches, such as campaigns, ads, landing pages and surveys.",
-              "partners:create": "Add your Salesforce org information.",
-              "partners:read": "See reporting information from partners.",
-              "reports:read": "See campaign, ad, landing page and survey reports, including which list members opened or clicked.",
-              "segments:create": "Create advanced segments.",
-              "segments:delete": "Delete advanced segments.",
-              "segments:read": "See your segments, their member counts and their snapshots.",
-              "segments:snapshot": "Start a snapshot of the members of a segment.",
-              "segments:update": "Change the name or definition of an advanced segment.",
-              "sms:create": "Create SMS campaigns.",
-              "sms:delete": "Remove SMS campaigns from your Mailchimp account.",
-              "sms:read": "See your SMS campaigns and their content.",
-              "sms:send": "Send or schedule SMS campaigns, or cancel a send.",
-              "sms:update": "Change SMS campaigns and their content.",
-              "webhooks:create": "Add a webhook that fires whenever a batch request completes.",
-              "webhooks:delete": "Remove batch webhooks so they are no longer sent.",
-              "webhooks:read": "See the webhooks configured for batch requests.",
-              "webhooks:update": "Change batch webhooks.",
-              "websites:create": "Connect sites, turn the tracking pixel on or off, and create landing pages.",
-              "websites:delete": "Remove connected sites and delete landing pages.",
-              "websites:read": "See your connected sites and landing pages.",
-              "websites:update": "Change landing pages, and publish or unpublish them."
-            },
-            "tokenUrl": "https://oauth.mailchimp.com/oauth2/token"
           }
         },
         "type": "oauth2"
@@ -16568,20 +16484,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": []
-          },
-          {
-            "mcApiKey": []
-          }
-        ],
         "summary": "List API root resources",
         "tags": [
           "root"
@@ -16875,24 +16777,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "account_exports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "account_exports:read"
-            ]
-          }
-        ],
         "summary": "List account exports",
         "tags": [
           "account-exports"
@@ -17113,24 +16997,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "account_exports:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "account_exports:create"
-            ]
-          }
-        ],
         "summary": "Add export",
         "tags": [
           "account-exports"
@@ -17343,24 +17209,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "account_exports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "account_exports:read"
-            ]
-          }
-        ],
         "summary": "Get account export info",
         "tags": [
           "account-exports"
@@ -17497,24 +17345,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "accounts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "accounts:read"
-            ]
-          }
-        ],
         "summary": "List activity feed resources",
         "tags": [
           "activity-feed"
@@ -17756,24 +17586,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "accounts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "accounts:read"
-            ]
-          }
-        ],
         "summary": "Get latest chimp chatter",
         "tags": [
           "activity-feed"
@@ -18067,26 +17879,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          }
-        ],
         "summary": "A collection of Audience Contacts",
         "tags": [
           "audiences"
@@ -18408,26 +18200,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create",
-              "contacts:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create",
-              "contacts:create"
-            ]
-          }
-        ],
         "summary": "Add Contact",
         "tags": [
           "audiences"
@@ -18529,26 +18301,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:delete",
-              "contacts:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:delete",
-              "contacts:delete"
-            ]
-          }
-        ],
         "summary": "Delete a contact",
         "tags": [
           "audiences"
@@ -18688,26 +18440,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          }
-        ],
         "summary": "Get a contact record",
         "tags": [
           "audiences"
@@ -19050,26 +18782,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:update",
-              "contacts:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:update",
-              "contacts:update"
-            ]
-          }
-        ],
         "summary": "Update Contact",
         "tags": [
           "audiences"
@@ -19175,26 +18887,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create",
-              "contacts:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create",
-              "contacts:delete"
-            ]
-          }
-        ],
         "summary": "Archive Contact",
         "tags": [
           "audiences"
@@ -19300,26 +18992,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create",
-              "contacts:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create",
-              "contacts:delete"
-            ]
-          }
-        ],
         "summary": "Forget Contact",
         "tags": [
           "audiences"
@@ -19623,24 +19295,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "segments:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "segments:read"
-            ]
-          }
-        ],
         "summary": "List Segments",
         "tags": [
           "segments"
@@ -19808,24 +19462,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "segments:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "segments:create"
-            ]
-          }
-        ],
         "summary": "Add Segment",
         "tags": [
           "segments"
@@ -19920,24 +19556,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "segments:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "segments:delete"
-            ]
-          }
-        ],
         "summary": "Delete Segment",
         "tags": [
           "segments"
@@ -20113,24 +19731,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "segments:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "segments:read"
-            ]
-          }
-        ],
         "summary": "Get Segment",
         "tags": [
           "segments"
@@ -20299,24 +19899,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "segments:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "segments:update"
-            ]
-          }
-        ],
         "summary": "Update Segment",
         "tags": [
           "segments"
@@ -20475,24 +20057,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "segments:snapshot"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "segments:snapshot"
-            ]
-          }
-        ],
         "summary": "Snapshot a Segment",
         "tags": [
           "segments",
@@ -20629,24 +20193,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "segments:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "segments:read"
-            ]
-          }
-        ],
         "summary": "Get Segment Snapshot",
         "tags": [
           "segments",
@@ -20914,26 +20460,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "segments:read",
-              "contacts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "segments:read",
-              "contacts:read"
-            ]
-          }
-        ],
         "summary": "Get Snapshot Member Contact IDs",
         "tags": [
           "segments",
@@ -21048,24 +20574,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "segments:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "segments:read"
-            ]
-          }
-        ],
         "summary": "Get Segment Member Count",
         "tags": [
           "segments"
@@ -21355,24 +20863,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "accounts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "accounts:read"
-            ]
-          }
-        ],
         "summary": "List authorized apps",
         "tags": [
           "authorized-apps"
@@ -21581,24 +21071,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "accounts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "accounts:read"
-            ]
-          }
-        ],
         "summary": "Get authorized app info",
         "tags": [
           "authorized-apps"
@@ -21869,24 +21341,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:read"
-            ]
-          }
-        ],
         "summary": "List automations",
         "tags": [
           "automations"
@@ -22047,24 +21501,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:create"
-            ]
-          }
-        ],
         "summary": "Add automation",
         "tags": [
           "automations"
@@ -22193,24 +21629,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:read"
-            ]
-          }
-        ],
         "summary": "Get automation info",
         "tags": [
           "automations"
@@ -22303,24 +21721,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:create"
-            ]
-          }
-        ],
         "summary": "Archive automation",
         "tags": [
           "automations"
@@ -22413,24 +21813,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:create"
-            ]
-          }
-        ],
         "summary": "Pause automation emails",
         "tags": [
           "automations"
@@ -22523,24 +21905,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:create"
-            ]
-          }
-        ],
         "summary": "Start automation emails",
         "tags": [
           "automations"
@@ -22715,24 +22079,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:read"
-            ]
-          }
-        ],
         "summary": "List automated emails",
         "tags": [
           "automations"
@@ -22834,24 +22180,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:delete"
-            ]
-          }
-        ],
         "summary": "Delete workflow email",
         "tags": [
           "automations"
@@ -22957,24 +22285,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:read"
-            ]
-          }
-        ],
         "summary": "Get workflow email info",
         "tags": [
           "automations"
@@ -23174,24 +22484,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:update"
-            ]
-          }
-        ],
         "summary": "Update workflow email",
         "tags": [
           "automations"
@@ -23293,24 +22585,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:create"
-            ]
-          }
-        ],
         "summary": "Pause automated email",
         "tags": [
           "automations"
@@ -23412,24 +22686,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:create"
-            ]
-          }
-        ],
         "summary": "Start automated email",
         "tags": [
           "automations"
@@ -23726,24 +22982,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:read"
-            ]
-          }
-        ],
         "summary": "List automated email subscribers",
         "tags": [
           "automations"
@@ -23871,24 +23109,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:create"
-            ]
-          }
-        ],
         "summary": "Add subscriber to workflow email",
         "tags": [
           "automations"
@@ -24007,24 +23227,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:read"
-            ]
-          }
-        ],
         "summary": "Get automated email subscriber",
         "tags": [
           "automations"
@@ -24206,24 +23408,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:read"
-            ]
-          }
-        ],
         "summary": "List subscribers removed from workflow",
         "tags": [
           "automations"
@@ -24342,24 +23526,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:create"
-            ]
-          }
-        ],
         "summary": "Remove subscriber from workflow",
         "tags": [
           "automations"
@@ -24469,24 +23635,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:read"
-            ]
-          }
-        ],
         "summary": "Get subscriber removed from workflow",
         "tags": [
           "automations"
@@ -24699,24 +23847,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "webhooks:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "webhooks:read"
-            ]
-          }
-        ],
         "summary": "List batch webhooks",
         "tags": [
           "batch-webhooks"
@@ -24846,24 +23976,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "webhooks:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "webhooks:create"
-            ]
-          }
-        ],
         "summary": "Add batch webhook",
         "tags": [
           "batch-webhooks"
@@ -24956,24 +24068,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "webhooks:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "webhooks:delete"
-            ]
-          }
-        ],
         "summary": "Delete batch webhook",
         "tags": [
           "batch-webhooks"
@@ -25100,24 +24194,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "webhooks:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "webhooks:read"
-            ]
-          }
-        ],
         "summary": "Get batch webhook info",
         "tags": [
           "batch-webhooks"
@@ -25240,24 +24316,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "webhooks:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "webhooks:update"
-            ]
-          }
-        ],
         "summary": "Update batch webhook",
         "tags": [
           "batch-webhooks"
@@ -25470,24 +24528,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "batches:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "batches:read"
-            ]
-          }
-        ],
         "summary": "List batch requests",
         "tags": [
           "batches"
@@ -25653,24 +24693,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "batches:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "batches:create"
-            ]
-          }
-        ],
         "summary": "Start batch operation",
         "tags": [
           "batches"
@@ -25763,24 +24785,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "batches:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "batches:delete"
-            ]
-          }
-        ],
         "summary": "Delete batch request",
         "tags": [
           "batches"
@@ -25907,24 +24911,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "batches:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "batches:read"
-            ]
-          }
-        ],
         "summary": "Get batch operation status",
         "tags": [
           "batches"
@@ -26067,24 +25053,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:read"
-            ]
-          }
-        ],
         "summary": "List campaign folders",
         "tags": [
           "campaign-folders"
@@ -26192,24 +25160,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:create"
-            ]
-          }
-        ],
         "summary": "Add campaign folder",
         "tags": [
           "campaign-folders"
@@ -26302,24 +25252,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:delete"
-            ]
-          }
-        ],
         "summary": "Delete campaign folder",
         "tags": [
           "campaign-folders"
@@ -26519,24 +25451,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:read"
-            ]
-          }
-        ],
         "summary": "Get campaign folder",
         "tags": [
           "campaign-folders"
@@ -26728,24 +25642,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:update"
-            ]
-          }
-        ],
         "summary": "Update campaign folder",
         "tags": [
           "campaign-folders"
@@ -27113,24 +26009,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:read"
-            ]
-          }
-        ],
         "summary": "List campaigns",
         "tags": [
           "campaigns"
@@ -27610,24 +26488,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:create"
-            ]
-          }
-        ],
         "summary": "Add campaign",
         "tags": [
           "campaigns"
@@ -27722,24 +26582,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:delete"
-            ]
-          }
-        ],
         "summary": "Delete campaign",
         "tags": [
           "campaigns"
@@ -27888,24 +26730,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:read"
-            ]
-          }
-        ],
         "summary": "Get campaign info",
         "tags": [
           "campaigns"
@@ -28377,24 +27201,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:update"
-            ]
-          }
-        ],
         "summary": "Update campaign settings",
         "tags": [
           "campaigns"
@@ -28489,24 +27295,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:send"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:send"
-            ]
-          }
-        ],
         "summary": "Cancel campaign",
         "tags": [
           "campaigns"
@@ -28631,24 +27419,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:send"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:send"
-            ]
-          }
-        ],
         "summary": "Resend campaign",
         "tags": [
           "campaigns"
@@ -28744,24 +27514,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:send"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:send"
-            ]
-          }
-        ],
         "summary": "Pause rss campaign",
         "tags": [
           "campaigns"
@@ -28862,24 +27614,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:create"
-            ]
-          }
-        ],
         "summary": "Replicate campaign",
         "tags": [
           "campaigns"
@@ -28974,24 +27708,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:send"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:send"
-            ]
-          }
-        ],
         "summary": "Resume rss campaign",
         "tags": [
           "campaigns"
@@ -29133,24 +27849,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:send"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:send"
-            ]
-          }
-        ],
         "summary": "Schedule campaign",
         "tags": [
           "campaigns"
@@ -29245,24 +27943,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:send"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:send"
-            ]
-          }
-        ],
         "summary": "Send campaign",
         "tags": [
           "campaigns"
@@ -29390,24 +28070,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:send"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:send"
-            ]
-          }
-        ],
         "summary": "Send test email",
         "tags": [
           "campaigns"
@@ -29502,24 +28164,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:send"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:send"
-            ]
-          }
-        ],
         "summary": "Unschedule campaign",
         "tags": [
           "campaigns"
@@ -29650,24 +28294,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:read"
-            ]
-          }
-        ],
         "summary": "Get campaign content",
         "tags": [
           "campaigns"
@@ -29776,24 +28402,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:update"
-            ]
-          }
-        ],
         "summary": "Set campaign content",
         "tags": [
           "campaigns"
@@ -30126,24 +28734,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:read"
-            ]
-          }
-        ],
         "summary": "List campaign feedback",
         "tags": [
           "campaigns"
@@ -30296,24 +28886,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:create"
-            ]
-          }
-        ],
         "summary": "Add campaign feedback",
         "tags": [
           "campaigns"
@@ -30419,24 +28991,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:delete"
-            ]
-          }
-        ],
         "summary": "Delete campaign feedback message",
         "tags": [
           "campaigns"
@@ -30576,24 +29130,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:read"
-            ]
-          }
-        ],
         "summary": "Get campaign feedback message",
         "tags": [
           "campaigns"
@@ -30732,24 +29268,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:update"
-            ]
-          }
-        ],
         "summary": "Update campaign feedback message",
         "tags": [
           "campaigns"
@@ -30976,24 +29494,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:read"
-            ]
-          }
-        ],
         "summary": "Get campaign send checklist",
         "tags": [
           "campaigns"
@@ -31206,24 +29706,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "websites:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "websites:read"
-            ]
-          }
-        ],
         "summary": "List connected sites",
         "tags": [
           "connected-sites"
@@ -31345,24 +29827,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "websites:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "websites:create"
-            ]
-          }
-        ],
         "summary": "Add connected site",
         "tags": [
           "connected-sites"
@@ -31457,24 +29921,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "websites:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "websites:delete"
-            ]
-          }
-        ],
         "summary": "Delete connected site",
         "tags": [
           "connected-sites"
@@ -31603,24 +30049,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "websites:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "websites:read"
-            ]
-          }
-        ],
         "summary": "Get connected site",
         "tags": [
           "connected-sites"
@@ -31742,24 +30170,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "websites:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "websites:update"
-            ]
-          }
-        ],
         "summary": "Update connected site",
         "tags": [
           "connected-sites"
@@ -31854,24 +30264,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "websites:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "websites:create"
-            ]
-          }
-        ],
         "summary": "Verify connected site script",
         "tags": [
           "connected-sites"
@@ -31967,24 +30359,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "websites:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "websites:create"
-            ]
-          }
-        ],
         "summary": "Enable pixel for connected site",
         "tags": [
           "connected-sites"
@@ -32079,24 +30453,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "websites:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "websites:create"
-            ]
-          }
-        ],
         "summary": "Disable pixel for connected site",
         "tags": [
           "connected-sites"
@@ -32343,24 +30699,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "inbox:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "inbox:read"
-            ]
-          }
-        ],
         "summary": "List conversations",
         "tags": [
           "conversations"
@@ -32491,24 +30829,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "inbox:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "inbox:read"
-            ]
-          }
-        ],
         "summary": "Get conversation",
         "tags": [
           "conversations"
@@ -32750,24 +31070,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "inbox:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "inbox:read"
-            ]
-          }
-        ],
         "summary": "List messages",
         "tags": [
           "conversations"
@@ -32909,24 +31211,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "inbox:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "inbox:read"
-            ]
-          }
-        ],
         "summary": "Get message",
         "tags": [
           "conversations"
@@ -33054,24 +31338,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "automations:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "automations:create"
-            ]
-          }
-        ],
         "summary": "Automation flows API trigger for a contact",
         "tags": [
           "customer-journeys"
@@ -33215,24 +31481,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "List e-commerce api resources",
         "tags": [
           "ecommerce"
@@ -33485,24 +31733,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "List account orders",
         "tags": [
           "ecommerce"
@@ -33715,24 +31945,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "List stores",
         "tags": [
           "ecommerce"
@@ -33992,24 +32204,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:create"
-            ]
-          }
-        ],
         "summary": "Add store",
         "tags": [
           "ecommerce"
@@ -34104,24 +32298,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:delete"
-            ]
-          }
-        ],
         "summary": "Delete store",
         "tags": [
           "ecommerce"
@@ -34250,24 +32426,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "Get store info",
         "tags": [
           "ecommerce"
@@ -34521,24 +32679,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:update"
-            ]
-          }
-        ],
         "summary": "Update store",
         "tags": [
           "ecommerce"
@@ -34767,24 +32907,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "List carts",
         "tags": [
           "ecommerce"
@@ -35016,24 +33138,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:create"
-            ]
-          }
-        ],
         "summary": "Add cart",
         "tags": [
           "ecommerce"
@@ -35139,24 +33243,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:delete"
-            ]
-          }
-        ],
         "summary": "Delete cart",
         "tags": [
           "ecommerce"
@@ -35296,24 +33382,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "Get cart info",
         "tags": [
           "ecommerce"
@@ -35530,24 +33598,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:update"
-            ]
-          }
-        ],
         "summary": "Update cart",
         "tags": [
           "ecommerce"
@@ -35792,24 +33842,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "List cart line items",
         "tags": [
           "ecommerce"
@@ -35972,24 +34004,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:create"
-            ]
-          }
-        ],
         "summary": "Add cart line item",
         "tags": [
           "ecommerce"
@@ -36106,24 +34120,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:delete"
-            ]
-          }
-        ],
         "summary": "Delete cart line item",
         "tags": [
           "ecommerce"
@@ -36274,24 +34270,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "Get cart line item",
         "tags": [
           "ecommerce"
@@ -36452,24 +34430,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:update"
-            ]
-          }
-        ],
         "summary": "Update cart line item",
         "tags": [
           "ecommerce"
@@ -36708,24 +34668,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "List customers",
         "tags": [
           "ecommerce"
@@ -36946,24 +34888,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:create"
-            ]
-          }
-        ],
         "summary": "Add customer",
         "tags": [
           "ecommerce"
@@ -37069,24 +34993,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:delete"
-            ]
-          }
-        ],
         "summary": "Delete customer",
         "tags": [
           "ecommerce"
@@ -37226,24 +35132,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "Get customer info",
         "tags": [
           "ecommerce"
@@ -37363,24 +35251,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:update"
-            ]
-          }
-        ],
         "summary": "Update customer",
         "tags": [
           "ecommerce"
@@ -37608,24 +35478,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:update"
-            ]
-          }
-        ],
         "summary": "Add or update customer",
         "tags": [
           "ecommerce"
@@ -37819,24 +35671,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "List orders",
         "tags": [
           "ecommerce"
@@ -38420,24 +36254,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:create"
-            ]
-          }
-        ],
         "summary": "Add order",
         "tags": [
           "ecommerce"
@@ -38543,24 +36359,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:delete"
-            ]
-          }
-        ],
         "summary": "Delete order",
         "tags": [
           "ecommerce"
@@ -38700,24 +36498,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "Get order info",
         "tags": [
           "ecommerce"
@@ -39292,24 +37072,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:update"
-            ]
-          }
-        ],
         "summary": "Update order",
         "tags": [
           "ecommerce"
@@ -39554,24 +37316,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "List order line items",
         "tags": [
           "ecommerce"
@@ -39748,24 +37492,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:create"
-            ]
-          }
-        ],
         "summary": "Add order line item",
         "tags": [
           "ecommerce"
@@ -39882,24 +37608,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:delete"
-            ]
-          }
-        ],
         "summary": "Delete order line item",
         "tags": [
           "ecommerce"
@@ -40050,24 +37758,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "Get order line item",
         "tags": [
           "ecommerce"
@@ -40245,24 +37935,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:update"
-            ]
-          }
-        ],
         "summary": "Update order line item",
         "tags": [
           "ecommerce"
@@ -40491,24 +38163,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "List product",
         "tags": [
           "ecommerce"
@@ -40617,24 +38271,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:create"
-            ]
-          }
-        ],
         "summary": "Add product",
         "tags": [
           "ecommerce"
@@ -40740,24 +38376,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:delete"
-            ]
-          }
-        ],
         "summary": "Delete product",
         "tags": [
           "ecommerce"
@@ -40897,24 +38515,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "Get product info",
         "tags": [
           "ecommerce"
@@ -41195,24 +38795,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:update"
-            ]
-          }
-        ],
         "summary": "Update product",
         "tags": [
           "ecommerce"
@@ -41523,24 +39105,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:update"
-            ]
-          }
-        ],
         "summary": "Create or update product",
         "tags": [
           "ecommerce"
@@ -41859,24 +39423,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "List product images",
         "tags": [
           "ecommerce"
@@ -42101,24 +39647,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:create"
-            ]
-          }
-        ],
         "summary": "Add product image",
         "tags": [
           "ecommerce"
@@ -42235,24 +39763,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:delete"
-            ]
-          }
-        ],
         "summary": "Delete product image",
         "tags": [
           "ecommerce"
@@ -42477,24 +39987,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "Get product image info",
         "tags": [
           "ecommerce"
@@ -42726,24 +40218,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:update"
-            ]
-          }
-        ],
         "summary": "Update product image",
         "tags": [
           "ecommerce"
@@ -42988,24 +40462,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "List product variants",
         "tags": [
           "ecommerce"
@@ -43195,24 +40651,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:create"
-            ]
-          }
-        ],
         "summary": "Add product variant",
         "tags": [
           "ecommerce"
@@ -43329,24 +40767,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:delete"
-            ]
-          }
-        ],
         "summary": "Delete product variant",
         "tags": [
           "ecommerce"
@@ -43497,24 +40917,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "Get product variant info",
         "tags": [
           "ecommerce"
@@ -43698,24 +41100,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:update"
-            ]
-          }
-        ],
         "summary": "Update product variant",
         "tags": [
           "ecommerce"
@@ -43906,24 +41290,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:update"
-            ]
-          }
-        ],
         "summary": "Add or update product variant",
         "tags": [
           "ecommerce"
@@ -44152,24 +41518,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "List promo rules",
         "tags": [
           "ecommerce"
@@ -44446,24 +41794,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:create"
-            ]
-          }
-        ],
         "summary": "Add promo rule",
         "tags": [
           "ecommerce"
@@ -44569,24 +41899,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:delete"
-            ]
-          }
-        ],
         "summary": "Delete promo rule",
         "tags": [
           "ecommerce"
@@ -44726,24 +42038,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "Get promo rule",
         "tags": [
           "ecommerce"
@@ -45021,24 +42315,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:update"
-            ]
-          }
-        ],
         "summary": "Update promo rule",
         "tags": [
           "ecommerce"
@@ -45278,24 +42554,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "List promo codes",
         "tags": [
           "ecommerce"
@@ -45465,24 +42723,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:create"
-            ]
-          }
-        ],
         "summary": "Add promo code",
         "tags": [
           "ecommerce"
@@ -45599,24 +42839,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:delete"
-            ]
-          }
-        ],
         "summary": "Delete promo code",
         "tags": [
           "ecommerce"
@@ -45767,24 +42989,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:read"
-            ]
-          }
-        ],
         "summary": "Get promo code",
         "tags": [
           "ecommerce"
@@ -45960,24 +43164,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ecommerce:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ecommerce:update"
-            ]
-          }
-        ],
         "summary": "Update promo code",
         "tags": [
           "ecommerce"
@@ -46216,24 +43402,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ads:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ads:read"
-            ]
-          }
-        ],
         "summary": "List facebook ads",
         "tags": [
           "facebook-ads"
@@ -46364,24 +43532,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "ads:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "ads:read"
-            ]
-          }
-        ],
         "summary": "Get facebook ad info",
         "tags": [
           "facebook-ads"
@@ -46518,24 +43668,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:read"
-            ]
-          }
-        ],
         "summary": "List file manager resources",
         "tags": [
           "file-manager"
@@ -46823,24 +43955,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:read"
-            ]
-          }
-        ],
         "summary": "List stored files",
         "tags": [
           "file-manager"
@@ -46959,24 +44073,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:create"
-            ]
-          }
-        ],
         "summary": "Add file",
         "tags": [
           "file-manager"
@@ -47071,24 +44167,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:delete"
-            ]
-          }
-        ],
         "summary": "Delete file",
         "tags": [
           "file-manager"
@@ -47217,24 +44295,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:read"
-            ]
-          }
-        ],
         "summary": "Get file",
         "tags": [
           "file-manager"
@@ -47357,24 +44417,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:update"
-            ]
-          }
-        ],
         "summary": "Update file",
         "tags": [
           "file-manager"
@@ -47703,24 +44745,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:read"
-            ]
-          }
-        ],
         "summary": "List folders",
         "tags": [
           "file-manager"
@@ -47914,24 +44938,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:create"
-            ]
-          }
-        ],
         "summary": "Add folder",
         "tags": [
           "file-manager"
@@ -48026,24 +45032,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:delete"
-            ]
-          }
-        ],
         "summary": "Delete folder",
         "tags": [
           "file-manager"
@@ -48258,24 +45246,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:read"
-            ]
-          }
-        ],
         "summary": "Get folder",
         "tags": [
           "file-manager"
@@ -48482,24 +45452,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:update"
-            ]
-          }
-        ],
         "summary": "Update folder",
         "tags": [
           "file-manager"
@@ -48798,24 +45750,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:read"
-            ]
-          }
-        ],
         "summary": "List stored files",
         "tags": [
           "file-manager"
@@ -49043,24 +45977,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "websites:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "websites:read"
-            ]
-          }
-        ],
         "summary": "List landing pages",
         "tags": [
           "landing-pages"
@@ -49230,24 +46146,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "websites:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "websites:create"
-            ]
-          }
-        ],
         "summary": "Add landing page",
         "tags": [
           "landing-pages"
@@ -49342,24 +46240,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "websites:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "websites:delete"
-            ]
-          }
-        ],
         "summary": "Delete landing page",
         "tags": [
           "landing-pages"
@@ -49488,24 +46368,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "websites:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "websites:read"
-            ]
-          }
-        ],
         "summary": "Get landing page info",
         "tags": [
           "landing-pages"
@@ -49660,24 +46522,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "websites:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "websites:update"
-            ]
-          }
-        ],
         "summary": "Update landing page",
         "tags": [
           "landing-pages"
@@ -49772,24 +46616,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "websites:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "websites:update"
-            ]
-          }
-        ],
         "summary": "Publish landing page",
         "tags": [
           "landing-pages"
@@ -49884,24 +46710,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "websites:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "websites:update"
-            ]
-          }
-        ],
         "summary": "Unpublish landing page",
         "tags": [
           "landing-pages"
@@ -50098,24 +46906,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "websites:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "websites:read"
-            ]
-          }
-        ],
         "summary": "Get landing page content",
         "tags": [
           "landing-pages"
@@ -50455,24 +47245,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "Get lists info",
         "tags": [
           "lists"
@@ -50715,24 +47487,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create"
-            ]
-          }
-        ],
         "summary": "Add list",
         "tags": [
           "lists"
@@ -50827,24 +47581,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:delete"
-            ]
-          }
-        ],
         "summary": "Delete list",
         "tags": [
           "lists"
@@ -50984,24 +47720,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "Get list info",
         "tags": [
           "lists"
@@ -51233,24 +47951,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:update"
-            ]
-          }
-        ],
         "summary": "Update lists",
         "tags": [
           "lists"
@@ -51843,26 +48543,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create",
-              "contacts:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create",
-              "contacts:create"
-            ]
-          }
-        ],
         "summary": "Batch subscribe or unsubscribe",
         "tags": [
           "lists"
@@ -52091,26 +48771,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          }
-        ],
         "summary": "List abuse reports",
         "tags": [
           "lists"
@@ -52273,26 +48933,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          }
-        ],
         "summary": "Get abuse report",
         "tags": [
           "lists"
@@ -52637,24 +49277,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "List recent activity",
         "tags": [
           "lists"
@@ -52877,24 +49499,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "List top email clients",
         "tags": [
           "lists"
@@ -53151,24 +49755,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "List growth history data",
         "tags": [
           "lists"
@@ -53308,24 +49894,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "Get growth history by month",
         "tags": [
           "lists"
@@ -53593,24 +50161,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "List interest categories",
         "tags": [
           "lists"
@@ -53748,24 +50298,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create"
-            ]
-          }
-        ],
         "summary": "Add interest category",
         "tags": [
           "lists"
@@ -53871,24 +50403,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:delete"
-            ]
-          }
-        ],
         "summary": "Delete interest category",
         "tags": [
           "lists"
@@ -54028,24 +50542,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "Get interest category info",
         "tags": [
           "lists"
@@ -54190,24 +50686,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:update"
-            ]
-          }
-        ],
         "summary": "Update interest category",
         "tags": [
           "lists"
@@ -54452,24 +50930,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "List interests in category",
         "tags": [
           "lists"
@@ -54606,24 +51066,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create"
-            ]
-          }
-        ],
         "summary": "Add interest in category",
         "tags": [
           "lists"
@@ -54740,24 +51182,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:delete"
-            ]
-          }
-        ],
         "summary": "Delete interest in category",
         "tags": [
           "lists"
@@ -54908,24 +51332,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "Get interest in category",
         "tags": [
           "lists"
@@ -55070,24 +51476,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:update"
-            ]
-          }
-        ],
         "summary": "Update interest in category",
         "tags": [
           "lists"
@@ -55320,24 +51708,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "List locations",
         "tags": [
           "lists"
@@ -55738,26 +52108,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          }
-        ],
         "summary": "List members info",
         "tags": [
           "lists"
@@ -56087,26 +52437,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create",
-              "contacts:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create",
-              "contacts:create"
-            ]
-          }
-        ],
         "summary": "Add member to list",
         "tags": [
           "lists"
@@ -56212,26 +52542,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:delete",
-              "contacts:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:delete",
-              "contacts:delete"
-            ]
-          }
-        ],
         "summary": "Archive list member",
         "tags": [
           "lists"
@@ -56371,26 +52681,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          }
-        ],
         "summary": "Get member info",
         "tags": [
           "lists"
@@ -56718,26 +53008,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:update",
-              "contacts:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:update",
-              "contacts:update"
-            ]
-          }
-        ],
         "summary": "Update list member",
         "tags": [
           "lists"
@@ -57089,26 +53359,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:update",
-              "contacts:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:update",
-              "contacts:update"
-            ]
-          }
-        ],
         "summary": "Add or update list member",
         "tags": [
           "lists"
@@ -57214,26 +53464,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create",
-              "contacts:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create",
-              "contacts:delete"
-            ]
-          }
-        ],
         "summary": "Delete list member",
         "tags": [
           "lists"
@@ -57527,26 +53757,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          }
-        ],
         "summary": "View recent activity 50",
         "tags": [
           "lists"
@@ -58668,26 +54878,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          }
-        ],
         "summary": "View recent activity",
         "tags": [
           "lists"
@@ -58946,26 +55136,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          }
-        ],
         "summary": "List member events",
         "tags": [
           "lists"
@@ -59110,26 +55280,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create",
-              "contacts:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create",
-              "contacts:create"
-            ]
-          }
-        ],
         "summary": "Add event",
         "tags": [
           "lists"
@@ -59378,26 +55528,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          }
-        ],
         "summary": "List member goal events",
         "tags": [
           "lists"
@@ -59673,26 +55803,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          }
-        ],
         "summary": "List recent member notes",
         "tags": [
           "lists"
@@ -59824,26 +55934,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create",
-              "contacts:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create",
-              "contacts:create"
-            ]
-          }
-        ],
         "summary": "Add member note",
         "tags": [
           "lists"
@@ -59960,26 +56050,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:delete",
-              "contacts:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:delete",
-              "contacts:delete"
-            ]
-          }
-        ],
         "summary": "Delete note",
         "tags": [
           "lists"
@@ -60130,26 +56200,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          }
-        ],
         "summary": "Get member note",
         "tags": [
           "lists"
@@ -60289,26 +56339,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:update",
-              "contacts:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:update",
-              "contacts:update"
-            ]
-          }
-        ],
         "summary": "Update note",
         "tags": [
           "lists"
@@ -60563,26 +56593,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          }
-        ],
         "summary": "List member tags",
         "tags": [
           "lists"
@@ -60738,26 +56748,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create",
-              "contacts:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create",
-              "contacts:create"
-            ]
-          }
-        ],
         "summary": "Add or remove member tags",
         "tags": [
           "lists"
@@ -61014,24 +57004,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "List merge fields",
         "tags": [
           "lists"
@@ -61244,24 +57216,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create"
-            ]
-          }
-        ],
         "summary": "Add merge field",
         "tags": [
           "lists"
@@ -61367,24 +57321,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:delete"
-            ]
-          }
-        ],
         "summary": "Delete merge field",
         "tags": [
           "lists"
@@ -61524,24 +57460,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "Get merge field",
         "tags": [
           "lists"
@@ -61735,24 +57653,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:update"
-            ]
-          }
-        ],
         "summary": "Update merge field",
         "tags": [
           "lists"
@@ -62080,24 +57980,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "List segments",
         "tags": [
           "lists"
@@ -62245,24 +58127,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create"
-            ]
-          }
-        ],
         "summary": "Add segment",
         "tags": [
           "lists"
@@ -62368,24 +58232,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:delete"
-            ]
-          }
-        ],
         "summary": "Delete segment",
         "tags": [
           "lists"
@@ -62558,24 +58404,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "Get segment info",
         "tags": [
           "lists"
@@ -62731,24 +58559,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:update"
-            ]
-          }
-        ],
         "summary": "Update segment",
         "tags": [
           "lists"
@@ -63001,26 +58811,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create",
-              "contacts:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create",
-              "contacts:create"
-            ]
-          }
-        ],
         "summary": "Batch add or remove members",
         "tags": [
           "lists"
@@ -63288,26 +59078,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          }
-        ],
         "summary": "List members in segment",
         "tags": [
           "lists"
@@ -63438,26 +59208,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create",
-              "contacts:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create",
-              "contacts:create"
-            ]
-          }
-        ],
         "summary": "Add member to segment",
         "tags": [
           "lists"
@@ -63574,26 +59324,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:delete",
-              "contacts:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:delete",
-              "contacts:delete"
-            ]
-          }
-        ],
         "summary": "Remove list member from segment",
         "tags": [
           "lists"
@@ -63769,24 +59499,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "List signup forms",
         "tags": [
           "lists"
@@ -64080,24 +59792,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create"
-            ]
-          }
-        ],
         "summary": "Customize signup form",
         "tags": [
           "lists"
@@ -64194,24 +59888,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "Get information about all surveys for a list",
         "tags": [
           "lists"
@@ -64333,24 +60009,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create"
-            ]
-          }
-        ],
         "summary": "Create survey",
         "tags": [
           "lists"
@@ -64458,24 +60116,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "Get survey",
         "tags": [
           "lists"
@@ -64613,24 +60253,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:update"
-            ]
-          }
-        ],
         "summary": "Update survey",
         "tags": [
           "lists"
@@ -64733,24 +60355,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:delete"
-            ]
-          }
-        ],
         "summary": "Delete survey",
         "tags": [
           "lists"
@@ -64862,24 +60466,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create"
-            ]
-          }
-        ],
         "summary": "Create a Survey Campaign",
         "tags": [
           "surveys"
@@ -64987,24 +60573,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create"
-            ]
-          }
-        ],
         "summary": "Publish a Survey",
         "tags": [
           "surveys"
@@ -65112,24 +60680,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create"
-            ]
-          }
-        ],
         "summary": "Unpublish a Survey",
         "tags": [
           "surveys"
@@ -65261,24 +60811,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create"
-            ]
-          }
-        ],
         "summary": "Replicate survey",
         "tags": [
           "lists"
@@ -65420,24 +60952,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "Search for tags on a list by name.",
         "tags": [
           "lists"
@@ -65613,24 +61127,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "List webhooks",
         "tags": [
           "lists"
@@ -65754,24 +61250,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:create"
-            ]
-          }
-        ],
         "summary": "Add webhook",
         "tags": [
           "lists"
@@ -65875,24 +61353,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:delete"
-            ]
-          }
-        ],
         "summary": "Delete webhook",
         "tags": [
           "lists"
@@ -66000,24 +61460,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read"
-            ]
-          }
-        ],
         "summary": "Get webhook info",
         "tags": [
           "lists"
@@ -66135,24 +61577,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:update"
-            ]
-          }
-        ],
         "summary": "Update webhook",
         "tags": [
           "lists"
@@ -66251,20 +61675,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": []
-          },
-          {
-            "mcApiKey": []
-          }
-        ],
         "summary": "Ping",
         "tags": [
           "ping"
@@ -66401,24 +61811,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List reporting resources",
         "tags": [
           "reporting"
@@ -66657,24 +62049,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List facebook ads reports",
         "tags": [
           "reporting"
@@ -66805,24 +62179,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "Get facebook ad report",
         "tags": [
           "reporting"
@@ -67084,24 +62440,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List facebook ecommerce report",
         "tags": [
           "reporting"
@@ -67311,24 +62649,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List landing pages reports",
         "tags": [
           "reporting"
@@ -67459,24 +62779,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "Get landing page report",
         "tags": [
           "reporting"
@@ -67772,24 +63074,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List survey reports",
         "tags": [
           "reporting"
@@ -68005,24 +63289,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "Get survey report",
         "tags": [
           "reporting"
@@ -68221,24 +63487,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List survey question reports",
         "tags": [
           "reporting"
@@ -68380,24 +63628,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "Get survey question report",
         "tags": [
           "reporting"
@@ -68720,24 +63950,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List answers for question",
         "tags": [
           "reporting"
@@ -69057,24 +64269,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List survey responses",
         "tags": [
           "reporting"
@@ -69313,24 +64507,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "Get survey response",
         "tags": [
           "reporting"
@@ -69582,24 +64758,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List campaign reports",
         "tags": [
           "reports"
@@ -69730,24 +64888,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "Get campaign report",
         "tags": [
           "reports"
@@ -69954,24 +65094,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List abuse reports",
         "tags": [
           "reports"
@@ -70111,24 +65233,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "Get abuse report",
         "tags": [
           "reports"
@@ -70408,24 +65512,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List campaign feedback",
         "tags": [
           "reports"
@@ -70694,24 +65780,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List campaign details",
         "tags": [
           "reports"
@@ -70864,24 +65932,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "Get campaign link details",
         "tags": [
           "reports"
@@ -71122,24 +66172,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List clicked link subscribers",
         "tags": [
           "reports"
@@ -71292,24 +66324,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "Get clicked link subscriber",
         "tags": [
           "reports"
@@ -71599,24 +66613,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List domain performance stats",
         "tags": [
           "reports"
@@ -71878,24 +66874,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List campaign product activity",
         "tags": [
           "reports"
@@ -72263,24 +67241,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List EepURL activity",
         "tags": [
           "reports"
@@ -72531,24 +67491,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List email activity",
         "tags": [
           "reports"
@@ -72711,24 +67653,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "Get subscriber email activity",
         "tags": [
           "reports"
@@ -72990,24 +67914,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List top open activities",
         "tags": [
           "reports"
@@ -73296,24 +68202,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List campaign open details",
         "tags": [
           "reports"
@@ -73466,24 +68354,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "Get opened campaign subscriber",
         "tags": [
           "reports"
@@ -73713,24 +68583,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List campaign recipients",
         "tags": [
           "reports"
@@ -73872,24 +68724,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "Get campaign recipient info",
         "tags": [
           "reports"
@@ -74095,24 +68929,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List child campaign reports",
         "tags": [
           "reports"
@@ -74342,24 +69158,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "List unsubscribed members",
         "tags": [
           "reports"
@@ -74501,24 +69299,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "reports:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "reports:read"
-            ]
-          }
-        ],
         "summary": "Get unsubscribed member",
         "tags": [
           "reports"
@@ -74728,24 +69508,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "campaigns:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "campaigns:read"
-            ]
-          }
-        ],
         "summary": "Search campaigns",
         "tags": [
           "search-campaigns"
@@ -74957,24 +69719,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "sms:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "sms:read"
-            ]
-          }
-        ],
         "summary": "List SMS campaigns",
         "tags": [
           "sms-campaigns"
@@ -75100,24 +69844,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "sms:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "sms:create"
-            ]
-          }
-        ],
         "summary": "Add SMS campaign",
         "tags": [
           "sms-campaigns"
@@ -75244,24 +69970,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "sms:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "sms:read"
-            ]
-          }
-        ],
         "summary": "Get SMS campaign info",
         "tags": [
           "sms-campaigns"
@@ -75392,24 +70100,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "sms:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "sms:update"
-            ]
-          }
-        ],
         "summary": "Update an SMS campaign",
         "tags": [
           "sms-campaigns"
@@ -75498,24 +70188,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "sms:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "sms:delete"
-            ]
-          }
-        ],
         "summary": "Delete SMS campaign",
         "tags": [
           "sms-campaigns"
@@ -75606,24 +70278,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "sms:send"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "sms:send"
-            ]
-          }
-        ],
         "summary": "Cancel SMS campaign send",
         "tags": [
           "sms-campaigns"
@@ -75734,24 +70388,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "sms:send"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "sms:send"
-            ]
-          }
-        ],
         "summary": "Schedule SMS campaign",
         "tags": [
           "sms-campaigns"
@@ -75842,24 +70478,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "sms:send"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "sms:send"
-            ]
-          }
-        ],
         "summary": "Send SMS campaign",
         "tags": [
           "sms-campaigns"
@@ -75986,24 +70604,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "sms:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "sms:read"
-            ]
-          }
-        ],
         "summary": "Get SMS campaign content",
         "tags": [
           "sms-campaigns"
@@ -76133,24 +70733,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "sms:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "sms:update"
-            ]
-          }
-        ],
         "summary": "Set SMS campaign content",
         "tags": [
           "sms-campaigns"
@@ -76385,26 +70967,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "audiences:read",
-              "contacts:read"
-            ]
-          }
-        ],
         "summary": "Search members",
         "tags": [
           "search-members"
@@ -76690,24 +71252,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:read"
-            ]
-          }
-        ],
         "summary": "List template folders",
         "tags": [
           "template-folders"
@@ -76888,24 +71432,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:create"
-            ]
-          }
-        ],
         "summary": "Add template folder",
         "tags": [
           "template-folders"
@@ -76998,24 +71524,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:delete"
-            ]
-          }
-        ],
         "summary": "Delete template folder",
         "tags": [
           "template-folders"
@@ -77215,24 +71723,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:read"
-            ]
-          }
-        ],
         "summary": "Get template folder",
         "tags": [
           "template-folders"
@@ -77424,24 +71914,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:update"
-            ]
-          }
-        ],
         "summary": "Update template folder",
         "tags": [
           "template-folders"
@@ -77758,24 +72230,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:read"
-            ]
-          }
-        ],
         "summary": "List templates",
         "tags": [
           "templates"
@@ -77900,24 +72354,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:create"
-            ]
-          }
-        ],
         "summary": "Add template",
         "tags": [
           "templates"
@@ -78012,24 +72448,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:delete"
-            ]
-          }
-        ],
         "summary": "Delete template",
         "tags": [
           "templates"
@@ -78158,24 +72576,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:read"
-            ]
-          }
-        ],
         "summary": "Get template info",
         "tags": [
           "templates"
@@ -78305,24 +72705,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:update"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:update"
-            ]
-          }
-        ],
         "summary": "Update template",
         "tags": [
           "templates"
@@ -78517,24 +72899,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "content:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "content:read"
-            ]
-          }
-        ],
         "summary": "View default content",
         "tags": [
           "templates"
@@ -78697,24 +73061,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "accounts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "accounts:read"
-            ]
-          }
-        ],
         "summary": "List sending domains",
         "tags": [
           "verified-domains"
@@ -78878,24 +73224,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "accounts:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "accounts:create"
-            ]
-          }
-        ],
         "summary": "Add domain to account",
         "tags": [
           "verified-domains"
@@ -78989,24 +73317,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "accounts:delete"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "accounts:delete"
-            ]
-          }
-        ],
         "summary": "Delete domain",
         "tags": [
           "verified-domains"
@@ -79160,24 +73470,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "accounts:read"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "accounts:read"
-            ]
-          }
-        ],
         "summary": "Get domain info",
         "tags": [
           "verified-domains"
@@ -79355,24 +73647,6 @@
             "description": "An error generated by the Mailchimp API."
           }
         },
-        "security": [
-          {
-            "mcLegacyOauth2": []
-          },
-          {
-            "mcLegacyApiKey": []
-          },
-          {
-            "mcOauth2": [
-              "accounts:create"
-            ]
-          },
-          {
-            "mcApiKey": [
-              "accounts:create"
-            ]
-          }
-        ],
         "summary": "Verify domain",
         "tags": [
           "verified-domains"
@@ -79386,16 +73660,10 @@
   },
   "security": [
     {
-      "mcLegacyOauth2": []
+      "bearerToken": []
     },
     {
-      "mcLegacyApiKey": []
-    },
-    {
-      "mcOauth2": []
-    },
-    {
-      "mcApiKey": []
+      "oauth2": []
     }
   ],
   "servers": [
