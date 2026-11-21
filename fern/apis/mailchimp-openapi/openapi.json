@@ -2,7 +2,7 @@
   "components": {
     "securitySchemes": {
       "mcOauth2": {
-        "description": "**Mailchimp OAuth 2.0.** Connect to Mailchimp on behalf of your users with OAuth 2.0. Your app asks for the scopes it needs, and [PKCE](https://www.rfc-editor.org/info/rfc7636/) is required. Learn more in [OAuth 2](https://mailchimp.com/developer/marketing/api-concepts/authentication/oauth-2).",
+        "description": "**OAuth 2.0.** Connect to Mailchimp on behalf of your users with OAuth 2.0. Your app asks for the scopes it needs, and [PKCE](https://www.rfc-editor.org/info/rfc7636/) is required. Learn more in [OAuth 2](https://mailchimp.com/developer/marketing/api-concepts/authentication/oauth-2).",
         "flows": {
           "authorizationCode": {
             "authorizationUrl": "https://oauth.mailchimp.com/oauth2/authorize",
@@ -18,10 +18,10 @@
               "ads:delete": "Delete ads.",
               "ads:read": "See your ads, including Facebook and Google ads, and an ad's cost information and available credits.",
               "ads:update": "Change and publish ads, and pause, resume or end them. Ending an ad is permanent.",
-              "audiences:create": "Create audiences, interest categories, merge fields, signup forms and surveys, and webhooks that send audience events to an external URL.",
-              "audiences:delete": "Delete audiences and their segments, merge fields, surveys and webhooks.",
+              "audiences:create": "Create audiences.",
+              "audiences:delete": "Delete audiences. You lose access to every contact in a deleted audience, and you can't restore it yourself.",
               "audiences:read": "See your audiences, their settings, segments and partner segments.",
-              "audiences:update": "Change audiences, their segments, surveys and audience webhooks, and publish surveys or unpublish them.",
+              "audiences:update": "Change audiences, and add, change or remove their segments, interest categories, merge fields, signup forms, surveys and audience webhooks. Audience webhooks send audience events to an external URL. Also publish surveys or unpublish them.",
               "automations:create": "Create and copy automations, and add a contact to an automation email's queue, which sends them that email.",
               "automations:delete": "Delete classic automation emails and automation flows. Deleting a flow permanently deletes it and its stats.",
               "automations:read": "See classic automations, automation flows and their queued subscribers.",
@@ -35,9 +35,9 @@
               "campaigns:send": "Send, schedule or test email campaigns, and publish or schedule social posts.",
               "campaigns:update": "Change campaign content and settings, campaign folders and feedback, including campaigns already scheduled to send.",
               "contacts:create": "Add, import, or batch subscribe or unsubscribe contacts.",
-              "contacts:delete": "Archive or forget contacts, or permanently remove them for privacy compliance.",
+              "contacts:delete": "Archive or forget contacts, or permanently remove them for privacy compliance. Deleting an audience also requires this, because you lose access to its contacts.",
               "contacts:read": "See and search the contacts in your audiences.",
-              "contacts:update": "Change contacts, or add or update a list member.",
+              "contacts:update": "Change contacts, or add or update a list member. Add events to a contact, and add, change or remove a contact's notes and tags.",
               "content:create": "Create brands and templates, and upload images and files to your File Manager.",
               "content:delete": "Delete brands and templates, and remove files from your File Manager.",
               "content:read": "See your brands, templates, and the images and files in your File Manager.",
@@ -67,10 +67,10 @@
               "sms:read": "See your SMS campaigns and their content.",
               "sms:send": "Send or schedule SMS campaigns, or cancel a send.",
               "sms:update": "Change SMS campaigns and their content.",
-              "webhooks:create": "Add a webhook that fires whenever a batch request completes.",
-              "webhooks:delete": "Remove batch webhooks so they are no longer sent.",
-              "webhooks:read": "See the webhooks configured for batch requests.",
-              "webhooks:update": "Change batch webhooks.",
+              "webhooks:create": "Add a webhook that sends audience events or batch results to an external URL.",
+              "webhooks:delete": "Remove audience webhooks and batch webhooks so they are no longer sent.",
+              "webhooks:read": "See your audience webhooks and batch webhooks.",
+              "webhooks:update": "Change audience webhooks and batch webhooks, including the URL they send to.",
               "websites:create": "Connect sites and create landing pages.",
               "websites:delete": "Remove connected sites and delete landing pages.",
               "websites:read": "See your connected sites and landing pages.",
@@ -82,12 +82,12 @@
         "type": "oauth2"
       },
       "mcApiKey": {
-        "description": "**Mailchimp API key.** Send your Mailchimp API key as a bearer token. A key created with scopes can only call the operations that list those scopes. Learn more in [API keys](https://mailchimp.com/developer/marketing/api-concepts/authentication/api-keys).",
+        "description": "**API key.** Send your Mailchimp API key as a bearer token. A key created with scopes can only call the operations that list those scopes. Learn more in [API keys](https://mailchimp.com/developer/marketing/api-concepts/authentication/api-keys).",
         "scheme": "bearer",
         "type": "http"
       },
       "mcLegacyOauth2": {
-        "description": "**Mailchimp legacy OAuth 2.0.** Connect to Mailchimp on behalf of your users with a legacy OAuth 2.0 app. Legacy apps don't support scopes. Learn more in [Legacy OAuth 2 apps](https://mailchimp.com/developer/marketing/api-concepts/authentication/legacy-oauth-2).",
+        "description": "**Legacy OAuth 2.0.** Connect to Mailchimp on behalf of your users with a legacy OAuth 2.0 app. Legacy apps don't support scopes. Learn more in [Legacy OAuth 2 apps](https://mailchimp.com/developer/marketing/api-concepts/authentication/legacy-oauth-2).",
         "flows": {
           "authorizationCode": {
             "authorizationUrl": "https://login.mailchimp.com/oauth2/authorize",
@@ -18386,13 +18386,13 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:create",
+              "audiences:update",
               "contacts:create"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:create",
+              "audiences:update",
               "contacts:create"
             ]
           },
@@ -18504,13 +18504,13 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:delete",
+              "audiences:update",
               "contacts:delete"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:delete",
+              "audiences:update",
               "contacts:delete"
             ]
           },
@@ -50301,12 +50301,14 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:delete"
+              "audiences:delete",
+              "contacts:delete"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:delete"
+              "audiences:delete",
+              "contacts:delete"
             ]
           },
           {
@@ -53191,12 +53193,12 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:create"
+              "audiences:update"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:create"
+              "audiences:update"
             ]
           },
           {
@@ -53311,12 +53313,12 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:delete"
+              "audiences:update"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:delete"
+              "audiences:update"
             ]
           },
           {
@@ -54034,12 +54036,12 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:create"
+              "audiences:update"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:create"
+              "audiences:update"
             ]
           },
           {
@@ -54165,12 +54167,12 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:delete"
+              "audiences:update"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:delete"
+              "audiences:update"
             ]
           },
           {
@@ -55497,13 +55499,13 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:create",
+              "audiences:update",
               "contacts:create"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:create",
+              "audiences:update",
               "contacts:create"
             ]
           },
@@ -55619,13 +55621,13 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:delete",
+              "audiences:update",
               "contacts:delete"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:delete",
+              "audiences:update",
               "contacts:delete"
             ]
           },
@@ -58493,14 +58495,14 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:create",
-              "contacts:create"
+              "audiences:update",
+              "contacts:update"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:create",
-              "contacts:create"
+              "audiences:update",
+              "contacts:update"
             ]
           },
           {
@@ -59198,14 +59200,14 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:create",
-              "contacts:create"
+              "audiences:update",
+              "contacts:update"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:create",
-              "contacts:create"
+              "audiences:update",
+              "contacts:update"
             ]
           },
           {
@@ -59331,14 +59333,14 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:delete",
-              "contacts:delete"
+              "audiences:update",
+              "contacts:update"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:delete",
-              "contacts:delete"
+              "audiences:update",
+              "contacts:update"
             ]
           },
           {
@@ -60098,6 +60100,7 @@
           {
             "mcOauth2": [
               "audiences:update",
+              "contacts:update",
               "segments:create",
               "segments:update"
             ]
@@ -60105,6 +60108,7 @@
           {
             "mcApiKey": [
               "audiences:update",
+              "contacts:update",
               "segments:create",
               "segments:update"
             ]
@@ -60599,12 +60603,12 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:create"
+              "audiences:update"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:create"
+              "audiences:update"
             ]
           },
           {
@@ -60719,12 +60723,12 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:delete"
+              "audiences:update"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:delete"
+              "audiences:update"
             ]
           },
           {
@@ -63405,12 +63409,12 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:create"
+              "audiences:update"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:create"
+              "audiences:update"
             ]
           },
           {
@@ -63652,12 +63656,12 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:create"
+              "audiences:update"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:create"
+              "audiences:update"
             ]
           },
           {
@@ -64043,12 +64047,12 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:delete"
+              "audiences:update"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:delete"
+              "audiences:update"
             ]
           },
           {
@@ -64169,12 +64173,12 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:create"
+              "audiences:update"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:create"
+              "audiences:update"
             ]
           },
           {
@@ -64559,12 +64563,12 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:create"
+              "audiences:update"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:create"
+              "audiences:update"
             ]
           },
           {
@@ -64905,12 +64909,14 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:read"
+              "audiences:read",
+              "webhooks:read"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:read"
+              "audiences:read",
+              "webhooks:read"
             ]
           },
           {
@@ -65043,12 +65049,14 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:create"
+              "audiences:update",
+              "webhooks:create"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:create"
+              "audiences:update",
+              "webhooks:create"
             ]
           },
           {
@@ -65161,12 +65169,14 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:delete"
+              "audiences:update",
+              "webhooks:delete"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:delete"
+              "audiences:update",
+              "webhooks:delete"
             ]
           },
           {
@@ -65283,12 +65293,14 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:read"
+              "audiences:read",
+              "webhooks:read"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:read"
+              "audiences:read",
+              "webhooks:read"
             ]
           },
           {
@@ -65415,12 +65427,14 @@
         "security": [
           {
             "mcOauth2": [
-              "audiences:update"
+              "audiences:update",
+              "webhooks:update"
             ]
           },
           {
             "mcApiKey": [
-              "audiences:update"
+              "audiences:update",
+              "webhooks:update"
             ]
           },
           {
