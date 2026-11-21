@@ -207,6 +207,7 @@ navigation:
     layout:
       - api: API Reference
         api-name: mailchimp-openapi
+        show-scopes: true
         skip-slug: true
         paginated: true
         snippets:
