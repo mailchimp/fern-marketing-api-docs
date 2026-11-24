@@ -3,6 +3,8 @@ title: Send your first API request
 description: Make your first call to the Marketing API and verify your credentials with the Ping endpoint.
 ---
 
+This page walks you through verifying your Mailchimp Marketing API credentials by making a test call to the Ping endpoint. The only thing you need first is a Marketing API key; if you don't have one yet, [generate your API key](/marketing/build/get-started/generate-your-api-key) before you continue.
+
 ## Install a client library
 
 You can call the Marketing API with whatever you normally use to make HTTP
@@ -178,6 +180,10 @@ If everything was set up correctly and the request to `ping` was a success, the 
    "health_status": "Everything's Chimpy!"
 }
 ```
+
+<Note>
+**Note**: If the request returns an error instead of this response, check that your API key is correct and that it hasn't been revoked. To create a new key, see [Generate your API key](/marketing/build/get-started/generate-your-api-key). For how API keys work, see [API keys](/marketing/api-concepts/authentication/api-keys).
+</Note>
 
 ## Next steps
 
